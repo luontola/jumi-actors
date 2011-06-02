@@ -95,6 +95,11 @@
                 <artifactId>jumi-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>net.orfjackal.jumi</groupId>
+                <artifactId>jumi-launcher</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>commons-io</groupId>

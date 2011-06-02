@@ -17,7 +17,10 @@
 
     <dependencies>
 
-        <!-- No dependencies -->
+        <dependency>
+            <groupId>net.orfjackal.jumi</groupId>
+            <artifactId>jumi-api</artifactId>
+        </dependency>
 
     </dependencies>
 

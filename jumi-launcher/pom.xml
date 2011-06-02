@@ -15,10 +15,56 @@
 
     <name>jumi-launcher</name>
 
+    <properties>
+        <daemonJarDir>${project.build.outputDirectory}/net/orfjackal/jumi/launcher/daemon</daemonJarDir>
+        <daemonJarName>jumi-daemon-${project.version}.jar</daemonJarName>
+    </properties>
+
     <dependencies>
 
-        <!-- No dependencies -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
 
     </dependencies>
+
+    <build>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
+        <plugins>
+
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.2</version>
+                <executions>
+                    <execution>
+                        <id>embed-daemon</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>net.orfjackal.jumi</groupId>
+                                    <artifactId>jumi-daemon</artifactId>
+                                    <version>${project.version}</version>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${daemonJarDir}</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
 
 </project>
