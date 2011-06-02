@@ -15,6 +15,10 @@
 
     <name>jumi-daemon</name>
 
+    <properties>
+        <shadedPrefix>net.orfjackal.jumi.INTERNAL</shadedPrefix>
+    </properties>
+
     <dependencies>
 
         <dependency>
@@ -38,6 +42,20 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <relocations>
+                                <relocation>
+                                    <pattern>org.apache</pattern>
+                                    <shadedPattern>${shadedPrefix}.org.apache</shadedPattern>
+                                </relocation>
+                            </relocations>
+                            <filters>
+                                <filter>
+                                    <artifact>commons-io:commons-io</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/**</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>net.orfjackal.jumi.daemon.Main</mainClass>

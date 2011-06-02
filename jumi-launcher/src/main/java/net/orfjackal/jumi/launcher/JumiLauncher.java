@@ -1,28 +1,18 @@
 package net.orfjackal.jumi.launcher;
 
+import net.orfjackal.jumi.launcher.daemon.Daemon;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.util.Properties;
 
 public class JumiLauncher {
-    private String daemonJarName;
     private File jumiHome; // TODO: default to "~/.jumi"
-    private StringWriter outputListener;
+    private Writer outputListener;
     private File javaExecutable = new File(System.getProperty("java.home"), "bin/java");
     private Process process;
 
     public JumiLauncher() {
-        InputStream in = getClass().getResourceAsStream("launcher.properties");
-        try {
-            Properties p = new Properties();
-            p.load(in);
-            daemonJarName = p.getProperty("daemonJarName");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            IOUtils.closeQuietly(in);
-        }
     }
 
     public void setJumiHome(File jumiHome) {
@@ -34,10 +24,9 @@ public class JumiLauncher {
     }
 
     public void start() throws IOException {
-        InputStream embeddedJar = getClass().getResourceAsStream("daemon/" + daemonJarName);
-        File extractedJar = new File(jumiHome, "lib/" + daemonJarName);
+        InputStream embeddedJar = Daemon.getDaemonJarAsStream();
+        File extractedJar = new File(jumiHome, "lib/" + Daemon.getDaemonJarName());
         copyToFile(embeddedJar, extractedJar);
-
 
         ProcessBuilder builder = new ProcessBuilder();
         builder.directory(jumiHome);
