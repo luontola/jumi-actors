@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+
+    <groupId>net.orfjackal.jumi</groupId>
+    <artifactId>parent</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>parent</name>
+
+    <description>
+        Common test runner for the JVM. Natively supports running
+        tests in parallel. Full stack from UI to class loading.
+        Overcomes a bunch of limitations in JUnit's test runner, IDEs
+        and build tools.
+    </description>
+    <url>https://github.com/orfjackal/jumi</url>
+    <inceptionYear>2011</inceptionYear>
+
+    <licenses>
+        <license>
+            <name>Apache License 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>orfjackal</id>
+            <name>Esko Luontola</name>
+            <url>http://www.orfjackal.net/</url>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/orfjackal/jumi.git</connection>
+        <url>http://github.com/orfjackal/jumi/tree</url>
+    </scm>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
+
+    <dependencies>
+
+        <!-- Testing -->
+
+        <dependency>
+            <!-- Must be declared before JUnit to use hamcrest-core 1.2 instead of the 1.1 which junit-dep depends on -->
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-library</artifactId>
+            <version>1.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit-dep</artifactId>
+            <version>4.8.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Mocking -->
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>1.8.5</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- Dimdwarf core modules -->
+
+            <dependency>
+                <groupId>net.orfjackal.jumi</groupId>
+                <artifactId>jumi-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.orfjackal.jumi</groupId>
+                <artifactId>jumi-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>2.0.1</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <plugins>
+
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.8.1</version>
+                <configuration>
+                    <includes>
+                        <include>**/*Test.class</include>
+                    </includes>
+                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>
