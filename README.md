@@ -18,6 +18,8 @@ Project Goals
 
 - **Simplicity** - The system should be as simple as possible, but no simpler. Adding new features should be done with great criticism and unnecessary features should be removed. To achieve high reliability, [simplicity](http://www.jbrains.ca/permalink/the-four-elements-of-simple-design) in implementation is critical.
 
+More details on the project's motivation can be read from its original announcements at the [junit](http://tech.groups.yahoo.com/group/junit/message/22933) and [scala-tools](http://scala-programming-language.1934581.n4.nabble.com/scala-tools-Common-Test-Runner-for-JVM-td2536290.html) mailing lists.
+
 
 License
 -------
