@@ -16,7 +16,7 @@
     <name>jumi-daemon</name>
 
     <properties>
-        <shadedPrefix>net.orfjackal.jumi.INTERNAL</shadedPrefix>
+        <shadedPrefix>net.orfjackal.jumi.daemon.INTERNAL</shadedPrefix>
     </properties>
 
     <dependencies>
@@ -31,8 +31,9 @@
     <build>
         <plugins>
 
+            <!-- Hide external dependencies -->
+
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>1.4</version>
                 <executions>
@@ -42,20 +43,6 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <relocations>
-                                <relocation>
-                                    <pattern>org.apache</pattern>
-                                    <shadedPattern>${shadedPrefix}.org.apache</shadedPattern>
-                                </relocation>
-                            </relocations>
-                            <filters>
-                                <filter>
-                                    <artifact>commons-io:commons-io</artifact>
-                                    <excludes>
-                                        <exclude>META-INF/**</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>net.orfjackal.jumi.daemon.Main</mainClass>

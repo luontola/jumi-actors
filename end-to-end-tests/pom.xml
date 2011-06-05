@@ -16,11 +16,7 @@
     <name>end-to-end-tests</name>
 
     <properties>
-        <test.projectJarsDir>${project.build.directory}/jars</test.projectJarsDir>
-        <test.apiJar>${test.projectJarsDir}/jumi-api-${project.version}.jar</test.apiJar>
-        <test.coreJar>${test.projectJarsDir}/jumi-core-${project.version}.jar</test.coreJar>
-        <test.daemonJar>${test.projectJarsDir}/jumi-daemon-${project.version}.jar</test.daemonJar>
-        <test.launcherJar>${test.projectJarsDir}/jumi-launcher-${project.version}.jar</test.launcherJar>
+        <test.projectArtifactsDir>${project.build.directory}/project-artifacts</test.projectArtifactsDir>
     </properties>
 
     <dependencies>
@@ -96,6 +92,7 @@
                         </goals>
                         <configuration>
                             <artifactItems>
+
                                 <artifactItem>
                                     <groupId>net.orfjackal.jumi</groupId>
                                     <artifactId>jumi-api</artifactId>
@@ -103,9 +100,23 @@
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>net.orfjackal.jumi</groupId>
+                                    <artifactId>jumi-api</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>pom</type>
+                                </artifactItem>
+
+                                <artifactItem>
+                                    <groupId>net.orfjackal.jumi</groupId>
                                     <artifactId>jumi-core</artifactId>
                                     <version>${project.version}</version>
                                 </artifactItem>
+                                <artifactItem>
+                                    <groupId>net.orfjackal.jumi</groupId>
+                                    <artifactId>jumi-core</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>pom</type>
+                                </artifactItem>
+
                                 <artifactItem>
                                     <groupId>net.orfjackal.jumi</groupId>
                                     <artifactId>jumi-daemon</artifactId>
@@ -113,11 +124,25 @@
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>net.orfjackal.jumi</groupId>
+                                    <artifactId>jumi-daemon</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>pom</type>
+                                </artifactItem>
+
+                                <artifactItem>
+                                    <groupId>net.orfjackal.jumi</groupId>
                                     <artifactId>jumi-launcher</artifactId>
                                     <version>${project.version}</version>
                                 </artifactItem>
+                                <artifactItem>
+                                    <groupId>net.orfjackal.jumi</groupId>
+                                    <artifactId>jumi-launcher</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>pom</type>
+                                </artifactItem>
+
                             </artifactItems>
-                            <outputDirectory>${test.projectJarsDir}</outputDirectory>
+                            <outputDirectory>${test.projectArtifactsDir}</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>
@@ -125,4 +150,5 @@
 
         </plugins>
     </build>
+
 </project>
