@@ -1,14 +1,18 @@
+// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// This software is released under the Apache License 2.0.
+// The license text is at http://www.apache.org/licenses/LICENSE-2.0
+
 package net.orfjackal.jumi.test;
 
 import net.orfjackal.jumi.launcher.JumiLauncher;
 import org.apache.commons.io.FileUtils;
 import org.junit.*;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertTrue;
-
 import java.io.*;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertTrue;
 
 public class TempProjectBootstrapTest {
 

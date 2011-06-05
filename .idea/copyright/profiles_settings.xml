@@ -1,5 +1,5 @@
 <component name="CopyrightManager">
-  <settings default="">
+  <settings default="Apache 2.0">
     <module2copyright />
     <LanguageOptions name="Properties">
       <option name="fileTypeOverride" value="1" />
