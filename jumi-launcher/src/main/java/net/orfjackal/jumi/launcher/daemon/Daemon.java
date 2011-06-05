@@ -10,7 +10,7 @@ public class Daemon {
     private static final String daemonJarName;
 
     static {
-        InputStream in = Daemon.class.getResourceAsStream("daemon.properties");
+        InputStream in = getResourceAsStream("daemon.properties");
         try {
             Properties p = new Properties();
             p.load(in);
