@@ -83,7 +83,7 @@
     <dependencyManagement>
         <dependencies>
 
-            <!-- Dimdwarf core modules -->
+            <!-- Jumi -->
 
             <dependency>
                 <groupId>net.orfjackal.jumi</groupId>
@@ -100,6 +100,8 @@
                 <artifactId>jumi-launcher</artifactId>
                 <version>${project.version}</version>
             </dependency>
+
+            <!-- Misc -->
 
             <dependency>
                 <groupId>commons-io</groupId>

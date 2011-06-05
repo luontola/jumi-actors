@@ -27,6 +27,14 @@ public class Daemon {
     }
 
     public static InputStream getDaemonJarAsStream() {
-        return Daemon.class.getResourceAsStream(daemonJarName);
+        return getResourceAsStream(daemonJarName);
+    }
+
+    private static InputStream getResourceAsStream(String resource) {
+        InputStream in = Daemon.class.getResourceAsStream(resource);
+        if (in == null) {
+            throw new IllegalArgumentException("resource not found: " + resource);
+        }
+        return in;
     }
 }

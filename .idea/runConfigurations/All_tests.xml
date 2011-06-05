@@ -23,6 +23,8 @@
       <value defaultName="wholeProject" />
     </option>
     <envs />
+    <RunnerSettings RunnerId="Run" />
+    <ConfigurationWrapper RunnerId="Run" />
     <method />
   </configuration>
 </component>
