@@ -8,15 +8,24 @@
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/resources" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/target/classes" />
-      <excludeFolder url="file://$MODULE_DIR$/target/failsafe-reports" />
       <excludeFolder url="file://$MODULE_DIR$/target/maven-archiver" />
       <excludeFolder url="file://$MODULE_DIR$/target/project-artifacts" />
-      <excludeFolder url="file://$MODULE_DIR$/target/surefire" />
       <excludeFolder url="file://$MODULE_DIR$/target/test-classes" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/annotations.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="module" module-name="jumi-launcher" scope="TEST" />
+    <orderEntry type="module" module-name="jumi-core" scope="TEST" />
+    <orderEntry type="module" module-name="jumi-api" scope="TEST" />
     <orderEntry type="library" scope="TEST" name="Maven: commons-io:commons-io:2.0.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.hamcrest:hamcrest-library:1.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.hamcrest:hamcrest-core:1.2" level="project" />

@@ -2,9 +2,11 @@ package net.orfjackal.jumi.test;
 
 import net.orfjackal.jumi.launcher.daemon.Daemon;
 import org.apache.commons.io.IOUtils;
+import org.intellij.lang.annotations.Language;
 import org.junit.*;
 import org.w3c.dom.*;
 
+import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.*;
 import java.io.*;
@@ -21,9 +23,15 @@ public class BuildTest {
             "META-INF/maven/net.orfjackal.jumi/",
             "net/orfjackal/jumi/"
     );
-    private static final List<String> DEPENDENCY_WHITELIST = Arrays.asList(
-            "net.orfjackal.jumi"
-    );
+    private static final Map<String, List<String>> DEPENDENCIES = new HashMap<String, List<String>>();
+
+    static {
+        DEPENDENCIES.put("jumi-api", Arrays.<String>asList());
+        DEPENDENCIES.put("jumi-core", Arrays.asList("net.orfjackal.jumi:jumi-api"));
+        DEPENDENCIES.put("jumi-daemon", Arrays.<String>asList());
+        DEPENDENCIES.put("jumi-launcher", Arrays.asList("net.orfjackal.jumi:jumi-core"));
+    }
+
     private File[] projectJars;
     private File[] projectPoms;
 
@@ -66,8 +74,9 @@ public class BuildTest {
     public void project_artifact_poms_do_not_have_external_dependencies() throws Exception {
         assertThat("project POMs", projectPoms.length, is(4));
         for (File projectPom : projectPoms) {
-            // TODO: check also artifact IDs, say explicitly what are the allowed dependencies per artifact?
-            assertHasRuntimeDependenciesOnly(DEPENDENCY_WHITELIST, projectPom); // TODO: better name?
+            Document doc = parseXml(projectPom);
+            String artifactId = xpath("/project/artifactId", doc);
+            assertThat("dependencies of " + artifactId, getRuntimeDependencies(doc), is(DEPENDENCIES.get(artifactId)));
         }
     }
 
@@ -98,38 +107,37 @@ public class BuildTest {
         assertTrue("contained a not allowed entry: " + entry, allowed);
     }
 
-    private void assertHasRuntimeDependenciesOnly(List<String> whitelist, File projectPom) throws Exception {
-        for (Node dependency : getRuntimeDependencies(parseXml(projectPom))) {
-            String groupId = getGroupId(dependency);
-            assertTrue(projectPom + " had an unallowed dependency: " + groupId, whitelist.contains(groupId));
-        }
-    }
-
-    private static List<Node> getRuntimeDependencies(Document doc) throws XPathExpressionException {
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        return asList((NodeList) xpath.evaluate(
+    private static List<String> getRuntimeDependencies(Document doc) throws XPathExpressionException {
+        NodeList nodes = (NodeList) xpath(
                 "/project/dependencies/dependency[not(scope) or scope='compile' or scope='runtime']",
-                doc, XPathConstants.NODESET));
-    }
+                doc, XPathConstants.NODESET);
 
-    private static String getGroupId(Node dependency) throws XPathExpressionException {
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        return (String) xpath.evaluate("groupId", dependency, XPathConstants.STRING);
+        List<String> results = new ArrayList<String>();
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Node dependency = nodes.item(i);
+
+            String groupId = xpath("groupId", dependency);
+            String artifactId = xpath("artifactId", dependency);
+            results.add(groupId + ":" + artifactId);
+        }
+        return results;
     }
 
     // xml parsing
-
-    private static List<Node> asList(NodeList nodes) {
-        List<Node> result = new ArrayList<Node>();
-        for (int i = 0; i < nodes.getLength(); i++) {
-            result.add(nodes.item(i));
-        }
-        return result;
-    }
 
     private static Document parseXml(File file) throws Exception {
         DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
         domFactory.setNamespaceAware(false);
         return domFactory.newDocumentBuilder().parse(file);
+    }
+
+    // TODO: add intellij annotations as maven dependencies
+    private static String xpath(@Language("XPath") String expression, Node node) throws XPathExpressionException {
+        return (String) xpath(expression, node, XPathConstants.STRING);
+    }
+
+    private static Object xpath(@Language("XPath") String expression, Node item, QName returnType) throws XPathExpressionException {
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        return xpath.evaluate(expression, item, returnType);
     }
 }

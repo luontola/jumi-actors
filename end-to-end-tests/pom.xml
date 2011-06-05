@@ -142,6 +142,8 @@
                                 </artifactItem>
 
                             </artifactItems>
+                            <overWriteReleases>true</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
                             <outputDirectory>${test.projectArtifactsDir}</outputDirectory>
                         </configuration>
                     </execution>
