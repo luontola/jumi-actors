@@ -17,8 +17,7 @@ import static org.junit.Assert.assertTrue;
 public class TempProjectBootstrapTest {
 
     // TODO: use a proper sandbox utility
-    // TODO: configure sandbox dir location in a maven-filtered properties file (otherwise IDE and Maven use different dir)
-    private final File sandboxDir = new File("target/sandbox").getAbsoluteFile();
+    private final File sandboxDir = TestEnvironment.getSandboxDir();
 
     @Before
     public void createSandbox() throws IOException {

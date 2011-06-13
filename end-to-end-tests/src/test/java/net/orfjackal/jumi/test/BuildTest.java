@@ -5,7 +5,6 @@
 package net.orfjackal.jumi.test;
 
 import net.orfjackal.jumi.launcher.daemon.Daemon;
-import org.apache.commons.io.IOUtils;
 import org.intellij.lang.annotations.Language;
 import org.junit.*;
 import org.w3c.dom.*;
@@ -40,25 +39,9 @@ public class BuildTest {
     private File[] projectPoms;
 
     @Before
-    public void readProperties() throws IOException {
-        Properties testing = new Properties();
-        InputStream in = BuildTest.class.getResourceAsStream("/testing.properties");
-        try {
-            testing.load(in);
-        } finally {
-            IOUtils.closeQuietly(in);
-        }
-        File projectArtifactsDir = new File(testing.getProperty("test.projectArtifactsDir"));
-        projectJars = projectArtifactsDir.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".jar");
-            }
-        });
-        projectPoms = projectArtifactsDir.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".pom");
-            }
-        });
+    public void init() throws IOException {
+        projectJars = TestEnvironment.getProjectJars();
+        projectPoms = TestEnvironment.getProjectPoms();
     }
 
     @Test
