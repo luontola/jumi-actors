@@ -1,5 +1,9 @@
 
 TODO NEXT:
+- refactor results of passing "suite with zero tests"
+- end-to-end tests: suite with one test
+	- public api (create "SampleUnit")
+
 - intellij annotations must be found from a maven repository (or system scope?)
 	only found unofficially:
 		http://www.mvnsearch.org/maven2/com/intellij/annotations/8.0/
@@ -11,20 +15,13 @@ TODO NEXT:
 	version differences:
 		9.0.4 == 10.5
 		8.1.4 ~= 9.0.4 (whitespace differences)
-- "Error creating shaded jar", probably an issue with NTFS's pending delete and the shade plugin
-	http://mail-archives.apache.org/mod_mbox/maven-dev/200808.mbox/%3C835d522e0808281121g47eedd04u3c056998569be860@mail.gmail.com%3E
-- hide the maven warning about 'parent.relativePath'
-- end-to-end tests: run tests (simplest possible - zero tests?)
-- public api (create "SampleUnit")
 
-[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:2.3.2:compile (default-compile) on project jumi-daemon: Compilation failure: Compilation failure:
-[ERROR] \DEVEL\Jumi\jumi\jumi-daemon\src\main\java\net\orfjackal\jumi\daemon\Main.java:[7,30] package net.orfjackal.jumi.core does not exist
-[ERROR] \DEVEL\Jumi\jumi\jumi-daemon\src\main\java\net\orfjackal\jumi\daemon\Main.java:[11,27] cannot find symbol
-[ERROR] symbol  : variable Hello
-[ERROR] location: class net.orfjackal.jumi.daemon.Main
+- "Error creating shaded jar", probably an issue with NTFS's pending delete and the shade plugin
+	- make a bug request, maybe also a patch
+	http://mail-archives.apache.org/mod_mbox/maven-dev/200808.mbox/%3C835d522e0808281121g47eedd04u3c056998569be860@mail.gmail.com%3E
 
 - investigate warnings on build:
-
+	- happens when jumi-core-0.1.0-SNAPSHOT.jar (or daemon JAR) exits from the previous build
 [WARNING] We have a duplicate net/orfjackal/jumi/core/INTERNAL/org/apache/commons/io/input/TailerListener.class in C:\DEVEL\Jumi\jumi\jumi-core\target\jumi-core-0.1.0-SNAPSHOT.jar
 [WARNING] We have a duplicate net/orfjackal/jumi/core/INTERNAL/org/apache/commons/io/input/TailerListenerAdapter.class in C:\DEVEL\Jumi\jumi\jumi-core\target\jumi-core-0.1.0-SNAPSHOT.jar
 [WARNING] We have a duplicate net/orfjackal/jumi/core/INTERNAL/org/apache/commons/io/input/TeeInputStream.class in C:\DEVEL\Jumi\jumi\jumi-core\target\jumi-core-0.1.0-SNAPSHOT.jar
