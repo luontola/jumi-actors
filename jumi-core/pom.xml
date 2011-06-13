@@ -50,16 +50,19 @@
                         <configuration>
                             <artifactSet>
                                 <excludes>
-                                    <exclude>net.orfjackal.jumi:*</exclude>
+                                    <!-- Regular dependencies -->
+                                    <exclude>net.orfjackal.jumi:jumi-api</exclude>
                                 </excludes>
                             </artifactSet>
                             <relocations>
+                                <!-- Hidden dependencies -->
                                 <relocation>
                                     <pattern>org.apache</pattern>
                                     <shadedPattern>${shadedPrefix}.org.apache</shadedPattern>
                                 </relocation>
                             </relocations>
                             <filters>
+                                <!-- Throw away license files, POMs etc. of hidden dependencies -->
                                 <filter>
                                     <artifact>commons-io:commons-io</artifact>
                                     <excludes>
