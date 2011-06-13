@@ -6,14 +6,23 @@ package net.orfjackal.jumi.launcher;
 
 import net.orfjackal.jumi.launcher.daemon.Daemon;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.NullWriter;
+import org.jboss.netty.bootstrap.ServerBootstrap;
+import org.jboss.netty.channel.*;
+import org.jboss.netty.channel.socket.oio.OioServerSocketChannelFactory;
+import org.jboss.netty.handler.codec.serialization.*;
 
 import java.io.*;
+import java.net.InetSocketAddress;
+import java.util.concurrent.Executors;
 
 public class JumiLauncher {
     private File jumiHome; // TODO: default to "~/.jumi"
-    private Writer outputListener;
+    private Writer outputListener = new NullWriter();
     private File javaExecutable = new File(System.getProperty("java.home"), "bin/java");
     private Process process;
+
+    private final JumiLauncherHandler handler = new JumiLauncherHandler();
 
     public JumiLauncher() {
     }
@@ -27,6 +36,36 @@ public class JumiLauncher {
     }
 
     public void start() throws IOException {
+        int port = listenForDaemonConnection();
+        startProcess(port);
+    }
+
+    private int listenForDaemonConnection() {
+        ChannelFactory factory =
+                new OioServerSocketChannelFactory(
+                        Executors.newCachedThreadPool(),
+                        Executors.newCachedThreadPool());
+
+        ServerBootstrap bootstrap = new ServerBootstrap(factory);
+
+        bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
+            public ChannelPipeline getPipeline() {
+                return Channels.pipeline(
+                        new ObjectEncoder(),
+                        new ObjectDecoder(),
+                        handler);
+            }
+        });
+
+        bootstrap.setOption("child.tcpNoDelay", true);
+        bootstrap.setOption("child.keepAlive", true);
+
+        Channel ch = bootstrap.bind(new InetSocketAddress(0));
+        InetSocketAddress addr = (InetSocketAddress) ch.getLocalAddress();
+        return addr.getPort();
+    }
+
+    private void startProcess(int launcherPort) throws IOException {
         InputStream embeddedJar = Daemon.getDaemonJarAsStream();
         File extractedJar = new File(jumiHome, "lib/" + Daemon.getDaemonJarName());
         copyToFile(embeddedJar, extractedJar);
@@ -34,14 +73,18 @@ public class JumiLauncher {
         ProcessBuilder builder = new ProcessBuilder();
         builder.directory(jumiHome);
         builder.redirectErrorStream(true);
-        builder.command(javaExecutable.getAbsolutePath(), "-jar", extractedJar.getAbsolutePath());
+        builder.command(javaExecutable.getAbsolutePath(), "-jar", extractedJar.getAbsolutePath(),
+                String.valueOf(launcherPort));
         process = builder.start();
 
+        copyInBackground(process.getInputStream(), outputListener);
+    }
+
+    private void copyInBackground(final InputStream src, final Writer dest) {
         Thread t = new Thread(new Runnable() {
             public void run() {
-                InputStream src = process.getInputStream();
                 try {
-                    IOUtils.copy(src, outputListener);
+                    IOUtils.copy(src, dest);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -72,7 +115,22 @@ public class JumiLauncher {
         }
     }
 
-    public void join() throws InterruptedException {
-        process.waitFor();
+    public void awaitSuiteFinished() throws InterruptedException {
+        // XXX: handle the case of suite deadlocking better
+        long limit = System.currentTimeMillis() + 2000;
+        while (!handler.isTestsFinished() && System.currentTimeMillis() < limit) {
+            Thread.sleep(1);
+        }
+    }
+
+    public void addToClassPath(File file) {
+        // TODO: support for main and test class paths
+    }
+
+    public void setTestsToInclude(String pattern) {
+    }
+
+    public int getTotalTests() {
+        return handler.getTotalTestsRun();
     }
 }

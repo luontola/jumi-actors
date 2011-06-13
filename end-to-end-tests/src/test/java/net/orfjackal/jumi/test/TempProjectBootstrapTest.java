@@ -9,15 +9,16 @@ import org.apache.commons.io.FileUtils;
 import org.junit.*;
 
 import java.io.*;
+import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertTrue;
 
 public class TempProjectBootstrapTest {
 
     // TODO: use a proper sandbox utility
-    private final File sandboxDir = TestEnvironment.getSandboxDir();
+    private final File sandboxDir = new File(TestEnvironment.getSandboxDir(), UUID.randomUUID().toString());
 
     @Before
     public void createSandbox() throws IOException {
@@ -26,7 +27,12 @@ public class TempProjectBootstrapTest {
 
     @After
     public void deleteSandbox() throws IOException {
-        FileUtils.forceDelete(sandboxDir);
+        try {
+            // XXX: may fail to delete because the daemon is still running and the JAR is locked
+            FileUtils.forceDelete(sandboxDir);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
@@ -37,8 +43,21 @@ public class TempProjectBootstrapTest {
         launcher.setJumiHome(sandboxDir);
         launcher.setOutputListener(out);
         launcher.start();
-        launcher.join();
+        launcher.awaitSuiteFinished();
 
-        assertThat(out.toString().trim(), is("Hello world"));
+        assertThat(out.toString(), startsWith("Hello world"));
+        System.out.println(out.toString());
+    }
+
+    @Test
+    public void suite_with_zero_tests() throws Exception {
+        JumiLauncher launcher = new JumiLauncher();
+        launcher.setJumiHome(sandboxDir);
+        launcher.addToClassPath(TestEnvironment.getSampleClasses());
+        launcher.setTestsToInclude("sample.notests.*Test");
+        launcher.start();
+        launcher.awaitSuiteFinished();
+
+        assertThat(launcher.getTotalTests(), is(0));
     }
 }
