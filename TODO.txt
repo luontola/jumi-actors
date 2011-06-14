@@ -4,18 +4,6 @@ TODO NEXT:
 - end-to-end tests: suite with one test
 	- public api (create "SampleUnit")
 
-- intellij annotations must be found from a maven repository (or system scope?)
-	only found unofficially:
-		http://www.mvnsearch.org/maven2/com/intellij/annotations/8.0/
-		http://maven.raffael.ch/com/intellij/annotations/
-		http://www.mvnsearch.org/maven2/com/intellij/intellilang/1.0/
-	upload manually:
-		https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide
-		!! https://docs.sonatype.org/display/Repository/Uploading+3rd-party+Artifacts+to+Maven+Central
-	version differences:
-		9.0.4 == 10.5
-		8.1.4 ~= 9.0.4 (whitespace differences)
-
 - "Error creating shaded jar", probably an issue with NTFS's pending delete and the shade plugin
 	- make a bug request, maybe also a patch
 	http://mail-archives.apache.org/mod_mbox/maven-dev/200808.mbox/%3C835d522e0808281121g47eedd04u3c056998569be860@mail.gmail.com%3E

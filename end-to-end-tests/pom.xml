@@ -39,9 +39,7 @@
             <groupId>com.intellij</groupId>
             <artifactId>annotations</artifactId>
             <version>9.0.4</version>
-            <!-- TODO: get the annotations into Maven Central -->
-            <scope>system</scope>
-            <systemPath>C:/Program Files (x86)/JetBrains/IntelliJ IDEA 9.0.4/redist/annotations.jar</systemPath>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>

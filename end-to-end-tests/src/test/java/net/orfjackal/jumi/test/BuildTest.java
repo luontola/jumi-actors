@@ -118,7 +118,6 @@ public class BuildTest {
         return domFactory.newDocumentBuilder().parse(file);
     }
 
-    // TODO: add intellij annotations as maven dependencies
     private static String xpath(@Language("XPath") String expression, Node node) throws XPathExpressionException {
         return (String) xpath(expression, node, XPathConstants.STRING);
     }
