@@ -17,6 +17,8 @@ import static org.junit.Assert.assertTrue;
 
 public class TempProjectBootstrapTest {
 
+    private static final int TIMEOUT = 2000;
+
     // TODO: use a proper sandbox utility
     private final File sandboxDir = new File(TestEnvironment.getSandboxDir(), UUID.randomUUID().toString());
 
@@ -35,21 +37,28 @@ public class TempProjectBootstrapTest {
         }
     }
 
-    @Test
+    @Test(timeout = TIMEOUT)
     public void starts_daemon_in_a_new_process() throws Exception {
         StringWriter out = new StringWriter();
 
+        // TODO: a better way for monitoring in tests that what the daemon printed
+        Writer spy = new FilterWriter(out) {
+            public void write(char[] cbuf, int off, int len) throws IOException {
+                System.out.print(new String(cbuf, off, len));
+                super.write(cbuf, off, len);
+            }
+        };
+
         JumiLauncher launcher = new JumiLauncher();
         launcher.setJumiHome(sandboxDir);
-        launcher.setOutputListener(out);
+        launcher.setOutputListener(spy);
         launcher.start();
         launcher.awaitSuiteFinished();
 
         assertThat(out.toString(), startsWith("Hello world"));
-        System.out.println(out.toString());
     }
 
-    @Test
+    @Test(timeout = TIMEOUT)
     public void suite_with_zero_tests() throws Exception {
         JumiLauncher launcher = new JumiLauncher();
         launcher.setJumiHome(sandboxDir);

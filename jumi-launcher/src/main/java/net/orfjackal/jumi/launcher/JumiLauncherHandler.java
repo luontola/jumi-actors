@@ -4,34 +4,35 @@
 
 package net.orfjackal.jumi.launcher;
 
+import net.orfjackal.jumi.core.SuiteStateCollector;
+import net.orfjackal.jumi.core.events.*;
 import org.jboss.netty.channel.*;
 
 public class JumiLauncherHandler extends SimpleChannelHandler {
-    private volatile int totalTestsRun = -1;
-    private volatile boolean testsFinished = false;
+
+    // TODO: this collector belongs somewhere else, because the network connection's lifetime is longer
+    private final SuiteStateCollector suite;
+
+    public JumiLauncherHandler(SuiteStateCollector suite) {
+        this.suite = suite;
+    }
 
     public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
         e.getChannel().write("RunTests");
     }
 
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-        String message = (String) e.getMessage();
-        if (message.startsWith("TotalTestsRun:")) {
-            totalTestsRun = Integer.parseInt(message.split(":")[1]);
-            testsFinished = true;
+        if (e.getMessage() instanceof SuiteStartedEvent) {
+            suite.onSuiteStarted();
+        }
+        if (e.getMessage() instanceof SuiteFinishedEvent) {
+            suite.onSuiteFinished();
         }
     }
 
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
         // TODO: better error handling
         e.getCause().printStackTrace();
-    }
-
-    public int getTotalTestsRun() {
-        return totalTestsRun;
-    }
-
-    public boolean isTestsFinished() {
-        return testsFinished;
+        e.getChannel().close();
     }
 }

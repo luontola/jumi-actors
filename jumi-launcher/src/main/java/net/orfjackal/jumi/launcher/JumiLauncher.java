@@ -4,6 +4,7 @@
 
 package net.orfjackal.jumi.launcher;
 
+import net.orfjackal.jumi.core.SuiteStateCollector;
 import net.orfjackal.jumi.launcher.daemon.Daemon;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.NullWriter;
@@ -14,7 +15,7 @@ import org.jboss.netty.handler.codec.serialization.*;
 
 import java.io.*;
 import java.net.InetSocketAddress;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 public class JumiLauncher {
     private File jumiHome; // TODO: default to "~/.jumi"
@@ -22,7 +23,8 @@ public class JumiLauncher {
     private File javaExecutable = new File(System.getProperty("java.home"), "bin/java");
     private Process process;
 
-    private final JumiLauncherHandler handler = new JumiLauncherHandler();
+    private final SuiteStateCollector suite = new SuiteStateCollector();
+    private final JumiLauncherHandler handler = new JumiLauncherHandler(suite);
 
     public JumiLauncher() {
     }
@@ -31,7 +33,7 @@ public class JumiLauncher {
         this.jumiHome = jumiHome;
     }
 
-    public void setOutputListener(StringWriter outputListener) {
+    public void setOutputListener(Writer outputListener) {
         this.outputListener = outputListener;
     }
 
@@ -116,11 +118,11 @@ public class JumiLauncher {
     }
 
     public void awaitSuiteFinished() throws InterruptedException {
-        // XXX: handle the case of suite deadlocking better
-        long limit = System.currentTimeMillis() + 2000;
-        while (!handler.isTestsFinished() && System.currentTimeMillis() < limit) {
-            Thread.sleep(1);
-        }
+        suite.awaitSuiteFinished();
+    }
+
+    public boolean awaitSuiteFinished(long timeout, TimeUnit unit) throws InterruptedException {
+        return suite.awaitSuiteFinished(timeout, unit);
     }
 
     public void addToClassPath(File file) {
@@ -131,6 +133,6 @@ public class JumiLauncher {
     }
 
     public int getTotalTests() {
-        return handler.getTotalTestsRun();
+        return suite.getState().getTotalTests();
     }
 }
