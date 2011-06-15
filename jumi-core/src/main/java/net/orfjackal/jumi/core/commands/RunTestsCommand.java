@@ -4,7 +4,12 @@
 
 package net.orfjackal.jumi.core.commands;
 
+import net.orfjackal.jumi.core.CommandListener;
+
 import java.io.Serializable;
 
 public class RunTestsCommand implements Command, Serializable {
+    public void fireOn(CommandListener target) {
+        target.runTests();
+    }
 }

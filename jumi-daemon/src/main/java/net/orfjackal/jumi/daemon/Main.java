@@ -4,7 +4,8 @@
 
 package net.orfjackal.jumi.daemon;
 
-import net.orfjackal.jumi.core.Hello;
+import net.orfjackal.jumi.core.*;
+import net.orfjackal.jumi.core.commands.CommandReceiver;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.socket.oio.OioClientSocketChannelFactory;
@@ -32,7 +33,7 @@ public class Main {
                 return Channels.pipeline(
                         new ObjectEncoder(),
                         new ObjectDecoder(),
-                        new JumiDaemonHandler(new DaemonController()));
+                        new JumiDaemonHandler(new CommandReceiver(new TestRunCoordinator())));
             }
         });
 

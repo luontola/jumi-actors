@@ -4,17 +4,16 @@
 
 package net.orfjackal.jumi.core.commands;
 
-import net.orfjackal.jumi.core.SuiteListener;
+import net.orfjackal.jumi.core.*;
 
 public class AddSuiteListener implements Command {
-
     private final SuiteListener listener;
 
     public AddSuiteListener(SuiteListener listener) {
         this.listener = listener;
     }
 
-    public SuiteListener getListener() {
-        return listener;
+    public void fireOn(CommandListener target) {
+        target.addSuiteListener(listener);
     }
 }

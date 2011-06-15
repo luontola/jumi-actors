@@ -9,7 +9,7 @@ import net.orfjackal.jumi.core.SuiteListener;
 import java.io.Serializable;
 
 public class SuiteFinishedEvent implements SuiteEvent, Serializable {
-    public void fireOn(SuiteListener listener) {
-        listener.onSuiteFinished();
+    public void fireOn(SuiteListener target) {
+        target.onSuiteFinished();
     }
 }
