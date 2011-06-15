@@ -15,6 +15,9 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 
 public class Main {
+
+    private static final TestRunCoordinator coordinator = new TestRunCoordinator();
+
     public static void main(String[] args) {
         System.out.println(Hello.hello());
         exitWhenNotAnymoreInUse();
@@ -33,7 +36,7 @@ public class Main {
                 return Channels.pipeline(
                         new ObjectEncoder(),
                         new ObjectDecoder(),
-                        new JumiDaemonHandler(new CommandReceiver(new TestRunCoordinator())));
+                        new JumiDaemonHandler(new CommandReceiver(coordinator)));
             }
         });
 
