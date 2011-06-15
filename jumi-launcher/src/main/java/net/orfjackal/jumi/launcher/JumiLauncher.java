@@ -27,8 +27,11 @@ public class JumiLauncher {
     private final SuiteStateCollector suite = new SuiteStateCollector();
     private final JumiLauncherHandler handler = new JumiLauncherHandler(new SuiteEventReceiver(suite));
 
-    public JumiLauncher() {
-    }
+    // TODO: this class has multiple responsibilities, split to smaller parts?
+    // - configuring the test run
+    // - starting up the daemon process
+    // - connecting to the daemon over a socket
+    // - sending commands to the daemon
 
     public void setJumiHome(File jumiHome) {
         this.jumiHome = jumiHome;

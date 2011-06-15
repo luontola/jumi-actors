@@ -11,18 +11,20 @@ import org.jboss.netty.channel.*;
 
 public class JumiLauncherHandler extends SimpleChannelHandler {
 
-    private final MessageSender<SuiteEvent> suiteListener;
+    private final MessageSender<SuiteEvent> toLauncher;
 
-    public JumiLauncherHandler(MessageSender<SuiteEvent> suiteListener) {
-        this.suiteListener = suiteListener;
+    public JumiLauncherHandler(MessageSender<SuiteEvent> toLauncher) {
+        this.toLauncher = toLauncher;
     }
 
     public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
+        // TODO: move the responsibility of sending this command into JumiLauncher
+        // TODO: send an event that the we have connected?
         e.getChannel().write(new RunTestsCommand());
     }
 
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-        suiteListener.send((SuiteEvent) e.getMessage());
+        toLauncher.send((SuiteEvent) e.getMessage());
     }
 
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {

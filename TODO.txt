@@ -1,8 +1,10 @@
 
 TODO NEXT:
-- refactor results of passing "suite with zero tests"
 - end-to-end tests: suite with one test
-	- public api (create "SampleUnit")
+	- public api
+	- minimal testing framework "SampleUnit"
+- refactor results of passing "suite with zero tests"
+	- actor model: some easy way for wiring the actors and starting new threads
 
 - "Error creating shaded jar", probably an issue with NTFS's pending delete and the shade plugin
 	- make a bug request, maybe also a patch

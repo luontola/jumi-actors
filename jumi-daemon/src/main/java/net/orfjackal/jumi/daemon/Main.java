@@ -16,6 +16,7 @@ import java.util.concurrent.Executors;
 
 public class Main {
 
+    // TODO: the coordinator should be an actor running in its own thread
     private static final TestRunCoordinator coordinator = new TestRunCoordinator();
 
     public static void main(String[] args) {
@@ -23,6 +24,8 @@ public class Main {
         exitWhenNotAnymoreInUse();
 
         int launcherPort = Integer.parseInt(args[0]);
+
+        // TODO: start up all actors
 
         connectToLauncher(launcherPort);
     }
