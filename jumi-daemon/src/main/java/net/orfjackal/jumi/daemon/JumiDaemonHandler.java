@@ -6,20 +6,25 @@ package net.orfjackal.jumi.daemon;
 
 import net.orfjackal.jumi.core.SuiteListener;
 import net.orfjackal.jumi.core.actors.MessageSender;
-import net.orfjackal.jumi.core.commands.RunTestsCommand;
+import net.orfjackal.jumi.core.commands.*;
 import net.orfjackal.jumi.core.events.*;
 import org.jboss.netty.channel.*;
 
 public class JumiDaemonHandler extends SimpleChannelHandler {
+    private MessageSender<Command> toController;
 
-    public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-        Object command = e.getMessage();
-        if (command instanceof RunTestsCommand) {
-            // TODO: move all of this logic outside the network layer
-            SuiteListener listener = new SuiteEventSender(new ChannelMessageSender(e.getChannel()));
-            listener.onSuiteStarted();
-            listener.onSuiteFinished();
-        }
+    public JumiDaemonHandler(MessageSender<Command> toController) {
+        this.toController = toController;
+    }
+
+    public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
+        // TODO: notify the controller on disconnect
+        SuiteListener listener = new SuiteEventSender(new ChannelMessageSender(e.getChannel()));
+        toController.send(new AddSuiteListener(listener));
+    }
+
+    public void messageReceived(ChannelHandlerContext ctx, final MessageEvent e) throws Exception {
+        toController.send((Command) e.getMessage());
     }
 
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {

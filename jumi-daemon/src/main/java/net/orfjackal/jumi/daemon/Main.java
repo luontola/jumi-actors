@@ -32,7 +32,7 @@ public class Main {
                 return Channels.pipeline(
                         new ObjectEncoder(),
                         new ObjectDecoder(),
-                        new JumiDaemonHandler());
+                        new JumiDaemonHandler(new DaemonController()));
             }
         });
 
