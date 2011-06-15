@@ -6,14 +6,15 @@ package net.orfjackal.jumi.daemon;
 
 import net.orfjackal.jumi.core.SuiteListener;
 import net.orfjackal.jumi.core.actors.MessageSender;
+import net.orfjackal.jumi.core.commands.RunTestsCommand;
 import net.orfjackal.jumi.core.events.*;
 import org.jboss.netty.channel.*;
 
 public class JumiDaemonHandler extends SimpleChannelHandler {
 
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-        String command = (String) e.getMessage();
-        if (command.equals("RunTests")) {
+        Object command = e.getMessage();
+        if (command instanceof RunTestsCommand) {
             // TODO: move all of this logic outside the network layer
             SuiteListener listener = new SuiteEventSender(new ChannelMessageSender(e.getChannel()));
             listener.onSuiteStarted();

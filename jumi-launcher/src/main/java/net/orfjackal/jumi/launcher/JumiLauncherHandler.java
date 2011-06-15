@@ -5,6 +5,7 @@
 package net.orfjackal.jumi.launcher;
 
 import net.orfjackal.jumi.core.actors.MessageSender;
+import net.orfjackal.jumi.core.commands.RunTestsCommand;
 import net.orfjackal.jumi.core.events.SuiteEvent;
 import org.jboss.netty.channel.*;
 
@@ -17,8 +18,7 @@ public class JumiLauncherHandler extends SimpleChannelHandler {
     }
 
     public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
-        // TODO: change into a command class
-        e.getChannel().write("RunTests");
+        e.getChannel().write(new RunTestsCommand());
     }
 
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
