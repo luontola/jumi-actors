@@ -33,7 +33,7 @@ public class TempProjectBootstrapTest {
             // XXX: may fail to delete because the daemon is still running and the JAR is locked
             FileUtils.forceDelete(sandboxDir);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("WARNING: " + e.getMessage());
         }
     }
 
