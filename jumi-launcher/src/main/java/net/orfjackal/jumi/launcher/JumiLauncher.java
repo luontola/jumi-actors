@@ -5,6 +5,7 @@
 package net.orfjackal.jumi.launcher;
 
 import net.orfjackal.jumi.core.SuiteStateCollector;
+import net.orfjackal.jumi.core.events.SuiteEventReceiver;
 import net.orfjackal.jumi.launcher.daemon.Daemon;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.NullWriter;
@@ -24,7 +25,7 @@ public class JumiLauncher {
     private Process process;
 
     private final SuiteStateCollector suite = new SuiteStateCollector();
-    private final JumiLauncherHandler handler = new JumiLauncherHandler(suite);
+    private final JumiLauncherHandler handler = new JumiLauncherHandler(new SuiteEventReceiver(suite));
 
     public JumiLauncher() {
     }

@@ -6,6 +6,8 @@ package net.orfjackal.jumi.core;
 
 public interface SuiteListener {
 
+    // TODO: code-generate all the event classes based on this interface
+
     void onSuiteStarted();
 
     void onSuiteFinished();

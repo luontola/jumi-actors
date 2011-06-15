@@ -4,30 +4,25 @@
 
 package net.orfjackal.jumi.launcher;
 
-import net.orfjackal.jumi.core.SuiteStateCollector;
-import net.orfjackal.jumi.core.events.*;
+import net.orfjackal.jumi.core.actors.MessageSender;
+import net.orfjackal.jumi.core.events.SuiteEvent;
 import org.jboss.netty.channel.*;
 
 public class JumiLauncherHandler extends SimpleChannelHandler {
 
-    // TODO: this collector belongs somewhere else, because the network connection's lifetime is longer
-    private final SuiteStateCollector suite;
+    private final MessageSender<SuiteEvent> suiteListener;
 
-    public JumiLauncherHandler(SuiteStateCollector suite) {
-        this.suite = suite;
+    public JumiLauncherHandler(MessageSender<SuiteEvent> suiteListener) {
+        this.suiteListener = suiteListener;
     }
 
     public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
+        // TODO: change into a command class
         e.getChannel().write("RunTests");
     }
 
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-        if (e.getMessage() instanceof SuiteStartedEvent) {
-            suite.onSuiteStarted();
-        }
-        if (e.getMessage() instanceof SuiteFinishedEvent) {
-            suite.onSuiteFinished();
-        }
+        suiteListener.send((SuiteEvent) e.getMessage());
     }
 
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {

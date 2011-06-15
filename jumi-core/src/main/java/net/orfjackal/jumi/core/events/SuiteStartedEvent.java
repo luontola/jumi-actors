@@ -4,7 +4,12 @@
 
 package net.orfjackal.jumi.core.events;
 
+import net.orfjackal.jumi.core.SuiteListener;
+
 import java.io.Serializable;
 
-public class SuiteStartedEvent implements Serializable {
+public class SuiteStartedEvent implements SuiteEvent, Serializable {
+    public void fireOn(SuiteListener listener) {
+        listener.onSuiteStarted();
+    }
 }
