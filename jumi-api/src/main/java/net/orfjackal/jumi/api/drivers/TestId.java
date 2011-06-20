@@ -22,6 +22,7 @@ public abstract class TestId {
     }
 
     private TestId() {
+        // prevent everybody except the inner classes from extending this class
     }
 
     public abstract boolean isRoot();
@@ -32,7 +33,9 @@ public abstract class TestId {
 
     public abstract int getIndex();
 
-    public abstract TestId getFirstChild();
+    public TestId getFirstChild() {
+        return new Child(this, 0);
+    }
 
     public abstract TestId nextSibling();
 
@@ -84,6 +87,7 @@ public abstract class TestId {
         return sb.toString();
     }
 
+
     private static class Root extends TestId {
 
         public boolean isRoot() {
@@ -91,26 +95,21 @@ public abstract class TestId {
         }
 
         public boolean isFirstChild() {
-            throw new AssertionError("not implemented");
+            throw new UnsupportedOperationException("root is not a child");
         }
 
         public TestId getParent() {
-            throw new AssertionError("not implemented");
+            throw new UnsupportedOperationException("root has no parent");
         }
 
         public int getIndex() {
-            throw new AssertionError("not implemented");
-        }
-
-        public TestId getFirstChild() {
-            throw new AssertionError("not implemented");
+            throw new UnsupportedOperationException("root has no index");
         }
 
         public TestId nextSibling() {
-            throw new AssertionError("not implemented");
+            throw new UnsupportedOperationException("root has no siblings");
         }
     }
-
 
     private static class Child extends TestId {
 
@@ -118,6 +117,9 @@ public abstract class TestId {
         private final int index;
 
         public Child(TestId parent, int index) {
+            if (index < 0) {
+                throw new IllegalArgumentException("illegal index: " + index);
+            }
             this.parent = parent;
             this.index = index;
         }
@@ -127,7 +129,7 @@ public abstract class TestId {
         }
 
         public boolean isFirstChild() {
-            throw new AssertionError("not implemented");
+            return index == 0;
         }
 
         public TestId getParent() {
@@ -138,12 +140,8 @@ public abstract class TestId {
             return index;
         }
 
-        public TestId getFirstChild() {
-            throw new AssertionError("not implemented");
-        }
-
         public TestId nextSibling() {
-            throw new AssertionError("not implemented");
+            return new Child(parent, index + 1);
         }
     }
 }

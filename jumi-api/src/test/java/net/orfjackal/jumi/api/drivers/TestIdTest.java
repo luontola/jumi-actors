@@ -4,7 +4,8 @@
 
 package net.orfjackal.jumi.api.drivers;
 
-import org.junit.Test;
+import org.junit.*;
+import org.junit.rules.ExpectedException;
 
 import java.util.*;
 
@@ -13,6 +14,9 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 public class TestIdTest {
+
+    @Rule
+    public final ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void to_string() {
@@ -54,13 +58,9 @@ public class TestIdTest {
     }
 
     @Test
-    public void root_is_root() {
+    public void is_root() {
         assertThat(TestId.ROOT.isRoot(), is(true));
         assertThat(TestId.of().isRoot(), is(true));
-    }
-
-    @Test
-    public void other_nodes_are_not_roots() {
         assertThat(TestId.of(0).isRoot(), is(false));
         assertThat(TestId.of(1, 2).isRoot(), is(false));
     }
@@ -70,18 +70,84 @@ public class TestIdTest {
         assertThat(TestId.of(), is(sameInstance(TestId.ROOT)));
     }
 
-//    @Test
-//    public void first_child() {
-//        TestId root = TestId.ROOT;
-//        assertThat(root.getFirstChild(), is(TestId.of(0)));
-//        assertThat(root.getFirstChild().getFirstChild(), is(TestId.of(0, 0)));
-//    }
+    @Test
+    public void is_first_child() {
+        assertThat(TestId.of(0).isFirstChild(), is(true));
+        assertThat(TestId.of(1).isFirstChild(), is(false));
+        assertThat(TestId.of(1, 2, 0).isFirstChild(), is(true));
+        assertThat(TestId.of(1, 2, 3).isFirstChild(), is(false));
+    }
 
+    @Test
+    public void root_is_not_a_child() {
+        thrown.expect(UnsupportedOperationException.class);
+        thrown.expectMessage("root is not a child");
+        TestId.ROOT.isFirstChild();
+    }
 
-//    @Test
-//    public void get_parent() {
-//        assertThat(TestId.of(0).getParent(), is(TestId.ROOT));
-//        assertThat(TestId.of(1).getParent(), is(TestId.ROOT));
-//        assertThat(TestId.of(1, 2).getParent(), is(TestId.of(1)));
-//    }
+    @Test
+    public void get_parent() {
+        assertThat(TestId.of(0).getParent(), is(TestId.ROOT));
+        assertThat(TestId.of(1).getParent(), is(TestId.ROOT));
+        assertThat(TestId.of(1, 2).getParent(), is(TestId.of(1)));
+    }
+
+    @Test
+    public void root_has_no_parent() {
+        thrown.expect(UnsupportedOperationException.class);
+        thrown.expectMessage("root has no parent");
+        TestId.ROOT.getParent();
+    }
+
+    @Test
+    public void get_index() {
+        assertThat(TestId.of(0).getIndex(), is(0));
+        assertThat(TestId.of(1).getIndex(), is(1));
+        assertThat(TestId.of(1, 2).getIndex(), is(2));
+    }
+
+    @Test
+    public void root_has_no_index() {
+        thrown.expect(UnsupportedOperationException.class);
+        thrown.expectMessage("root has no index");
+        TestId.ROOT.getIndex();
+    }
+
+    @Test
+    public void get_first_child() {
+        assertThat(TestId.ROOT.getFirstChild(), is(TestId.of(0)));
+        assertThat(TestId.ROOT.getFirstChild().getFirstChild(), is(TestId.of(0, 0)));
+        assertThat(TestId.of(1, 2, 3).getFirstChild(), is(TestId.of(1, 2, 3, 0)));
+    }
+
+    @Test
+    public void next_sibling() {
+        assertThat(TestId.of(0).nextSibling(), is(TestId.of(1)));
+        assertThat(TestId.of(1).nextSibling(), is(TestId.of(2)));
+        assertThat(TestId.of(1, 2, 3).nextSibling(), is(TestId.of(1, 2, 4)));
+    }
+
+    @Test
+    public void root_has_no_siblings() {
+        thrown.expect(UnsupportedOperationException.class);
+        thrown.expectMessage("root has no siblings");
+        TestId.ROOT.nextSibling();
+    }
+
+    @Test
+    public void negative_indices_are_not_allowed() {
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("illegal index: -1");
+        TestId.of(-1);
+    }
+
+    @Test
+    public void overflows_are_prevented() {
+        TestId lastSibling = TestId.of(Integer.MAX_VALUE);
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("illegal index: -2147483648");
+        lastSibling.nextSibling();
+    }
+
+    // TODO: isGrandParent, isDecendant etc.
 }
