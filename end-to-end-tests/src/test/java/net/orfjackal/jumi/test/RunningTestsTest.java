@@ -68,6 +68,23 @@ public class RunningTestsTest {
         launcher.start();
         launcher.awaitSuiteFinished();
 
-        assertThat(launcher.getTotalTests(), is(0));
+        assertThat("total tests", launcher.getTotalTests(), is(0));
     }
+
+    @Ignore
+    @Test(timeout = TIMEOUT)
+    public void suite_with_one_test() throws Exception {
+        JumiLauncher launcher = new JumiLauncher();
+        launcher.setJumiHome(sandboxDir);
+        launcher.addToClassPath(TestEnvironment.getSampleClasses());
+        launcher.setTestsToInclude("sample.OnePassingTest");
+        launcher.start();
+        launcher.awaitSuiteFinished();
+
+        assertThat("total tests", launcher.getTotalTests(), is(1));
+    }
+
+    // TODO: passing & failing tests
+    // TODO: reporting test names
+    // TODO: reporting stack traces
 }
