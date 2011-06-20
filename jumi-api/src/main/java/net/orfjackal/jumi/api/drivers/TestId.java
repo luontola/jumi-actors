@@ -62,7 +62,12 @@ public abstract class TestId {
     }
 
     public int hashCode() {
-        return 0; // TODO: better dispersion
+        // We use an algorithm similar to java.util.Arrays.hashCode()
+        int hash = 1;
+        for (TestId node = this; !node.isRoot(); node = node.getParent()) {
+            hash = 31 * hash + node.getIndex();
+        }
+        return hash;
     }
 
     public String toString() {

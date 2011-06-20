@@ -6,6 +6,8 @@ package net.orfjackal.jumi.api.drivers;
 
 import org.junit.Test;
 
+import java.util.*;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
@@ -30,6 +32,25 @@ public class TestIdTest {
         assertFalse("shorter & longer", TestId.of(1).equals(TestId.of(1, 2)));
         assertFalse("null", TestId.of(1).equals(null));
         assertEquals("hashCode for same values", TestId.of(1, 2, 3).hashCode(), TestId.of(1, 2, 3).hashCode());
+    }
+
+    @Test
+    public void hashCode_has_good_dispersion() {
+        List<TestId> values = new ArrayList<TestId>();
+        values.add(TestId.of());
+        values.add(TestId.of(0));
+        values.add(TestId.of(1));
+        values.add(TestId.of(2));
+        values.add(TestId.of(3));
+        values.add(TestId.of(1, 1));
+        values.add(TestId.of(1, 2));
+        values.add(TestId.of(2, 1));
+
+        Set<Integer> hashCodes = new HashSet<Integer>();
+        for (TestId value : values) {
+            hashCodes.add(value.hashCode());
+        }
+        assertThat(hashCodes.size(), is(values.size()));
     }
 
     @Test
