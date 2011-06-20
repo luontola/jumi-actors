@@ -18,6 +18,8 @@ public class TestIdTest {
     @Rule
     public final ExpectedException thrown = ExpectedException.none();
 
+    // low-level operations
+
     @Test
     public void to_string() {
         assertThat(TestId.of().toString(), is("TestId()"));
@@ -60,6 +62,37 @@ public class TestIdTest {
     }
 
     @Test
+    public void get_index() {
+        assertThat(TestId.of(0).getIndex(), is(0));
+        assertThat(TestId.of(1).getIndex(), is(1));
+        assertThat(TestId.of(1, 2).getIndex(), is(2));
+    }
+
+    @Test
+    public void root_has_no_index() {
+        thrown.expect(UnsupportedOperationException.class);
+        thrown.expectMessage("root has no index");
+        TestId.ROOT.getIndex();
+    }
+
+    @Test
+    public void negative_indices_are_not_allowed() {
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("illegal index: -1");
+        TestId.of(-1);
+    }
+
+    @Test
+    public void overflows_are_prevented() {
+        TestId lastSibling = TestId.of(Integer.MAX_VALUE);
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("illegal index: -2147483648");
+        lastSibling.nextSibling();
+    }
+
+    // inquiring
+
+    @Test
     public void is_root() {
         assertThat(TestId.ROOT.isRoot(), is(true));
         assertThat(TestId.of().isRoot(), is(true));
@@ -88,6 +121,44 @@ public class TestIdTest {
     }
 
     @Test
+    public void is_ancestor_of() {
+        TestId x = TestId.of(1, 2, 3);
+
+        assertThat("grand child of x", TestId.of(1, 2, 3, 4, 5).isAncestorOf(x), is(false));
+        assertThat("child of x", TestId.of(1, 2, 3, 4).isAncestorOf(x), is(false));
+        assertThat("itself", TestId.of(1, 2, 3).isAncestorOf(x), is(false));
+        assertThat("parent of x", TestId.of(1, 2).isAncestorOf(x), is(true));
+        assertThat("grand parent of x", TestId.of(1).isAncestorOf(x), is(true));
+
+        assertThat("root", TestId.of().isAncestorOf(x), is(true));
+        assertThat("root reverse", x.isAncestorOf(TestId.of()), is(false));
+
+        assertThat("sibling of x", TestId.of(1, 2, 10).isAncestorOf(x), is(false));
+        assertThat("cousin of x", TestId.of(1, 10, 3).isAncestorOf(x), is(false));
+        assertThat("second cousin of x", TestId.of(10, 2, 3).isAncestorOf(x), is(false));
+    }
+
+    @Test
+    public void is_descendant_of() {
+        TestId x = TestId.of(1, 2, 3);
+
+        assertThat("grand child of x", TestId.of(1, 2, 3, 4, 5).isDescendantOf(x), is(true));
+        assertThat("child of x", TestId.of(1, 2, 3, 4).isDescendantOf(x), is(true));
+        assertThat("itself", TestId.of(1, 2, 3).isDescendantOf(x), is(false));
+        assertThat("parent of x", TestId.of(1, 2).isDescendantOf(x), is(false));
+        assertThat("grand parent of x", TestId.of(1).isDescendantOf(x), is(false));
+
+        assertThat("root", TestId.of().isDescendantOf(x), is(false));
+        assertThat("root reverse", x.isDescendantOf(TestId.of()), is(true));
+
+        assertThat("sibling of x", TestId.of(1, 2, 10).isDescendantOf(x), is(false));
+        assertThat("cousin of x", TestId.of(1, 10, 3).isDescendantOf(x), is(false));
+        assertThat("second cousin of x", TestId.of(10, 2, 3).isDescendantOf(x), is(false));
+    }
+
+    // accessing relatives
+
+    @Test
     public void get_parent() {
         assertThat(TestId.of(0).getParent(), is(TestId.ROOT));
         assertThat(TestId.of(1).getParent(), is(TestId.ROOT));
@@ -99,20 +170,6 @@ public class TestIdTest {
         thrown.expect(UnsupportedOperationException.class);
         thrown.expectMessage("root has no parent");
         TestId.ROOT.getParent();
-    }
-
-    @Test
-    public void get_index() {
-        assertThat(TestId.of(0).getIndex(), is(0));
-        assertThat(TestId.of(1).getIndex(), is(1));
-        assertThat(TestId.of(1, 2).getIndex(), is(2));
-    }
-
-    @Test
-    public void root_has_no_index() {
-        thrown.expect(UnsupportedOperationException.class);
-        thrown.expectMessage("root has no index");
-        TestId.ROOT.getIndex();
     }
 
     @Test
@@ -134,56 +191,5 @@ public class TestIdTest {
         thrown.expect(UnsupportedOperationException.class);
         thrown.expectMessage("root has no siblings");
         TestId.ROOT.nextSibling();
-    }
-
-    @Test
-    public void negative_indices_are_not_allowed() {
-        thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("illegal index: -1");
-        TestId.of(-1);
-    }
-
-    @Test
-    public void overflows_are_prevented() {
-        TestId lastSibling = TestId.of(Integer.MAX_VALUE);
-        thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("illegal index: -2147483648");
-        lastSibling.nextSibling();
-    }
-
-    @Test
-    public void is_ancestor() {
-        TestId x = TestId.of(1, 2, 3);
-
-        assertThat("grand child of x", TestId.of(1, 2, 3, 4, 5).isAncestorOf(x), is(false));
-        assertThat("child of x", TestId.of(1, 2, 3, 4).isAncestorOf(x), is(false));
-        assertThat("itself", TestId.of(1, 2, 3).isAncestorOf(x), is(false));
-        assertThat("parent of x", TestId.of(1, 2).isAncestorOf(x), is(true));
-        assertThat("grand parent of x", TestId.of(1).isAncestorOf(x), is(true));
-
-        assertThat("root", TestId.of().isAncestorOf(x), is(true));
-        assertThat("root reverse", x.isAncestorOf(TestId.of()), is(false));
-
-        assertThat("sibling of x", TestId.of(1, 2, 10).isAncestorOf(x), is(false));
-        assertThat("cousin of x", TestId.of(1, 10, 3).isAncestorOf(x), is(false));
-        assertThat("second cousin of x", TestId.of(10, 2, 3).isAncestorOf(x), is(false));
-    }
-
-    @Test
-    public void is_descendant() {
-        TestId x = TestId.of(1, 2, 3);
-
-        assertThat("grand child of x", TestId.of(1, 2, 3, 4, 5).isDescendantOf(x), is(true));
-        assertThat("child of x", TestId.of(1, 2, 3, 4).isDescendantOf(x), is(true));
-        assertThat("itself", TestId.of(1, 2, 3).isDescendantOf(x), is(false));
-        assertThat("parent of x", TestId.of(1, 2).isDescendantOf(x), is(false));
-        assertThat("grand parent of x", TestId.of(1).isDescendantOf(x), is(false));
-
-        assertThat("root", TestId.of().isDescendantOf(x), is(false));
-        assertThat("root reverse", x.isDescendantOf(TestId.of()), is(true));
-
-        assertThat("sibling of x", TestId.of(1, 2, 10).isDescendantOf(x), is(false));
-        assertThat("cousin of x", TestId.of(1, 10, 3).isDescendantOf(x), is(false));
-        assertThat("second cousin of x", TestId.of(10, 2, 3).isDescendantOf(x), is(false));
     }
 }
