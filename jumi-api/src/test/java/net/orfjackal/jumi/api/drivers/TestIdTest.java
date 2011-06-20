@@ -34,6 +34,8 @@ public class TestIdTest {
         assertFalse("many path elements", TestId.of(1, 3, 1).equals(TestId.of(1, 2, 1)));
         assertFalse("longer & shorter", TestId.of(1, 2).equals(TestId.of(1)));
         assertFalse("shorter & longer", TestId.of(1).equals(TestId.of(1, 2)));
+        assertFalse("root & child", TestId.ROOT.equals(TestId.of(1)));
+        assertFalse("child & root", TestId.of(1).equals(TestId.ROOT));
         assertFalse("null", TestId.of(1).equals(null));
         assertEquals("hashCode for same values", TestId.of(1, 2, 3).hashCode(), TestId.of(1, 2, 3).hashCode());
     }
@@ -149,5 +151,39 @@ public class TestIdTest {
         lastSibling.nextSibling();
     }
 
-    // TODO: isGrandParent, isDecendant etc.
+    @Test
+    public void is_ancestor() {
+        TestId x = TestId.of(1, 2, 3);
+
+        assertThat("grand child of x", TestId.of(1, 2, 3, 4, 5).isAncestorOf(x), is(false));
+        assertThat("child of x", TestId.of(1, 2, 3, 4).isAncestorOf(x), is(false));
+        assertThat("itself", TestId.of(1, 2, 3).isAncestorOf(x), is(false));
+        assertThat("parent of x", TestId.of(1, 2).isAncestorOf(x), is(true));
+        assertThat("grand parent of x", TestId.of(1).isAncestorOf(x), is(true));
+
+        assertThat("root", TestId.of().isAncestorOf(x), is(true));
+        assertThat("root reverse", x.isAncestorOf(TestId.of()), is(false));
+
+        assertThat("sibling of x", TestId.of(1, 2, 10).isAncestorOf(x), is(false));
+        assertThat("cousin of x", TestId.of(1, 10, 3).isAncestorOf(x), is(false));
+        assertThat("second cousin of x", TestId.of(10, 2, 3).isAncestorOf(x), is(false));
+    }
+
+    @Test
+    public void is_descendant() {
+        TestId x = TestId.of(1, 2, 3);
+
+        assertThat("grand child of x", TestId.of(1, 2, 3, 4, 5).isDescendantOf(x), is(true));
+        assertThat("child of x", TestId.of(1, 2, 3, 4).isDescendantOf(x), is(true));
+        assertThat("itself", TestId.of(1, 2, 3).isDescendantOf(x), is(false));
+        assertThat("parent of x", TestId.of(1, 2).isDescendantOf(x), is(false));
+        assertThat("grand parent of x", TestId.of(1).isDescendantOf(x), is(false));
+
+        assertThat("root", TestId.of().isDescendantOf(x), is(false));
+        assertThat("root reverse", x.isDescendantOf(TestId.of()), is(true));
+
+        assertThat("sibling of x", TestId.of(1, 2, 10).isDescendantOf(x), is(false));
+        assertThat("cousin of x", TestId.of(1, 10, 3).isDescendantOf(x), is(false));
+        assertThat("second cousin of x", TestId.of(10, 2, 3).isDescendantOf(x), is(false));
+    }
 }

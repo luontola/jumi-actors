@@ -25,13 +25,27 @@ public abstract class TestId {
         // prevent everybody except the inner classes from extending this class
     }
 
+    // inquiring
+
     public abstract boolean isRoot();
 
     public abstract boolean isFirstChild();
 
-    public abstract TestId getParent();
+    public boolean isAncestorOf(TestId descendant) {
+        if (descendant.isRoot()) {
+            return false;
+        }
+        TestId parent = descendant.getParent();
+        return this.equals(parent) || this.isAncestorOf(parent);
+    }
 
-    public abstract int getIndex();
+    public boolean isDescendantOf(TestId ancestor) {
+        return ancestor.isAncestorOf(this);
+    }
+
+    // accessing relatives
+
+    public abstract TestId getParent();
 
     public TestId getFirstChild() {
         return new Child(this, 0);
@@ -39,7 +53,12 @@ public abstract class TestId {
 
     public abstract TestId nextSibling();
 
+    // low-level operations
+
+    public abstract int getIndex();
+
     private List<Integer> getPath() {
+        // TODO: make public? should then write explicit tests for it
         List<Integer> path = new ArrayList<Integer>();
         for (TestId node = this; !node.isRoot(); node = node.getParent()) {
             path.add(node.getIndex());
@@ -50,16 +69,11 @@ public abstract class TestId {
 
     public boolean equals(Object obj) {
         if (obj instanceof TestId) {
-            TestId n1 = this;
-            TestId n2 = (TestId) obj;
-            while (!n1.isRoot() && !n2.isRoot()) {
-                if (n1.getIndex() != n2.getIndex()) {
-                    return false;
-                }
-                n1 = n1.getParent();
-                n2 = n2.getParent();
+            TestId that = (TestId) obj;
+            if (this.isRoot() || that.isRoot()) {
+                return this.isRoot() == that.isRoot();
             }
-            return n1.isRoot() == n2.isRoot();
+            return this.getIndex() == that.getIndex() && this.getParent().equals(that.getParent());
         }
         return false;
     }
@@ -102,12 +116,12 @@ public abstract class TestId {
             throw new UnsupportedOperationException("root has no parent");
         }
 
-        public int getIndex() {
-            throw new UnsupportedOperationException("root has no index");
-        }
-
         public TestId nextSibling() {
             throw new UnsupportedOperationException("root has no siblings");
+        }
+
+        public int getIndex() {
+            throw new UnsupportedOperationException("root has no index");
         }
     }
 
@@ -136,12 +150,12 @@ public abstract class TestId {
             return parent;
         }
 
-        public int getIndex() {
-            return index;
-        }
-
         public TestId nextSibling() {
             return new Child(parent, index + 1);
+        }
+
+        public int getIndex() {
+            return index;
         }
     }
 }
