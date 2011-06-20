@@ -1,15 +1,18 @@
 
 TODO NEXT:
 - end-to-end tests: suite with one test
-	- public api
+	- public api (except reporting failures)
 	- minimal testing framework "SampleUnit"
 - refactor results of passing "suite with zero tests"
 	- actor model: some easy way for wiring the actors and starting new threads
+	- bullet proofing the public api
 - persistent daemon process
 	- should drive better design on launcher side
 	- connect to existing process
 	- if daemon dies unexpectedly (System.exit/halt, JVM crash etc.), report it and restart next time
 	- make it reliable
+
+- organize the project so that it's possible to run unit tests separate from end-to-end tests
 
 - "Error creating shaded jar", probably an issue with NTFS's pending delete and the shade plugin
 	- make a bug request, maybe also a patch
