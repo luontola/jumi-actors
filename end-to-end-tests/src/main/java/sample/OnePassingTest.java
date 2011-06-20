@@ -4,6 +4,9 @@
 
 package sample;
 
+import net.orfjackal.jumi.api.RunVia;
+
+@RunVia(SimpleUnit.class)
 public class OnePassingTest {
 
     public void testPassing() {

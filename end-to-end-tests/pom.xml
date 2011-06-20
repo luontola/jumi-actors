@@ -24,6 +24,12 @@
     <dependencies>
 
         <dependency>
+            <!-- TODO: should the test data be in a different module; then they could have both main and test sources -->
+            <groupId>net.orfjackal.jumi</groupId>
+            <artifactId>jumi-api</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>net.orfjackal.jumi</groupId>
             <artifactId>jumi-launcher</artifactId>
             <scope>test</scope>
