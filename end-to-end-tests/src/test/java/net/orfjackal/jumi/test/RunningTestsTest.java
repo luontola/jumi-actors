@@ -15,7 +15,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertTrue;
 
-public class TempProjectBootstrapTest {
+public class RunningTestsTest {
 
     private static final int TIMEOUT = 2000;
 
@@ -39,6 +39,7 @@ public class TempProjectBootstrapTest {
 
     @Test(timeout = TIMEOUT)
     public void starts_daemon_in_a_new_process() throws Exception {
+        // TODO: this was a temporary test to get the project started; remove it sooner or later 
         StringWriter out = new StringWriter();
 
         // TODO: a better way for monitoring in tests that what the daemon printed
