@@ -11,6 +11,11 @@ import java.util.*;
 public class TestClassRunner {
 
     private final Map<TestId, String> tests = new HashMap<TestId, String>();
+    private final SuiteListener listener;
+
+    public TestClassRunner(SuiteListener listener) {
+        this.listener = listener;
+    }
 
     public Collection<String> getTestNames() {
         return Collections.unmodifiableCollection(tests.values());
@@ -24,13 +29,21 @@ public class TestClassRunner {
     private class DefaultSuiteNotifier implements SuiteNotifier {
 
         public void fireTestFound(TestId id, String name) {
-            checkParentWasFoundFirst(id);
-            checkNameIsSameAsBefore(id, name);
-            tests.put(id, name);
+            if (hasNotBeenFoundBefore(id)) {
+                checkParentWasFoundFirst(id);
+                tests.put(id, name);
+                listener.onTestFound(id, name);
+            } else {
+                checkNameIsSameAsBefore(id, name);
+            }
+        }
+
+        private boolean hasNotBeenFoundBefore(TestId id) {
+            return !tests.containsKey(id);
         }
 
         private void checkParentWasFoundFirst(TestId id) {
-            if (!id.isRoot() && !tests.containsKey(id.getParent())) {
+            if (!id.isRoot() && hasNotBeenFoundBefore(id.getParent())) {
                 throw new IllegalStateException("parent of " + id + " must be found first");
             }
         }

@@ -7,7 +7,9 @@ package net.orfjackal.jumi.core.events;
 import net.orfjackal.jumi.api.drivers.TestId;
 import net.orfjackal.jumi.core.SuiteListener;
 
-public class TestFoundEvent implements SuiteEvent {
+import java.io.Serializable;
+
+public class TestFoundEvent implements SuiteEvent, Serializable {
     private final TestId id;
     private final String name;
 

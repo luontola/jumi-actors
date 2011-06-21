@@ -4,12 +4,13 @@
 
 package net.orfjackal.jumi.api.drivers;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * Uniquely identifies a single test in the tree of all tests. Immutable.
  */
-public abstract class TestId {
+public abstract class TestId implements Serializable {
 
     public static final TestId ROOT = new Root();
 

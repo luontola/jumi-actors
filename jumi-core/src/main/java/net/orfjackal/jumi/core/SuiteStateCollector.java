@@ -25,7 +25,7 @@ public class SuiteStateCollector implements SuiteListener {
     }
 
     public void onTestFound(TestId id, String name) {
-        // TODO
+        state = state.withTest(id, name);
     }
 
     public void awaitSuiteFinished() throws InterruptedException {

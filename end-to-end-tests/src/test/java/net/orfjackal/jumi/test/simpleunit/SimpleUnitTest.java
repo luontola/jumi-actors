@@ -4,7 +4,7 @@
 
 package net.orfjackal.jumi.test.simpleunit;
 
-import net.orfjackal.jumi.core.TestClassRunner;
+import net.orfjackal.jumi.core.*;
 import org.junit.Test;
 import sample.*;
 
@@ -13,11 +13,13 @@ import java.util.concurrent.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.mock;
 
 public class SimpleUnitTest {
     private static final long TIMEOUT = 1000;
 
-    private TestClassRunner runner = new TestClassRunner();
+    private SuiteListener listener = mock(SuiteListener.class);
+    private TestClassRunner runner = new TestClassRunner(listener);
     private ExecutorService executor = Executors.newCachedThreadPool();
     private SimpleUnit driver = new SimpleUnit();
 

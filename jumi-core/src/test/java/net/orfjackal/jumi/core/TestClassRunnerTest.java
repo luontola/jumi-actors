@@ -10,10 +10,12 @@ import org.junit.rules.ExpectedException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.*;
 
 public class TestClassRunnerTest {
 
-    private TestClassRunner runner = new TestClassRunner();
+    private SuiteListener listener = mock(SuiteListener.class);
+    private TestClassRunner runner = new TestClassRunner(listener);
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -57,4 +59,23 @@ public class TestClassRunnerTest {
     }
 
     // TODO: should younger siblings be found first?
+
+    @Test
+    public void notifies_the_listener_about_found_tests() {
+        SuiteNotifier notifier = runner.getSuiteNotifier();
+
+        notifier.fireTestFound(TestId.ROOT, "root");
+
+        verify(listener).onTestFound(TestId.ROOT, "root");
+    }
+
+    @Test
+    public void notifies_the_listener_about_found_tests_only_once() {
+        SuiteNotifier notifier = runner.getSuiteNotifier();
+
+        notifier.fireTestFound(TestId.ROOT, "root");
+        notifier.fireTestFound(TestId.ROOT, "root");
+
+        verify(listener, atMost(1)).onTestFound(TestId.ROOT, "root");
+    }
 }

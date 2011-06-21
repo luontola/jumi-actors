@@ -64,7 +64,6 @@ public class RunningTestsTest {
         assertThat("total tests", launcher.getTotalTests(), is(0));
     }
 
-    @Ignore
     @Test(timeout = TIMEOUT)
     public void suite_with_one_test() throws Exception {
         JumiLauncher launcher = new JumiLauncher();
