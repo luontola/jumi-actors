@@ -13,6 +13,7 @@ TODO NEXT:
 	- make it reliable
 
 - organize the project so that it's possible to run unit tests separate from end-to-end tests
+	- maybe using ClasspathSuite?
 
 - "Error creating shaded jar", probably an issue with NTFS's pending delete and the shade plugin
 	- make a bug request, maybe also a patch

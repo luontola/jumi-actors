@@ -22,9 +22,11 @@ public class SimpleUnit implements Driver {
 //            tn.fireTestFinished();
         }
 
+        TestId testMethodId = TestId.ROOT.getFirstChild();
         for (Method testMethod : testMethods) {
-            // TODO: assign test IDs
-            executor.execute(new RunTestMethod(testMethod));
+            notifier.fireTestFound(testMethodId, testMethod.getName());
+            executor.execute(new RunTestMethod(testMethod, testMethodId));
+            testMethodId = testMethodId.nextSibling();
         }
     }
 
@@ -40,9 +42,11 @@ public class SimpleUnit implements Driver {
 
     private static class RunTestMethod implements Runnable {
         private final Method testMethod;
+        private final TestId testMethodId;
 
-        public RunTestMethod(Method testMethod) {
+        public RunTestMethod(Method testMethod, TestId testMethodId) {
             this.testMethod = testMethod;
+            this.testMethodId = testMethodId;
         }
 
         public void run() {

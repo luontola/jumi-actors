@@ -7,8 +7,13 @@ package sample;
 import net.orfjackal.jumi.api.RunVia;
 
 @RunVia(SimpleUnit.class)
+@SuppressWarnings({"UnusedDeclaration"})
 public class OnePassingTest {
 
     public void testPassing() {
+    }
+
+    public void unrelatedMethod() {
+        // doesn't start with "test", so is not a test
     }
 }
