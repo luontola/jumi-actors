@@ -4,6 +4,7 @@
 
 package net.orfjackal.jumi.core.events;
 
+import net.orfjackal.jumi.api.drivers.TestId;
 import net.orfjackal.jumi.core.SuiteListener;
 import net.orfjackal.jumi.core.actors.MessageSender;
 
@@ -20,5 +21,9 @@ public class SuiteEventSender implements SuiteListener {
 
     public void onSuiteFinished() {
         sender.send(new SuiteFinishedEvent());
+    }
+
+    public void onTestFound(TestId id, String name) {
+        sender.send(new TestFoundEvent(id, name));
     }
 }

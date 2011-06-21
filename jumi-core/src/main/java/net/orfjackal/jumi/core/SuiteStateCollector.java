@@ -4,6 +4,8 @@
 
 package net.orfjackal.jumi.core;
 
+import net.orfjackal.jumi.api.drivers.TestId;
+
 import java.util.concurrent.*;
 
 public class SuiteStateCollector implements SuiteListener {
@@ -20,6 +22,10 @@ public class SuiteStateCollector implements SuiteListener {
     public void onSuiteFinished() {
         state = state.withFinished(true);
         finished.countDown();
+    }
+
+    public void onTestFound(TestId id, String name) {
+        // TODO
     }
 
     public void awaitSuiteFinished() throws InterruptedException {

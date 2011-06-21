@@ -4,6 +4,8 @@
 
 package net.orfjackal.jumi.core;
 
+import net.orfjackal.jumi.api.drivers.TestId;
+
 public interface SuiteListener {
 
     // TODO: code-generate all the event classes based on this interface
@@ -11,4 +13,7 @@ public interface SuiteListener {
     void onSuiteStarted();
 
     void onSuiteFinished();
+
+    // TODO: mention also the test class?
+    void onTestFound(TestId id, String name);
 }

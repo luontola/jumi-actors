@@ -81,7 +81,7 @@ public class RunningTestsTest {
         launcher.start();
         launcher.awaitSuiteFinished();
 
-        assertThat("total tests", launcher.getTotalTests(), is(1));
+        assertThat("total tests", launcher.getTotalTests(), is(2)); // test class plus its one test method
     }
 
     // TODO: passing & failing tests
