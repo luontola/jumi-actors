@@ -1,12 +1,13 @@
 
 TODO NEXT:
-- end-to-end tests: suite with one test
-	- public api (except reporting failures)
-	- minimal testing framework "SampleUnit"
 - refactor results of passing "suite with zero tests"
-	- actor model: some easy way for wiring the actors and starting new threads
-	- bullet proofing the public api
-- persistent daemon process
+	- actor model: some easy way for wiring the actors and starting new threads (use in daemon and launcher)
+	- code generation for events
+	- bullet proofing the public api, cross-references from javadocs to tests (a new xref tag?)
+- end-to-end tests: failing tests (includes reporting stack trace)
+- end-to-end tests: failures outside tests (in drivers and core)
+- end-to-end tests: reporting test output
+- end-to-end tests: persistent daemon process
 	- should drive better design on launcher side
 	- connect to existing process
 	- if daemon dies unexpectedly (System.exit/halt, JVM crash etc.), report it and restart next time
