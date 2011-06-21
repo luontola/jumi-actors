@@ -4,9 +4,12 @@
 
 package net.orfjackal.jumi.core;
 
+import java.io.File;
+import java.util.List;
+
 public interface CommandListener {
 
     void addSuiteListener(SuiteListener listener);
 
-    void runTests();
+    void runTests(List<File> classPath, String testsToIncludePattern);
 }

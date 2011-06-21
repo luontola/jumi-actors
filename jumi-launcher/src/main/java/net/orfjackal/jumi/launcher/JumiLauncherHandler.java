@@ -12,15 +12,21 @@ import org.jboss.netty.channel.*;
 public class JumiLauncherHandler extends SimpleChannelHandler {
 
     private final MessageSender<SuiteEvent> toLauncher;
+    private volatile RunTestsCommand startupCommand;
 
     public JumiLauncherHandler(MessageSender<SuiteEvent> toLauncher) {
         this.toLauncher = toLauncher;
     }
 
+    public void setStartupCommand(RunTestsCommand startupCommand) {
+        // XXX: do not pass this command like this, but use events
+        this.startupCommand = startupCommand;
+    }
+
     public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
-        // TODO: move the responsibility of sending this command into JumiLauncher
+        // TODO: move the responsibility of sending this command into JumiLauncher (requires actor model?)
         // TODO: send an event that the we have connected?
-        e.getChannel().write(new RunTestsCommand());
+        e.getChannel().write(startupCommand);
     }
 
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {

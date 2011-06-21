@@ -5,6 +5,7 @@
 package net.orfjackal.jumi.launcher;
 
 import net.orfjackal.jumi.core.SuiteStateCollector;
+import net.orfjackal.jumi.core.commands.RunTestsCommand;
 import net.orfjackal.jumi.core.events.SuiteEventReceiver;
 import net.orfjackal.jumi.launcher.daemon.Daemon;
 import org.apache.commons.io.IOUtils;
@@ -16,6 +17,7 @@ import org.jboss.netty.handler.codec.serialization.*;
 
 import java.io.*;
 import java.net.InetSocketAddress;
+import java.util.*;
 import java.util.concurrent.*;
 
 public class JumiLauncher {
@@ -26,6 +28,8 @@ public class JumiLauncher {
 
     private final SuiteStateCollector suite = new SuiteStateCollector();
     private final JumiLauncherHandler handler = new JumiLauncherHandler(new SuiteEventReceiver(suite));
+    private final List<File> classPath = new ArrayList<File>();
+    private String testsToIncludePattern;
 
     // TODO: this class has multiple responsibilities, split to smaller parts?
     // - configuring the test run
@@ -42,6 +46,7 @@ public class JumiLauncher {
     }
 
     public void start() throws IOException {
+        handler.setStartupCommand(new RunTestsCommand(classPath, testsToIncludePattern)); // XXX: send properly using a message queue
         int port = listenForDaemonConnection();
         startProcess(port);
     }
@@ -130,10 +135,12 @@ public class JumiLauncher {
     }
 
     public void addToClassPath(File file) {
+        classPath.add(file);
         // TODO: support for main and test class paths
     }
 
     public void setTestsToInclude(String pattern) {
+        testsToIncludePattern = pattern;
     }
 
     public int getTotalTests() {

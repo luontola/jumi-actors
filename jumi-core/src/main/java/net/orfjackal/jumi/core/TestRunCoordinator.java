@@ -4,6 +4,9 @@
 
 package net.orfjackal.jumi.core;
 
+import java.io.File;
+import java.util.List;
+
 public class TestRunCoordinator implements CommandListener {
 
     // TODO: support for multiple clients?
@@ -13,8 +16,13 @@ public class TestRunCoordinator implements CommandListener {
         this.listener = listener;
     }
 
-    public void runTests() {
+    public void runTests(List<File> classPath, String testsToIncludePattern) {
         listener.onSuiteStarted();
+
+        // TODO: find tests
+        // TODO: run the tests
+        // TODO: wait for the suite to finish (async)
+
         listener.onSuiteFinished();
     }
 }
