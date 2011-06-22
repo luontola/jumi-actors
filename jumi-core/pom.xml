@@ -31,6 +31,11 @@
             <artifactId>commons-io</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.functionaljava</groupId>
+            <artifactId>functionaljava</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -60,11 +65,21 @@
                                     <pattern>org.apache</pattern>
                                     <shadedPattern>${shadedPrefix}.org.apache</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>fj</pattern>
+                                    <shadedPattern>${shadedPrefix}.fj</shadedPattern>
+                                </relocation>
                             </relocations>
                             <filters>
                                 <!-- Throw away license files, POMs etc. of hidden dependencies -->
                                 <filter>
                                     <artifact>commons-io:commons-io</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/**</exclude>
+                                    </excludes>
+                                </filter>
+                                <filter>
+                                    <artifact>org.functionaljava:functionaljava</artifact>
                                     <excludes>
                                         <exclude>META-INF/**</exclude>
                                     </excludes>

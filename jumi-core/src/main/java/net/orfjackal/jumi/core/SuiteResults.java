@@ -4,22 +4,22 @@
 
 package net.orfjackal.jumi.core;
 
+import fj.Ord;
+import fj.data.TreeMap;
 import net.orfjackal.jumi.api.drivers.TestId;
-
-import java.util.*;
 
 public class SuiteResults {
 
     private final boolean finished;
-    private final Map<TestId, String> tests;
+    private final TreeMap<TestId, String> tests;
 
     public SuiteResults() {
-        this(false, new HashMap<TestId, String>());
+        this(false, TreeMap.<TestId, String>empty(Ord.<TestId>comparableOrd()));
     }
 
-    public SuiteResults(boolean finished, Map<TestId, String> tests) {
+    public SuiteResults(boolean finished, TreeMap<TestId, String> tests) {
         this.finished = finished;
-        this.tests = new HashMap<TestId, String>(tests); // TODO: use functional collections
+        this.tests = tests;
     }
 
     public boolean isFinished() {
@@ -31,9 +31,7 @@ public class SuiteResults {
     }
 
     public SuiteResults withTest(TestId id, String name) {
-        Map<TestId, String> tests = new HashMap<TestId, String>(this.tests);
-        tests.put(id, name);
-        return new SuiteResults(finished, tests);
+        return new SuiteResults(finished, tests.set(id, name));
     }
 
     public int getTotalTests() {
