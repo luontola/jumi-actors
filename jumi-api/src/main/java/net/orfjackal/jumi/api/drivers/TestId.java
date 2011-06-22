@@ -10,7 +10,7 @@ import java.util.*;
 /**
  * Uniquely identifies a single test in the tree of all tests. Immutable.
  */
-public abstract class TestId implements Serializable {
+public abstract class TestId implements Comparable<TestId>, Serializable {
 
     public static final TestId ROOT = new Root();
 
@@ -86,6 +86,27 @@ public abstract class TestId implements Serializable {
             hash = 31 * hash + node.getIndex();
         }
         return hash;
+    }
+
+    public int compareTo(TestId that) {
+        if (this.isRoot()) {
+            return -1;
+        }
+        if (that.isRoot()) {
+            return 1;
+        }
+        // TODO: rewrite this without using getPath(), in a more functional way, without that many intermediate objects
+        List<Integer> thisPath = this.getPath();
+        List<Integer> thatPath = that.getPath();
+        for (int i = 0; i < thisPath.size() && i < thatPath.size(); i++) {
+            Integer thisIndex = thisPath.get(i);
+            Integer thatIndex = thatPath.get(i);
+            int comp = thisIndex.compareTo(thatIndex);
+            if (comp != 0) {
+                return comp;
+            }
+        }
+        return thisPath.size() - thatPath.size();
     }
 
     public String toString() {

@@ -50,6 +50,11 @@ public class TestIdTest {
         values.add(TestId.of(1));
         values.add(TestId.of(2));
         values.add(TestId.of(3));
+        values.add(TestId.of(0, 0));
+        values.add(TestId.of(1, 0));
+        values.add(TestId.of(0, 1));
+        values.add(TestId.of(2, 0));
+        values.add(TestId.of(0, 2));
         values.add(TestId.of(1, 1));
         values.add(TestId.of(1, 2));
         values.add(TestId.of(2, 1));
@@ -59,6 +64,28 @@ public class TestIdTest {
             hashCodes.add(value.hashCode());
         }
         assertThat(hashCodes.size(), is(values.size()));
+    }
+
+    @Test
+    public void ordering() {
+        List<TestId> expectedOrder = Arrays.asList(
+                TestId.of(),
+                TestId.of(0),
+                TestId.of(0, 0),
+                TestId.of(0, 1),
+                TestId.of(0, 2),
+                TestId.of(1),
+                TestId.of(1, 0),
+                TestId.of(1, 1),
+                TestId.of(1, 2),
+                TestId.of(2)
+        );
+
+        List<TestId> actualOrder = new ArrayList<TestId>(expectedOrder);
+        Collections.shuffle(actualOrder);
+        Collections.sort(actualOrder);
+
+        assertThat(actualOrder, is(expectedOrder));
     }
 
     @Test
