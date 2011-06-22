@@ -44,8 +44,10 @@ public class Actors {
 
         public void run() {
             try {
-                Event<T> message = queue.take();
-                receiver.send(message);
+                while (true) {
+                    Event<T> message = queue.take();
+                    receiver.send(message);
+                }
 
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);

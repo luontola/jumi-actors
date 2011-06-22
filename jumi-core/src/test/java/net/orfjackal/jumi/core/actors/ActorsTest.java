@@ -6,6 +6,7 @@ package net.orfjackal.jumi.core.actors;
 
 import org.junit.Test;
 
+import java.util.*;
 import java.util.concurrent.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -18,42 +19,56 @@ public class ActorsTest {
 
     @Test
     public void method_calls_on_handle_are_forwarded_to_target() throws InterruptedException {
-        final SynchronousQueue<String> eventParameter = new SynchronousQueue<String>();
+        final LinkedBlockingQueue<String> spy = new LinkedBlockingQueue<String>();
         DummyListener target = new DummyListener() {
             public void onSomething(String parameter) {
-                try {
-                    eventParameter.put(parameter);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                spy.offer(parameter);
             }
         };
 
         DummyListener handle = actors.createNewActor(DummyListener.class, target, "ActorName");
         handle.onSomething("event parameter");
 
-        String parameter = eventParameter.poll(TIMEOUT, TimeUnit.MILLISECONDS);
+        String parameter = spy.poll(TIMEOUT, TimeUnit.MILLISECONDS);
         assertThat(parameter, is("event parameter"));
     }
 
     @Test
     public void target_is_invoked_in_its_own_actor_thread() throws InterruptedException {
-        final SynchronousQueue<Thread> actorThread = new SynchronousQueue<Thread>();
+        final LinkedBlockingQueue<Thread> spy = new LinkedBlockingQueue<Thread>();
         DummyListener target = new DummyListener() {
             public void onSomething(String parameter) {
-                try {
-                    actorThread.put(Thread.currentThread());
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                spy.offer(Thread.currentThread());
             }
         };
 
         DummyListener handle = actors.createNewActor(DummyListener.class, target, "ActorName");
         handle.onSomething(null);
 
-        Thread thread = actorThread.poll(TIMEOUT, TimeUnit.MILLISECONDS);
+        Thread thread = spy.poll(TIMEOUT, TimeUnit.MILLISECONDS);
         assertThat(thread.getName(), is("ActorName"));
+    }
+
+    @Test
+    public void actor_processes_multiple_events_in_the_order_they_were_sent() throws InterruptedException {
+        final LinkedBlockingQueue<String> spy = new LinkedBlockingQueue<String>();
+        DummyListener target = new DummyListener() {
+            public void onSomething(String parameter) {
+                spy.offer(parameter);
+            }
+        };
+
+        DummyListener handle = actors.createNewActor(DummyListener.class, target, "ActorName");
+        handle.onSomething("event 1");
+        handle.onSomething("event 2");
+        handle.onSomething("event 3");
+
+        List<String> receivedEvents = new ArrayList<String>();
+        receivedEvents.add(spy.poll(TIMEOUT, TimeUnit.MILLISECONDS));
+        receivedEvents.add(spy.poll(TIMEOUT, TimeUnit.MILLISECONDS));
+        receivedEvents.add(spy.poll(TIMEOUT, TimeUnit.MILLISECONDS));
+
+        assertThat(receivedEvents, is(Arrays.asList("event 1", "event 2", "event 3")));
     }
 
     // TODO: bind actors to current thread
