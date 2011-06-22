@@ -52,7 +52,7 @@ public abstract class TestId implements Serializable {
         return new Child(this, 0);
     }
 
-    public abstract TestId nextSibling();
+    public abstract TestId getNextSibling();
 
     // low-level operations
 
@@ -117,7 +117,7 @@ public abstract class TestId implements Serializable {
             throw new UnsupportedOperationException("root has no parent");
         }
 
-        public TestId nextSibling() {
+        public TestId getNextSibling() {
             throw new UnsupportedOperationException("root has no siblings");
         }
 
@@ -151,7 +151,7 @@ public abstract class TestId implements Serializable {
             return parent;
         }
 
-        public TestId nextSibling() {
+        public TestId getNextSibling() {
             return new Child(parent, index + 1);
         }
 

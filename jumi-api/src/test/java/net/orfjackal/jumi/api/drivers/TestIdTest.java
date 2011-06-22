@@ -87,7 +87,7 @@ public class TestIdTest {
         TestId lastSibling = TestId.of(Integer.MAX_VALUE);
         thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage("illegal index: -2147483648");
-        lastSibling.nextSibling();
+        lastSibling.getNextSibling();
     }
 
     // inquiring
@@ -180,16 +180,16 @@ public class TestIdTest {
     }
 
     @Test
-    public void next_sibling() {
-        assertThat(TestId.of(0).nextSibling(), is(TestId.of(1)));
-        assertThat(TestId.of(1).nextSibling(), is(TestId.of(2)));
-        assertThat(TestId.of(1, 2, 3).nextSibling(), is(TestId.of(1, 2, 4)));
+    public void get_next_sibling() {
+        assertThat(TestId.of(0).getNextSibling(), is(TestId.of(1)));
+        assertThat(TestId.of(1).getNextSibling(), is(TestId.of(2)));
+        assertThat(TestId.of(1, 2, 3).getNextSibling(), is(TestId.of(1, 2, 4)));
     }
 
     @Test
     public void root_has_no_siblings() {
         thrown.expect(UnsupportedOperationException.class);
         thrown.expectMessage("root has no siblings");
-        TestId.ROOT.nextSibling();
+        TestId.ROOT.getNextSibling();
     }
 }

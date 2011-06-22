@@ -26,7 +26,7 @@ public class SimpleUnit implements Driver {
         for (Method testMethod : testMethods) {
             notifier.fireTestFound(testMethodId, testMethod.getName());
             executor.execute(new RunTestMethod(testMethod, testMethodId));
-            testMethodId = testMethodId.nextSibling();
+            testMethodId = testMethodId.getNextSibling();
         }
     }
 
