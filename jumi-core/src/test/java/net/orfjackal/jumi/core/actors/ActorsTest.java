@@ -5,42 +5,55 @@
 package net.orfjackal.jumi.core.actors;
 
 import org.junit.Test;
-import org.mockito.Mockito;
 
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 public class ActorsTest {
+    private static final long TIMEOUT = 1000;
 
     private Actors actors = new Actors(new DummyListenerFactory());
 
     @Test
     public void method_calls_on_handle_are_forwarded_to_target() throws InterruptedException {
-        DummyListener target = Mockito.mock(DummyListener.class);
+        final SynchronousQueue<String> eventParameter = new SynchronousQueue<String>();
+        DummyListener target = new DummyListener() {
+            public void onSomething(String parameter) {
+                try {
+                    eventParameter.put(parameter);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
         DummyListener handle = actors.createNewActor(DummyListener.class, target, "ActorName");
+        handle.onSomething("event parameter");
 
-        handle.onSomething("param");
-        Thread.sleep(100); // XXX
-
-        Mockito.verify(target).onSomething("param");
+        String parameter = eventParameter.poll(TIMEOUT, TimeUnit.MILLISECONDS);
+        assertThat(parameter, is("event parameter"));
     }
 
     @Test
     public void target_is_invoked_in_its_own_actor_thread() throws InterruptedException {
-        final AtomicReference<Thread> actorThread = new AtomicReference<Thread>();
+        final SynchronousQueue<Thread> actorThread = new SynchronousQueue<Thread>();
         DummyListener target = new DummyListener() {
             public void onSomething(String parameter) {
-                actorThread.set(Thread.currentThread());
+                try {
+                    actorThread.put(Thread.currentThread());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         };
+
         DummyListener handle = actors.createNewActor(DummyListener.class, target, "ActorName");
+        handle.onSomething(null);
 
-        handle.onSomething("param");
-        Thread.sleep(100); // XXX
-
-        assertThat(actorThread.get().getName(), is("ActorName"));
+        Thread thread = actorThread.poll(TIMEOUT, TimeUnit.MILLISECONDS);
+        assertThat(thread.getName(), is("ActorName"));
     }
 
     // TODO: bind actors to current thread
