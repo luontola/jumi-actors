@@ -5,7 +5,7 @@
 package net.orfjackal.jumi.core.events;
 
 import net.orfjackal.jumi.core.SuiteListener;
+import net.orfjackal.jumi.core.actors.Event;
 
-public interface SuiteEvent {
-    void fireOn(SuiteListener target);
+public interface SuiteEvent extends Event<SuiteListener> {
 }

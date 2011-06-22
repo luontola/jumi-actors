@@ -5,7 +5,7 @@
 package net.orfjackal.jumi.core.commands;
 
 import net.orfjackal.jumi.core.CommandListener;
+import net.orfjackal.jumi.core.actors.Event;
 
-public interface Command {
-    void fireOn(CommandListener target);
+public interface Command extends Event<CommandListener> {
 }
