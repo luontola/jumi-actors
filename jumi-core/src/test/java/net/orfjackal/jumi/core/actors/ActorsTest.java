@@ -4,7 +4,7 @@
 
 package net.orfjackal.jumi.core.actors;
 
-import org.junit.Test;
+import org.junit.*;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -15,18 +15,18 @@ import static org.hamcrest.Matchers.is;
 public class ActorsTest {
     private static final long TIMEOUT = 1000;
 
-    private Actors actors = new Actors(new DummyListenerFactory());
+    private final Actors actors = new Actors(new DummyListenerFactory());
+
+    @After
+    public void shutdown() throws InterruptedException {
+        actors.shutdown(TIMEOUT, TimeUnit.MILLISECONDS);
+    }
 
     @Test
     public void method_calls_on_handle_are_forwarded_to_target() throws InterruptedException {
-        final LinkedBlockingQueue<String> spy = new LinkedBlockingQueue<String>();
-        DummyListener target = new DummyListener() {
-            public void onSomething(String parameter) {
-                spy.offer(parameter);
-            }
-        };
+        LinkedBlockingQueue<String> spy = new LinkedBlockingQueue<String>();
+        DummyListener handle = actors.createNewActor(DummyListener.class, new EventParameterSpy(spy), "ActorName");
 
-        DummyListener handle = actors.createNewActor(DummyListener.class, target, "ActorName");
         handle.onSomething("event parameter");
 
         String parameter = spy.poll(TIMEOUT, TimeUnit.MILLISECONDS);
@@ -35,14 +35,9 @@ public class ActorsTest {
 
     @Test
     public void target_is_invoked_in_its_own_actor_thread() throws InterruptedException {
-        final LinkedBlockingQueue<Thread> spy = new LinkedBlockingQueue<Thread>();
-        DummyListener target = new DummyListener() {
-            public void onSomething(String parameter) {
-                spy.offer(Thread.currentThread());
-            }
-        };
+        LinkedBlockingQueue<Thread> spy = new LinkedBlockingQueue<Thread>();
+        DummyListener handle = actors.createNewActor(DummyListener.class, new CurrentThreadSpy(spy), "ActorName");
 
-        DummyListener handle = actors.createNewActor(DummyListener.class, target, "ActorName");
         handle.onSomething(null);
 
         Thread thread = spy.poll(TIMEOUT, TimeUnit.MILLISECONDS);
@@ -51,14 +46,9 @@ public class ActorsTest {
 
     @Test
     public void actor_processes_multiple_events_in_the_order_they_were_sent() throws InterruptedException {
-        final LinkedBlockingQueue<String> spy = new LinkedBlockingQueue<String>();
-        DummyListener target = new DummyListener() {
-            public void onSomething(String parameter) {
-                spy.offer(parameter);
-            }
-        };
+        LinkedBlockingQueue<String> spy = new LinkedBlockingQueue<String>();
+        DummyListener handle = actors.createNewActor(DummyListener.class, new EventParameterSpy(spy), "ActorName");
 
-        DummyListener handle = actors.createNewActor(DummyListener.class, target, "ActorName");
         handle.onSomething("event 1");
         handle.onSomething("event 2");
         handle.onSomething("event 3");
@@ -67,11 +57,48 @@ public class ActorsTest {
         receivedEvents.add(spy.poll(TIMEOUT, TimeUnit.MILLISECONDS));
         receivedEvents.add(spy.poll(TIMEOUT, TimeUnit.MILLISECONDS));
         receivedEvents.add(spy.poll(TIMEOUT, TimeUnit.MILLISECONDS));
-
         assertThat(receivedEvents, is(Arrays.asList("event 1", "event 2", "event 3")));
     }
 
+    @Test
+    public void actors_can_be_shut_down() throws InterruptedException {
+        LinkedBlockingQueue<Thread> spy = new LinkedBlockingQueue<Thread>();
+        DummyListener handle = actors.createNewActor(DummyListener.class, new CurrentThreadSpy(spy), "ActorName");
+        handle.onSomething(null);
+        Thread actorThread = spy.poll(TIMEOUT, TimeUnit.MILLISECONDS);
+
+        assertThat("alive before shutdown", actorThread.isAlive(), is(true));
+        actors.shutdown(TIMEOUT, TimeUnit.MILLISECONDS);
+        assertThat("alive after shutdown", actorThread.isAlive(), is(false));
+    }
+
+    // TODO: support for multiple factories
     // TODO: bind actors to current thread
+
+
+    private static class EventParameterSpy implements DummyListener {
+        private final LinkedBlockingQueue<String> spy;
+
+        public EventParameterSpy(LinkedBlockingQueue<String> spy) {
+            this.spy = spy;
+        }
+
+        public void onSomething(String parameter) {
+            spy.offer(parameter);
+        }
+    }
+
+    private static class CurrentThreadSpy implements DummyListener {
+        private final LinkedBlockingQueue<Thread> spy;
+
+        public CurrentThreadSpy(LinkedBlockingQueue<Thread> spy) {
+            this.spy = spy;
+        }
+
+        public void onSomething(String parameter) {
+            spy.offer(Thread.currentThread());
+        }
+    }
 }
 
 

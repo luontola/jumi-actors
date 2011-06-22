@@ -4,8 +4,11 @@
 
 package net.orfjackal.jumi.core.actors;
 
+import java.util.concurrent.*;
+
 public class Actors {
     private final ListenerFactory<?> factory;
+    private final ExecutorService executor = Executors.newCachedThreadPool();
 
     public Actors(ListenerFactory<?> factory) {
         this.factory = factory;
@@ -18,39 +21,43 @@ public class Actors {
         MessageSender<Event<T>> receiver = factory.createReceiver(target);
         T handle = factory.createSenderWrapper(queue);
 
-        EventPoller<T> actor = new EventPoller<T>(queue, receiver);
-        Thread t = new Thread(actor, name);
-        t.start();
+        executor.execute(new EventPoller<T>(queue, receiver, name));
 
         return type.cast(handle);
     }
 
     @SuppressWarnings({"unchecked"})
     private <T> ListenerFactory<T> getFactoryForType(Class<T> type) {
-        // TODO: support for multiple factories
         ListenerFactory<T> factory = (ListenerFactory<T>) this.factory;
         assert factory.getType().equals(type);
         return factory;
     }
 
+    public void shutdown(long timeout, TimeUnit unit) throws InterruptedException {
+        executor.shutdownNow();
+        executor.awaitTermination(timeout, unit);
+    }
+
     private static class EventPoller<T> implements Runnable {
         private final MessageQueue<Event<T>> queue;
         private final MessageSender<Event<T>> receiver;
+        private final String name;
 
-        public EventPoller(MessageQueue<Event<T>> queue, MessageSender<Event<T>> receiver) {
+        public EventPoller(MessageQueue<Event<T>> queue, MessageSender<Event<T>> receiver, String name) {
             this.queue = queue;
             this.receiver = receiver;
+            this.name = name;
         }
 
         public void run() {
+            Thread.currentThread().setName(name);
             try {
                 while (true) {
                     Event<T> message = queue.take();
                     receiver.send(message);
                 }
-
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                System.out.println("Shutting down actor " + name);
             }
         }
     }
