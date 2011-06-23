@@ -7,11 +7,11 @@ package net.orfjackal.jumi.core.actors;
 import java.util.concurrent.*;
 
 public class Actors {
-    private final ListenerFactory<?> factory;
+    private final ListenerFactory<?>[] factories;
     private final ExecutorService executor = Executors.newCachedThreadPool();
 
-    public Actors(ListenerFactory<?> factory) {
-        this.factory = factory;
+    public Actors(ListenerFactory<?>... factories) {
+        this.factories = factories;
     }
 
     public <T> T createNewActor(Class<T> type, T target, String name) {
@@ -28,9 +28,12 @@ public class Actors {
 
     @SuppressWarnings({"unchecked"})
     private <T> ListenerFactory<T> getFactoryForType(Class<T> type) {
-        ListenerFactory<T> factory = (ListenerFactory<T>) this.factory;
-        assert factory.getType().equals(type);
-        return factory;
+        for (ListenerFactory<?> factory : factories) {
+            if (factory.getType().equals(type)) {
+                return (ListenerFactory<T>) factory;
+            }
+        }
+        throw new IllegalArgumentException("unsupported listener type: " + type);
     }
 
     public void shutdown(long timeout, TimeUnit unit) throws InterruptedException {

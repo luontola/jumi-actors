@@ -5,6 +5,7 @@
 package net.orfjackal.jumi.core.actors;
 
 import org.junit.*;
+import org.junit.rules.ExpectedException;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -16,6 +17,9 @@ public class ActorsTest {
     private static final long TIMEOUT = 1000;
 
     private final Actors actors = new Actors(new DummyListenerFactory());
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @After
     public void shutdown() throws InterruptedException {
@@ -72,8 +76,20 @@ public class ActorsTest {
         assertThat("alive after shutdown", actorThread.isAlive(), is(false));
     }
 
-    // TODO: support for multiple factories
-    // TODO: bind actors to current thread
+    @Test
+    public void listener_factories_must_be_registered_for_them_to_be_usable() {
+        NoFactoryForThisListener listener = new NoFactoryForThisListener() {
+        };
+
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("unsupported listener type");
+        thrown.expectMessage(NoFactoryForThisListener.class.getName());
+
+        actors.createNewActor(NoFactoryForThisListener.class, listener, "ActorName");
+    }
+
+    // TODO: single-threaded actor manager for unit tests
+    // TODO: bind actors to current thread (also double-check the current thread? might be good to do explicit thread handling after all)
 
 
     private static class EventParameterSpy implements DummyListener {
@@ -101,6 +117,9 @@ public class ActorsTest {
     }
 }
 
+
+interface NoFactoryForThisListener {
+}
 
 interface DummyListener {
     void onSomething(String parameter);
