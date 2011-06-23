@@ -6,7 +6,7 @@ package net.orfjackal.jumi.daemon;
 
 import net.orfjackal.jumi.core.*;
 import net.orfjackal.jumi.core.actors.Actors;
-import net.orfjackal.jumi.core.commands.*;
+import net.orfjackal.jumi.core.commands.CommandListenerFactory;
 import net.orfjackal.jumi.core.events.SuiteListenerFactory;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.*;
@@ -18,9 +18,6 @@ import java.util.concurrent.Executors;
 
 public class Main {
 
-    // TODO: the coordinator should be an actor running in its own thread
-    private static final TestRunCoordinator coordinator = new TestRunCoordinator();
-
     public static void main(String[] args) {
         System.out.println(Hello.hello());
         exitWhenNotAnymoreInUse();
@@ -29,11 +26,12 @@ public class Main {
 
         // TODO: start up all actors
         Actors actors = new Actors(new SuiteListenerFactory(), new CommandListenerFactory());
+        CommandListener toCoordinator = actors.createNewActor(CommandListener.class, new TestRunCoordinator(), "Coordinator");
 
-        connectToLauncher(launcherPort);
+        connectToLauncher(launcherPort, toCoordinator);
     }
 
-    private static void connectToLauncher(int launcherPort) {
+    private static void connectToLauncher(int launcherPort, final CommandListener toCoordinator) {
         ChannelFactory factory = new OioClientSocketChannelFactory(Executors.newCachedThreadPool());
         ClientBootstrap bootstrap = new ClientBootstrap(factory);
 
@@ -42,7 +40,7 @@ public class Main {
                 return Channels.pipeline(
                         new ObjectEncoder(),
                         new ObjectDecoder(),
-                        new JumiDaemonHandler(new CommandReceiver(coordinator)));
+                        new JumiDaemonHandler(toCoordinator));
             }
         });
 
