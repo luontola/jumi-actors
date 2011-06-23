@@ -5,7 +5,6 @@
 package net.orfjackal.jumi.api.drivers;
 
 import java.io.Serializable;
-import java.util.*;
 
 /**
  * Uniquely identifies a single test in the tree of all tests. Immutable.
@@ -58,14 +57,18 @@ public abstract class TestId implements Comparable<TestId>, Serializable {
 
     public abstract int getIndex();
 
-    private List<Integer> getPath() {
+    private int[] getPath() {
         // TODO: make public? should then write explicit tests for it
-        List<Integer> path = new ArrayList<Integer>();
-        for (TestId node = this; !node.isRoot(); node = node.getParent()) {
-            path.add(node.getIndex());
+        return getPath(0);
+    }
+
+    private int[] getPath(int depth) {
+        if (isRoot()) {
+            return new int[depth];
         }
-        Collections.reverse(path);
-        return Collections.unmodifiableList(path);
+        int[] path = getParent().getPath(depth + 1);
+        path[path.length - 1 - depth] = getIndex();
+        return path;
     }
 
     public boolean equals(Object obj) {
@@ -89,28 +92,29 @@ public abstract class TestId implements Comparable<TestId>, Serializable {
     }
 
     public int compareTo(TestId that) {
-        List<Integer> thisPath = this.getPath();
-        List<Integer> thatPath = that.getPath();
-        for (int i = 0; i < thisPath.size() && i < thatPath.size(); i++) {
-            Integer thisIndex = thisPath.get(i);
-            Integer thatIndex = thatPath.get(i);
+        int[] thisPath = this.getPath();
+        int[] thatPath = that.getPath();
+        for (int i = 0; i < thisPath.length && i < thatPath.length; i++) {
+            Integer thisIndex = thisPath[i];
+            Integer thatIndex = thatPath[i];
             int comp = thisIndex.compareTo(thatIndex);
             if (comp != 0) {
                 return comp;
             }
         }
-        return thisPath.size() - thatPath.size();
+        return thisPath.length - thatPath.length;
     }
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("TestId(");
-        List<Integer> path = getPath();
-        for (int i = 0; i < path.size(); i++) {
+        int[] path = getPath();
+        for (int i = 0; i < path.length; i++) {
+            int index = path[i];
             if (i > 0) {
                 sb.append(", ");
             }
-            sb.append(path.get(i));
+            sb.append(index);
         }
         sb.append(")");
         return sb.toString();
