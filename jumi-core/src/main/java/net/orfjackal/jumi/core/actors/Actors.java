@@ -4,11 +4,11 @@
 
 package net.orfjackal.jumi.core.actors;
 
-import java.util.concurrent.*;
+import java.util.*;
 
 public class Actors {
     private final ListenerFactory<?>[] factories;
-    private final ExecutorService executor = Executors.newCachedThreadPool();
+    private final Set<Thread> actorThreads = Collections.synchronizedSet(new HashSet<Thread>());
 
     public Actors(ListenerFactory<?>... factories) {
         this.factories = factories;
@@ -21,9 +21,14 @@ public class Actors {
         MessageSender<Event<T>> receiver = factory.createReceiver(target);
         T handle = factory.createSenderWrapper(queue);
 
-        executor.execute(new EventPoller<T>(queue, receiver, name));
-
+        startActorThread(new EventPoller<T>(queue, receiver), name);
         return type.cast(handle);
+    }
+
+    private void startActorThread(Runnable actor, String name) {
+        Thread t = new Thread(actor, name);
+        t.start();
+        actorThreads.add(t);
     }
 
     @SuppressWarnings({"unchecked"})
@@ -36,31 +41,32 @@ public class Actors {
         throw new IllegalArgumentException("unsupported listener type: " + type);
     }
 
-    public void shutdown(long timeout, TimeUnit unit) throws InterruptedException {
-        executor.shutdownNow();
-        executor.awaitTermination(timeout, unit);
+    public void shutdown(long timeout) throws InterruptedException {
+        for (Thread t : actorThreads) {
+            t.interrupt();
+        }
+        for (Thread t : actorThreads) {
+            t.join(timeout);
+        }
     }
 
     private static class EventPoller<T> implements Runnable {
         private final MessageQueue<Event<T>> queue;
         private final MessageSender<Event<T>> receiver;
-        private final String name;
 
-        public EventPoller(MessageQueue<Event<T>> queue, MessageSender<Event<T>> receiver, String name) {
+        public EventPoller(MessageQueue<Event<T>> queue, MessageSender<Event<T>> receiver) {
             this.queue = queue;
             this.receiver = receiver;
-            this.name = name;
         }
 
         public void run() {
-            Thread.currentThread().setName(name);
             try {
-                while (true) {
+                while (!Thread.interrupted()) {
                     Event<T> message = queue.take();
                     receiver.send(message);
                 }
             } catch (InterruptedException e) {
-                System.out.println("Shutting down actor " + name);
+                // TODO: log that the actor is shutting down?
             }
         }
     }

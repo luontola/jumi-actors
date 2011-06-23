@@ -2,6 +2,10 @@
 TODO NEXT:
 - refactor results of passing "suite with zero tests"
 	- actor model: some easy way for wiring the actors and starting new threads (use in daemon and launcher)
+	- test execution might be better implemented using regular thread pools instead of actors
+		- CPU bound threads should use an optimal number of threads per core
+		- they take no input when running, so no actor handle needs to be created for them
+		- the thing which coordinates a test class's workers might need to be an actor (it receives events from the tests), but it should also be able to exit itself when it has done its work
 	- code generation for events
 	- bullet proofing the public api, cross-references from javadocs to tests (a new xref tag?)
 - end-to-end tests: failing tests (includes reporting stack trace)

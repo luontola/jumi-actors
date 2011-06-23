@@ -23,7 +23,7 @@ public class ActorsTest {
 
     @After
     public void shutdown() throws InterruptedException {
-        actors.shutdown(TIMEOUT, TimeUnit.MILLISECONDS);
+        actors.shutdown(TIMEOUT);
     }
 
     @Test
@@ -72,7 +72,7 @@ public class ActorsTest {
         Thread actorThread = spy.poll(TIMEOUT, TimeUnit.MILLISECONDS);
 
         assertThat("alive before shutdown", actorThread.isAlive(), is(true));
-        actors.shutdown(TIMEOUT, TimeUnit.MILLISECONDS);
+        actors.shutdown(TIMEOUT);
         assertThat("alive after shutdown", actorThread.isAlive(), is(false));
     }
 
