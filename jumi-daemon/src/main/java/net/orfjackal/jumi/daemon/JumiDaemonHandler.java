@@ -4,16 +4,16 @@
 
 package net.orfjackal.jumi.daemon;
 
-import net.orfjackal.jumi.core.SuiteListener;
-import net.orfjackal.jumi.core.actors.MessageSender;
-import net.orfjackal.jumi.core.commands.*;
-import net.orfjackal.jumi.core.events.*;
+import net.orfjackal.jumi.core.*;
+import net.orfjackal.jumi.core.actors.*;
+import net.orfjackal.jumi.core.commands.AddSuiteListener;
+import net.orfjackal.jumi.core.events.SuiteEventSender;
 import org.jboss.netty.channel.*;
 
 public class JumiDaemonHandler extends SimpleChannelHandler {
-    private MessageSender<Command> toController;
+    private MessageSender<Event<CommandListener>> toController;
 
-    public JumiDaemonHandler(MessageSender<Command> toController) {
+    public JumiDaemonHandler(MessageSender<Event<CommandListener>> toController) {
         this.toController = toController;
     }
 
@@ -23,8 +23,8 @@ public class JumiDaemonHandler extends SimpleChannelHandler {
         toController.send(new AddSuiteListener(listener));
     }
 
-    public void messageReceived(ChannelHandlerContext ctx, final MessageEvent e) throws Exception {
-        toController.send((Command) e.getMessage());
+    public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
+        toController.send((Event<CommandListener>) e.getMessage());
     }
 
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
@@ -33,14 +33,14 @@ public class JumiDaemonHandler extends SimpleChannelHandler {
         e.getChannel().close();
     }
 
-    private static class ChannelMessageSender implements MessageSender<SuiteEvent> {
+    private static class ChannelMessageSender implements MessageSender<Event<SuiteListener>> {
         private final Channel channel;
 
         public ChannelMessageSender(Channel channel) {
             this.channel = channel;
         }
 
-        public void send(SuiteEvent message) {
+        public void send(Event<SuiteListener> message) {
             channel.write(message);
         }
     }

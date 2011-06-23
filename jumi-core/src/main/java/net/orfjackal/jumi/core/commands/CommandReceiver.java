@@ -5,16 +5,16 @@
 package net.orfjackal.jumi.core.commands;
 
 import net.orfjackal.jumi.core.CommandListener;
-import net.orfjackal.jumi.core.actors.MessageSender;
+import net.orfjackal.jumi.core.actors.*;
 
-public class CommandReceiver implements MessageSender<Command> {
+public class CommandReceiver implements MessageSender<Event<CommandListener>> {
     private final CommandListener listener;
 
     public CommandReceiver(CommandListener listener) {
         this.listener = listener;
     }
 
-    public void send(Command message) {
+    public void send(Event<CommandListener> message) {
         message.fireOn(listener);
     }
 }

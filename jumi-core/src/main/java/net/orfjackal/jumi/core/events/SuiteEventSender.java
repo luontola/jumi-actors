@@ -6,12 +6,12 @@ package net.orfjackal.jumi.core.events;
 
 import net.orfjackal.jumi.api.drivers.TestId;
 import net.orfjackal.jumi.core.SuiteListener;
-import net.orfjackal.jumi.core.actors.MessageSender;
+import net.orfjackal.jumi.core.actors.*;
 
 public class SuiteEventSender implements SuiteListener {
-    private final MessageSender<SuiteEvent> sender;
+    private final MessageSender<Event<SuiteListener>> sender;
 
-    public SuiteEventSender(MessageSender<SuiteEvent> sender) {
+    public SuiteEventSender(MessageSender<Event<SuiteListener>> sender) {
         this.sender = sender;
     }
 

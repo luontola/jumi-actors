@@ -5,11 +5,12 @@
 package net.orfjackal.jumi.core.commands;
 
 import net.orfjackal.jumi.core.CommandListener;
+import net.orfjackal.jumi.core.actors.Event;
 
 import java.io.*;
 import java.util.List;
 
-public class RunTestsCommand implements Command, Serializable {
+public class RunTestsCommand implements Serializable, Event<CommandListener> {
     private final List<File> classPath;
     private final String testsToIncludePattern;
 

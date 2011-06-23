@@ -4,17 +4,17 @@
 
 package net.orfjackal.jumi.launcher;
 
-import net.orfjackal.jumi.core.actors.MessageSender;
+import net.orfjackal.jumi.core.SuiteListener;
+import net.orfjackal.jumi.core.actors.*;
 import net.orfjackal.jumi.core.commands.RunTestsCommand;
-import net.orfjackal.jumi.core.events.SuiteEvent;
 import org.jboss.netty.channel.*;
 
 public class JumiLauncherHandler extends SimpleChannelHandler {
 
-    private final MessageSender<SuiteEvent> toLauncher;
+    private final MessageSender<Event<SuiteListener>> toLauncher;
     private volatile RunTestsCommand startupCommand;
 
-    public JumiLauncherHandler(MessageSender<SuiteEvent> toLauncher) {
+    public JumiLauncherHandler(MessageSender<Event<SuiteListener>> toLauncher) {
         this.toLauncher = toLauncher;
     }
 
@@ -30,7 +30,7 @@ public class JumiLauncherHandler extends SimpleChannelHandler {
     }
 
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-        toLauncher.send((SuiteEvent) e.getMessage());
+        toLauncher.send((Event<SuiteListener>) e.getMessage());
     }
 
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {

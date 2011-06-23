@@ -6,10 +6,11 @@ package net.orfjackal.jumi.core.events;
 
 import net.orfjackal.jumi.api.drivers.TestId;
 import net.orfjackal.jumi.core.SuiteListener;
+import net.orfjackal.jumi.core.actors.Event;
 
 import java.io.Serializable;
 
-public class TestFoundEvent implements SuiteEvent, Serializable {
+public class TestFoundEvent implements Serializable, Event<SuiteListener> {
     private final TestId id;
     private final String name;
 

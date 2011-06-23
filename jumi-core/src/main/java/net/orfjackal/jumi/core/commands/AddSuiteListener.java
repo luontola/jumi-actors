@@ -5,8 +5,9 @@
 package net.orfjackal.jumi.core.commands;
 
 import net.orfjackal.jumi.core.*;
+import net.orfjackal.jumi.core.actors.Event;
 
-public class AddSuiteListener implements Command {
+public class AddSuiteListener implements Event<CommandListener> {
     private final SuiteListener listener;
 
     public AddSuiteListener(SuiteListener listener) {

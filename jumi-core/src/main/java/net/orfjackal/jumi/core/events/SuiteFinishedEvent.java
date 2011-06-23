@@ -5,10 +5,11 @@
 package net.orfjackal.jumi.core.events;
 
 import net.orfjackal.jumi.core.SuiteListener;
+import net.orfjackal.jumi.core.actors.Event;
 
 import java.io.Serializable;
 
-public class SuiteFinishedEvent implements SuiteEvent, Serializable {
+public class SuiteFinishedEvent implements Serializable, Event<SuiteListener> {
     public void fireOn(SuiteListener target) {
         target.onSuiteFinished();
     }

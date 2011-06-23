@@ -5,15 +5,15 @@
 package net.orfjackal.jumi.core.commands;
 
 import net.orfjackal.jumi.core.*;
-import net.orfjackal.jumi.core.actors.MessageSender;
+import net.orfjackal.jumi.core.actors.*;
 
 import java.io.File;
 import java.util.List;
 
 public class CommandSender implements CommandListener {
-    private final MessageSender<Command> sender;
+    private final MessageSender<Event<CommandListener>> sender;
 
-    public CommandSender(MessageSender<Command> sender) {
+    public CommandSender(MessageSender<Event<CommandListener>> sender) {
         this.sender = sender;
     }
 
