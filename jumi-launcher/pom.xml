@@ -95,6 +95,7 @@
                             <artifactSet>
                                 <excludes>
                                     <!-- Regular dependencies -->
+                                    <exclude>net.orfjackal.jumi:jumi-api</exclude>
                                     <exclude>net.orfjackal.jumi:jumi-core</exclude>
                                 </excludes>
                             </artifactSet>

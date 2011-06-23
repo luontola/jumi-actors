@@ -22,10 +22,8 @@ import static org.junit.Assert.assertTrue;
 
 public class BuildTest {
 
-    private static final List<String> JAR_WHITELIST = Arrays.asList(
-            "META-INF/maven/net.orfjackal.jumi/",
-            "net/orfjackal/jumi/"
-    );
+    private static final String POM_FILES = "META-INF/maven/net.orfjackal.jumi/";
+    private static final String BASE_PACKAGE = "net/orfjackal/jumi/";
     private static final Map<String, List<String>> DEPENDENCIES = new HashMap<String, List<String>>();
 
     static {
@@ -35,26 +33,73 @@ public class BuildTest {
         DEPENDENCIES.put("jumi-launcher", Arrays.asList("net.orfjackal.jumi:jumi-core"));
     }
 
-    private File[] projectJars;
     private File[] projectPoms;
+    private File apiJar;
+    private File coreJar;
+    private File daemonJar;
+    private File launcherJar;
 
     @Before
     public void init() throws IOException {
-        projectJars = TestEnvironment.getProjectJars();
         projectPoms = TestEnvironment.getProjectPoms();
+        File[] projectJars = TestEnvironment.getProjectJars();
+        assertThat("project JARs", projectJars.length, is(4));
+        apiJar = pick("jumi-api", projectJars);
+        coreJar = pick("jumi-core", projectJars);
+        daemonJar = pick("jumi-daemon", projectJars);
+        launcherJar = pick("jumi-launcher", projectJars);
+    }
+
+    private static File pick(String namePrefix, File[] files) {
+        for (File file : files) {
+            if (file.getName().startsWith(namePrefix)) {
+                return file;
+            }
+        }
+        throw new IllegalArgumentException("file starting with " + namePrefix + " not found in " + Arrays.toString(files));
     }
 
     @Test
     public void embedded_daemon_jar_contains_only_jumi_classes() throws IOException {
-        assertJarContainsOnly(JAR_WHITELIST, Daemon.getDaemonJarAsStream());
+        assertJarContainsOnly(Daemon.getDaemonJarAsStream(),
+                POM_FILES,
+                BASE_PACKAGE
+        );
     }
 
     @Test
-    public void project_artifact_jars_contain_only_jumi_classes() throws IOException {
-        assertThat("project JARs", projectJars.length, is(4));
-        for (File projectJar : projectJars) {
-            assertJarContainsOnly(JAR_WHITELIST, projectJar);
-        }
+    public void contents_of_api_jar() throws IOException {
+        assertJarContainsOnly(apiJar,
+                POM_FILES,
+                BASE_PACKAGE + "api/"
+        );
+
+    }
+
+    @Test
+    public void contents_of_core_jar() throws IOException {
+        assertJarContainsOnly(coreJar,
+                POM_FILES,
+                BASE_PACKAGE + "core/"
+        );
+    }
+
+    @Test
+    public void contents_of_daemon_jar() throws IOException {
+        assertJarContainsOnly(daemonJar,
+                POM_FILES,
+                BASE_PACKAGE + "api/",
+                BASE_PACKAGE + "core/",
+                BASE_PACKAGE + "daemon/"
+        );
+    }
+
+    @Test
+    public void contents_of_launcher_jar() throws IOException {
+        assertJarContainsOnly(launcherJar,
+                POM_FILES,
+                BASE_PACKAGE + "launcher/"
+        );
     }
 
     @Test
@@ -69,15 +114,15 @@ public class BuildTest {
 
     // helper methods
 
-    private static void assertJarContainsOnly(List<String> whitelist, File jar) throws IOException {
+    private static void assertJarContainsOnly(File jar, String... whitelist) throws IOException {
         try {
-            assertJarContainsOnly(whitelist, new FileInputStream(jar));
+            assertJarContainsOnly(new FileInputStream(jar), whitelist);
         } catch (AssertionError e) {
             throw (AssertionError) new AssertionError(jar + " " + e.getMessage()).initCause(e);
         }
     }
 
-    private static void assertJarContainsOnly(List<String> whitelist, InputStream jarAsStream) throws IOException {
+    private static void assertJarContainsOnly(InputStream jarAsStream, String... whitelist) throws IOException {
         JarInputStream in = new JarInputStream(jarAsStream);
         JarEntry entry;
         while ((entry = in.getNextJarEntry()) != null) {
@@ -85,7 +130,7 @@ public class BuildTest {
         }
     }
 
-    private static void assertIsWhitelisted(JarEntry entry, List<String> whitelist) {
+    private static void assertIsWhitelisted(JarEntry entry, String... whitelist) {
         boolean allowed = false;
         for (String s : whitelist) {
             allowed |= entry.getName().startsWith(s);
