@@ -89,13 +89,6 @@ public abstract class TestId implements Comparable<TestId>, Serializable {
     }
 
     public int compareTo(TestId that) {
-        if (this.isRoot()) {
-            return -1;
-        }
-        if (that.isRoot()) {
-            return 1;
-        }
-        // TODO: rewrite this without using getPath(), in a more functional way, without that many intermediate objects
         List<Integer> thisPath = this.getPath();
         List<Integer> thatPath = that.getPath();
         for (int i = 0; i < thisPath.size() && i < thatPath.size(); i++) {

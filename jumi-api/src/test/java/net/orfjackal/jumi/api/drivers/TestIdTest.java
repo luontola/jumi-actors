@@ -85,7 +85,10 @@ public class TestIdTest {
         Collections.shuffle(actualOrder);
         Collections.sort(actualOrder);
 
-        assertThat(actualOrder, is(expectedOrder));
+        assertThat("natural order", actualOrder, is(expectedOrder));
+        for (TestId id : expectedOrder) {
+            assertThat("comparing with self: " + id, id.compareTo(id), is(0));
+        }
     }
 
     @Test
