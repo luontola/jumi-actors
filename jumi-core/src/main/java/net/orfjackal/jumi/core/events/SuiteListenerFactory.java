@@ -9,6 +9,8 @@ import net.orfjackal.jumi.core.actors.*;
 
 public class SuiteListenerFactory implements ListenerFactory<SuiteListener> {
 
+    // TODO: remove this class and all the events, use the dynamic listeners (until code generating these classes works)
+
     public Class<SuiteListener> getType() {
         return SuiteListener.class;
     }

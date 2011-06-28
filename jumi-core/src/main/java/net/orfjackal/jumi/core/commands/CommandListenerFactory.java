@@ -9,6 +9,8 @@ import net.orfjackal.jumi.core.actors.*;
 
 public class CommandListenerFactory implements ListenerFactory<CommandListener> {
 
+    // TODO: remove this class and all the events, use the dynamic listeners (until code generating these classes works)
+
     public Class<CommandListener> getType() {
         return CommandListener.class;
     }
