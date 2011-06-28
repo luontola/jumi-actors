@@ -13,11 +13,11 @@ public class CommandListenerFactory implements ListenerFactory<CommandListener> 
         return CommandListener.class;
     }
 
-    public CommandListener createSenderWrapper(MessageSender<Event<CommandListener>> sender) {
-        return new CommandSender(sender);
+    public CommandListener newFrontend(MessageSender<Event<CommandListener>> target) {
+        return new CommandSender(target);
     }
 
-    public MessageSender<Event<CommandListener>> createReceiver(CommandListener listener) {
-        return new CommandReceiver(listener);
+    public MessageSender<Event<CommandListener>> newBackend(CommandListener target) {
+        return new CommandReceiver(target);
     }
 }

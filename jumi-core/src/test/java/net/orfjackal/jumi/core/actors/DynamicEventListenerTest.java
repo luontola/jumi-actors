@@ -13,8 +13,9 @@ import static org.mockito.Mockito.*;
 
 public class DynamicEventListenerTest {
 
+    private final DynamicListenerFactory<DummyListener> factory = new DynamicListenerFactory<DummyListener>(DummyListener.class);
     private final MessageQueue<Event<DummyListener>> queue = new MessageQueue<Event<DummyListener>>();
-    private final DummyListener frontend = DynamicEventListener.newFrontend(DummyListener.class, queue);
+    private final DummyListener frontend = factory.newFrontend(queue);
 
     @Rule
     public final ExpectedException thrown = ExpectedException.none();
@@ -29,7 +30,7 @@ public class DynamicEventListenerTest {
     @Test
     public void event_objects_are_converted_back_into_method_calls() {
         DummyListener target = mock(DummyListener.class);
-        MessageSender<Event<DummyListener>> backend = DynamicEventListener.newBackend(target);
+        MessageSender<Event<DummyListener>> backend = factory.newBackend(target);
 
         frontend.onSomething("param");
         Event<DummyListener> event = queue.poll();
@@ -43,7 +44,7 @@ public class DynamicEventListenerTest {
         thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage("listeners may contain only void methods, but onSomething had return type java.lang.String");
 
-        DynamicEventListener.newFrontend(ListenerWithNonVoidMethods.class, new MessageQueue<Event<ListenerWithNonVoidMethods>>());
+        new DynamicListenerFactory<ListenerWithNonVoidMethods>(ListenerWithNonVoidMethods.class);
     }
 
 

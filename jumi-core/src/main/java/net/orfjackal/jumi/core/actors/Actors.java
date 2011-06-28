@@ -18,8 +18,8 @@ public class Actors {
         ListenerFactory<T> factory = getFactoryForType(type);
 
         MessageQueue<Event<T>> queue = new MessageQueue<Event<T>>();
-        MessageSender<Event<T>> receiver = factory.createReceiver(target);
-        T handle = factory.createSenderWrapper(queue);
+        MessageSender<Event<T>> receiver = factory.newBackend(target);
+        T handle = factory.newFrontend(queue);
 
         startActorThread(new EventPoller<T>(queue, receiver), name);
         return type.cast(handle);

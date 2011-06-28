@@ -13,11 +13,11 @@ public class SuiteListenerFactory implements ListenerFactory<SuiteListener> {
         return SuiteListener.class;
     }
 
-    public SuiteListener createSenderWrapper(MessageSender<Event<SuiteListener>> sender) {
-        return new SuiteEventSender(sender);
+    public SuiteListener newFrontend(MessageSender<Event<SuiteListener>> target) {
+        return new SuiteEventSender(target);
     }
 
-    public MessageSender<Event<SuiteListener>> createReceiver(SuiteListener listener) {
-        return new SuiteEventReceiver(listener);
+    public MessageSender<Event<SuiteListener>> newBackend(SuiteListener target) {
+        return new SuiteEventReceiver(target);
     }
 }

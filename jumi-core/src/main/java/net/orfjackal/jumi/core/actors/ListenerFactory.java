@@ -8,7 +8,7 @@ public interface ListenerFactory<T> {
 
     Class<T> getType();
 
-    T createSenderWrapper(MessageSender<Event<T>> sender);
+    T newFrontend(MessageSender<Event<T>> target);
 
-    MessageSender<Event<T>> createReceiver(T listener);
+    MessageSender<Event<T>> newBackend(T target);
 }

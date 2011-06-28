@@ -132,12 +132,12 @@ public class ActorsTest {
             return DummyListener.class;
         }
 
-        public DummyListener createSenderWrapper(MessageSender<Event<DummyListener>> sender) {
-            return new DummyEventSender(sender);
+        public DummyListener newFrontend(MessageSender<Event<DummyListener>> target) {
+            return new DummyEventSender(target);
         }
 
-        public MessageSender<Event<DummyListener>> createReceiver(DummyListener listener) {
-            return new DummyEventReceiver(listener);
+        public MessageSender<Event<DummyListener>> newBackend(DummyListener target) {
+            return new DummyEventReceiver(target);
         }
     }
 

@@ -5,9 +5,7 @@
 package net.orfjackal.jumi.daemon;
 
 import net.orfjackal.jumi.core.*;
-import net.orfjackal.jumi.core.actors.Actors;
-import net.orfjackal.jumi.core.commands.CommandListenerFactory;
-import net.orfjackal.jumi.core.events.SuiteListenerFactory;
+import net.orfjackal.jumi.core.actors.*;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.socket.oio.OioClientSocketChannelFactory;
@@ -25,7 +23,11 @@ public class Main {
         int launcherPort = Integer.parseInt(args[0]);
 
         // TODO: start up all actors
-        Actors actors = new Actors(new SuiteListenerFactory(), new CommandListenerFactory());
+
+        Actors actors = new Actors(DynamicListenerFactory.factoriesFor(
+                SuiteListener.class,
+                CommandListener.class
+        ));
         CommandListener toCoordinator = actors.createNewActor(CommandListener.class, new TestRunCoordinator(), "Coordinator");
 
         connectToLauncher(launcherPort, toCoordinator);
