@@ -14,10 +14,10 @@ public class CommandListenerFactory implements ListenerFactory<CommandListener> 
     }
 
     public CommandListener newFrontend(MessageSender<Event<CommandListener>> target) {
-        return new CommandSender(target);
+        return new CommandEventToCommandListener(target);
     }
 
     public MessageSender<Event<CommandListener>> newBackend(CommandListener target) {
-        return new CommandReceiver(target);
+        return new CommandListenerToCommandEvent(target);
     }
 }

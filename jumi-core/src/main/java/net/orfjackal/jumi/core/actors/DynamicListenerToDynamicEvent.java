@@ -7,6 +7,7 @@ package net.orfjackal.jumi.core.actors;
 import java.lang.reflect.*;
 
 public class DynamicListenerToDynamicEvent<T> implements InvocationHandler {
+
     private final MessageSender<Event<T>> target;
 
     public DynamicListenerToDynamicEvent(MessageSender<Event<T>> target) {

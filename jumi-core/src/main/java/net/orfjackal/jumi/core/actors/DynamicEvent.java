@@ -7,6 +7,7 @@ package net.orfjackal.jumi.core.actors;
 import java.lang.reflect.*;
 
 public class DynamicEvent<T> implements Event<T> {
+
     private final Method method;
     private final Object[] args;
 

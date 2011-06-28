@@ -10,18 +10,19 @@ import net.orfjackal.jumi.core.actors.*;
 import java.io.File;
 import java.util.List;
 
-public class CommandSender implements CommandListener {
-    private final MessageSender<Event<CommandListener>> sender;
+public class CommandEventToCommandListener implements CommandListener {
 
-    public CommandSender(MessageSender<Event<CommandListener>> sender) {
-        this.sender = sender;
+    private final MessageSender<Event<CommandListener>> target;
+
+    public CommandEventToCommandListener(MessageSender<Event<CommandListener>> target) {
+        this.target = target;
     }
 
     public void addSuiteListener(SuiteListener listener) {
-        sender.send(new AddSuiteListener(listener));
+        target.send(new AddSuiteListener(listener));
     }
 
     public void runTests(List<File> classPath, String testsToIncludePattern) {
-        sender.send(new RunTestsCommand(classPath, testsToIncludePattern));
+        target.send(new RunTestsCommand(classPath, testsToIncludePattern));
     }
 }

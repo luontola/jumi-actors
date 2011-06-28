@@ -8,22 +8,23 @@ import net.orfjackal.jumi.api.drivers.TestId;
 import net.orfjackal.jumi.core.SuiteListener;
 import net.orfjackal.jumi.core.actors.*;
 
-public class SuiteEventSender implements SuiteListener {
-    private final MessageSender<Event<SuiteListener>> sender;
+public class SuiteListenerToSuiteEvent implements SuiteListener {
 
-    public SuiteEventSender(MessageSender<Event<SuiteListener>> sender) {
-        this.sender = sender;
+    private final MessageSender<Event<SuiteListener>> target;
+
+    public SuiteListenerToSuiteEvent(MessageSender<Event<SuiteListener>> target) {
+        this.target = target;
     }
 
     public void onSuiteStarted() {
-        sender.send(new SuiteStartedEvent());
+        target.send(new SuiteStartedEvent());
     }
 
     public void onSuiteFinished() {
-        sender.send(new SuiteFinishedEvent());
+        target.send(new SuiteFinishedEvent());
     }
 
     public void onTestFound(TestId id, String name) {
-        sender.send(new TestFoundEvent(id, name));
+        target.send(new TestFoundEvent(id, name));
     }
 }

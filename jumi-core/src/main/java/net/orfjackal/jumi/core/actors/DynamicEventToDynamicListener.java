@@ -5,6 +5,7 @@
 package net.orfjackal.jumi.core.actors;
 
 public class DynamicEventToDynamicListener<T> implements MessageSender<Event<T>> {
+
     private final T target;
 
     public DynamicEventToDynamicListener(T target) {

@@ -14,10 +14,10 @@ public class SuiteListenerFactory implements ListenerFactory<SuiteListener> {
     }
 
     public SuiteListener newFrontend(MessageSender<Event<SuiteListener>> target) {
-        return new SuiteEventSender(target);
+        return new SuiteListenerToSuiteEvent(target);
     }
 
     public MessageSender<Event<SuiteListener>> newBackend(SuiteListener target) {
-        return new SuiteEventReceiver(target);
+        return new SuiteEventToSuiteListener(target);
     }
 }

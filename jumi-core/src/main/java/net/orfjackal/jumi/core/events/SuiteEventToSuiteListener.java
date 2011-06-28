@@ -7,14 +7,15 @@ package net.orfjackal.jumi.core.events;
 import net.orfjackal.jumi.core.SuiteListener;
 import net.orfjackal.jumi.core.actors.*;
 
-public class SuiteEventReceiver implements MessageSender<Event<SuiteListener>> {
-    private final SuiteListener listener;
+public class SuiteEventToSuiteListener implements MessageSender<Event<SuiteListener>> {
 
-    public SuiteEventReceiver(SuiteListener listener) {
-        this.listener = listener;
+    private final SuiteListener target;
+
+    public SuiteEventToSuiteListener(SuiteListener target) {
+        this.target = target;
     }
 
     public void send(Event<SuiteListener> message) {
-        message.fireOn(listener);
+        message.fireOn(target);
     }
 }
