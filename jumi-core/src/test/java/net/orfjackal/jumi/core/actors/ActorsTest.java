@@ -115,63 +115,65 @@ public class ActorsTest {
             spy.offer(Thread.currentThread());
         }
     }
-}
 
 
-interface NoFactoryForThisListener {
-}
+    // test data
 
-interface DummyListener {
-    void onSomething(String parameter);
-}
-
-class DummyListenerFactory implements ListenerFactory<DummyListener> {
-
-    public Class<DummyListener> getType() {
-        return DummyListener.class;
+    private interface NoFactoryForThisListener {
     }
 
-    public DummyListener createSenderWrapper(MessageSender<Event<DummyListener>> sender) {
-        return new DummyEventSender(sender);
+    private interface DummyListener {
+        void onSomething(String parameter);
     }
 
-    public MessageSender<Event<DummyListener>> createReceiver(DummyListener listener) {
-        return new DummyEventReceiver(listener);
-    }
-}
+    private class DummyListenerFactory implements ListenerFactory<DummyListener> {
 
-class SomethingEvent implements Event<DummyListener> {
-    private final String parameter;
+        public Class<DummyListener> getType() {
+            return DummyListener.class;
+        }
 
-    public SomethingEvent(String parameter) {
-        this.parameter = parameter;
-    }
+        public DummyListener createSenderWrapper(MessageSender<Event<DummyListener>> sender) {
+            return new DummyEventSender(sender);
+        }
 
-    public void fireOn(DummyListener target) {
-        target.onSomething(parameter);
-    }
-}
-
-class DummyEventSender implements DummyListener {
-    private final MessageSender<Event<DummyListener>> sender;
-
-    public DummyEventSender(MessageSender<Event<DummyListener>> sender) {
-        this.sender = sender;
+        public MessageSender<Event<DummyListener>> createReceiver(DummyListener listener) {
+            return new DummyEventReceiver(listener);
+        }
     }
 
-    public void onSomething(String parameter) {
-        sender.send(new SomethingEvent(parameter));
+    private class SomethingEvent implements Event<DummyListener> {
+        private final String parameter;
+
+        public SomethingEvent(String parameter) {
+            this.parameter = parameter;
+        }
+
+        public void fireOn(DummyListener target) {
+            target.onSomething(parameter);
+        }
     }
-}
 
-class DummyEventReceiver implements MessageSender<Event<DummyListener>> {
-    private final DummyListener listener;
+    private class DummyEventSender implements DummyListener {
+        private final MessageSender<Event<DummyListener>> sender;
 
-    public DummyEventReceiver(DummyListener listener) {
-        this.listener = listener;
+        public DummyEventSender(MessageSender<Event<DummyListener>> sender) {
+            this.sender = sender;
+        }
+
+        public void onSomething(String parameter) {
+            sender.send(new SomethingEvent(parameter));
+        }
     }
 
-    public void send(Event<DummyListener> message) {
-        message.fireOn(listener);
+    private class DummyEventReceiver implements MessageSender<Event<DummyListener>> {
+        private final DummyListener listener;
+
+        public DummyEventReceiver(DummyListener listener) {
+            this.listener = listener;
+        }
+
+        public void send(Event<DummyListener> message) {
+            message.fireOn(listener);
+        }
     }
 }
