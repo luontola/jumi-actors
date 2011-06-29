@@ -4,21 +4,20 @@
 
 package net.orfjackal.jumi.launcher;
 
-import net.orfjackal.jumi.core.SuiteListener;
+import net.orfjackal.jumi.core.*;
 import net.orfjackal.jumi.core.actors.*;
-import net.orfjackal.jumi.core.commands.RunTestsCommand;
 import org.jboss.netty.channel.*;
 
 public class JumiLauncherHandler extends SimpleChannelHandler {
 
     private final MessageSender<Event<SuiteListener>> toLauncher;
-    private volatile RunTestsCommand startupCommand;
+    private volatile Event<CommandListener> startupCommand;
 
     public JumiLauncherHandler(MessageSender<Event<SuiteListener>> toLauncher) {
         this.toLauncher = toLauncher;
     }
 
-    public void setStartupCommand(RunTestsCommand startupCommand) {
+    public void setStartupCommand(Event<CommandListener> startupCommand) {
         // XXX: do not pass this command like this, but use events
         this.startupCommand = startupCommand;
     }

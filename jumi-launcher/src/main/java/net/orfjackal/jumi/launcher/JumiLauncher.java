@@ -4,9 +4,8 @@
 
 package net.orfjackal.jumi.launcher;
 
-import net.orfjackal.jumi.core.SuiteStateCollector;
-import net.orfjackal.jumi.core.commands.RunTestsCommand;
-import net.orfjackal.jumi.core.events.SuiteEventToSuiteListener;
+import net.orfjackal.jumi.core.*;
+import net.orfjackal.jumi.core.actors.*;
 import net.orfjackal.jumi.launcher.daemon.Daemon;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.NullWriter;
@@ -27,7 +26,7 @@ public class JumiLauncher {
     private Process process;
 
     private final SuiteStateCollector suite = new SuiteStateCollector();
-    private final JumiLauncherHandler handler = new JumiLauncherHandler(new SuiteEventToSuiteListener(suite));
+    private final JumiLauncherHandler handler = new JumiLauncherHandler(new DynamicEventToDynamicListener<SuiteListener>(suite));
     private final List<File> classPath = new ArrayList<File>();
     private String testsToIncludePattern;
 
@@ -46,9 +45,19 @@ public class JumiLauncher {
     }
 
     public void start() throws IOException {
-        handler.setStartupCommand(new RunTestsCommand(classPath, testsToIncludePattern)); // XXX: send properly using a message queue
+        // XXX: send startup command properly, using a message queue
+        handler.setStartupCommand(genereteStartupCommand());
+
         int port = listenForDaemonConnection();
         startProcess(port);
+    }
+
+    private Event<CommandListener> genereteStartupCommand() {
+        MessageQueue<Event<CommandListener>> spy = new MessageQueue<Event<CommandListener>>();
+        new DynamicListenerFactory<CommandListener>(CommandListener.class)
+                .newFrontend(spy)
+                .runTests(classPath, testsToIncludePattern);
+        return spy.poll();
     }
 
     private int listenForDaemonConnection() {
