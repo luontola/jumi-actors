@@ -6,6 +6,7 @@ package net.orfjackal.jumi.launcher;
 
 import net.orfjackal.jumi.core.*;
 import net.orfjackal.jumi.core.actors.*;
+import net.orfjackal.jumi.core.dynamicevents.*;
 import net.orfjackal.jumi.launcher.daemon.Daemon;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.NullWriter;

@@ -6,6 +6,7 @@ package net.orfjackal.jumi.daemon;
 
 import net.orfjackal.jumi.core.*;
 import net.orfjackal.jumi.core.actors.*;
+import net.orfjackal.jumi.core.dynamicevents.DynamicListenerFactory;
 import org.jboss.netty.channel.*;
 
 public class JumiDaemonHandler extends SimpleChannelHandler {
