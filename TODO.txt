@@ -2,7 +2,7 @@
 TODO NEXT:
 - refactor results of passing "suite with zero tests"
 	- actor model: some easy way for wiring the actors and starting new threads (use in daemon and launcher)
-		- use dynamic events instead of old boilerplate
+		- start writing TestClassRunnerActor; wraps current TestClassRunner and parts of TestRunCoordinator#runTests
 	- test execution might be better implemented using regular thread pools instead of actors
 		- CPU bound threads should use an optimal number of threads per core
 		- they take no input when running, so no actor handle needs to be created for them
