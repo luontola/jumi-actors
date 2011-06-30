@@ -14,6 +14,10 @@ public interface SuiteListener {
 
     void onSuiteFinished();
 
+    void onTestClassStarted(Class<?> testClass);
+
+    void onTestClassFinished(Class<?> testClass);
+
     // TODO: mention also the test class?
     void onTestFound(TestId id, String name);
 }
