@@ -29,6 +29,7 @@ public class DynamicEvent<T> implements Event<T>, Serializable {
             method = getMethodByName(methodName, target);
         }
         try {
+            method.setAccessible(true);
             method.invoke(target, args);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);

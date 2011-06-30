@@ -4,6 +4,7 @@
 
 package net.orfjackal.jumi.core.actors;
 
+import net.orfjackal.jumi.core.dynamicevents.DynamicListenerFactory;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 
@@ -11,7 +12,7 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 public class ActorsTest {
     private static final long TIMEOUT = 1000;
@@ -65,6 +66,24 @@ public class ActorsTest {
     }
 
     @Test
+    public void an_actor_can_receive_events_in_the_same_thread_through_a_secondary_interface() {
+        Actors actors = new Actors(DynamicListenerFactory.factoriesFor(PrimaryInterface.class, SecondaryInterface.class));
+        MultiPurposeActor actor = new MultiPurposeActor(actors);
+
+        PrimaryInterface primaryHandle = actors.createNewActor(PrimaryInterface.class, actor, "ActorName");
+        primaryHandle.onPrimaryEvent();
+        actor.syncOnEvent();
+
+        SecondaryInterface secondaryHandle = actor.secondaryHandle;
+        secondaryHandle.onSecondaryEvent();
+        actor.syncOnEvent();
+
+        assertThat("primary event should have happened", actor.primaryEventThread, is(notNullValue()));
+        assertThat("secondary event should have happened", actor.secondaryEventThread, is(notNullValue()));
+        assertThat("events should have happened in same thread", actor.secondaryEventThread, is(actor.primaryEventThread));
+    }
+
+    @Test
     public void actors_can_be_shut_down() throws InterruptedException {
         LinkedBlockingQueue<Thread> spy = new LinkedBlockingQueue<Thread>();
         DummyListener handle = actors.createNewActor(DummyListener.class, new CurrentThreadSpy(spy), "ActorName");
@@ -114,6 +133,46 @@ public class ActorsTest {
         public void onSomething(String parameter) {
             spy.offer(Thread.currentThread());
         }
+    }
+
+    private static class MultiPurposeActor implements PrimaryInterface, SecondaryInterface {
+        private final Actors actors;
+        private final CyclicBarrier sync = new CyclicBarrier(2);
+
+        public volatile Thread primaryEventThread;
+        public volatile Thread secondaryEventThread;
+        public volatile SecondaryInterface secondaryHandle;
+
+        public MultiPurposeActor(Actors actors) {
+            this.actors = actors;
+        }
+
+        public void onPrimaryEvent() {
+            primaryEventThread = Thread.currentThread();
+            secondaryHandle = actors.bindToCurrentActor(SecondaryInterface.class, this);
+            syncOnEvent();
+        }
+
+        public void onSecondaryEvent() {
+            secondaryEventThread = Thread.currentThread();
+            syncOnEvent();
+        }
+
+        public void syncOnEvent() {
+            try {
+                sync.await(TIMEOUT, TimeUnit.MILLISECONDS);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private interface PrimaryInterface {
+        void onPrimaryEvent();
+    }
+
+    private interface SecondaryInterface {
+        void onSecondaryEvent();
     }
 
 
