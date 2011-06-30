@@ -108,7 +108,10 @@ public class ActorsTest {
     }
 
     // TODO: single-threaded actor manager for unit tests
-    // TODO: bind actors to current thread (also double-check the current thread? might be good to do explicit thread handling after all)
+
+    // TODO: improve binding actors to current thread:
+    // - double-check the current thread
+    // - cover Actors.getQueueOfCurrentActor(), call method in a non-actor thread
 
 
     private static class EventParameterSpy implements DummyListener {
