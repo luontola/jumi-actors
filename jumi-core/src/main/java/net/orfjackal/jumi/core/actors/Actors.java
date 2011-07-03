@@ -22,8 +22,14 @@ public class Actors {
         MessageSender<Event<T>> receiver = factory.newBackend(target);
         T handle = factory.newFrontend(queue);
 
-        startActorThread(new EventPoller<T>(queue, receiver), name);
+        pollEventsInNewActor(queue, receiver, name);
         return type.cast(handle);
+    }
+
+    private <T> void pollEventsInNewActor(MessageQueue<Event<T>> queue, MessageSender<Event<T>> actor, String name) {
+        Thread t = new Thread(new ActorContext<T>(queue, new EventPoller<T>(queue, actor)), name);
+        t.start();
+        actorThreads.add(t);
     }
 
     public <T> T bindToCurrentActor(Class<T> type, final T target) {
@@ -46,12 +52,6 @@ public class Actors {
         return queue;
     }
 
-    private void startActorThread(Runnable actor, String name) {
-        Thread t = new Thread(actor, name);
-        t.start();
-        actorThreads.add(t);
-    }
-
     @SuppressWarnings({"unchecked"})
     private <T> ListenerFactory<T> getFactoryForType(Class<T> type) {
         for (ListenerFactory<?> factory : factories) {
@@ -71,27 +71,44 @@ public class Actors {
         }
     }
 
-    private class EventPoller<T> implements Runnable {
-        private final MessageQueue<Event<T>> queue;
-        private final MessageSender<Event<T>> receiver;
 
-        public EventPoller(MessageQueue<Event<T>> queue, MessageSender<Event<T>> receiver) {
+    private class ActorContext<T> implements Runnable {
+        private final MessageQueue<Event<T>> queue;
+        private final Runnable actor;
+
+        public ActorContext(MessageQueue<Event<T>> queue, Runnable actor) {
+            this.actor = actor;
             this.queue = queue;
-            this.receiver = receiver;
         }
 
         @SuppressWarnings({"unchecked"})
         public void run() {
             queueOfCurrentActor.set((MessageQueue) queue);
             try {
+                actor.run();
+            } finally {
+                queueOfCurrentActor.remove();
+            }
+        }
+    }
+
+    private class EventPoller<T> implements Runnable {
+        private final MessageReceiver<Event<T>> events;
+        private final MessageSender<Event<T>> target;
+
+        public EventPoller(MessageReceiver<Event<T>> events, MessageSender<Event<T>> target) {
+            this.events = events;
+            this.target = target;
+        }
+
+        public void run() {
+            try {
                 while (!Thread.interrupted()) {
-                    Event<T> message = queue.take();
-                    receiver.send(message);
+                    Event<T> message = events.take();
+                    target.send(message);
                 }
             } catch (InterruptedException e) {
                 // actor was told to exit
-            } finally {
-                queueOfCurrentActor.remove();
             }
         }
     }
@@ -106,6 +123,7 @@ public class Actors {
         }
 
         public void fireOn(Object ignored) {
+            // TODO: double-check that we are on the right thread?
             message.fireOn(target);
         }
     }

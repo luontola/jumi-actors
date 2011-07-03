@@ -38,6 +38,7 @@ public class TestClassRunnerActorTest {
         // TODO: is this an allowed situation? in practice it means that the class is not reported anywhere
         inOrder.verify(listener).onTestClassStarted(DummyTest.class);
         inOrder.verify(listener).onTestClassFinished(DummyTest.class);
+        verifyNoMoreInteractions(listener);
     }
 
     @Test
@@ -49,6 +50,7 @@ public class TestClassRunnerActorTest {
         inOrder.verify(listener).onTestClassStarted(DummyTest.class);
         inOrder.verify(listener).onTestFound(TestId.ROOT, "root test");
         inOrder.verify(listener).onTestClassFinished(DummyTest.class);
+        verifyNoMoreInteractions(listener);
     }
 
     private void runAndAwaitCompletion(TestClassRunnerActor runner) throws InterruptedException {

@@ -13,6 +13,7 @@ import java.util.concurrent.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.mock;
 
 public class ActorsTest {
     private static final long TIMEOUT = 1000;
@@ -84,6 +85,14 @@ public class ActorsTest {
     }
 
     @Test
+    public void secondary_interfaces_cannot_be_bound_outside_an_actor() {
+        thrown.expect(IllegalStateException.class);
+        thrown.expectMessage("not inside an actor");
+
+        actors.bindToCurrentActor(DummyListener.class, mock(DummyListener.class));
+    }
+
+    @Test
     public void actors_can_be_shut_down() throws InterruptedException {
         LinkedBlockingQueue<Thread> spy = new LinkedBlockingQueue<Thread>();
         DummyListener handle = actors.createNewActor(DummyListener.class, new CurrentThreadSpy(spy), "ActorName");
@@ -108,10 +117,6 @@ public class ActorsTest {
     }
 
     // TODO: single-threaded actor manager for unit tests
-
-    // TODO: improve binding actors to current thread:
-    // - double-check the current thread
-    // - cover Actors.getQueueOfCurrentActor(), call method in a non-actor thread
 
 
     private static class EventParameterSpy implements DummyListener {
