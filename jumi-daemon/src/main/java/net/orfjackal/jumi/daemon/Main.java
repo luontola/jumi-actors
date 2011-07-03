@@ -11,6 +11,8 @@ import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.socket.oio.OioClientSocketChannelFactory;
 import org.jboss.netty.handler.codec.serialization.*;
+import org.jboss.netty.handler.logging.LoggingHandler;
+import org.jboss.netty.logging.InternalLogLevel;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
@@ -43,6 +45,7 @@ public class Main {
                 return Channels.pipeline(
                         new ObjectEncoder(),
                         new ObjectDecoder(),
+                        new LoggingHandler(InternalLogLevel.INFO), // TODO: remove this debug code
                         new JumiDaemonHandler(toCoordinator));
             }
         });
