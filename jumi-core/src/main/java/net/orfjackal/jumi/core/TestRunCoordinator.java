@@ -36,7 +36,7 @@ public class TestRunCoordinator implements CommandListener {
             System.out.println("testClass = " + testClass);
 
             // TODO: run the tests (async)
-            TestClassRunner runner = new TestClassRunner(listener, testClass);
+            TestClassState runner = new TestClassState(listener, testClass);
             ExecutorService executor = Executors.newCachedThreadPool();
 
             RunVia runVia = testClass.getAnnotation(RunVia.class);

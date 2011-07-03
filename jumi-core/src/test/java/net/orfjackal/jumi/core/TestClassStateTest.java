@@ -12,12 +12,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 
-public class TestClassRunnerTest {
+public class TestClassStateTest {
 
     private final Class<DummyTest> testClass = DummyTest.class;
 
     private SuiteListener listener = mock(SuiteListener.class);
-    private TestClassRunner runner = new TestClassRunner(listener, testClass);
+    private TestClassState runner = new TestClassState(listener, testClass);
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();

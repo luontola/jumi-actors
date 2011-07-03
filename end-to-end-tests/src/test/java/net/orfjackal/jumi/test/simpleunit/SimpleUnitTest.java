@@ -25,7 +25,7 @@ public class SimpleUnitTest {
     @Test
     public void the_test_class_is_named_after_its_simple_name() throws InterruptedException {
         Class<OnePassingTest> testClass = OnePassingTest.class;
-        TestClassRunner runner = new TestClassRunner(dummyListener, testClass);
+        TestClassState runner = new TestClassState(dummyListener, testClass);
         driver.findTests(testClass, runner.getSuiteNotifier(), executor);
         waitForTestsToExecute();
 
@@ -35,7 +35,7 @@ public class SimpleUnitTest {
     @Test
     public void the_tests_are_methods_whose_name_starts_with_test() throws InterruptedException {
         Class<OnePassingTest> testClass = OnePassingTest.class;
-        TestClassRunner runner = new TestClassRunner(dummyListener, testClass);
+        TestClassState runner = new TestClassState(dummyListener, testClass);
         driver.findTests(testClass, runner.getSuiteNotifier(), executor);
         waitForTestsToExecute();
 

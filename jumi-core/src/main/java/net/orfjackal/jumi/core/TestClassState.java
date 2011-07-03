@@ -8,13 +8,13 @@ import net.orfjackal.jumi.api.drivers.*;
 
 import java.util.*;
 
-public class TestClassRunner {
+public class TestClassState {
 
     private final Map<TestId, String> tests = new HashMap<TestId, String>();
     private final SuiteListener listener;
     private final Class<?> testClass;
 
-    public TestClassRunner(SuiteListener listener, Class<?> testClass) {
+    public TestClassState(SuiteListener listener, Class<?> testClass) {
         this.listener = listener;
         this.testClass = testClass;
     }
