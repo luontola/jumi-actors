@@ -8,7 +8,7 @@ import net.orfjackal.jumi.api.drivers.*;
 
 import java.util.*;
 
-public class TestClassState {
+public class TestClassState implements SuiteListener {
 
     private final Map<TestId, String> tests = new HashMap<TestId, String>();
     private final SuiteListener listener;
@@ -24,44 +24,50 @@ public class TestClassState {
     }
 
     public SuiteNotifier getSuiteNotifier() {
-        // TODO: parameterize the suite notifer with the test class
-        return new DefaultSuiteNotifier();
+        // TODO: should this method not belong into this class?
+        return new DefaultSuiteNotifier(testClass, this);
     }
 
-    private class DefaultSuiteNotifier implements SuiteNotifier {
+    public void onSuiteStarted() {
+        throw new UnsupportedOperationException(); // XXX: using SuiteListener violates ISP
+    }
 
-        public void fireTestFound(TestId id, String name) {
-            if (hasNotBeenFoundBefore(id)) {
-                checkParentWasFoundFirst(id);
-                tests.put(id, name);
-                listener.onTestFound(testClass.getName(), id, name);
-            } else {
-                checkNameIsSameAsBefore(id, name);
-            }
-        }
+    public void onSuiteFinished() {
+        throw new UnsupportedOperationException(); // XXX: using SuiteListener violates ISP
+    }
 
-        private boolean hasNotBeenFoundBefore(TestId id) {
-            return !tests.containsKey(id);
-        }
+    public void onTestClassStarted(Class<?> testClass) {
+        throw new UnsupportedOperationException(); // XXX: using SuiteListener violates ISP
+    }
 
-        private void checkParentWasFoundFirst(TestId id) {
-            if (!id.isRoot() && hasNotBeenFoundBefore(id.getParent())) {
-                throw new IllegalStateException("parent of " + id + " must be found first");
-            }
-        }
+    public void onTestClassFinished(Class<?> testClass) {
+        throw new UnsupportedOperationException(); // XXX: using SuiteListener violates ISP
+    }
 
-        private void checkNameIsSameAsBefore(TestId id, String newName) {
-            String oldName = tests.get(id);
-            if (oldName != null && !oldName.equals(newName)) {
-                throw new IllegalStateException("test " + id + " was already found with another name: " + oldName);
-            }
-        }
-
-        public TestNotifier fireTestStarted(TestId id) {
-            return null; // TODO
+    public void onTestFound(String testClass, TestId id, String name) {
+        if (hasNotBeenFoundBefore(id)) {
+            checkParentWasFoundFirst(id);
+            tests.put(id, name);
+            listener.onTestFound(testClass, id, name);
+        } else {
+            checkNameIsSameAsBefore(id, name);
         }
     }
 
-    // TODO: forward messages to TestSuiteRunner
-    // TODO: executing tests, firing an event when the class is done?
+    private boolean hasNotBeenFoundBefore(TestId id) {
+        return !tests.containsKey(id);
+    }
+
+    private void checkParentWasFoundFirst(TestId id) {
+        if (!id.isRoot() && hasNotBeenFoundBefore(id.getParent())) {
+            throw new IllegalStateException("parent of " + id + " must be found first");
+        }
+    }
+
+    private void checkNameIsSameAsBefore(TestId id, String newName) {
+        String oldName = tests.get(id);
+        if (oldName != null && !oldName.equals(newName)) {
+            throw new IllegalStateException("test " + id + " was already found with another name: " + oldName);
+        }
+    }
 }
