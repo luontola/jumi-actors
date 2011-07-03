@@ -5,6 +5,8 @@ TODO NEXT:
 		- improve binding actors to current thread
 		- TestClassRunnerActorTest would benefit from monitoring when actors are idle
 		- start writing TestClassRunnerActor; wraps current TestClassRunner and parts of TestRunCoordinator#runTests
+	- events between launcher and daemon should not contain Class instances, because launcher's classpath won't contain the test classes
+		- write a test that SuiteListener doesn't contain any method parameters of type java.lang.Class
 	- test execution might be better implemented using regular thread pools instead of actors
 		- CPU bound threads should use an optimal number of threads per core
 		- they take no input when running, so no actor handle needs to be created for them

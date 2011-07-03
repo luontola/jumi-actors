@@ -49,6 +49,6 @@ public class DynamicEvent<T> implements Event<T>, Serializable {
     }
 
     public String toString() {
-        return getClass().getSimpleName() + "(" + method + ", " + Arrays.toString(args) + ")";
+        return getClass().getSimpleName() + "(" + methodName + ", " + method + ", " + Arrays.toString(args) + ")";
     }
 }

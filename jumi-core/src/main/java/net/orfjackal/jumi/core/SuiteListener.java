@@ -14,10 +14,13 @@ public interface SuiteListener {
 
     void onSuiteFinished();
 
+    // XXX: these two events are internal to daemon; they shouldn't be part of this interface?
     void onTestClassStarted(Class<?> testClass);
 
     void onTestClassFinished(Class<?> testClass);
 
-    // TODO: mention also the test class?
-    void onTestFound(TestId id, String name);
+    // TODO: use Class parameters internally? have a different interface for remote use?
+    void onTestFound(String testClass, TestId id, String name);
+
+    // FIXME: this interfaces is used for events sent from daemon to launcher; it shouldn't contain any Class instances as parameters
 }

@@ -12,9 +12,11 @@ public class TestClassRunner {
 
     private final Map<TestId, String> tests = new HashMap<TestId, String>();
     private final SuiteListener listener;
+    private final Class<?> testClass;
 
-    public TestClassRunner(SuiteListener listener) {
+    public TestClassRunner(SuiteListener listener, Class<?> testClass) {
         this.listener = listener;
+        this.testClass = testClass;
     }
 
     public Collection<String> getTestNames() {
@@ -32,7 +34,7 @@ public class TestClassRunner {
             if (hasNotBeenFoundBefore(id)) {
                 checkParentWasFoundFirst(id);
                 tests.put(id, name);
-                listener.onTestFound(id, name);
+                listener.onTestFound(testClass.getName(), id, name);
             } else {
                 checkNameIsSameAsBefore(id, name);
             }

@@ -18,14 +18,15 @@ import static org.mockito.Mockito.mock;
 public class SimpleUnitTest {
     private static final long TIMEOUT = 1000;
 
-    private SuiteListener listener = mock(SuiteListener.class);
-    private TestClassRunner runner = new TestClassRunner(listener);
+    private SuiteListener dummyListener = mock(SuiteListener.class);
     private ExecutorService executor = Executors.newCachedThreadPool();
     private SimpleUnit driver = new SimpleUnit();
 
     @Test
     public void the_test_class_is_named_after_its_simple_name() throws InterruptedException {
-        driver.findTests(OnePassingTest.class, runner.getSuiteNotifier(), executor);
+        Class<OnePassingTest> testClass = OnePassingTest.class;
+        TestClassRunner runner = new TestClassRunner(dummyListener, testClass);
+        driver.findTests(testClass, runner.getSuiteNotifier(), executor);
         waitForTestsToExecute();
 
         assertThat(runner.getTestNames(), hasItem("OnePassingTest"));
@@ -33,7 +34,9 @@ public class SimpleUnitTest {
 
     @Test
     public void the_tests_are_methods_whose_name_starts_with_test() throws InterruptedException {
-        driver.findTests(OnePassingTest.class, runner.getSuiteNotifier(), executor);
+        Class<OnePassingTest> testClass = OnePassingTest.class;
+        TestClassRunner runner = new TestClassRunner(dummyListener, testClass);
+        driver.findTests(testClass, runner.getSuiteNotifier(), executor);
         waitForTestsToExecute();
 
         Collection<String> testNames = runner.getTestNames();
@@ -46,4 +49,6 @@ public class SimpleUnitTest {
         executor.shutdown();
         executor.awaitTermination(TIMEOUT, TimeUnit.MILLISECONDS);
     }
+
+    // TODO: these tests will probably need to be rewritten; they should also serve as an example of how to write tests for a testing framework
 }

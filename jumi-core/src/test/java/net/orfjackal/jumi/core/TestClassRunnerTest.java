@@ -14,8 +14,10 @@ import static org.mockito.Mockito.*;
 
 public class TestClassRunnerTest {
 
+    private final Class<DummyTest> testClass = DummyTest.class;
+
     private SuiteListener listener = mock(SuiteListener.class);
-    private TestClassRunner runner = new TestClassRunner(listener);
+    private TestClassRunner runner = new TestClassRunner(listener, testClass);
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -66,7 +68,7 @@ public class TestClassRunnerTest {
 
         notifier.fireTestFound(TestId.ROOT, "root");
 
-        verify(listener).onTestFound(TestId.ROOT, "root");
+        verify(listener).onTestFound(testClass.getName(), TestId.ROOT, "root");
     }
 
     @Test
@@ -76,6 +78,10 @@ public class TestClassRunnerTest {
         notifier.fireTestFound(TestId.ROOT, "root");
         notifier.fireTestFound(TestId.ROOT, "root");
 
-        verify(listener, atMost(1)).onTestFound(TestId.ROOT, "root");
+        verify(listener, atMost(1)).onTestFound(testClass.getName(), TestId.ROOT, "root");
+    }
+
+
+    private class DummyTest {
     }
 }

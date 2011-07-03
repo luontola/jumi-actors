@@ -34,7 +34,7 @@ public class TestClassRunnerActor implements Runnable, WorkerListener {
 
         WorkerListener workerListener = actors.bindToCurrentActor(WorkerListener.class, this);
 
-        startWorker(new DriverRunner(new TestClassRunner(listener).getSuiteNotifier()), workerListener);
+        startWorker(new DriverRunner(new TestClassRunner(listener, testClass).getSuiteNotifier()), workerListener);
     }
 
     private void startWorker(Runnable worker, WorkerListener workerListener) {

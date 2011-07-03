@@ -48,7 +48,7 @@ public class TestClassRunnerActorTest {
         runAndAwaitCompletion(runner);
 
         inOrder.verify(listener).onTestClassStarted(DummyTest.class);
-        inOrder.verify(listener).onTestFound(TestId.ROOT, "root test");
+        inOrder.verify(listener).onTestFound(DummyTest.class.getName(), TestId.ROOT, "root test");
         inOrder.verify(listener).onTestClassFinished(DummyTest.class);
         verifyNoMoreInteractions(listener);
     }

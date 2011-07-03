@@ -32,7 +32,7 @@ public class SuiteStateCollector implements SuiteListener {
         throw new UnsupportedOperationException("not implemented");
     }
 
-    public void onTestFound(TestId id, String name) {
+    public void onTestFound(String testClass, TestId id, String name) {
         state = state.withTest(id, name);
     }
 
