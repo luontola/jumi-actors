@@ -10,6 +10,7 @@ import org.junit.rules.ExpectedException;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -68,14 +69,21 @@ public class ActorsTest {
 
     @Test
     public void an_actor_can_receive_events_in_the_same_thread_through_a_secondary_interface() {
-        Actors actors = new Actors(DynamicListenerFactory.factoriesFor(PrimaryInterface.class, SecondaryInterface.class));
-        MultiPurposeActor actor = new MultiPurposeActor(actors);
+        final Actors actors = new Actors(DynamicListenerFactory.factoriesFor(PrimaryInterface.class, SecondaryInterface.class));
+        final AtomicReference<SecondaryInterface> secondaryHandleRef = new AtomicReference<SecondaryInterface>();
+        MultiPurposeActor actor = new MultiPurposeActor() {
+            public void onPrimaryEvent() {
+                // binding must be done inside the actor
+                secondaryHandleRef.set(actors.bindToCurrentActor(SecondaryInterface.class, this));
+                super.onPrimaryEvent();
+            }
+        };
 
         PrimaryInterface primaryHandle = actors.createNewActor(PrimaryInterface.class, actor, "ActorName");
         primaryHandle.onPrimaryEvent();
         actor.syncOnEvent();
 
-        SecondaryInterface secondaryHandle = actor.secondaryHandle;
+        SecondaryInterface secondaryHandle = secondaryHandleRef.get();
         secondaryHandle.onSecondaryEvent();
         actor.syncOnEvent();
 
@@ -144,20 +152,13 @@ public class ActorsTest {
     }
 
     private static class MultiPurposeActor implements PrimaryInterface, SecondaryInterface {
-        private final Actors actors;
         private final CyclicBarrier sync = new CyclicBarrier(2);
 
         public volatile Thread primaryEventThread;
         public volatile Thread secondaryEventThread;
-        public volatile SecondaryInterface secondaryHandle;
-
-        public MultiPurposeActor(Actors actors) {
-            this.actors = actors;
-        }
 
         public void onPrimaryEvent() {
             primaryEventThread = Thread.currentThread();
-            secondaryHandle = actors.bindToCurrentActor(SecondaryInterface.class, this);
             syncOnEvent();
         }
 
