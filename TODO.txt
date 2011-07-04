@@ -2,13 +2,14 @@
 TODO NEXT:
 - refactor results of passing "suite with zero tests"
 	- actor model: some easy way for wiring the actors and starting new threads (use in daemon and launcher)
+		- improve actors
+			- combine Actors and ExecutorService, to support running fire-and-forget type of actors
+			- TestClassRunnerActorTest would benefit from monitoring when actors are idle
 		- integrate TestRunCoordinator and TestClassRunnerActor (rewrite TestRunCoordinator using TDD?)
 			- make TestRunCoordinator.run() event-based
 			- communicate with TestRunCoordinator through WorkerListener
 			- embed TestClassState into TestClassRunnerActor
 			- use TestClassRunnerActor from TestRunCoordinator.run()
-		- combine Actors and ExecutorService, to support running fire-and-forget type of actors
-		- TestClassRunnerActorTest would benefit from monitoring when actors are idle
 		- start writing TestClassRunnerActor; wraps current TestClassRunner and parts of TestRunCoordinator#runTests
 	- events between launcher and daemon should not contain Class instances, because launcher's classpath won't contain the test classes
 		- write a test that SuiteListener doesn't contain any method parameters of type java.lang.Class
