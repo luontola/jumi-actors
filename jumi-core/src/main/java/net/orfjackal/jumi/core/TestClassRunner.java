@@ -9,14 +9,14 @@ import net.orfjackal.jumi.core.actors.Actors;
 
 import java.util.concurrent.*;
 
-public class TestClassRunner implements Runnable, WorkerCounterListener {
+public class TestClassRunner implements Runnable, WorkersListener {
 
     private final Class<?> testClass;
     private final Class<? extends Driver> driverClass;
     private final SuiteListener listener;
     private final Executor executor;
     private final Actors actors;
-    private WorkerCounter workers;
+    private WorkerCountingExecutor workers;
 
     public TestClassRunner(Class<?> testClass,
                            Class<? extends Driver> driverClass,
@@ -33,8 +33,8 @@ public class TestClassRunner implements Runnable, WorkerCounterListener {
     public void run() {
         listener.onTestClassStarted(testClass);
 
-        WorkerCounterListener workerListener = actors.bindToCurrentActor(WorkerCounterListener.class, this);
-        workers = new WorkerCounter(workerListener, actors, executor);
+        WorkersListener workerListener = actors.bindToCurrentActor(WorkersListener.class, this);
+        workers = new WorkerCountingExecutor(workerListener, actors, executor);
 
         SuiteNotifier notifier = new TestClassState(listener, testClass).getSuiteNotifier();
         workers.execute(new DriverRunner(notifier));
@@ -53,7 +53,7 @@ public class TestClassRunner implements Runnable, WorkerCounterListener {
         }
 
         public void run() {
-            // TODO: pass an executor which keeps a count of how many workers there are (WorkerCounter?)
+            // TODO: pass an executor which keeps a count of how many workers there are (WorkerCountingExecutor?)
             newDriverInstance().findTests(testClass, suiteNotifier, null);
         }
 

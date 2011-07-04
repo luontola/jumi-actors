@@ -32,12 +32,12 @@ public class WorkerCounterTest {
     public void notifies_when_all_workers_have_finished_executing() throws InterruptedException {
         final BlockingQueue<String> events = new LinkedBlockingQueue<String>();
 
-        WorkerCounterListener listener = new WorkerCounterListener() {
+        WorkersListener listener = new WorkersListener() {
             public void onAllWorkersFinished() {
                 events.add("all finished");
             }
         };
-        WorkerCounter workers = new WorkerCounter(listener, actors, threadPool);
+        WorkerCountingExecutor workers = new WorkerCountingExecutor(listener, actors, threadPool);
         workers.execute(new Runnable() {
             public void run() {
                 events.add("run worker");
@@ -54,12 +54,12 @@ public class WorkerCounterTest {
         final CountDownLatch allFinished = new CountDownLatch(1);
         final AtomicReference<Thread> workerThread = new AtomicReference<Thread>();
 
-        WorkerCounterListener listener = new WorkerCounterListener() {
+        WorkersListener listener = new WorkersListener() {
             public void onAllWorkersFinished() {
                 allFinished.countDown();
             }
         };
-        WorkerCounter workers = new WorkerCounter(listener, actors, threadPool);
+        WorkerCountingExecutor workers = new WorkerCountingExecutor(listener, actors, threadPool);
         workers.execute(new Runnable() {
             public void run() {
                 workerThread.set(Thread.currentThread());
@@ -76,12 +76,12 @@ public class WorkerCounterTest {
     public void notifies_when_all_workers_have_finished_executing_even_if_a_worker_throws_an_exception() throws InterruptedException {
         final CountDownLatch allFinished = new CountDownLatch(1);
 
-        WorkerCounterListener listener = new WorkerCounterListener() {
+        WorkersListener listener = new WorkersListener() {
             public void onAllWorkersFinished() {
                 allFinished.countDown();
             }
         };
-        WorkerCounter workers = new WorkerCounter(listener, actors, threadPool);
+        WorkerCountingExecutor workers = new WorkerCountingExecutor(listener, actors, threadPool);
         workers.execute(new Runnable() {
             public void run() {
                 throw new AssertionError("dummy exception");

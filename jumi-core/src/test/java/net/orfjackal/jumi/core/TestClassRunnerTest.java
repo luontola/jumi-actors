@@ -21,7 +21,7 @@ public class TestClassRunnerTest {
 
     private final ExecutorService threadPool = Executors.newCachedThreadPool();
     private final Actors actors = new Actors(
-            DynamicListenerFactory.factoriesFor(Runnable.class, WorkerCounterListener.class));
+            DynamicListenerFactory.factoriesFor(Runnable.class, WorkersListener.class));
 
     @After
     public void shutdownThreadPool() throws InterruptedException {

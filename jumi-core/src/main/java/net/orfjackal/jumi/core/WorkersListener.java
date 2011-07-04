@@ -4,6 +4,6 @@
 
 package net.orfjackal.jumi.core;
 
-public interface WorkerCounterListener {
+public interface WorkersListener {
     void onAllWorkersFinished();
 }
