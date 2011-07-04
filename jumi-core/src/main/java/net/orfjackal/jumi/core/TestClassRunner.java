@@ -9,13 +9,14 @@ import net.orfjackal.jumi.core.actors.Actors;
 
 import java.util.concurrent.*;
 
-public class TestClassRunner implements Runnable, WorkerListener {
+public class TestClassRunner implements Runnable, WorkerCounterListener {
 
     private final Class<?> testClass;
     private final Class<? extends Driver> driverClass;
     private final SuiteListener listener;
     private final Executor executor;
     private final Actors actors;
+    private WorkerCounter workers;
 
     public TestClassRunner(Class<?> testClass,
                            Class<? extends Driver> driverClass,
@@ -32,22 +33,14 @@ public class TestClassRunner implements Runnable, WorkerListener {
     public void run() {
         listener.onTestClassStarted(testClass);
 
-        WorkerListener workerListener = actors.bindToCurrentActor(WorkerListener.class, this);
+        WorkerCounterListener workerListener = actors.bindToCurrentActor(WorkerCounterListener.class, this);
+        workers = new WorkerCounter(workerListener, actors, executor);
 
-        startWorker(new DriverRunner(new TestClassState(listener, testClass).getSuiteNotifier()), workerListener);
+        SuiteNotifier notifier = new TestClassState(listener, testClass).getSuiteNotifier();
+        workers.execute(new DriverRunner(notifier));
     }
 
-    private void startWorker(Runnable worker, WorkerListener workerListener) {
-        onWorkerStarted();
-        executor.execute(new WorkerFinishedNotifier(worker, workerListener));
-    }
-
-    public void onWorkerStarted() {
-        // TODO: keep count of how many workers there are
-    }
-
-    public void onWorkerFinished() {
-        // TODO: fire this event only after all workers are finished
+    public void onAllWorkersFinished() {
         listener.onTestClassFinished(testClass);
     }
 
@@ -60,7 +53,7 @@ public class TestClassRunner implements Runnable, WorkerListener {
         }
 
         public void run() {
-            // TODO: pass an executor which keeps a count of how many workers there are
+            // TODO: pass an executor which keeps a count of how many workers there are (WorkerCounter?)
             newDriverInstance().findTests(testClass, suiteNotifier, null);
         }
 
@@ -72,23 +65,6 @@ public class TestClassRunner implements Runnable, WorkerListener {
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
-        }
-    }
-
-    private static class WorkerFinishedNotifier implements Runnable {
-        private final Runnable worker;
-        private final WorkerListener workerListener;
-
-        public WorkerFinishedNotifier(Runnable worker, WorkerListener workerListener) {
-            this.worker = worker;
-            this.workerListener = workerListener;
-        }
-
-        public void run() {
-            worker.run();
-
-            // TODO: should call also on failure (need a try-finally, maybe in a wrapper class)
-            workerListener.onWorkerFinished();
         }
     }
 }

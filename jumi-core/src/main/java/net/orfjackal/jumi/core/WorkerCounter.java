@@ -9,7 +9,7 @@ import net.orfjackal.jumi.core.actors.Actors;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class WorkerCounter {
+public class WorkerCounter implements Executor {
 
     private final WorkerCounterListener listener;
     private final Actors actors;
@@ -24,7 +24,7 @@ public class WorkerCounter {
         this.listener = listener;
     }
 
-    public void startWorker(final Runnable worker) {
+    public void execute(final Runnable worker) {
         workers.incrementAndGet();
         executor.execute(new Runnable() {
             public void run() {

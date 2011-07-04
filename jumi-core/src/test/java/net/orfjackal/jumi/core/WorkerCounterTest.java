@@ -38,7 +38,7 @@ public class WorkerCounterTest {
             }
         };
         WorkerCounter workers = new WorkerCounter(listener, actors, threadPool);
-        workers.startWorker(new Runnable() {
+        workers.execute(new Runnable() {
             public void run() {
                 events.add("run worker");
             }
@@ -60,7 +60,7 @@ public class WorkerCounterTest {
             }
         };
         WorkerCounter workers = new WorkerCounter(listener, actors, threadPool);
-        workers.startWorker(new Runnable() {
+        workers.execute(new Runnable() {
             public void run() {
                 workerThread.set(Thread.currentThread());
             }
@@ -82,7 +82,7 @@ public class WorkerCounterTest {
             }
         };
         WorkerCounter workers = new WorkerCounter(listener, actors, threadPool);
-        workers.startWorker(new Runnable() {
+        workers.execute(new Runnable() {
             public void run() {
                 throw new AssertionError("dummy exception");
             }
