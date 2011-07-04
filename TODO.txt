@@ -7,6 +7,7 @@ TODO NEXT:
 			- communicate with TestRunCoordinator through WorkerListener
 			- embed TestClassState into TestClassRunnerActor
 			- use TestClassRunnerActor from TestRunCoordinator.run()
+		- combine Actors and ExecutorService, to support running fire-and-forget type of actors
 		- TestClassRunnerActorTest would benefit from monitoring when actors are idle
 		- start writing TestClassRunnerActor; wraps current TestClassRunner and parts of TestRunCoordinator#runTests
 	- events between launcher and daemon should not contain Class instances, because launcher's classpath won't contain the test classes
