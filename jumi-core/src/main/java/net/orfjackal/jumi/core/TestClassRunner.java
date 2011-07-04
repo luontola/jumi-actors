@@ -9,7 +9,7 @@ import net.orfjackal.jumi.core.actors.Actors;
 
 import java.util.concurrent.*;
 
-public class TestClassRunnerActor implements Runnable, WorkerListener {
+public class TestClassRunner implements Runnable, WorkerListener {
 
     private final Class<?> testClass;
     private final Class<? extends Driver> driverClass;
@@ -17,11 +17,11 @@ public class TestClassRunnerActor implements Runnable, WorkerListener {
     private final Executor executor;
     private final Actors actors;
 
-    public TestClassRunnerActor(Class<?> testClass,
-                                Class<? extends Driver> driverClass,
-                                SuiteListener listener,
-                                ExecutorService executor,
-                                Actors actors) {
+    public TestClassRunner(Class<?> testClass,
+                           Class<? extends Driver> driverClass,
+                           SuiteListener listener,
+                           ExecutorService executor,
+                           Actors actors) {
         this.testClass = testClass;
         this.driverClass = driverClass;
         this.listener = listener;

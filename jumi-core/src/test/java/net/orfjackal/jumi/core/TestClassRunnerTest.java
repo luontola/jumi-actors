@@ -14,7 +14,7 @@ import java.util.concurrent.*;
 
 import static org.mockito.Mockito.*;
 
-public class TestClassRunnerActorTest {
+public class TestClassRunnerTest {
 
     private final SuiteListener listener = mock(SuiteListener.class);
     private final InOrder inOrder = inOrder(listener);
@@ -31,7 +31,7 @@ public class TestClassRunnerActorTest {
 
     @Test
     public void test_class_with_zero_tests() throws Exception {
-        TestClassRunnerActor runner = new TestClassRunnerActor(DummyTest.class, ZeroTestsDriver.class, listener, threadPool, actors);
+        TestClassRunner runner = new TestClassRunner(DummyTest.class, ZeroTestsDriver.class, listener, threadPool, actors);
 
         runAndAwaitCompletion(runner);
 
@@ -43,7 +43,7 @@ public class TestClassRunnerActorTest {
 
     @Test
     public void test_class_with_only_root_test() throws Exception {
-        TestClassRunnerActor runner = new TestClassRunnerActor(DummyTest.class, OneTestDriver.class, listener, threadPool, actors);
+        TestClassRunner runner = new TestClassRunner(DummyTest.class, OneTestDriver.class, listener, threadPool, actors);
 
         runAndAwaitCompletion(runner);
 
@@ -53,7 +53,7 @@ public class TestClassRunnerActorTest {
         verifyNoMoreInteractions(listener);
     }
 
-    private void runAndAwaitCompletion(TestClassRunnerActor runner) throws InterruptedException {
+    private void runAndAwaitCompletion(TestClassRunner runner) throws InterruptedException {
         Runnable handle = actors.createNewActor(Runnable.class, runner, "TestClassRunner");
         handle.run();       // command to start up test class execution
         Thread.sleep(100);  // XXX
