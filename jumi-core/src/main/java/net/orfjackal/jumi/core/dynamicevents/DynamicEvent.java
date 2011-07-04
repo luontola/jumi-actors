@@ -40,6 +40,7 @@ public class DynamicEvent<T> implements Event<T>, Serializable {
 
     private static Method getMethodByName(String name, Object obj) {
         // XXX: there is some issue which causes Netty to not be able to deserialize java.lang.Class instances, so this hack is needed
+        // TODO: wait for https://issues.jboss.org/browse/NETTY-419 to be fixed
         for (Method m : obj.getClass().getMethods()) {
             if (m.getName().equals(name)) {
                 return m;

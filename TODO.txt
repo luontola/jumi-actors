@@ -2,7 +2,7 @@
 TODO NEXT:
 - refactor results of passing "suite with zero tests"
 	- actor model: some easy way for wiring the actors and starting new threads (use in daemon and launcher)
-		- integrate test TestRunCoordinator and TestClassRunnerActor
+		- integrate TestRunCoordinator and TestClassRunnerActor (rewrite TestRunCoordinator using TDD?)
 			- make TestRunCoordinator.run() event-based
 			- communicate with TestRunCoordinator through WorkerListener
 			- embed TestClassState into TestClassRunnerActor
