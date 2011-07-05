@@ -84,7 +84,8 @@ public class WorkerCounterTest {
         WorkerCountingExecutor workers = new WorkerCountingExecutor(listener, actors, threadPool);
         workers.execute(new Runnable() {
             public void run() {
-                throw new AssertionError("dummy exception");
+                // ThreadDeath is not printed when it's thrown, so this keeps the test logs cleaner
+                throw new ThreadDeath();
             }
         });
 

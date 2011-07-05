@@ -19,7 +19,7 @@ import static org.mockito.Mockito.mock;
 public class ActorsTest {
     private static final long TIMEOUT = 1000;
 
-    private final Actors actors = new Actors(new DummyListenerFactory());
+    private final Actors actors = new Actors(new DummyListenerFactory(), new DynamicListenerFactory<Runnable>(Runnable.class));
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -104,6 +104,129 @@ public class ActorsTest {
         thrown.expectMessage("not inside an actor");
 
         actors.bindSecondaryInterface(DummyListener.class, mock(DummyListener.class));
+    }
+
+
+    // unattended workers
+
+    @Test
+    public void unattended_workers_are_run_in_their_own_thread() throws InterruptedException {
+        final AtomicReference<Thread> actorThread = new AtomicReference<Thread>();
+        final AtomicReference<Thread> workerThread = new AtomicReference<Thread>();
+        final CountDownLatch done = new CountDownLatch(1);
+
+        final Runnable worker = new Runnable() {
+            public void run() {
+                workerThread.set(Thread.currentThread());
+                done.countDown();
+            }
+        };
+        actors.startEventPoller(Runnable.class, new Runnable() {
+            public void run() {
+                actorThread.set(Thread.currentThread());
+                actors.startUnattendedWorker(worker, new DummyRunnable());
+            }
+        }, "Actor").run();
+        done.await(TIMEOUT, TimeUnit.MILLISECONDS);
+
+        assertThat("worker was not run", workerThread.get(), is(notNullValue()));
+        assertThat("worker did not have its own thread", workerThread.get(), is(not(Thread.currentThread())));
+        assertThat("worker did not have its own thread", workerThread.get(), is(not(actorThread.get())));
+    }
+
+    @Test
+    public void when_worker_finishes_the_actor_which_started_it_is_notified_in_the_actor_thread() throws InterruptedException {
+        final BlockingQueue<String> events = new LinkedBlockingQueue<String>();
+        final AtomicReference<Thread> actorThread = new AtomicReference<Thread>();
+        final AtomicReference<Thread> onFinishedThread = new AtomicReference<Thread>();
+
+        final Runnable worker = new Runnable() {
+            public void run() {
+                events.add("run worker");
+            }
+        };
+        final Runnable onFinished = new Runnable() {
+            public void run() {
+                onFinishedThread.set(Thread.currentThread());
+                events.add("on finished");
+            }
+        };
+        actors.startEventPoller(Runnable.class, new Runnable() {
+            public void run() {
+                actorThread.set(Thread.currentThread());
+                events.add("start worker");
+                actors.startUnattendedWorker(worker, onFinished);
+            }
+        }, "Actor").run();
+
+        assertThat("event 1", events.poll(TIMEOUT, TimeUnit.MILLISECONDS), is("start worker"));
+        assertThat("event 2", events.poll(TIMEOUT, TimeUnit.MILLISECONDS), is("run worker"));
+        assertThat("event 3", events.poll(TIMEOUT, TimeUnit.MILLISECONDS), is("on finished"));
+        assertThat("no more events", events.poll(), is(nullValue()));
+        assertThat("notification should have been in the actor thread", onFinishedThread.get(), is(actorThread.get()));
+    }
+
+    @Test
+    public void the_actor_is_notified_even_if_the_worker_throws_an_exception() throws InterruptedException {
+        final BlockingQueue<String> events = new LinkedBlockingQueue<String>();
+
+        final Runnable worker = new Runnable() {
+            public void run() {
+                events.add("run worker");
+                // ThreadDeath is not printed when it's thrown, so this keeps the test logs cleaner
+                throw new ThreadDeath();
+            }
+        };
+        final Runnable onFinished = new Runnable() {
+            public void run() {
+                events.add("on finished");
+            }
+        };
+        actors.startEventPoller(Runnable.class, new Runnable() {
+            public void run() {
+                events.add("start worker");
+                actors.startUnattendedWorker(worker, onFinished);
+            }
+        }, "Actor").run();
+
+        assertThat("event 1", events.poll(TIMEOUT, TimeUnit.MILLISECONDS), is("start worker"));
+        assertThat("event 2", events.poll(TIMEOUT, TimeUnit.MILLISECONDS), is("run worker"));
+        assertThat("event 3", events.poll(TIMEOUT, TimeUnit.MILLISECONDS), is("on finished"));
+        assertThat("no more events", events.poll(), is(nullValue()));
+    }
+
+    @Test
+    public void shutting_down_waits_for_workers_to_finish() throws InterruptedException {
+        final BlockingQueue<String> events = new LinkedBlockingQueue<String>();
+
+        final Runnable worker = new Runnable() {
+            public void run() {
+                events.add("worker started");
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    // continue executing
+                }
+                events.add("worker finished");
+            }
+        };
+        actors.startEventPoller(Runnable.class, new Runnable() {
+            public void run() {
+                actors.startUnattendedWorker(worker, new DummyRunnable());
+            }
+        }, "Actor").run();
+
+        assertThat("worker did not start", events.poll(TIMEOUT, TimeUnit.MILLISECONDS), is("worker started"));
+        actors.shutdown(TIMEOUT);
+        assertThat("did not wait for worker to finish", events.poll(), is("worker finished"));
+    }
+
+    @Test
+    public void unattended_workers_cannot_be_bound_outside_an_actor() {
+        thrown.expect(IllegalStateException.class);
+        thrown.expectMessage("not inside an actor");
+
+        actors.startUnattendedWorker(new DummyRunnable(), new DummyRunnable());
     }
 
 
@@ -251,6 +374,11 @@ public class ActorsTest {
 
         public void send(Event<DummyListener> message) {
             message.fireOn(listener);
+        }
+    }
+
+    private static class DummyRunnable implements Runnable {
+        public void run() {
         }
     }
 }

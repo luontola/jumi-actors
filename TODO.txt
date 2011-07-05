@@ -14,6 +14,7 @@ TODO NEXT:
 						- notify on all workers finished
 			- TestClassRunnerActorTest would benefit from monitoring when actors are idle
 			- should creating long-lived polling actor threads be allowed only once, when system is started?
+			- Startable interface instead of Runnable, for event polling actors and secondary interfaces?
 		- integrate TestRunCoordinator and TestClassRunnerActor (rewrite TestRunCoordinator using TDD?)
 			- make TestRunCoordinator.run() event-based
 			- communicate with TestRunCoordinator through WorkerListener

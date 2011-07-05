@@ -5,10 +5,12 @@
 package net.orfjackal.jumi.core.actors;
 
 import java.util.*;
+import java.util.concurrent.*;
 
 public class Actors {
     private final ListenerFactory<?>[] factories;
     private final Set<Thread> actorThreads = Collections.synchronizedSet(new HashSet<Thread>());
+    private final ExecutorService unattendedWorkers = Executors.newCachedThreadPool();
     private final ThreadLocal<MessageQueue<Event<?>>> queueOfCurrentActor = new ThreadLocal<MessageQueue<Event<?>>>();
 
     public Actors(ListenerFactory<?>... factories) {
@@ -22,14 +24,19 @@ public class Actors {
         MessageSender<Event<T>> receiver = factory.newBackend(target);
         T handle = factory.newFrontend(queue);
 
-        pollEventsInNewActor(queue, receiver, name);
+        startActorThread(name, queue, new EventPoller<T>(queue, receiver));
         return type.cast(handle);
     }
 
-    private <T> void pollEventsInNewActor(MessageQueue<Event<T>> queue, MessageSender<Event<T>> actor, String name) {
-        Thread t = new Thread(new ActorContext<T>(queue, new EventPoller<T>(queue, actor)), name);
+    private <T> void startActorThread(String name, MessageQueue<Event<T>> queue, EventPoller<T> actor) {
+        Thread t = new Thread(new ActorContext<T>(queue, actor), name);
         t.start();
         actorThreads.add(t);
+    }
+
+    public void startUnattendedWorker(final Runnable worker, Runnable onFinished) {
+        Runnable onFinishedHandle = bindSecondaryInterface(Runnable.class, onFinished);
+        unattendedWorkers.execute(new UnattendedWorker(worker, onFinishedHandle));
     }
 
     public <T> T bindSecondaryInterface(Class<T> type, final T target) {
@@ -52,8 +59,6 @@ public class Actors {
         return queue;
     }
 
-    // TODO: startUnattendedWorker(Runnable worker, Runnable onFinished)
-
     @SuppressWarnings({"unchecked"})
     private <T> ListenerFactory<T> getFactoryForType(Class<T> type) {
         for (ListenerFactory<?> factory : factories) {
@@ -68,9 +73,11 @@ public class Actors {
         for (Thread t : actorThreads) {
             t.interrupt();
         }
+        unattendedWorkers.shutdown();
         for (Thread t : actorThreads) {
             t.join(timeout);
         }
+        unattendedWorkers.awaitTermination(timeout, TimeUnit.MILLISECONDS);
     }
 
 
@@ -111,6 +118,24 @@ public class Actors {
                 }
             } catch (InterruptedException e) {
                 // actor was told to exit
+            }
+        }
+    }
+
+    private static class UnattendedWorker implements Runnable {
+        private final Runnable worker;
+        private final Runnable onFinished;
+
+        public UnattendedWorker(Runnable worker, Runnable onFinished) {
+            this.worker = worker;
+            this.onFinished = onFinished;
+        }
+
+        public void run() {
+            try {
+                worker.run();
+            } finally {
+                onFinished.run();
             }
         }
     }
