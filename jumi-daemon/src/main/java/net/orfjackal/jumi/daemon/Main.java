@@ -31,7 +31,7 @@ public class Main {
                 SuiteListener.class,
                 CommandListener.class
         ));
-        CommandListener toCoordinator = actors.createNewActor(CommandListener.class, new TestRunCoordinator(), "Coordinator");
+        CommandListener toCoordinator = actors.startEventPoller(CommandListener.class, new TestRunCoordinator(), "Coordinator");
 
         connectToLauncher(launcherPort, toCoordinator);
     }

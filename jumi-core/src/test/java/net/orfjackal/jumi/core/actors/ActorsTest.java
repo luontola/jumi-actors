@@ -29,10 +29,13 @@ public class ActorsTest {
         actors.shutdown(TIMEOUT);
     }
 
+
+    // normal event-polling actors
+
     @Test
     public void method_calls_on_handle_are_forwarded_to_target() throws InterruptedException {
         LinkedBlockingQueue<String> spy = new LinkedBlockingQueue<String>();
-        DummyListener handle = actors.createNewActor(DummyListener.class, new EventParameterSpy(spy), "ActorName");
+        DummyListener handle = actors.startEventPoller(DummyListener.class, new EventParameterSpy(spy), "ActorName");
 
         handle.onSomething("event parameter");
 
@@ -43,7 +46,7 @@ public class ActorsTest {
     @Test
     public void target_is_invoked_in_its_own_actor_thread() throws InterruptedException {
         LinkedBlockingQueue<Thread> spy = new LinkedBlockingQueue<Thread>();
-        DummyListener handle = actors.createNewActor(DummyListener.class, new CurrentThreadSpy(spy), "ActorName");
+        DummyListener handle = actors.startEventPoller(DummyListener.class, new CurrentThreadSpy(spy), "ActorName");
 
         handle.onSomething(null);
 
@@ -54,7 +57,7 @@ public class ActorsTest {
     @Test
     public void actor_processes_multiple_events_in_the_order_they_were_sent() throws InterruptedException {
         LinkedBlockingQueue<String> spy = new LinkedBlockingQueue<String>();
-        DummyListener handle = actors.createNewActor(DummyListener.class, new EventParameterSpy(spy), "ActorName");
+        DummyListener handle = actors.startEventPoller(DummyListener.class, new EventParameterSpy(spy), "ActorName");
 
         handle.onSomething("event 1");
         handle.onSomething("event 2");
@@ -67,6 +70,9 @@ public class ActorsTest {
         assertThat(receivedEvents, is(Arrays.asList("event 1", "event 2", "event 3")));
     }
 
+
+    // secondary interfaces
+
     @Test
     public void an_actor_can_receive_events_in_the_same_thread_through_a_secondary_interface() {
         final Actors actors = new Actors(DynamicListenerFactory.factoriesFor(PrimaryInterface.class, SecondaryInterface.class));
@@ -74,12 +80,12 @@ public class ActorsTest {
         MultiPurposeActor actor = new MultiPurposeActor() {
             public void onPrimaryEvent() {
                 // binding must be done inside the actor
-                secondaryHandleRef.set(actors.bindToCurrentActor(SecondaryInterface.class, this));
+                secondaryHandleRef.set(actors.bindSecondaryInterface(SecondaryInterface.class, this));
                 super.onPrimaryEvent();
             }
         };
 
-        PrimaryInterface primaryHandle = actors.createNewActor(PrimaryInterface.class, actor, "ActorName");
+        PrimaryInterface primaryHandle = actors.startEventPoller(PrimaryInterface.class, actor, "ActorName");
         primaryHandle.onPrimaryEvent();
         actor.syncOnEvent();
 
@@ -97,13 +103,16 @@ public class ActorsTest {
         thrown.expect(IllegalStateException.class);
         thrown.expectMessage("not inside an actor");
 
-        actors.bindToCurrentActor(DummyListener.class, mock(DummyListener.class));
+        actors.bindSecondaryInterface(DummyListener.class, mock(DummyListener.class));
     }
+
+
+    // setup & shutdown
 
     @Test
     public void actors_can_be_shut_down() throws InterruptedException {
         LinkedBlockingQueue<Thread> spy = new LinkedBlockingQueue<Thread>();
-        DummyListener handle = actors.createNewActor(DummyListener.class, new CurrentThreadSpy(spy), "ActorName");
+        DummyListener handle = actors.startEventPoller(DummyListener.class, new CurrentThreadSpy(spy), "ActorName");
         handle.onSomething(null);
         Thread actorThread = spy.poll(TIMEOUT, TimeUnit.MILLISECONDS);
 
@@ -121,7 +130,7 @@ public class ActorsTest {
         thrown.expectMessage("unsupported listener type");
         thrown.expectMessage(NoFactoryForThisListener.class.getName());
 
-        actors.createNewActor(NoFactoryForThisListener.class, listener, "ActorName");
+        actors.startEventPoller(NoFactoryForThisListener.class, listener, "ActorName");
     }
 
     // TODO: single-threaded actor manager for unit tests

@@ -3,8 +3,17 @@ TODO NEXT:
 - refactor results of passing "suite with zero tests"
 	- actor model: some easy way for wiring the actors and starting new threads (use in daemon and launcher)
 		- improve actors
-			- combine Actors and ExecutorService, to support running fire-and-forget type of actors
+			- combine Actors and ExecutorService (and WorkerCountingExecutor?), to support running fire-and-forget type of actors
+				- executeWorker(Runnable worker <in non-actor thread>, Runnable onFinished <in current actor>);
+				- executeActor(Runnable actor <in current actor>); just hold no reference and it will be GC'd when idle
+					* SuiteRunner uses executeWorker(TestClassFinder, AfterAllTestsFound)
+					* SuiteRunner uses executeActor(TestClassRunner)
+						- keep count of test classes in progress; new TestClassRunner(Runnable onFinished)
+					* TestClassRunner uses executeWorker(FindTests, OnWorkerFinished)
+					* TestClassRunner uses executeWorker(RunTests, OnWorkerFinished)
+						- notify on all workers finished
 			- TestClassRunnerActorTest would benefit from monitoring when actors are idle
+			- should creating long-lived polling actor threads be allowed only once, when system is started?
 		- integrate TestRunCoordinator and TestClassRunnerActor (rewrite TestRunCoordinator using TDD?)
 			- make TestRunCoordinator.run() event-based
 			- communicate with TestRunCoordinator through WorkerListener

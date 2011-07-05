@@ -54,7 +54,7 @@ public class TestClassRunnerTest {
     }
 
     private void runAndAwaitCompletion(TestClassRunner runner) throws InterruptedException {
-        Runnable handle = actors.createNewActor(Runnable.class, runner, "TestClassRunner");
+        Runnable handle = actors.startEventPoller(Runnable.class, runner, "TestClassRunner");
         handle.run();       // command to start up test class execution
         Thread.sleep(100);  // XXX
     }

@@ -33,7 +33,7 @@ public class TestClassRunner implements Runnable, WorkersListener {
     public void run() {
         listener.onTestClassStarted(testClass);
 
-        WorkersListener workerListener = actors.bindToCurrentActor(WorkersListener.class, this);
+        WorkersListener workerListener = actors.bindSecondaryInterface(WorkersListener.class, this);
         workers = new WorkerCountingExecutor(workerListener, actors, executor);
 
         SuiteNotifier notifier = new TestClassState(listener, testClass).getSuiteNotifier();

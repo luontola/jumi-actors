@@ -15,7 +15,7 @@ public class Actors {
         this.factories = factories;
     }
 
-    public <T> T createNewActor(Class<T> type, T target, String name) {
+    public <T> T startEventPoller(Class<T> type, T target, String name) {
         ListenerFactory<T> factory = getFactoryForType(type);
 
         MessageQueue<Event<T>> queue = new MessageQueue<Event<T>>();
@@ -32,7 +32,7 @@ public class Actors {
         actorThreads.add(t);
     }
 
-    public <T> T bindToCurrentActor(Class<T> type, final T target) {
+    public <T> T bindSecondaryInterface(Class<T> type, final T target) {
         ListenerFactory<T> factory = getFactoryForType(type);
         final MessageQueue<Event<?>> queue = getQueueOfCurrentActor();
 
@@ -51,6 +51,8 @@ public class Actors {
         }
         return queue;
     }
+
+    // TODO: startUnattendedWorker(Runnable worker, Runnable onFinished)
 
     @SuppressWarnings({"unchecked"})
     private <T> ListenerFactory<T> getFactoryForType(Class<T> type) {
