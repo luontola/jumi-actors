@@ -333,18 +333,18 @@ public class ActorsTest {
         }
 
         public DummyListener newFrontend(MessageSender<Event<DummyListener>> target) {
-            return new DummyEventSender(target);
+            return new DummyListenerToEvent(target);
         }
 
         public MessageSender<Event<DummyListener>> newBackend(DummyListener target) {
-            return new DummyEventReceiver(target);
+            return new EventToDummyListener(target);
         }
     }
 
-    private class SomethingEvent implements Event<DummyListener> {
+    private class OnSomethingEvent implements Event<DummyListener> {
         private final String parameter;
 
-        public SomethingEvent(String parameter) {
+        public OnSomethingEvent(String parameter) {
             this.parameter = parameter;
         }
 
@@ -353,22 +353,22 @@ public class ActorsTest {
         }
     }
 
-    private class DummyEventSender implements DummyListener {
+    private class DummyListenerToEvent implements DummyListener {
         private final MessageSender<Event<DummyListener>> sender;
 
-        public DummyEventSender(MessageSender<Event<DummyListener>> sender) {
+        public DummyListenerToEvent(MessageSender<Event<DummyListener>> sender) {
             this.sender = sender;
         }
 
         public void onSomething(String parameter) {
-            sender.send(new SomethingEvent(parameter));
+            sender.send(new OnSomethingEvent(parameter));
         }
     }
 
-    private class DummyEventReceiver implements MessageSender<Event<DummyListener>> {
+    private class EventToDummyListener implements MessageSender<Event<DummyListener>> {
         private final DummyListener listener;
 
-        public DummyEventReceiver(DummyListener listener) {
+        public EventToDummyListener(DummyListener listener) {
             this.listener = listener;
         }
 
