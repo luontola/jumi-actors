@@ -5,7 +5,7 @@
 package net.orfjackal.jumi.core;
 
 import net.orfjackal.jumi.api.drivers.*;
-import net.orfjackal.jumi.core.actors.Actors;
+import net.orfjackal.jumi.core.actors.ThreadedActors;
 import net.orfjackal.jumi.core.dynamicevents.DynamicListenerFactory;
 import org.junit.*;
 import org.mockito.InOrder;
@@ -19,7 +19,7 @@ public class TestClassRunnerTest {
     private final SuiteListener listener = mock(SuiteListener.class);
     private final InOrder inOrder = inOrder(listener);
 
-    private final Actors actors = new Actors(DynamicListenerFactory.factoriesFor(Runnable.class));
+    private final ThreadedActors actors = new ThreadedActors(DynamicListenerFactory.factoriesFor(Runnable.class));
 
     @After
     public void shutdownThreadPool() throws InterruptedException {

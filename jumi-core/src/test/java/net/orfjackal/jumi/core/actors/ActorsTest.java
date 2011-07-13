@@ -19,7 +19,7 @@ import static org.mockito.Mockito.mock;
 public class ActorsTest {
     private static final long TIMEOUT = 1000;
 
-    private final Actors actors = new Actors(new DummyListenerFactory(), new DynamicListenerFactory<Runnable>(Runnable.class));
+    private final ThreadedActors actors = new ThreadedActors(new DummyListenerFactory(), new DynamicListenerFactory<Runnable>(Runnable.class));
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -75,7 +75,7 @@ public class ActorsTest {
 
     @Test
     public void an_actor_can_receive_events_in_the_same_thread_through_a_secondary_interface() {
-        final Actors actors = new Actors(DynamicListenerFactory.factoriesFor(PrimaryInterface.class, SecondaryInterface.class));
+        final Actors actors = new ThreadedActors(DynamicListenerFactory.factoriesFor(PrimaryInterface.class, SecondaryInterface.class));
         final AtomicReference<SecondaryInterface> secondaryHandleRef = new AtomicReference<SecondaryInterface>();
         MultiPurposeActor actor = new MultiPurposeActor() {
             public void onPrimaryEvent() {

@@ -4,13 +4,9 @@
 
 package net.orfjackal.jumi.core.actors;
 
-import java.util.*;
-import java.util.concurrent.*;
+public abstract class Actors {
 
-public class Actors {
     private final ListenerFactory<?>[] factories;
-    private final Set<Thread> actorThreads = Collections.synchronizedSet(new HashSet<Thread>());
-    private final ExecutorService unattendedWorkers = Executors.newCachedThreadPool();
     private final ThreadLocal<MessageQueue<Event<?>>> queueOfCurrentActor = new ThreadLocal<MessageQueue<Event<?>>>();
 
     public Actors(ListenerFactory<?>... factories) {
@@ -24,20 +20,18 @@ public class Actors {
         MessageSender<Event<T>> receiver = factory.newBackend(target);
         T handle = factory.newFrontend(queue);
 
-        startActorThread(name, queue, new EventPoller<T>(queue, receiver));
+        doStartEventPoller(name, queue, receiver);
         return type.cast(handle);
     }
 
-    private <T> void startActorThread(String name, MessageQueue<Event<T>> queue, EventPoller<T> actor) {
-        Thread t = new Thread(new ActorContext<T>(queue, actor), name);
-        t.start();
-        actorThreads.add(t);
-    }
+    protected abstract <T> void doStartEventPoller(String name, MessageQueue<Event<T>> queue, MessageSender<Event<T>> receiver);
 
     public void startUnattendedWorker(Runnable worker, Runnable onFinished) {
         Runnable onFinishedHandle = bindSecondaryInterface(Runnable.class, onFinished);
-        unattendedWorkers.execute(new UnattendedWorker(worker, onFinishedHandle));
+        doStartUnattendedWorker(new UnattendedWorker(worker, onFinishedHandle));
     }
+
+    protected abstract void doStartUnattendedWorker(Runnable worker);
 
     public <T> T bindSecondaryInterface(Class<T> type, final T target) {
         ListenerFactory<T> factory = getFactoryForType(type);
@@ -69,19 +63,8 @@ public class Actors {
         throw new IllegalArgumentException("unsupported listener type: " + type);
     }
 
-    public void shutdown(long timeout) throws InterruptedException {
-        for (Thread t : actorThreads) {
-            t.interrupt();
-        }
-        unattendedWorkers.shutdown();
-        for (Thread t : actorThreads) {
-            t.join(timeout);
-        }
-        unattendedWorkers.awaitTermination(timeout, TimeUnit.MILLISECONDS);
-    }
 
-
-    private class ActorContext<T> implements Runnable {
+    protected class ActorContext<T> implements Runnable {
         private final MessageQueue<Event<T>> queue;
         private final Runnable actor;
 
@@ -97,27 +80,6 @@ public class Actors {
                 actor.run();
             } finally {
                 queueOfCurrentActor.remove();
-            }
-        }
-    }
-
-    private class EventPoller<T> implements Runnable {
-        private final MessageReceiver<Event<T>> events;
-        private final MessageSender<Event<T>> target;
-
-        public EventPoller(MessageReceiver<Event<T>> events, MessageSender<Event<T>> target) {
-            this.events = events;
-            this.target = target;
-        }
-
-        public void run() {
-            try {
-                while (!Thread.interrupted()) {
-                    Event<T> message = events.take();
-                    target.send(message);
-                }
-            } catch (InterruptedException e) {
-                // actor was told to exit
             }
         }
     }

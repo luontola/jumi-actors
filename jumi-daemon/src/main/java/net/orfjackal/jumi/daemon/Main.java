@@ -5,7 +5,7 @@
 package net.orfjackal.jumi.daemon;
 
 import net.orfjackal.jumi.core.*;
-import net.orfjackal.jumi.core.actors.Actors;
+import net.orfjackal.jumi.core.actors.*;
 import net.orfjackal.jumi.core.dynamicevents.DynamicListenerFactory;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.*;
@@ -27,7 +27,7 @@ public class Main {
 
         // TODO: start up all actors
 
-        Actors actors = new Actors(DynamicListenerFactory.factoriesFor(
+        Actors actors = new ThreadedActors(DynamicListenerFactory.factoriesFor(
                 SuiteListener.class,
                 CommandListener.class
         ));
