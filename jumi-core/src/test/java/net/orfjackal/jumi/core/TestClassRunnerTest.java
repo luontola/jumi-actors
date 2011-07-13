@@ -10,7 +10,7 @@ import net.orfjackal.jumi.core.dynamicevents.DynamicListenerFactory;
 import org.junit.*;
 import org.mockito.InOrder;
 
-import java.util.concurrent.*;
+import java.util.concurrent.Executor;
 
 import static org.mockito.Mockito.*;
 
@@ -19,19 +19,16 @@ public class TestClassRunnerTest {
     private final SuiteListener listener = mock(SuiteListener.class);
     private final InOrder inOrder = inOrder(listener);
 
-    private final ExecutorService threadPool = Executors.newCachedThreadPool();
-    private final Actors actors = new Actors(
-            DynamicListenerFactory.factoriesFor(Runnable.class, WorkersListener.class));
+    private final Actors actors = new Actors(DynamicListenerFactory.factoriesFor(Runnable.class));
 
     @After
     public void shutdownThreadPool() throws InterruptedException {
-        threadPool.shutdown();
         actors.shutdown(1000);
     }
 
     @Test
     public void test_class_with_zero_tests() throws Exception {
-        TestClassRunner runner = new TestClassRunner(DummyTest.class, ZeroTestsDriver.class, listener, threadPool, actors);
+        TestClassRunner runner = new TestClassRunner(DummyTest.class, ZeroTestsDriver.class, listener, actors);
 
         runAndAwaitCompletion(runner);
 
@@ -43,7 +40,7 @@ public class TestClassRunnerTest {
 
     @Test
     public void test_class_with_only_root_test() throws Exception {
-        TestClassRunner runner = new TestClassRunner(DummyTest.class, OneTestDriver.class, listener, threadPool, actors);
+        TestClassRunner runner = new TestClassRunner(DummyTest.class, OneTestDriver.class, listener, actors);
 
         runAndAwaitCompletion(runner);
 

@@ -34,7 +34,7 @@ public class Actors {
         actorThreads.add(t);
     }
 
-    public void startUnattendedWorker(final Runnable worker, Runnable onFinished) {
+    public void startUnattendedWorker(Runnable worker, Runnable onFinished) {
         Runnable onFinishedHandle = bindSecondaryInterface(Runnable.class, onFinished);
         unattendedWorkers.execute(new UnattendedWorker(worker, onFinishedHandle));
     }

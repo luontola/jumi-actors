@@ -7,41 +7,35 @@ package net.orfjackal.jumi.core;
 import net.orfjackal.jumi.api.drivers.*;
 import net.orfjackal.jumi.core.actors.Actors;
 
-import java.util.concurrent.*;
-
-public class TestClassRunner implements Runnable, WorkersListener {
+public class TestClassRunner implements Runnable {
 
     private final Class<?> testClass;
     private final Class<? extends Driver> driverClass;
     private final SuiteListener listener;
-    private final Executor executor;
     private final Actors actors;
-    private WorkerCountingExecutor workers;
 
     public TestClassRunner(Class<?> testClass,
                            Class<? extends Driver> driverClass,
                            SuiteListener listener,
-                           ExecutorService executor,
                            Actors actors) {
         this.testClass = testClass;
         this.driverClass = driverClass;
         this.listener = listener;
-        this.executor = executor;
         this.actors = actors;
     }
 
     public void run() {
         listener.onTestClassStarted(testClass);
 
-        WorkersListener workerListener = actors.bindSecondaryInterface(WorkersListener.class, this);
-        workers = new WorkerCountingExecutor(workerListener, actors, executor);
-
         SuiteNotifier notifier = new TestClassState(listener, testClass).getSuiteNotifier();
-        workers.execute(new DriverRunner(notifier));
-    }
+        DriverRunner worker = new DriverRunner(notifier);
 
-    public void onAllWorkersFinished() {
-        listener.onTestClassFinished(testClass);
+        actors.startUnattendedWorker(worker, new Runnable() {
+            public void run() {
+                // TODO: count workers, fire "onTestClassFinished" only after all workers are finished
+                listener.onTestClassFinished(testClass);
+            }
+        });
     }
 
 
@@ -53,7 +47,6 @@ public class TestClassRunner implements Runnable, WorkersListener {
         }
 
         public void run() {
-            // TODO: pass an executor which keeps a count of how many workers there are (WorkerCountingExecutor?)
             newDriverInstance().findTests(testClass, suiteNotifier, null);
         }
 
