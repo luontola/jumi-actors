@@ -16,18 +16,21 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.mock;
 
-public class ActorsTest {
+public abstract class ActorsContract {
+
     private static final long TIMEOUT = 1000;
 
-    private final ThreadedActors actors = new ThreadedActors(new DummyListenerFactory(), new DynamicListenerFactory<Runnable>(Runnable.class));
+    private Actors actors;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    @After
-    public void shutdown() throws InterruptedException {
-        actors.shutdown(TIMEOUT);
+    @Before
+    public void initActors() {
+        actors = newActors(new DummyListenerFactory(), new DynamicListenerFactory<Runnable>(Runnable.class));
     }
+
+    protected abstract Actors newActors(ListenerFactory<?>... factories);
 
 
     // normal event-polling actors
@@ -75,7 +78,7 @@ public class ActorsTest {
 
     @Test
     public void an_actor_can_receive_events_in_the_same_thread_through_a_secondary_interface() {
-        final Actors actors = new ThreadedActors(DynamicListenerFactory.factoriesFor(PrimaryInterface.class, SecondaryInterface.class));
+        final Actors actors = newActors(DynamicListenerFactory.factoriesFor(PrimaryInterface.class, SecondaryInterface.class));
         final AtomicReference<SecondaryInterface> secondaryHandleRef = new AtomicReference<SecondaryInterface>();
         MultiPurposeActor actor = new MultiPurposeActor() {
             public void onPrimaryEvent() {
@@ -196,32 +199,6 @@ public class ActorsTest {
     }
 
     @Test
-    public void shutting_down_waits_for_workers_to_finish() throws InterruptedException {
-        final BlockingQueue<String> events = new LinkedBlockingQueue<String>();
-
-        final Runnable worker = new Runnable() {
-            public void run() {
-                events.add("worker started");
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    // continue executing
-                }
-                events.add("worker finished");
-            }
-        };
-        actors.startEventPoller(Runnable.class, new Runnable() {
-            public void run() {
-                actors.startUnattendedWorker(worker, new DummyRunnable());
-            }
-        }, "Actor").run();
-
-        assertThat("worker did not start", events.poll(TIMEOUT, TimeUnit.MILLISECONDS), is("worker started"));
-        actors.shutdown(TIMEOUT);
-        assertThat("did not wait for worker to finish", events.poll(), is("worker finished"));
-    }
-
-    @Test
     public void unattended_workers_cannot_be_bound_outside_an_actor() {
         thrown.expect(IllegalStateException.class);
         thrown.expectMessage("not inside an actor");
@@ -230,19 +207,7 @@ public class ActorsTest {
     }
 
 
-    // setup & shutdown
-
-    @Test
-    public void actors_can_be_shut_down() throws InterruptedException {
-        LinkedBlockingQueue<Thread> spy = new LinkedBlockingQueue<Thread>();
-        DummyListener handle = actors.startEventPoller(DummyListener.class, new CurrentThreadSpy(spy), "ActorName");
-        handle.onSomething(null);
-        Thread actorThread = spy.poll(TIMEOUT, TimeUnit.MILLISECONDS);
-
-        assertThat("alive before shutdown", actorThread.isAlive(), is(true));
-        actors.shutdown(TIMEOUT);
-        assertThat("alive after shutdown", actorThread.isAlive(), is(false));
-    }
+    // setup
 
     @Test
     public void listener_factories_must_be_registered_for_them_to_be_usable() {
@@ -271,7 +236,7 @@ public class ActorsTest {
         }
     }
 
-    private static class CurrentThreadSpy implements DummyListener {
+    protected static class CurrentThreadSpy implements DummyListener {
         private final LinkedBlockingQueue<Thread> spy;
 
         public CurrentThreadSpy(LinkedBlockingQueue<Thread> spy) {
@@ -322,11 +287,11 @@ public class ActorsTest {
     private interface NoFactoryForThisListener {
     }
 
-    private interface DummyListener {
+    protected interface DummyListener {
         void onSomething(String parameter);
     }
 
-    private class DummyListenerFactory implements ListenerFactory<DummyListener> {
+    protected class DummyListenerFactory implements ListenerFactory<DummyListener> {
 
         public Class<DummyListener> getType() {
             return DummyListener.class;
@@ -377,7 +342,7 @@ public class ActorsTest {
         }
     }
 
-    private static class DummyRunnable implements Runnable {
+    protected static class DummyRunnable implements Runnable {
         public void run() {
         }
     }
