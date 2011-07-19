@@ -5,9 +5,9 @@
 package net.orfjackal.jumi.core;
 
 import net.orfjackal.jumi.api.drivers.*;
-import net.orfjackal.jumi.core.actors.ThreadedActors;
+import net.orfjackal.jumi.core.actors.SingleThreadedActors;
 import net.orfjackal.jumi.core.dynamicevents.DynamicListenerFactory;
-import org.junit.*;
+import org.junit.Test;
 import org.mockito.InOrder;
 
 import java.util.concurrent.Executor;
@@ -19,15 +19,10 @@ public class TestClassRunnerTest {
     private final SuiteListener listener = mock(SuiteListener.class);
     private final InOrder inOrder = inOrder(listener);
 
-    private final ThreadedActors actors = new ThreadedActors(DynamicListenerFactory.factoriesFor(Runnable.class));
-
-    @After
-    public void shutdownThreadPool() throws InterruptedException {
-        actors.shutdown(1000);
-    }
+    private final SingleThreadedActors actors = new SingleThreadedActors(DynamicListenerFactory.factoriesFor(Runnable.class));
 
     @Test
-    public void test_class_with_zero_tests() throws Exception {
+    public void test_class_with_zero_tests() {
         TestClassRunner runner = new TestClassRunner(DummyTest.class, ZeroTestsDriver.class, listener, actors);
 
         runAndAwaitCompletion(runner);
@@ -39,7 +34,7 @@ public class TestClassRunnerTest {
     }
 
     @Test
-    public void test_class_with_only_root_test() throws Exception {
+    public void test_class_with_only_root_test() {
         TestClassRunner runner = new TestClassRunner(DummyTest.class, OneTestDriver.class, listener, actors);
 
         runAndAwaitCompletion(runner);
@@ -50,10 +45,10 @@ public class TestClassRunnerTest {
         verifyNoMoreInteractions(listener);
     }
 
-    private void runAndAwaitCompletion(TestClassRunner runner) throws InterruptedException {
+    private void runAndAwaitCompletion(TestClassRunner runner) {
         Runnable handle = actors.startEventPoller(Runnable.class, runner, "TestClassRunner");
         handle.run();       // command to start up test class execution
-        Thread.sleep(100);  // XXX
+        actors.processEventsUntilIdle();
     }
 
 
