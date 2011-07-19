@@ -48,13 +48,13 @@ public class ThreadedActorsTest extends ActorsContract {
 
     @Test
     public void target_is_invoked_in_its_own_actor_thread() throws InterruptedException {
-        LinkedBlockingQueue<Thread> spy = new LinkedBlockingQueue<Thread>();
-        DummyListener handle = actors.startEventPoller(DummyListener.class, new CurrentThreadSpy(spy), "ActorName");
+        CurrentThreadSpy actor = new CurrentThreadSpy();
+        DummyListener handle = actors.startEventPoller(DummyListener.class, actor, "ActorName");
 
-        handle.onSomething(null);
+        handle.onSomething("event");
+        awaitEvents(1);
 
-        Thread thread = spy.poll(TIMEOUT, TimeUnit.MILLISECONDS);
-        assertThat(thread.getName(), is("ActorName"));
+        assertThat(actor.actorThread.getName(), is("ActorName"));
     }
 
     // unattended workers
@@ -63,39 +63,42 @@ public class ThreadedActorsTest extends ActorsContract {
     public void unattended_workers_are_run_in_their_own_thread() throws InterruptedException {
         final AtomicReference<Thread> actorThread = new AtomicReference<Thread>();
         final AtomicReference<Thread> workerThread = new AtomicReference<Thread>();
-        final CountDownLatch done = new CountDownLatch(1);
 
         final Runnable worker = new Runnable() {
             public void run() {
                 workerThread.set(Thread.currentThread());
-                done.countDown();
+                logEvent("event 2");
             }
         };
         actors.startEventPoller(Runnable.class, new Runnable() {
             public void run() {
                 actorThread.set(Thread.currentThread());
+                logEvent("event 1");
+
+                // starting the worker must be done inside an actor
                 actors.startUnattendedWorker(worker, new DummyRunnable());
             }
         }, "Actor").run();
-        done.await(TIMEOUT, TimeUnit.MILLISECONDS);
+        awaitEvents(2);
 
-        assertThat("worker was not run", workerThread.get(), is(notNullValue()));
-        assertThat("worker did not have its own thread", workerThread.get(), is(not(Thread.currentThread())));
-        assertThat("worker did not have its own thread", workerThread.get(), is(not(actorThread.get())));
+        assertThat("worker is run", workerThread.get(), is(notNullValue()));
+        assertThat("worker is run in its own thread", workerThread.get(), is(not(Thread.currentThread())));
+        assertThat("worker is run in its own thread", workerThread.get(), is(not(actorThread.get())));
     }
 
     // shutdown
 
     @Test
     public void actor_threads_can_be_shut_down() throws InterruptedException {
-        LinkedBlockingQueue<Thread> spy = new LinkedBlockingQueue<Thread>();
-        DummyListener handle = actors.startEventPoller(DummyListener.class, new CurrentThreadSpy(spy), "ActorName");
-        handle.onSomething(null);
-        Thread actorThread = spy.poll(TIMEOUT, TimeUnit.MILLISECONDS);
+        CurrentThreadSpy actor = new CurrentThreadSpy();
+        DummyListener handle = actors.startEventPoller(DummyListener.class, actor, "ActorName");
 
-        assertThat("alive before shutdown", actorThread.isAlive(), is(true));
+        handle.onSomething("event");
+        awaitEvents(1);
+
+        assertThat("alive before shutdown", actor.actorThread.isAlive(), is(true));
         actors.shutdown(TIMEOUT);
-        assertThat("alive after shutdown", actorThread.isAlive(), is(false));
+        assertThat("alive after shutdown", actor.actorThread.isAlive(), is(false));
     }
 
     @Test
@@ -123,5 +126,15 @@ public class ThreadedActorsTest extends ActorsContract {
         assertThat("worker did not start", events.poll(TIMEOUT, TimeUnit.MILLISECONDS), is("worker started"));
         actors.shutdown(TIMEOUT);
         assertThat("did not wait for worker to finish", events.poll(), is("worker finished"));
+    }
+
+
+    private class CurrentThreadSpy implements DummyListener {
+        public volatile Thread actorThread;
+
+        public void onSomething(String parameter) {
+            actorThread = Thread.currentThread();
+            logEvent(parameter);
+        }
     }
 }
