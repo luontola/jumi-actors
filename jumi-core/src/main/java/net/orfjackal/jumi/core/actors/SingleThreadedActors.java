@@ -36,7 +36,7 @@ public class SingleThreadedActors extends Actors {
                 try {
                     worker.run();
                 } catch (Throwable t) {
-                    // TODO: rethrow this exception?
+                    // TODO: rethrow or send to a custom exception handler?
                     t.printStackTrace();
                 }
                 idle = false;

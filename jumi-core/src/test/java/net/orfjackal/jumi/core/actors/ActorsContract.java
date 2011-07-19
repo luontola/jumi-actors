@@ -174,6 +174,7 @@ public abstract class ActorsContract {
         final Runnable worker = new Runnable() {
             public void run() {
                 logEvent("run worker");
+                // TODO: create a custom exception handler, then make it ignore this exception
                 throw new RuntimeException("dummy exception");
             }
         };

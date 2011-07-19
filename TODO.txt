@@ -13,6 +13,7 @@ TODO NEXT:
 					* TestClassRunner uses executeWorker(RunTests, OnWorkerFinished)
 						- notify on all workers finished
 			NEXT - TestClassRunnerActorTest would benefit from monitoring when actors are idle
+			- actor tests print dummy exceptions; solve by having a custom pluggable exception handler which doesn't print stack traces of a DummyException class
 			- should creating long-lived polling actor threads be allowed only once, when system is started?
 			- Startable interface instead of Runnable, for event polling actors and secondary interfaces?
 		- integrate TestRunCoordinator and TestClassRunnerActor (rewrite TestRunCoordinator using TDD?)
