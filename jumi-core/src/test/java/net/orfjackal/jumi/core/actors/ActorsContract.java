@@ -21,6 +21,7 @@ public abstract class ActorsContract {
     private static final long TIMEOUT = 1000;
 
     private Actors actors;
+    private final Queue<String> events = new ConcurrentLinkedQueue<String>();
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -32,6 +33,26 @@ public abstract class ActorsContract {
 
     protected abstract Actors newActors(ListenerFactory<?>... factories);
 
+    protected abstract void processEvents();
+
+    protected void logEvent(String event) {
+        events.add(event);
+    }
+
+    protected void awaitForEvents(int expectedEventCount) {
+        processEvents();
+
+        long limit = System.currentTimeMillis() + TIMEOUT;
+        while (events.size() < expectedEventCount && System.currentTimeMillis() < limit) {
+            Thread.yield();
+        }
+    }
+
+    protected void assertLoggedEvents(String... expected) {
+        List<String> actual = new ArrayList<String>(events);
+        assertThat("events", actual, is(Arrays.asList(expected)));
+    }
+
 
     // normal event-polling actors
 
@@ -41,20 +62,10 @@ public abstract class ActorsContract {
         DummyListener handle = actors.startEventPoller(DummyListener.class, new EventParameterSpy(spy), "ActorName");
 
         handle.onSomething("event parameter");
+        processEvents();
 
         String parameter = spy.poll(TIMEOUT, TimeUnit.MILLISECONDS);
         assertThat(parameter, is("event parameter"));
-    }
-
-    @Test
-    public void target_is_invoked_in_its_own_actor_thread() throws InterruptedException {
-        LinkedBlockingQueue<Thread> spy = new LinkedBlockingQueue<Thread>();
-        DummyListener handle = actors.startEventPoller(DummyListener.class, new CurrentThreadSpy(spy), "ActorName");
-
-        handle.onSomething(null);
-
-        Thread thread = spy.poll(TIMEOUT, TimeUnit.MILLISECONDS);
-        assertThat(thread.getName(), is("ActorName"));
     }
 
     @Test
@@ -65,6 +76,7 @@ public abstract class ActorsContract {
         handle.onSomething("event 1");
         handle.onSomething("event 2");
         handle.onSomething("event 3");
+        processEvents();
 
         List<String> receivedEvents = new ArrayList<String>();
         receivedEvents.add(spy.poll(TIMEOUT, TimeUnit.MILLISECONDS));
@@ -80,26 +92,40 @@ public abstract class ActorsContract {
     public void an_actor_can_receive_events_in_the_same_thread_through_a_secondary_interface() {
         final Actors actors = newActors(DynamicListenerFactory.factoriesFor(PrimaryInterface.class, SecondaryInterface.class));
         final AtomicReference<SecondaryInterface> secondaryHandleRef = new AtomicReference<SecondaryInterface>();
-        MultiPurposeActor actor = new MultiPurposeActor() {
+        final AtomicReference<Thread> primaryEventThread = new AtomicReference<Thread>();
+        final AtomicReference<Thread> secondaryEventThread = new AtomicReference<Thread>();
+
+        class MultiPurposeActor implements PrimaryInterface, SecondaryInterface {
             public void onPrimaryEvent() {
                 // binding must be done inside the actor
                 secondaryHandleRef.set(actors.bindSecondaryInterface(SecondaryInterface.class, this));
-                super.onPrimaryEvent();
+
+                primaryEventThread.set(Thread.currentThread());
+                logEvent("primary event");
             }
-        };
+
+            public void onSecondaryEvent() {
+                secondaryEventThread.set(Thread.currentThread());
+                logEvent("secondary event");
+            }
+        }
+
+
+        MultiPurposeActor actor = new MultiPurposeActor();
 
         PrimaryInterface primaryHandle = actors.startEventPoller(PrimaryInterface.class, actor, "ActorName");
         primaryHandle.onPrimaryEvent();
-        actor.syncOnEvent();
+        awaitForEvents(1);
 
         SecondaryInterface secondaryHandle = secondaryHandleRef.get();
         secondaryHandle.onSecondaryEvent();
-        actor.syncOnEvent();
+        awaitForEvents(2);
 
-        assertThat("primary event should have happened", actor.primaryEventThread, is(notNullValue()));
-        assertThat("secondary event should have happened", actor.secondaryEventThread, is(notNullValue()));
-        assertThat("events should have happened in same thread", actor.secondaryEventThread, is(actor.primaryEventThread));
+        assertThat("events", events, contains("primary event", "secondary event"));
+        assertThat("secondary event happened", secondaryEventThread.get(), is(notNullValue()));
+        assertThat("secondary event happened in same thread as primary event", secondaryEventThread.get(), is(primaryEventThread.get()));
     }
+
 
     @Test
     public void secondary_interfaces_cannot_be_bound_outside_an_actor() {
@@ -113,59 +139,31 @@ public abstract class ActorsContract {
     // unattended workers
 
     @Test
-    public void unattended_workers_are_run_in_their_own_thread() throws InterruptedException {
-        final AtomicReference<Thread> actorThread = new AtomicReference<Thread>();
-        final AtomicReference<Thread> workerThread = new AtomicReference<Thread>();
-        final CountDownLatch done = new CountDownLatch(1);
-
-        final Runnable worker = new Runnable() {
-            public void run() {
-                workerThread.set(Thread.currentThread());
-                done.countDown();
-            }
-        };
-        actors.startEventPoller(Runnable.class, new Runnable() {
-            public void run() {
-                actorThread.set(Thread.currentThread());
-                actors.startUnattendedWorker(worker, new DummyRunnable());
-            }
-        }, "Actor").run();
-        done.await(TIMEOUT, TimeUnit.MILLISECONDS);
-
-        assertThat("worker was not run", workerThread.get(), is(notNullValue()));
-        assertThat("worker did not have its own thread", workerThread.get(), is(not(Thread.currentThread())));
-        assertThat("worker did not have its own thread", workerThread.get(), is(not(actorThread.get())));
-    }
-
-    @Test
     public void when_worker_finishes_the_actor_which_started_it_is_notified_in_the_actor_thread() throws InterruptedException {
-        final BlockingQueue<String> events = new LinkedBlockingQueue<String>();
         final AtomicReference<Thread> actorThread = new AtomicReference<Thread>();
         final AtomicReference<Thread> onFinishedThread = new AtomicReference<Thread>();
 
         final Runnable worker = new Runnable() {
             public void run() {
-                events.add("run worker");
+                logEvent("run worker");
             }
         };
         final Runnable onFinished = new Runnable() {
             public void run() {
                 onFinishedThread.set(Thread.currentThread());
-                events.add("on finished");
+                logEvent("on finished");
             }
         };
         actors.startEventPoller(Runnable.class, new Runnable() {
             public void run() {
                 actorThread.set(Thread.currentThread());
-                events.add("start worker");
+                logEvent("start worker");
                 actors.startUnattendedWorker(worker, onFinished);
             }
         }, "Actor").run();
+        awaitForEvents(3);
 
-        assertThat("event 1", events.poll(TIMEOUT, TimeUnit.MILLISECONDS), is("start worker"));
-        assertThat("event 2", events.poll(TIMEOUT, TimeUnit.MILLISECONDS), is("run worker"));
-        assertThat("event 3", events.poll(TIMEOUT, TimeUnit.MILLISECONDS), is("on finished"));
-        assertThat("no more events", events.poll(), is(nullValue()));
+        assertLoggedEvents("start worker", "run worker", "on finished");
         assertThat("notification should have been in the actor thread", onFinishedThread.get(), is(actorThread.get()));
     }
 
@@ -191,6 +189,7 @@ public abstract class ActorsContract {
                 actors.startUnattendedWorker(worker, onFinished);
             }
         }, "Actor").run();
+        processEvents();
 
         assertThat("event 1", events.poll(TIMEOUT, TimeUnit.MILLISECONDS), is("start worker"));
         assertThat("event 2", events.poll(TIMEOUT, TimeUnit.MILLISECONDS), is("run worker"));
@@ -245,31 +244,6 @@ public abstract class ActorsContract {
 
         public void onSomething(String parameter) {
             spy.offer(Thread.currentThread());
-        }
-    }
-
-    private static class MultiPurposeActor implements PrimaryInterface, SecondaryInterface {
-        private final CyclicBarrier sync = new CyclicBarrier(2);
-
-        public volatile Thread primaryEventThread;
-        public volatile Thread secondaryEventThread;
-
-        public void onPrimaryEvent() {
-            primaryEventThread = Thread.currentThread();
-            syncOnEvent();
-        }
-
-        public void onSecondaryEvent() {
-            secondaryEventThread = Thread.currentThread();
-            syncOnEvent();
-        }
-
-        public void syncOnEvent() {
-            try {
-                sync.await(TIMEOUT, TimeUnit.MILLISECONDS);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
     }
 

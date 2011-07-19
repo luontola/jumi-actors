@@ -53,6 +53,14 @@ public abstract class Actors {
         return queue;
     }
 
+    protected void initActorContext(MessageQueue<?> queue) {
+        queueOfCurrentActor.set((MessageQueue) queue);
+    }
+
+    protected void clearActorContext() {
+        queueOfCurrentActor.remove();
+    }
+
     @SuppressWarnings({"unchecked"})
     private <T> ListenerFactory<T> getFactoryForType(Class<T> type) {
         for (ListenerFactory<?> factory : factories) {
@@ -75,11 +83,11 @@ public abstract class Actors {
 
         @SuppressWarnings({"unchecked"})
         public void run() {
-            queueOfCurrentActor.set((MessageQueue) queue);
+            initActorContext(queue);
             try {
                 actor.run();
             } finally {
-                queueOfCurrentActor.remove();
+                clearActorContext();
             }
         }
     }

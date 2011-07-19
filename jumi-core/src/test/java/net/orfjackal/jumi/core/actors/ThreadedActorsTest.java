@@ -9,21 +9,26 @@ import org.junit.*;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 public class ThreadedActorsTest extends ActorsContract {
 
     private static final long TIMEOUT = 1000;
 
-    private final List<ThreadedActors> actorsToShutDown = new ArrayList<ThreadedActors>();
+    private final List<ThreadedActors> createdActors = new ArrayList<ThreadedActors>();
     private ThreadedActors actors;
 
     protected ThreadedActors newActors(ListenerFactory<?>... factories) {
         ThreadedActors actors = new ThreadedActors(factories);
-        actorsToShutDown.add(actors);
+        createdActors.add(actors);
         return actors;
+    }
+
+    protected void processEvents() {
+        // noop; background threads run automatically, rely on the timeouts in the contract tests for waiting
     }
 
     @Before
@@ -33,9 +38,50 @@ public class ThreadedActorsTest extends ActorsContract {
 
     @After
     public void shutdown() throws InterruptedException {
-        for (ThreadedActors actors : actorsToShutDown) {
+        for (ThreadedActors actors : createdActors) {
             actors.shutdown(TIMEOUT);
         }
+    }
+
+
+    // normal event-polling actors
+
+    @Test
+    public void target_is_invoked_in_its_own_actor_thread() throws InterruptedException {
+        LinkedBlockingQueue<Thread> spy = new LinkedBlockingQueue<Thread>();
+        DummyListener handle = actors.startEventPoller(DummyListener.class, new CurrentThreadSpy(spy), "ActorName");
+
+        handle.onSomething(null);
+
+        Thread thread = spy.poll(TIMEOUT, TimeUnit.MILLISECONDS);
+        assertThat(thread.getName(), is("ActorName"));
+    }
+
+    // unattended workers
+
+    @Test
+    public void unattended_workers_are_run_in_their_own_thread() throws InterruptedException {
+        final AtomicReference<Thread> actorThread = new AtomicReference<Thread>();
+        final AtomicReference<Thread> workerThread = new AtomicReference<Thread>();
+        final CountDownLatch done = new CountDownLatch(1);
+
+        final Runnable worker = new Runnable() {
+            public void run() {
+                workerThread.set(Thread.currentThread());
+                done.countDown();
+            }
+        };
+        actors.startEventPoller(Runnable.class, new Runnable() {
+            public void run() {
+                actorThread.set(Thread.currentThread());
+                actors.startUnattendedWorker(worker, new DummyRunnable());
+            }
+        }, "Actor").run();
+        done.await(TIMEOUT, TimeUnit.MILLISECONDS);
+
+        assertThat("worker was not run", workerThread.get(), is(notNullValue()));
+        assertThat("worker did not have its own thread", workerThread.get(), is(not(Thread.currentThread())));
+        assertThat("worker did not have its own thread", workerThread.get(), is(not(actorThread.get())));
     }
 
     // shutdown
