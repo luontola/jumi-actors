@@ -2,26 +2,15 @@
 TODO NEXT:
 - refactor results of passing "suite with zero tests"
 	- actor model: some easy way for wiring the actors and starting new threads (use in daemon and launcher)
+		- integrate TestRunCoordinator and TestClassRunner (rewrite TestRunCoordinator using TDD and call it SuiteRunner?)
+			- make TestRunCoordinator.run() event-based
+			- communicate with TestRunCoordinator through WorkerListener
+			- embed TestClassState into TestClassRunner
+			- use TestClassRunner from TestRunCoordinator.run()
 		- improve actors
-			OK - combine Actors and ExecutorService (and WorkerCountingExecutor?), to support running fire-and-forget type of actors
-				- executeWorker(Runnable worker <in non-actor thread>, Runnable onFinished <in current actor>);
-				- executeActor(Runnable actor <in current actor>); just hold no reference and it will be GC'd when idle
-					* SuiteRunner uses executeWorker(TestClassFinder, AfterAllTestsFound)
-					* SuiteRunner uses executeActor(TestClassRunner)
-						- keep count of test classes in progress; new TestClassRunner(Runnable onFinished)
-					* TestClassRunner uses executeWorker(FindTests, OnWorkerFinished)
-					* TestClassRunner uses executeWorker(RunTests, OnWorkerFinished)
-						- notify on all workers finished
-			NEXT - TestClassRunnerActorTest would benefit from monitoring when actors are idle
 			- actor tests print dummy exceptions; solve by having a custom pluggable exception handler which doesn't print stack traces of a DummyException class
 			- should creating long-lived polling actor threads be allowed only once, when system is started?
 			- Startable interface instead of Runnable, for event polling actors and secondary interfaces?
-		- integrate TestRunCoordinator and TestClassRunnerActor (rewrite TestRunCoordinator using TDD?)
-			- make TestRunCoordinator.run() event-based
-			- communicate with TestRunCoordinator through WorkerListener
-			- embed TestClassState into TestClassRunnerActor
-			- use TestClassRunnerActor from TestRunCoordinator.run()
-		- start writing TestClassRunnerActor; wraps current TestClassRunner and parts of TestRunCoordinator#runTests
 	- use fi.jumi groupId and package
 	- events between launcher and daemon should not contain Class instances, because launcher's classpath won't contain the test classes
 		- write a test that SuiteListener doesn't contain any method parameters of type java.lang.Class

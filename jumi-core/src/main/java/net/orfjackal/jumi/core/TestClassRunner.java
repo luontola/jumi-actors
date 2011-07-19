@@ -30,12 +30,7 @@ public class TestClassRunner implements Runnable {
         SuiteNotifier notifier = new TestClassState(listener, testClass).getSuiteNotifier();
         DriverRunner worker = new DriverRunner(notifier);
 
-        actors.startUnattendedWorker(worker, new Runnable() {
-            public void run() {
-                // TODO: count workers, fire "onTestClassFinished" only after all workers are finished
-                listener.onTestClassFinished(testClass);
-            }
-        });
+        actors.startUnattendedWorker(worker, new OnWorkerFinished());
     }
 
 
@@ -58,6 +53,13 @@ public class TestClassRunner implements Runnable {
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+    private class OnWorkerFinished implements Runnable {
+        public void run() {
+            // TODO: count workers, fire "onTestClassFinished" only after all workers are finished
+            listener.onTestClassFinished(testClass);
         }
     }
 }

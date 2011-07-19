@@ -30,12 +30,12 @@ public class TestRunCoordinator implements CommandListener {
         System.out.println("testsToIncludePattern = " + testsToIncludePattern);
 
         try {
-            // TODO: find tests (async)
+            // TODO: find tests (async), should use startUnattendedWorker(TestClassFinder, AfterAllTestsFound)
             URLClassLoader loader = new URLClassLoader(asUrls(classPath));
             Class<?> testClass = loader.loadClass(testsToIncludePattern);
             System.out.println("testClass = " + testClass);
 
-            // TODO: run the tests (async)
+            // TODO: run the tests (async), should use bindSecondaryInterface(TestClassRunner)
             TestClassState runner = new TestClassState(listener, testClass);
             ExecutorService executor = Executors.newCachedThreadPool();
 
