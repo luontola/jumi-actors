@@ -10,9 +10,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-public abstract class ActorsContractHelpers {
+public abstract class ActorsContractHelpers<T extends Actors> {
 
-    private static final long TIMEOUT = 1000;
+    protected T actors;
+
+    public static final long TIMEOUT = 1000;
 
     private final Queue<String> events = new ConcurrentLinkedQueue<String>();
 
@@ -42,18 +44,67 @@ public abstract class ActorsContractHelpers {
 
     // test doubles
 
-    public class EventLoggingActor implements DummyListener {
+    public class SpyDummyListener implements DummyListener {
+        public volatile Thread thread;
+
         public void onSomething(String parameter) {
+            thread = Thread.currentThread();
             logEvent(parameter);
         }
     }
 
-    public class CurrentThreadSpy implements DummyListener {
-        public volatile Thread actorThread;
+    public class SpyRunnable implements Runnable {
+        private final String event;
+        public volatile Thread thread;
 
-        public void onSomething(String parameter) {
-            actorThread = Thread.currentThread();
-            logEvent(parameter);
+        public SpyRunnable(String event) {
+            this.event = event;
+        }
+
+        public void run() {
+            thread = Thread.currentThread();
+            logEvent(event);
+        }
+    }
+
+    public class WorkerStartingSpyRunnable extends SpyRunnable {
+        private final Runnable worker;
+        private final Runnable onFinished;
+
+        public WorkerStartingSpyRunnable(String event, Runnable worker, Runnable onFinished) {
+            super(event);
+            this.worker = worker;
+            this.onFinished = onFinished;
+        }
+
+        @Override
+        public void run() {
+            super.run();
+
+            // starting the worker must be done inside an actor
+            actors.startUnattendedWorker(worker, onFinished);
+        }
+    }
+
+    public class ExceptionThrowingSpyRunnable extends SpyRunnable {
+        private final RuntimeException exception;
+
+        public ExceptionThrowingSpyRunnable(String event, RuntimeException exception) {
+            super(event);
+            this.exception = exception;
+        }
+
+        @Override
+        public void run() {
+            super.run();
+
+            // the stack trace will be funny, because it doesn't start from where it was thrown; let's wrap it
+            throw new RuntimeException(exception);
+        }
+    }
+
+    public static class NullRunnable implements Runnable {
+        public void run() {
         }
     }
 
@@ -70,6 +121,7 @@ public abstract class ActorsContractHelpers {
 
     public interface NoFactoryForThisListener {
     }
+
 
     public interface DummyListener {
         void onSomething(String parameter);
@@ -123,11 +175,6 @@ public abstract class ActorsContractHelpers {
 
         public void send(Event<DummyListener> message) {
             message.fireOn(listener);
-        }
-    }
-
-    public static class DummyRunnable implements Runnable {
-        public void run() {
         }
     }
 }

@@ -6,7 +6,7 @@ package net.orfjackal.jumi.core.actors;
 
 import java.util.*;
 
-public class SingleThreadedActorsTest extends ActorsContract {
+public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActors> {
 
     private final List<SingleThreadedActors> createdActors = new ArrayList<SingleThreadedActors>();
 

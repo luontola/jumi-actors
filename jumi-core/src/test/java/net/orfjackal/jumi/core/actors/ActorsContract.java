@@ -8,15 +8,11 @@ import net.orfjackal.jumi.core.dynamicevents.DynamicListenerFactory;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.mock;
 
-public abstract class ActorsContract extends ActorsContractHelpers {
-
-    private Actors actors;
+public abstract class ActorsContract<T extends Actors> extends ActorsContractHelpers<T> {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -26,14 +22,14 @@ public abstract class ActorsContract extends ActorsContractHelpers {
         actors = newActors(new DummyListenerFactory(), new DynamicListenerFactory<Runnable>(Runnable.class));
     }
 
-    protected abstract Actors newActors(ListenerFactory<?>... factories);
+    protected abstract T newActors(ListenerFactory<?>... factories);
 
 
     // normal event-polling actors
 
     @Test
     public void method_calls_on_handle_are_forwarded_to_target() throws InterruptedException {
-        DummyListener handle = actors.startEventPoller(DummyListener.class, new EventLoggingActor(), "ActorName");
+        DummyListener handle = actors.startEventPoller(DummyListener.class, new SpyDummyListener(), "ActorName");
 
         handle.onSomething("event parameter");
         awaitEvents(1);
@@ -43,7 +39,7 @@ public abstract class ActorsContract extends ActorsContractHelpers {
 
     @Test
     public void actor_processes_multiple_events_in_the_order_they_were_sent() throws InterruptedException {
-        DummyListener handle = actors.startEventPoller(DummyListener.class, new EventLoggingActor(), "ActorName");
+        DummyListener handle = actors.startEventPoller(DummyListener.class, new SpyDummyListener(), "ActorName");
 
         handle.onSomething("event 1");
         handle.onSomething("event 2");
@@ -58,7 +54,7 @@ public abstract class ActorsContract extends ActorsContractHelpers {
 
     @Test
     public void an_actor_can_receive_events_in_the_same_thread_through_a_secondary_interface() {
-        final Actors actors = newActors(DynamicListenerFactory.factoriesFor(PrimaryInterface.class, SecondaryInterface.class));
+        actors = newActors(DynamicListenerFactory.factoriesFor(PrimaryInterface.class, SecondaryInterface.class));
         class MultiPurposeActor implements PrimaryInterface, SecondaryInterface {
             public volatile SecondaryInterface secondaryHandle;
             public volatile Thread primaryEventThread;
@@ -106,57 +102,25 @@ public abstract class ActorsContract extends ActorsContractHelpers {
 
     @Test
     public void when_worker_finishes_the_actor_which_started_it_is_notified_in_the_actor_thread() throws InterruptedException {
-        final AtomicReference<Thread> actorThread = new AtomicReference<Thread>();
-        final AtomicReference<Thread> onFinishedThread = new AtomicReference<Thread>();
+        SpyRunnable worker = new SpyRunnable("run worker");
+        SpyRunnable onFinished = new SpyRunnable("on finished");
+        SpyRunnable actor = new WorkerStartingSpyRunnable("start worker", worker, onFinished);
 
-        final Runnable worker = new Runnable() {
-            public void run() {
-                logEvent("run worker");
-            }
-        };
-        final Runnable onFinished = new Runnable() {
-            public void run() {
-                onFinishedThread.set(Thread.currentThread());
-                logEvent("on finished");
-            }
-        };
-        actors.startEventPoller(Runnable.class, new Runnable() {
-            public void run() {
-                actorThread.set(Thread.currentThread());
-                logEvent("start worker");
-
-                // starting the worker must be done inside an actor
-                actors.startUnattendedWorker(worker, onFinished);
-            }
-        }, "Actor").run();
+        actors.startEventPoller(Runnable.class, actor, "Actor").run();
         awaitEvents(3);
 
         assertEvents("start worker", "run worker", "on finished");
-        assertThat("notification should have been in the actor thread", onFinishedThread.get(), is(actorThread.get()));
+        assertThat("notification should have been in the actor thread", onFinished.thread, is(actor.thread));
     }
 
     @Test
-    public void the_actor_is_notified_even_if_the_worker_throws_an_exception() throws InterruptedException {
-        final Runnable worker = new Runnable() {
-            public void run() {
-                logEvent("run worker");
-                // TODO: create a custom exception handler, then make it ignore this exception
-                throw new RuntimeException("dummy exception");
-            }
-        };
-        final Runnable onFinished = new Runnable() {
-            public void run() {
-                logEvent("on finished");
-            }
-        };
-        actors.startEventPoller(Runnable.class, new Runnable() {
-            public void run() {
-                logEvent("start worker");
+    public void the_actor_is_notified_on_finish_even_if_the_worker_throws_an_exception() throws InterruptedException {
+        // TODO: create a custom exception handler, then make it ignore this exception
+        SpyRunnable worker = new ExceptionThrowingSpyRunnable("run worker", new RuntimeException("dummy exception"));
+        SpyRunnable onFinished = new SpyRunnable("on finished");
+        SpyRunnable actor = new WorkerStartingSpyRunnable("start worker", worker, onFinished);
 
-                // starting the worker must be done inside an actor
-                actors.startUnattendedWorker(worker, onFinished);
-            }
-        }, "Actor").run();
+        actors.startEventPoller(Runnable.class, actor, "Actor").run();
         awaitEvents(3);
 
         assertEvents("start worker", "run worker", "on finished");
@@ -167,7 +131,7 @@ public abstract class ActorsContract extends ActorsContractHelpers {
         thrown.expect(IllegalStateException.class);
         thrown.expectMessage("not inside an actor");
 
-        actors.startUnattendedWorker(new DummyRunnable(), new DummyRunnable());
+        actors.startUnattendedWorker(new NullRunnable(), new NullRunnable());
     }
 
 
