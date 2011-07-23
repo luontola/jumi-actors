@@ -5,19 +5,19 @@
 package net.orfjackal.jumi.core;
 
 import net.orfjackal.jumi.api.drivers.*;
-import net.orfjackal.jumi.core.actors.Actors;
+import net.orfjackal.jumi.core.actors.OnDemandActors;
 
 public class TestClassRunner implements Runnable {
 
     private final Class<?> testClass;
     private final Class<? extends Driver> driverClass;
     private final SuiteListener listener;
-    private final Actors actors;
+    private final OnDemandActors actors;
 
     public TestClassRunner(Class<?> testClass,
                            Class<? extends Driver> driverClass,
                            SuiteListener listener,
-                           Actors actors) {
+                           OnDemandActors actors) {
         this.testClass = testClass;
         this.driverClass = driverClass;
         this.listener = listener;

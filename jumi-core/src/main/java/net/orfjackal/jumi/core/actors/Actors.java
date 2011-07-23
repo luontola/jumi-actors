@@ -4,7 +4,7 @@
 
 package net.orfjackal.jumi.core.actors;
 
-public abstract class Actors {
+public abstract class Actors implements LongLivedActors, OnDemandActors {
 
     private final ListenerFactory<?>[] factories;
     private final ThreadLocal<MessageQueue<Event<?>>> queueOfCurrentActor = new ThreadLocal<MessageQueue<Event<?>>>();

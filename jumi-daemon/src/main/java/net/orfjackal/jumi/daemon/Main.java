@@ -27,7 +27,7 @@ public class Main {
 
         // TODO: start up all actors
 
-        Actors actors = new ThreadedActors(DynamicListenerFactory.factoriesFor(
+        LongLivedActors actors = new MultiThreadedActors(DynamicListenerFactory.factoriesFor(
                 SuiteListener.class,
                 CommandListener.class
         ));

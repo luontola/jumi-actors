@@ -7,12 +7,12 @@ package net.orfjackal.jumi.core.actors;
 import java.util.*;
 import java.util.concurrent.*;
 
-public class ThreadedActors extends Actors {
+public class MultiThreadedActors extends Actors {
 
     private final Set<Thread> actorThreads = Collections.synchronizedSet(new HashSet<Thread>());
     private final ExecutorService unattendedWorkers = Executors.newCachedThreadPool();
 
-    public ThreadedActors(ListenerFactory<?>... factories) {
+    public MultiThreadedActors(ListenerFactory<?>... factories) {
         super(factories);
     }
 

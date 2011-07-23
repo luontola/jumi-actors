@@ -14,15 +14,15 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-public class ThreadedActorsTest extends ActorsContract {
+public class MultiThreadedActorsTest extends ActorsContract {
 
     private static final long TIMEOUT = 1000;
 
-    private final List<ThreadedActors> createdActors = new ArrayList<ThreadedActors>();
-    private ThreadedActors actors;
+    private final List<MultiThreadedActors> createdActors = new ArrayList<MultiThreadedActors>();
+    private MultiThreadedActors actors;
 
-    protected ThreadedActors newActors(ListenerFactory<?>... factories) {
-        ThreadedActors actors = new ThreadedActors(factories);
+    protected MultiThreadedActors newActors(ListenerFactory<?>... factories) {
+        MultiThreadedActors actors = new MultiThreadedActors(factories);
         createdActors.add(actors);
         return actors;
     }
@@ -38,7 +38,7 @@ public class ThreadedActorsTest extends ActorsContract {
 
     @After
     public void shutdown() throws InterruptedException {
-        for (ThreadedActors actors : createdActors) {
+        for (MultiThreadedActors actors : createdActors) {
             actors.shutdown(TIMEOUT);
         }
     }
@@ -103,7 +103,7 @@ public class ThreadedActorsTest extends ActorsContract {
 
     @Test
     public void shutting_down_waits_for_workers_to_finish() throws InterruptedException {
-        final ThreadedActors actors = newActors(new DummyListenerFactory(), new DynamicListenerFactory<Runnable>(Runnable.class));
+        final MultiThreadedActors actors = newActors(new DummyListenerFactory(), new DynamicListenerFactory<Runnable>(Runnable.class));
         final BlockingQueue<String> events = new LinkedBlockingQueue<String>();
 
         final Runnable worker = new Runnable() {
