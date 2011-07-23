@@ -9,7 +9,11 @@ TODO NEXT:
 			- use TestClassRunner from TestRunCoordinator.run()
 		- improve actors
 			- actor tests print dummy exceptions; solve by having a custom pluggable exception handler which doesn't print stack traces of a DummyException class
-			- should creating long-lived polling actor threads be allowed only once, when system is started?
+			! - should creating long-lived polling actor threads be allowed only once, when system is started?
+				OnDemandActors
+				LongLivedActors
+			! - actors tests: superclass with helpers
+			! - actors tests: extract anonymous classes
 			- Startable interface instead of Runnable, for event polling actors and secondary interfaces?
 	- use fi.jumi groupId and package
 	- events between launcher and daemon should not contain Class instances, because launcher's classpath won't contain the test classes
