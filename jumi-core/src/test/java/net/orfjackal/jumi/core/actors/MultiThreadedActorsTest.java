@@ -127,14 +127,4 @@ public class MultiThreadedActorsTest extends ActorsContract {
         actors.shutdown(TIMEOUT);
         assertThat("did not wait for worker to finish", events.poll(), is("worker finished"));
     }
-
-
-    private class CurrentThreadSpy implements DummyListener {
-        public volatile Thread actorThread;
-
-        public void onSomething(String parameter) {
-            actorThread = Thread.currentThread();
-            logEvent(parameter);
-        }
-    }
 }

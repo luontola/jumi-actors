@@ -9,7 +9,6 @@ TODO NEXT:
 			- use TestClassRunner from TestRunCoordinator.run()
 		- improve actors
 			- actor tests print dummy exceptions; solve by having a custom pluggable exception handler which doesn't print stack traces of a DummyException class
-			! - actors tests: superclass with helpers
 			! - actors tests: extract anonymous classes
 			- Startable interface instead of Runnable, for event polling actors and secondary interfaces?
 	- use fi.jumi groupId and package

@@ -8,20 +8,15 @@ import net.orfjackal.jumi.core.dynamicevents.DynamicListenerFactory;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.mock;
 
-public abstract class ActorsContract {
-
-    private static final long TIMEOUT = 1000;
+public abstract class ActorsContract extends ActorsContractHelpers {
 
     private Actors actors;
-    private final Queue<String> events = new ConcurrentLinkedQueue<String>();
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -32,35 +27,6 @@ public abstract class ActorsContract {
     }
 
     protected abstract Actors newActors(ListenerFactory<?>... factories);
-
-    protected abstract void processEvents();
-
-    protected void logEvent(String event) {
-        events.add(event);
-    }
-
-    protected void awaitEvents(int expectedEventCount) {
-        processEvents();
-
-        long limit = System.currentTimeMillis() + TIMEOUT;
-        while (events.size() < expectedEventCount) {
-            if (System.currentTimeMillis() > limit) {
-                throw new AssertionError("timed out; received events " + events + " but expected " + expectedEventCount);
-            }
-            Thread.yield();
-        }
-    }
-
-    protected void assertEvents(String... expected) {
-        List<String> actual = new ArrayList<String>(events);
-        assertThat("events", actual, is(Arrays.asList(expected)));
-    }
-
-    private class EventLoggingActor implements DummyListener {
-        public void onSomething(String parameter) {
-            logEvent(parameter);
-        }
-    }
 
 
     // normal event-polling actors
@@ -217,80 +183,5 @@ public abstract class ActorsContract {
         thrown.expectMessage(NoFactoryForThisListener.class.getName());
 
         actors.startEventPoller(NoFactoryForThisListener.class, listener, "ActorName");
-    }
-
-
-    // test data
-
-    private interface PrimaryInterface {
-        void onPrimaryEvent();
-    }
-
-    private interface SecondaryInterface {
-        void onSecondaryEvent();
-    }
-
-
-    private interface NoFactoryForThisListener {
-    }
-
-    protected interface DummyListener {
-        void onSomething(String parameter);
-    }
-
-    protected class DummyListenerFactory implements ListenerFactory<DummyListener> {
-
-        public Class<DummyListener> getType() {
-            return DummyListener.class;
-        }
-
-        public DummyListener newFrontend(MessageSender<Event<DummyListener>> target) {
-            return new DummyListenerToEvent(target);
-        }
-
-        public MessageSender<Event<DummyListener>> newBackend(DummyListener target) {
-            return new EventToDummyListener(target);
-        }
-    }
-
-    private class OnSomethingEvent implements Event<DummyListener> {
-        private final String parameter;
-
-        public OnSomethingEvent(String parameter) {
-            this.parameter = parameter;
-        }
-
-        public void fireOn(DummyListener target) {
-            target.onSomething(parameter);
-        }
-    }
-
-    private class DummyListenerToEvent implements DummyListener {
-        private final MessageSender<Event<DummyListener>> sender;
-
-        public DummyListenerToEvent(MessageSender<Event<DummyListener>> sender) {
-            this.sender = sender;
-        }
-
-        public void onSomething(String parameter) {
-            sender.send(new OnSomethingEvent(parameter));
-        }
-    }
-
-    private class EventToDummyListener implements MessageSender<Event<DummyListener>> {
-        private final DummyListener listener;
-
-        public EventToDummyListener(DummyListener listener) {
-            this.listener = listener;
-        }
-
-        public void send(Event<DummyListener> message) {
-            message.fireOn(listener);
-        }
-    }
-
-    protected static class DummyRunnable implements Runnable {
-        public void run() {
-        }
     }
 }
