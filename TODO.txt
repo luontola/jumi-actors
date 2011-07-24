@@ -2,14 +2,14 @@
 TODO NEXT:
 - refactor results of passing "suite with zero tests"
 	- actor model: some easy way for wiring the actors and starting new threads (use in daemon and launcher)
-		- integrate TestRunCoordinator and TestClassRunner (rewrite TestRunCoordinator using TDD and call it SuiteRunner?)
+		! - integrate TestRunCoordinator and TestClassRunner (rewrite TestRunCoordinator using TDD and call it SuiteRunner?)
 			- make TestRunCoordinator.run() event-based
 			- communicate with TestRunCoordinator through WorkerListener
 			- embed TestClassState into TestClassRunner
 			- use TestClassRunner from TestRunCoordinator.run()
 		- improve actors
 			- actor tests print dummy exceptions; solve by having a custom pluggable exception handler which doesn't print stack traces of a DummyException class
-			- Startable interface instead of Runnable, for event polling actors and secondary interfaces?
+			- Startable interface instead of Runnable, for event polling actors and secondary interfaces? (e.g. SuiteRunner)
 	- use fi.jumi groupId and package
 	- events between launcher and daemon should not contain Class instances, because launcher's classpath won't contain the test classes
 		- write a test that SuiteListener doesn't contain any method parameters of type java.lang.Class
@@ -19,6 +19,7 @@ TODO NEXT:
 		- the thing which coordinates a test class's workers might need to be an actor (it receives events from the tests), but it should also be able to exit itself when it has done its work
 	- code generation for events
 	- bullet proofing the public api, cross-references from javadocs to tests (a new xref tag?)
+	- making sure that non-thread-safe classes are used only from one thread (create a Java agent and use it in end-to-end tests?)
 - end-to-end tests: failing tests (includes reporting stack trace)
 - end-to-end tests: failures outside tests (in drivers and core)
 - end-to-end tests: reporting test output
