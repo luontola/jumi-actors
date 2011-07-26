@@ -24,14 +24,6 @@ public class SuiteStateCollector implements SuiteListener {
         finished.countDown();
     }
 
-    public void onTestClassStarted(Class<?> testClass) {
-        throw new UnsupportedOperationException("not implemented");
-    }
-
-    public void onTestClassFinished(Class<?> testClass) {
-        throw new UnsupportedOperationException("not implemented");
-    }
-
     public void onTestFound(String testClass, TestId id, String name) {
         state = state.withTest(id, name);
     }

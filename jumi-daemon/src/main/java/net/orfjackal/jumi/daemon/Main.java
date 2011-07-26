@@ -5,7 +5,7 @@
 package net.orfjackal.jumi.daemon;
 
 import net.orfjackal.jumi.core.*;
-import net.orfjackal.jumi.core.actors.*;
+import net.orfjackal.jumi.core.actors.MultiThreadedActors;
 import net.orfjackal.jumi.core.dynamicevents.DynamicListenerFactory;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.*;
@@ -25,13 +25,14 @@ public class Main {
 
         int launcherPort = Integer.parseInt(args[0]);
 
-        // TODO: start up all actors
-
-        LongLivedActors actors = new MultiThreadedActors(DynamicListenerFactory.factoriesFor(
+        MultiThreadedActors actors = new MultiThreadedActors(DynamicListenerFactory.factoriesFor(
+                Startable.class,
+                Runnable.class,
+                TestClassFinderListener.class,
                 SuiteListener.class,
                 CommandListener.class
         ));
-        CommandListener toCoordinator = actors.startEventPoller(CommandListener.class, new TestRunCoordinator(), "Coordinator");
+        CommandListener toCoordinator = actors.startEventPoller(CommandListener.class, new TestRunCoordinator(actors), "Coordinator");
 
         connectToLauncher(launcherPort, toCoordinator);
     }

@@ -11,10 +11,10 @@ import java.util.*;
 public class TestClassState implements SuiteListener {
 
     private final Map<TestId, String> tests = new HashMap<TestId, String>();
-    private final SuiteListener listener;
+    private final TestClassRunnerListener listener;
     private final Class<?> testClass;
 
-    public TestClassState(SuiteListener listener, Class<?> testClass) {
+    public TestClassState(TestClassRunnerListener listener, Class<?> testClass) {
         this.listener = listener;
         this.testClass = testClass;
     }
@@ -36,19 +36,11 @@ public class TestClassState implements SuiteListener {
         throw new UnsupportedOperationException(); // XXX: using SuiteListener violates ISP
     }
 
-    public void onTestClassStarted(Class<?> testClass) {
-        throw new UnsupportedOperationException(); // XXX: using SuiteListener violates ISP
-    }
-
-    public void onTestClassFinished(Class<?> testClass) {
-        throw new UnsupportedOperationException(); // XXX: using SuiteListener violates ISP
-    }
-
     public void onTestFound(String testClass, TestId id, String name) {
         if (hasNotBeenFoundBefore(id)) {
             checkParentWasFoundFirst(id);
             tests.put(id, name);
-            listener.onTestFound(testClass, id, name);
+            listener.onTestFound(id, name);
         } else {
             checkNameIsSameAsBefore(id, name);
         }

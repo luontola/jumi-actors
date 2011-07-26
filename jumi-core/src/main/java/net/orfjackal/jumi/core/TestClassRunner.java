@@ -7,16 +7,16 @@ package net.orfjackal.jumi.core;
 import net.orfjackal.jumi.api.drivers.*;
 import net.orfjackal.jumi.core.actors.OnDemandActors;
 
-public class TestClassRunner implements Runnable {
+public class TestClassRunner implements Startable {
 
     private final Class<?> testClass;
     private final Class<? extends Driver> driverClass;
-    private final SuiteListener listener;
+    private final TestClassRunnerListener listener;
     private final OnDemandActors actors;
 
     public TestClassRunner(Class<?> testClass,
                            Class<? extends Driver> driverClass,
-                           SuiteListener listener,
+                           TestClassRunnerListener listener,
                            OnDemandActors actors) {
         this.testClass = testClass;
         this.driverClass = driverClass;
@@ -24,16 +24,21 @@ public class TestClassRunner implements Runnable {
         this.actors = actors;
     }
 
-    public void run() {
-        listener.onTestClassStarted(testClass);
-
+    public void start() {
+        // XXX: the use of TestClassState needs to be redesigned; is the class even needed? 
         SuiteNotifier notifier = new TestClassState(listener, testClass).getSuiteNotifier();
         DriverRunner worker = new DriverRunner(notifier);
 
-        actors.startUnattendedWorker(worker, new OnWorkerFinished());
+        actors.startUnattendedWorker(worker, new Runnable() {
+            public void run() {
+                // TODO: count workers, fire "onTestClassFinished" only after all workers are finished
+                listener.onTestClassFinished();
+            }
+        });
     }
 
 
+    // TODO: decouple DriverRunner from TestClassRunner (at least once long-lived drivers are added)
     private class DriverRunner implements Runnable {
         private final SuiteNotifier suiteNotifier;
 
@@ -53,13 +58,6 @@ public class TestClassRunner implements Runnable {
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
-        }
-    }
-
-    private class OnWorkerFinished implements Runnable {
-        public void run() {
-            // TODO: count workers, fire "onTestClassFinished" only after all workers are finished
-            listener.onTestClassFinished(testClass);
         }
     }
 }

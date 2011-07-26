@@ -16,7 +16,7 @@ public class TestClassStateTest {
 
     private final Class<DummyTest> testClass = DummyTest.class;
 
-    private SuiteListener listener = mock(SuiteListener.class);
+    private TestClassRunnerListener listener = mock(TestClassRunnerListener.class);
     private TestClassState runner = new TestClassState(listener, testClass);
 
     @Rule
@@ -68,7 +68,7 @@ public class TestClassStateTest {
 
         notifier.fireTestFound(TestId.ROOT, "root");
 
-        verify(listener).onTestFound(testClass.getName(), TestId.ROOT, "root");
+        verify(listener).onTestFound(TestId.ROOT, "root");
     }
 
     @Test
@@ -78,7 +78,7 @@ public class TestClassStateTest {
         notifier.fireTestFound(TestId.ROOT, "root");
         notifier.fireTestFound(TestId.ROOT, "root");
 
-        verify(listener, atMost(1)).onTestFound(testClass.getName(), TestId.ROOT, "root");
+        verify(listener, atMost(1)).onTestFound(TestId.ROOT, "root");
     }
 
 

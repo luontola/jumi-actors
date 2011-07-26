@@ -16,10 +16,11 @@ import static org.mockito.Mockito.*;
 
 public class TestClassRunnerTest {
 
-    private final SuiteListener listener = mock(SuiteListener.class);
+    private final TestClassRunnerListener listener = mock(TestClassRunnerListener.class);
     private final InOrder inOrder = inOrder(listener);
 
-    private final SingleThreadedActors actors = new SingleThreadedActors(DynamicListenerFactory.factoriesFor(Runnable.class));
+    private final SingleThreadedActors actors = new SingleThreadedActors(
+            DynamicListenerFactory.factoriesFor(Startable.class, Runnable.class));
 
     @Test
     public void test_class_with_zero_tests() {
@@ -28,8 +29,7 @@ public class TestClassRunnerTest {
         runAndAwaitCompletion(runner);
 
         // TODO: is this an allowed situation? in practice it means that the class is not reported anywhere
-        inOrder.verify(listener).onTestClassStarted(DummyTest.class);
-        inOrder.verify(listener).onTestClassFinished(DummyTest.class);
+        inOrder.verify(listener).onTestClassFinished();
         verifyNoMoreInteractions(listener);
     }
 
@@ -39,15 +39,13 @@ public class TestClassRunnerTest {
 
         runAndAwaitCompletion(runner);
 
-        inOrder.verify(listener).onTestClassStarted(DummyTest.class);
-        inOrder.verify(listener).onTestFound(DummyTest.class.getName(), TestId.ROOT, "root test");
-        inOrder.verify(listener).onTestClassFinished(DummyTest.class);
+        inOrder.verify(listener).onTestFound(TestId.ROOT, "root test");
+        inOrder.verify(listener).onTestClassFinished();
         verifyNoMoreInteractions(listener);
     }
 
     private void runAndAwaitCompletion(TestClassRunner runner) {
-        Runnable handle = actors.startEventPoller(Runnable.class, runner, "TestClassRunner");
-        handle.run();       // command to start up test class execution
+        actors.startEventPoller(Startable.class, runner, "TestClassRunner").start();
         actors.processEventsUntilIdle();
     }
 

@@ -18,7 +18,7 @@ import static org.mockito.Mockito.mock;
 public class SimpleUnitTest {
     private static final long TIMEOUT = 1000;
 
-    private SuiteListener dummyListener = mock(SuiteListener.class);
+    private TestClassRunnerListener dummyListener = mock(TestClassRunnerListener.class);
     private ExecutorService executor = Executors.newCachedThreadPool();
     private SimpleUnit driver = new SimpleUnit();
 
