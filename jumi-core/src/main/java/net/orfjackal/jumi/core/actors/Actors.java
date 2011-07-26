@@ -14,6 +14,7 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
     }
 
     public <T> T startEventPoller(Class<T> type, T target, String name) {
+        checkNotInsideAnActor();
         ListenerFactory<T> factory = getFactoryForType(type);
 
         MessageQueue<Event<T>> queue = new MessageQueue<Event<T>>();
@@ -22,6 +23,12 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
 
         doStartEventPoller(name, queue, receiver);
         return type.cast(handle);
+    }
+
+    private <T> void checkNotInsideAnActor() {
+        if (queueOfCurrentActor.get() != null) {
+            throw new IllegalStateException("already inside an actor");
+        }
     }
 
     protected abstract <T> void doStartEventPoller(String name, MessageQueue<Event<T>> queue, MessageSender<Event<T>> receiver);
