@@ -46,10 +46,20 @@
                 <artifactId>code-generator-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <phase>compile</phase>
+                        <phase>generate-sources</phase>
                         <goals>
-                            <goal>sayhi</goal>
+                            <goal>generate-event-stubs</goal>
                         </goals>
+                        <configuration>
+                            <targetPackage>fi.jumi.core.events</targetPackage>
+                            <eventInterfaces>
+                                <param>java.lang.Runnable</param>
+                                <param>fi.jumi.core.CommandListener</param>
+                                <param>fi.jumi.core.Startable</param>
+                                <param>fi.jumi.core.SuiteListener</param>
+                                <param>fi.jumi.core.files.TestClassFinderListener</param>
+                            </eventInterfaces>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
