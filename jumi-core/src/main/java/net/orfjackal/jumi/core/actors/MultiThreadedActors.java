@@ -16,7 +16,7 @@ public class MultiThreadedActors extends Actors {
         super(factories);
     }
 
-    protected <T> void doStartEventPoller(String name, MessageQueue<Event<T>> queue, MessageSender<Event<T>> receiver) {
+    protected <T> void startEventPoller(String name, MessageQueue<Event<T>> queue, MessageSender<Event<T>> receiver) {
         Thread t = new Thread(new ActorContext<T>(queue, new EventPoller<T>(queue, receiver)), name);
         t.start();
         actorThreads.add(t);

@@ -32,7 +32,7 @@ public class Main {
                 SuiteListener.class,
                 CommandListener.class
         ));
-        CommandListener toCoordinator = actors.startEventPoller(CommandListener.class, new TestRunCoordinator(actors), "Coordinator");
+        CommandListener toCoordinator = actors.createPrimaryActor(CommandListener.class, new TestRunCoordinator(actors), "Coordinator");
 
         connectToLauncher(launcherPort, toCoordinator);
     }

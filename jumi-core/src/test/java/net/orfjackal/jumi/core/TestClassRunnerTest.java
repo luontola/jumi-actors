@@ -45,7 +45,7 @@ public class TestClassRunnerTest {
     }
 
     private void runAndAwaitCompletion(TestClassRunner runner) {
-        actors.startEventPoller(Startable.class, runner, "TestClassRunner").start();
+        actors.createPrimaryActor(Startable.class, runner, "TestClassRunner").start();
         actors.processEventsUntilIdle();
     }
 

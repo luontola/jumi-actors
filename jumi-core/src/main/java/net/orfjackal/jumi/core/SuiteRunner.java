@@ -29,7 +29,7 @@ public class SuiteRunner implements Startable, TestClassFinderListener {
         // XXX: this call might not be needed (it could even be harmful because of asynchrony); the caller of SuiteRunner knows when the suite is started
         suiteListener.onSuiteStarted();
 
-        final TestClassFinderListener finderListener = actors.bindSecondaryInterface(TestClassFinderListener.class, this);
+        final TestClassFinderListener finderListener = actors.createSecondaryActor(TestClassFinderListener.class, this);
         startUnattendedWorker(new Runnable() {
             public void run() {
                 testClassFinder.findTestClasses(finderListener);

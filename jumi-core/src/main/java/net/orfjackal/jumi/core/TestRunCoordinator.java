@@ -27,6 +27,6 @@ public class TestRunCoordinator implements CommandListener {
         DriverFinder driverFinder = new RunViaAnnotationDriverFinder();
         SuiteRunner suiteRunner = new SuiteRunner(listener, testClassFinder, driverFinder, actors);
 
-        actors.bindSecondaryInterface(Startable.class, suiteRunner).start();
+        actors.createSecondaryActor(Startable.class, suiteRunner).start();
     }
 }

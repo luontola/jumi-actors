@@ -41,7 +41,7 @@ public class MultiThreadedActorsTest extends ActorsContract<MultiThreadedActors>
     public void target_is_invoked_in_its_own_actor_thread() throws InterruptedException {
         SpyDummyListener actor = new SpyDummyListener();
 
-        DummyListener handle = actors.startEventPoller(DummyListener.class, actor, "ActorName");
+        DummyListener handle = actors.createPrimaryActor(DummyListener.class, actor, "ActorName");
         handle.onSomething("event");
         awaitEvents(1);
 
@@ -55,7 +55,7 @@ public class MultiThreadedActorsTest extends ActorsContract<MultiThreadedActors>
         SpyRunnable worker = new SpyRunnable("event 2");
         SpyRunnable actor = new WorkerStartingSpyRunnable("event 1", worker, new NullRunnable());
 
-        actors.startEventPoller(Runnable.class, actor, "ActorName").run();
+        actors.createPrimaryActor(Runnable.class, actor, "ActorName").run();
         awaitEvents(2);
 
         assertThat("worker is run", worker.thread, is(notNullValue()));
@@ -68,7 +68,7 @@ public class MultiThreadedActorsTest extends ActorsContract<MultiThreadedActors>
     @Test
     public void actor_threads_can_be_shut_down() throws InterruptedException {
         SpyDummyListener actor = new SpyDummyListener();
-        DummyListener handle = actors.startEventPoller(DummyListener.class, actor, "ActorName");
+        DummyListener handle = actors.createPrimaryActor(DummyListener.class, actor, "ActorName");
         handle.onSomething("event");
         awaitEvents(1);
 
@@ -94,7 +94,7 @@ public class MultiThreadedActorsTest extends ActorsContract<MultiThreadedActors>
                 events.add("worker finished");
             }
         };
-        actors.startEventPoller(Runnable.class, new WorkerStartingSpyRunnable("", worker, new NullRunnable()), "Actor").run();
+        actors.createPrimaryActor(Runnable.class, new WorkerStartingSpyRunnable("", worker, new NullRunnable()), "Actor").run();
 
         assertThat("worker did not start", events.poll(TIMEOUT, TimeUnit.MILLISECONDS), is("worker started"));
         actors.shutdown(TIMEOUT);

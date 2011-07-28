@@ -6,5 +6,5 @@ package net.orfjackal.jumi.core.actors;
 
 public interface LongLivedActors {
 
-    <T> T startEventPoller(Class<T> type, T target, String name);
+    <T> T createPrimaryActor(Class<T> type, T target, String name);
 }

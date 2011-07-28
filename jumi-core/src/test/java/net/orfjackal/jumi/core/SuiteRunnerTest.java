@@ -83,7 +83,7 @@ public class SuiteRunnerTest {
 
 
     private void runAndAwaitCompletion(SuiteRunner runner) {
-        actors.startEventPoller(Startable.class, runner, "SuiteRunner").start();
+        actors.createPrimaryActor(Startable.class, runner, "SuiteRunner").start();
         actors.processEventsUntilIdle();
     }
 

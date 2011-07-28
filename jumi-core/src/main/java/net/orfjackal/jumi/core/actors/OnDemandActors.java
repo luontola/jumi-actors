@@ -8,5 +8,5 @@ public interface OnDemandActors {
 
     void startUnattendedWorker(Runnable worker, Runnable onFinished);
 
-    <T> T bindSecondaryInterface(Class<T> type, T target);
+    <T> T createSecondaryActor(Class<T> type, T target);
 }

@@ -15,7 +15,7 @@ public class SingleThreadedActors extends Actors {
         super(factories);
     }
 
-    protected <T> void doStartEventPoller(String name, MessageQueue<Event<T>> queue, MessageSender<Event<T>> receiver) {
+    protected <T> void startEventPoller(String name, MessageQueue<Event<T>> queue, MessageSender<Event<T>> receiver) {
         pollers.add(new EventPoller<T>(queue, receiver));
     }
 

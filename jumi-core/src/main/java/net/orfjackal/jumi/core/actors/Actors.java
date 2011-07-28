@@ -13,7 +13,7 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
         this.factories = factories;
     }
 
-    public <T> T startEventPoller(Class<T> type, T target, String name) {
+    public <T> T createPrimaryActor(Class<T> type, T target, String name) {
         checkNotInsideAnActor();
         ListenerFactory<T> factory = getFactoryForType(type);
 
@@ -21,7 +21,7 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
         MessageSender<Event<T>> receiver = factory.newBackend(target);
         T handle = factory.newFrontend(queue);
 
-        doStartEventPoller(name, queue, receiver);
+        startEventPoller(name, queue, receiver);
         return type.cast(handle);
     }
 
@@ -31,16 +31,16 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
         }
     }
 
-    protected abstract <T> void doStartEventPoller(String name, MessageQueue<Event<T>> queue, MessageSender<Event<T>> receiver);
+    protected abstract <T> void startEventPoller(String name, MessageQueue<Event<T>> queue, MessageSender<Event<T>> receiver);
 
     public void startUnattendedWorker(Runnable worker, Runnable onFinished) {
-        Runnable onFinishedHandle = bindSecondaryInterface(Runnable.class, onFinished);
+        Runnable onFinishedHandle = createSecondaryActor(Runnable.class, onFinished);
         doStartUnattendedWorker(new UnattendedWorker(worker, onFinishedHandle));
     }
 
     protected abstract void doStartUnattendedWorker(Runnable worker);
 
-    public <T> T bindSecondaryInterface(Class<T> type, final T target) {
+    public <T> T createSecondaryActor(Class<T> type, final T target) {
         ListenerFactory<T> factory = getFactoryForType(type);
         final MessageQueue<Event<?>> queue = getQueueOfCurrentActor();
 
