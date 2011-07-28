@@ -9,7 +9,6 @@ import java.net.*;
 import java.util.List;
 
 public class FileSystemTestClassFinder implements TestClassFinder {
-    // TODO: cover with unit tests
 
     private final List<File> classPath;
     private final String testsToIncludePattern;
@@ -20,22 +19,18 @@ public class FileSystemTestClassFinder implements TestClassFinder {
     }
 
     public void findTestClasses(TestClassFinderListener listener) {
-        System.out.println("classPath = " + classPath);
-        System.out.println("testsToIncludePattern = " + testsToIncludePattern);
-
         try {
             // TODO: find all test classes from classpath
+            // TODO: class loader might need to be dependency injected
             URLClassLoader loader = new URLClassLoader(asUrls(classPath));
             Class<?> testClass = loader.loadClass(testsToIncludePattern);
-            System.out.println("testClass = " + testClass);
-
             listener.onTestClassFound(testClass);
 
         } catch (MalformedURLException e) {
             // TODO: use sneaky throw? http://blog.jayway.com/2010/01/29/sneaky-throw/
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            // no class matching the pattern; fail silently
         }
     }
 
