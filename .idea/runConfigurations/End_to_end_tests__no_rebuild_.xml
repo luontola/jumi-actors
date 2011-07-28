@@ -2,7 +2,7 @@
   <configuration default="false" name="End-to-end tests (no rebuild)" type="JUnit" factoryName="JUnit">
     <extension name="coverage" enabled="true" merge="false" track_test_folders="true" runner="idea">
       <pattern>
-        <option name="PATTERN" value="net.orfjackal.*" />
+        <option name="PATTERN" value="fi.jumi.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>
