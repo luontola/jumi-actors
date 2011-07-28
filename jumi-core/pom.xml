@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>net.orfjackal.jumi</groupId>
+        <groupId>fi.jumi</groupId>
         <artifactId>parent</artifactId>
         <version>0.1.0-SNAPSHOT</version>
         <relativePath>../parent/pom.xml</relativePath>
@@ -22,7 +22,7 @@
     <dependencies>
 
         <dependency>
-            <groupId>net.orfjackal.jumi</groupId>
+            <groupId>fi.jumi</groupId>
             <artifactId>jumi-api</artifactId>
         </dependency>
 
@@ -56,7 +56,7 @@
                             <artifactSet>
                                 <excludes>
                                     <!-- Regular dependencies -->
-                                    <exclude>net.orfjackal.jumi:jumi-api</exclude>
+                                    <exclude>fi.jumi:jumi-api</exclude>
                                 </excludes>
                             </artifactSet>
                             <relocations>

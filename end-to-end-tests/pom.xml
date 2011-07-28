@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>net.orfjackal.jumi</groupId>
+        <groupId>fi.jumi</groupId>
         <artifactId>parent</artifactId>
         <version>0.1.0-SNAPSHOT</version>
         <relativePath>../parent/pom.xml</relativePath>
@@ -25,12 +25,12 @@
 
         <dependency>
             <!-- TODO: should the test data be in a different module; then they could have both main and test sources -->
-            <groupId>net.orfjackal.jumi</groupId>
+            <groupId>fi.jumi</groupId>
             <artifactId>jumi-api</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>net.orfjackal.jumi</groupId>
+            <groupId>fi.jumi</groupId>
             <artifactId>jumi-launcher</artifactId>
             <scope>test</scope>
         </dependency>
@@ -115,48 +115,48 @@
                             <artifactItems>
 
                                 <artifactItem>
-                                    <groupId>net.orfjackal.jumi</groupId>
+                                    <groupId>fi.jumi</groupId>
                                     <artifactId>jumi-api</artifactId>
                                     <version>${project.version}</version>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>net.orfjackal.jumi</groupId>
+                                    <groupId>fi.jumi</groupId>
                                     <artifactId>jumi-api</artifactId>
                                     <version>${project.version}</version>
                                     <type>pom</type>
                                 </artifactItem>
 
                                 <artifactItem>
-                                    <groupId>net.orfjackal.jumi</groupId>
+                                    <groupId>fi.jumi</groupId>
                                     <artifactId>jumi-core</artifactId>
                                     <version>${project.version}</version>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>net.orfjackal.jumi</groupId>
+                                    <groupId>fi.jumi</groupId>
                                     <artifactId>jumi-core</artifactId>
                                     <version>${project.version}</version>
                                     <type>pom</type>
                                 </artifactItem>
 
                                 <artifactItem>
-                                    <groupId>net.orfjackal.jumi</groupId>
+                                    <groupId>fi.jumi</groupId>
                                     <artifactId>jumi-daemon</artifactId>
                                     <version>${project.version}</version>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>net.orfjackal.jumi</groupId>
+                                    <groupId>fi.jumi</groupId>
                                     <artifactId>jumi-daemon</artifactId>
                                     <version>${project.version}</version>
                                     <type>pom</type>
                                 </artifactItem>
 
                                 <artifactItem>
-                                    <groupId>net.orfjackal.jumi</groupId>
+                                    <groupId>fi.jumi</groupId>
                                     <artifactId>jumi-launcher</artifactId>
                                     <version>${project.version}</version>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>net.orfjackal.jumi</groupId>
+                                    <groupId>fi.jumi</groupId>
                                     <artifactId>jumi-launcher</artifactId>
                                     <version>${project.version}</version>
                                     <type>pom</type>

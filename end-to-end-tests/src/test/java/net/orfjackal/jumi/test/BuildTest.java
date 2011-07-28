@@ -22,15 +22,15 @@ import static org.junit.Assert.assertTrue;
 
 public class BuildTest {
 
-    private static final String POM_FILES = "META-INF/maven/net.orfjackal.jumi/";
+    private static final String POM_FILES = "META-INF/maven/fi.jumi/";
     private static final String BASE_PACKAGE = "net/orfjackal/jumi/";
     private static final Map<String, List<String>> DEPENDENCIES = new HashMap<String, List<String>>();
 
     static {
         DEPENDENCIES.put("jumi-api", Arrays.<String>asList());
-        DEPENDENCIES.put("jumi-core", Arrays.asList("net.orfjackal.jumi:jumi-api"));
+        DEPENDENCIES.put("jumi-core", Arrays.asList("fi.jumi:jumi-api"));
         DEPENDENCIES.put("jumi-daemon", Arrays.<String>asList());
-        DEPENDENCIES.put("jumi-launcher", Arrays.asList("net.orfjackal.jumi:jumi-core"));
+        DEPENDENCIES.put("jumi-launcher", Arrays.asList("fi.jumi:jumi-core"));
     }
 
     private File[] projectPoms;
@@ -107,8 +107,10 @@ public class BuildTest {
         assertThat("project POMs", projectPoms.length, is(4));
         for (File projectPom : projectPoms) {
             Document doc = parseXml(projectPom);
-            String artifactId = xpath("/project/artifactId", doc);
-            assertThat("dependencies of " + artifactId, getRuntimeDependencies(doc), is(DEPENDENCIES.get(artifactId)));
+
+            String artifactId = getArtifactId(doc);
+            List<String> dependencies = getRuntimeDependencies(doc);
+            assertThat("dependencies of " + artifactId + " were " + dependencies, dependencies, is(DEPENDENCIES.get(artifactId)));
         }
     }
 
@@ -137,6 +139,10 @@ public class BuildTest {
             allowed |= s.startsWith(entry.getName());
         }
         assertTrue("contained a not allowed entry: " + entry, allowed);
+    }
+
+    private static String getArtifactId(Document doc) throws XPathExpressionException {
+        return xpath("/project/artifactId", doc);
     }
 
     private static List<String> getRuntimeDependencies(Document doc) throws XPathExpressionException {

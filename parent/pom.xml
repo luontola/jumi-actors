@@ -9,7 +9,7 @@
         <version>7</version>
     </parent>
 
-    <groupId>net.orfjackal.jumi</groupId>
+    <groupId>fi.jumi</groupId>
     <artifactId>parent</artifactId>
     <version>0.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -86,17 +86,17 @@
             <!-- Jumi -->
 
             <dependency>
-                <groupId>net.orfjackal.jumi</groupId>
+                <groupId>fi.jumi</groupId>
                 <artifactId>jumi-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>net.orfjackal.jumi</groupId>
+                <groupId>fi.jumi</groupId>
                 <artifactId>jumi-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>net.orfjackal.jumi</groupId>
+                <groupId>fi.jumi</groupId>
                 <artifactId>jumi-launcher</artifactId>
                 <version>${project.version}</version>
             </dependency>
