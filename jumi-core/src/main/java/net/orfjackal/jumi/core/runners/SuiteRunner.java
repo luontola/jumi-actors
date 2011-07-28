@@ -2,10 +2,13 @@
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
-package net.orfjackal.jumi.core;
+package net.orfjackal.jumi.core.runners;
 
 import net.orfjackal.jumi.api.drivers.*;
+import net.orfjackal.jumi.core.*;
 import net.orfjackal.jumi.core.actors.OnDemandActors;
+import net.orfjackal.jumi.core.drivers.DriverFinder;
+import net.orfjackal.jumi.core.files.*;
 
 public class SuiteRunner implements Startable, TestClassFinderListener {
 

@@ -2,7 +2,7 @@
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
-package net.orfjackal.jumi.core;
+package net.orfjackal.jumi.core.files;
 
 import java.io.File;
 import java.net.*;

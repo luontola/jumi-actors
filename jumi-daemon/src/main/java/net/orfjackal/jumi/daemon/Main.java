@@ -7,6 +7,7 @@ package net.orfjackal.jumi.daemon;
 import net.orfjackal.jumi.core.*;
 import net.orfjackal.jumi.core.actors.MultiThreadedActors;
 import net.orfjackal.jumi.core.dynamicevents.DynamicListenerFactory;
+import net.orfjackal.jumi.core.files.TestClassFinderListener;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.socket.oio.OioClientSocketChannelFactory;

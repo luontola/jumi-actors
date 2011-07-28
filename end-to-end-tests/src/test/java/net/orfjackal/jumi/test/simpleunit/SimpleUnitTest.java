@@ -5,7 +5,7 @@
 package net.orfjackal.jumi.test.simpleunit;
 
 import net.orfjackal.jumi.api.drivers.SuiteNotifier;
-import net.orfjackal.jumi.core.*;
+import net.orfjackal.jumi.core.runners.*;
 import org.junit.Test;
 import sample.*;
 

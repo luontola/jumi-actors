@@ -2,11 +2,9 @@
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
-package net.orfjackal.jumi.core;
+package net.orfjackal.jumi.core.files;
 
-import net.orfjackal.jumi.api.drivers.Driver;
+public interface TestClassFinder {
 
-public interface DriverFinder {
-
-    Class<? extends Driver> findTestClassDriver(Class<?> testClass);
+    void findTestClasses(TestClassFinderListener listener);
 }
