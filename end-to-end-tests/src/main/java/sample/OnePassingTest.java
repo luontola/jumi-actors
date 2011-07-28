@@ -4,7 +4,7 @@
 
 package sample;
 
-import net.orfjackal.jumi.api.RunVia;
+import fi.jumi.api.RunVia;
 
 @RunVia(SimpleUnit.class)
 @SuppressWarnings({"UnusedDeclaration"})

@@ -4,7 +4,7 @@
 
 package sample;
 
-import net.orfjackal.jumi.api.drivers.*;
+import fi.jumi.api.drivers.*;
 
 import java.lang.reflect.Method;
 import java.util.*;

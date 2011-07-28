@@ -16,7 +16,7 @@
     <name>jumi-daemon</name>
 
     <properties>
-        <shadedPrefix>net.orfjackal.jumi.daemon.INTERNAL</shadedPrefix>
+        <shadedPrefix>fi.jumi.daemon.INTERNAL</shadedPrefix>
     </properties>
 
     <dependencies>
@@ -50,7 +50,7 @@
                         <configuration>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>net.orfjackal.jumi.daemon.Main</mainClass>
+                                    <mainClass>fi.jumi.daemon.Main</mainClass>
                                 </transformer>
                             </transformers>
                             <relocations>
