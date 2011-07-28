@@ -22,7 +22,7 @@
         Overcomes a bunch of limitations in JUnit's test runner, IDEs
         and build tools.
     </description>
-    <url>https://github.com/orfjackal/jumi</url>
+    <url>http://jumi.fi</url>
     <inceptionYear>2011</inceptionYear>
 
     <licenses>
@@ -42,7 +42,7 @@
 
     <scm>
         <connection>scm:git:git://github.com/orfjackal/jumi.git</connection>
-        <url>http://github.com/orfjackal/jumi/tree</url>
+        <url>https://github.com/orfjackal/jumi</url>
     </scm>
 
     <properties>
