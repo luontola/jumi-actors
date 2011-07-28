@@ -8,12 +8,6 @@ import fi.jumi.api.drivers.TestId;
 
 public interface SuiteListener {
 
-    // NOTE:
-    // This interfaces is used for events sent over the network from daemon to launcher.
-    // It shouldn't contain any Class instances as parameters.
-
-    // TODO: write a test which ensures the absence of Class parameters
-
     // TODO: code-generate all the event classes based on this interface
 
     void onSuiteStarted();
