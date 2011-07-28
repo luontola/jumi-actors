@@ -9,28 +9,18 @@ import org.junit.*;
 import org.junit.rules.ExpectedException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 
-public class TestClassStateTest {
+public class FindingTestsTest {
 
     private final Class<DummyTest> testClass = DummyTest.class;
 
     private TestClassRunnerListener listener = mock(TestClassRunnerListener.class);
-    private TestClassState runner = new TestClassState(listener, testClass);
+    private TestClassRunner runner = new TestClassRunner(testClass, null, listener, null);
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
-
-    @Test
-    public void remembers_found_tests() {
-        SuiteNotifier notifier = runner.getSuiteNotifier();
-        notifier.fireTestFound(TestId.ROOT, "root");
-        notifier.fireTestFound(TestId.of(0), "child 0");
-        notifier.fireTestFound(TestId.of(1), "child 1");
-
-        assertThat(runner.getTestNames(), containsInAnyOrder("root", "child 0", "child 1"));
-    }
 
     @Test
     public void finding_tests_multiple_times_is_idempotent() {

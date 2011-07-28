@@ -8,7 +8,10 @@ import net.orfjackal.jumi.api.drivers.TestId;
 
 public interface SuiteListener {
 
-    // NOTE: this interfaces is used for events sent from daemon to launcher; it shouldn't contain any Class instances as parameters
+    // NOTE:
+    // This interfaces is used for events sent over the network from daemon to launcher.
+    // It shouldn't contain any Class instances as parameters.
+
     // TODO: write a test which ensures the absence of Class parameters
 
     // TODO: code-generate all the event classes based on this interface

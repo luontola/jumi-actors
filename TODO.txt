@@ -6,8 +6,8 @@ TODO NEXT:
 			OK - make TestRunCoordinator.run() event-based
 			OK - communicate with TestRunCoordinator through WorkerListener
 			OK - use TestClassRunner from TestRunCoordinator.run()
-			- refactor TestClassRunner, rethink TestClassState
-				- embed TestClassState into TestClassRunner?
+			OK - refactor TestClassRunner, rethink TestClassState
+				OK - embed TestClassState into TestClassRunner?
 			- cover with unit tests: FileSystemTestClassFinder, RunViaAnnotationDriverFinder
 		- improve actors
 			- actor tests print dummy exceptions; solve by having a custom pluggable exception handler which doesn't print stack traces of a DummyException class

@@ -8,16 +8,14 @@ import net.orfjackal.jumi.api.drivers.*;
 
 public class DefaultSuiteNotifier implements SuiteNotifier {
 
-    private final Class<?> testClass;
-    private final SuiteListener listener;
+    private final TestClassRunner listener;
 
-    public DefaultSuiteNotifier(Class<?> testClass, TestClassState listener) {
-        this.testClass = testClass;
+    public DefaultSuiteNotifier(TestClassRunner listener) {
         this.listener = listener;
     }
 
     public void fireTestFound(TestId id, String name) {
-        listener.onTestFound(testClass.getName(), id, name);
+        listener.onTestFound(id, name);
     }
 
     public TestNotifier fireTestStarted(TestId id) {

@@ -4,6 +4,7 @@
 
 package net.orfjackal.jumi.test.simpleunit;
 
+import net.orfjackal.jumi.api.drivers.SuiteNotifier;
 import net.orfjackal.jumi.core.*;
 import org.junit.Test;
 import sample.*;
@@ -22,24 +23,24 @@ public class SimpleUnitTest {
     private ExecutorService executor = Executors.newCachedThreadPool();
     private SimpleUnit driver = new SimpleUnit();
 
+    private Class<OnePassingTest> testClass = OnePassingTest.class;
+    private TestClassRunner results = new TestClassRunner(null, null, dummyListener, null); // XXX: use something else to collect the results?
+    private SuiteNotifier notifier = new DefaultSuiteNotifier(results);
+
     @Test
     public void the_test_class_is_named_after_its_simple_name() throws InterruptedException {
-        Class<OnePassingTest> testClass = OnePassingTest.class;
-        TestClassState runner = new TestClassState(dummyListener, testClass);
-        driver.findTests(testClass, runner.getSuiteNotifier(), executor);
+        driver.findTests(testClass, notifier, executor);
         waitForTestsToExecute();
 
-        assertThat(runner.getTestNames(), hasItem("OnePassingTest"));
+        assertThat(results.getTestNames(), hasItem("OnePassingTest"));
     }
 
     @Test
     public void the_tests_are_methods_whose_name_starts_with_test() throws InterruptedException {
-        Class<OnePassingTest> testClass = OnePassingTest.class;
-        TestClassState runner = new TestClassState(dummyListener, testClass);
-        driver.findTests(testClass, runner.getSuiteNotifier(), executor);
+        driver.findTests(testClass, notifier, executor);
         waitForTestsToExecute();
 
-        Collection<String> testNames = runner.getTestNames();
+        Collection<String> testNames = results.getTestNames();
         assertThat(testNames, hasItem("testPassing"));
         assertThat(testNames.size(), is(2)); // one root plus the one passing test
     }

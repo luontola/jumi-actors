@@ -7,12 +7,15 @@ package net.orfjackal.jumi.core;
 import net.orfjackal.jumi.api.drivers.*;
 import net.orfjackal.jumi.core.actors.OnDemandActors;
 
+import java.util.*;
+
 public class TestClassRunner implements Startable {
 
     private final Class<?> testClass;
     private final Class<? extends Driver> driverClass;
     private final TestClassRunnerListener listener;
     private final OnDemandActors actors;
+    private final Map<TestId, String> tests = new HashMap<TestId, String>();
 
     public TestClassRunner(Class<?> testClass,
                            Class<? extends Driver> driverClass,
@@ -25,8 +28,7 @@ public class TestClassRunner implements Startable {
     }
 
     public void start() {
-        // XXX: the use of TestClassState needs to be redesigned; is the class even needed? 
-        SuiteNotifier notifier = new TestClassState(listener, testClass).getSuiteNotifier();
+        SuiteNotifier notifier = getSuiteNotifier();
         DriverRunner worker = new DriverRunner(notifier);
 
         actors.startUnattendedWorker(worker, new Runnable() {
@@ -35,6 +37,42 @@ public class TestClassRunner implements Startable {
                 listener.onTestClassFinished();
             }
         });
+    }
+
+    public Collection<String> getTestNames() {
+        // XXX: smelly getter; remove it and move the responsibility somewhere else
+        return Collections.unmodifiableCollection(tests.values());
+    }
+
+    public SuiteNotifier getSuiteNotifier() {
+        return new DefaultSuiteNotifier(this);
+    }
+
+    public void onTestFound(TestId id, String name) {
+        if (hasNotBeenFoundBefore(id)) {
+            checkParentWasFoundFirst(id);
+            tests.put(id, name);
+            listener.onTestFound(id, name);
+        } else {
+            checkNameIsSameAsBefore(id, name);
+        }
+    }
+
+    private boolean hasNotBeenFoundBefore(TestId id) {
+        return !tests.containsKey(id);
+    }
+
+    private void checkParentWasFoundFirst(TestId id) {
+        if (!id.isRoot() && hasNotBeenFoundBefore(id.getParent())) {
+            throw new IllegalStateException("parent of " + id + " must be found first");
+        }
+    }
+
+    private void checkNameIsSameAsBefore(TestId id, String newName) {
+        String oldName = tests.get(id);
+        if (oldName != null && !oldName.equals(newName)) {
+            throw new IllegalStateException("test " + id + " was already found with another name: " + oldName);
+        }
     }
 
 
