@@ -12,7 +12,7 @@ import java.io.*;
 import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertTrue;
 
 public class RunningTestsTest {
@@ -38,23 +38,9 @@ public class RunningTestsTest {
     }
 
     @Test(timeout = TIMEOUT)
-    public void starts_daemon_in_a_new_process() throws Exception {
-        // TODO: this was a temporary test to get the project started; remove it sooner or later
-        JumiLauncher launcher = new JumiLauncher();
-        StringWriter out = spyProcessOutput(launcher);
-        launcher.setJumiHome(sandboxDir);
-        launcher.addToClassPath(TestEnvironment.getSampleClasses());
-        launcher.setTestsToInclude("sample.notests.*Test");
-        launcher.start();
-        launcher.awaitSuiteFinished();
-
-        assertThat(out.toString(), startsWith("Hello world"));
-    }
-
-    @Test(timeout = TIMEOUT)
     public void suite_with_zero_tests() throws Exception {
         JumiLauncher launcher = new JumiLauncher();
-        spyProcessOutput(launcher);
+        printProcessOutput(launcher);
         launcher.setJumiHome(sandboxDir);
         launcher.addToClassPath(TestEnvironment.getSampleClasses());
         launcher.setTestsToInclude("sample.notests.*Test");
@@ -67,7 +53,7 @@ public class RunningTestsTest {
     @Test(timeout = TIMEOUT)
     public void suite_with_one_test() throws Exception {
         JumiLauncher launcher = new JumiLauncher();
-        spyProcessOutput(launcher);
+        printProcessOutput(launcher);
         launcher.setJumiHome(sandboxDir);
         launcher.addToClassPath(TestEnvironment.getSampleClasses());
         launcher.setTestsToInclude("sample.OnePassingTest");
@@ -77,17 +63,20 @@ public class RunningTestsTest {
         assertThat("total tests", launcher.getTotalTests(), is(2)); // test class plus its one test method
     }
 
-    private static StringWriter spyProcessOutput(JumiLauncher launcher) {
-        StringWriter out = new StringWriter();
-        // TODO: a better way for monitoring in tests that what the daemon printed
-        Writer spy = new FilterWriter(out) {
-            public void write(char[] cbuf, int off, int len) throws IOException {
+    private static void printProcessOutput(JumiLauncher launcher) {
+        launcher.setOutputListener(new Writer() {
+            public void write(char[] cbuf, int off, int len) {
                 System.out.print(new String(cbuf, off, len));
-                super.write(cbuf, off, len);
             }
-        };
-        launcher.setOutputListener(spy);
-        return out;
+
+            public void flush() {
+                System.out.flush();
+            }
+
+            public void close() {
+                flush();
+            }
+        });
     }
 
     // TODO: passing & failing tests
