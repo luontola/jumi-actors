@@ -1,16 +1,21 @@
 
 TODO NEXT:
 - refactor results of passing "suite with zero tests"
-	- test execution might be better implemented using regular thread pools instead of actors
+	!! - code generation for events
+		- compile event interface sources as in maven-compiler-plugin, output to temp dir (unless it's a library class)
+		- load classes from temp dir, use reflection to find out methods
+		- write generated sources (maybe use a template for file headers etc.)
+	- making sure that non-thread-safe classes are used only from one thread
+		- annotate classes with http://code.google.com/p/jsr-305/
+		- create a Java agent and use it in end-to-end tests
+- end-to-end tests: failing tests (includes reporting stack trace)
+	- test execution might be best implemented using regular thread pools instead of actors
 		- CPU bound threads should use an optimal number of threads per core
 		- they take no input when running, so no actor handle needs to be created for them
-		- the thing which coordinates a test class's workers might need to be an actor (it receives events from the tests), but it should also be able to exit itself when it has done its work
-	! - code generation for events
+		OK - the thing which coordinates a test class's workers might need to be an actor (it receives events from the tests), but it should also be able to exit itself when it has done its work
 	- bullet proofing the public api, cross-references from javadocs to tests (a new xref tag?)
-	- making sure that non-thread-safe classes are used only from one thread (create a Java agent and use it in end-to-end tests?)
-	- actor tests print dummy exceptions; solve by having a custom pluggable exception handler which doesn't print stack traces of a DummyException class
-- end-to-end tests: failing tests (includes reporting stack trace)
 - end-to-end tests: failures outside tests (in drivers and core)
+	- actor tests print dummy exceptions; solve by having a custom pluggable exception handler which doesn't print stack traces of a DummyException class
 - end-to-end tests: reporting test output
 - end-to-end tests: persistent daemon process
 	- should drive better design on launcher side
