@@ -7,7 +7,7 @@ package fi.jumi.codegenerator;
 import org.apache.maven.plugin.*;
 
 import java.io.File;
-import java.util.List;
+import java.util.Arrays;
 
 /**
  * @goal generate-event-stubs
@@ -33,7 +33,7 @@ public class GenerateEventStubsMojo extends AbstractMojo {
     /**
      * @parameter
      */
-    public List<String> eventInterfaces;
+    public String[] eventInterfaces;
 
     public void execute() throws MojoExecutionException {
         getLog().info("Hello, world.");
@@ -41,6 +41,6 @@ public class GenerateEventStubsMojo extends AbstractMojo {
         System.out.println("sourceDirectory = " + sourceDirectory);
         System.out.println("outputDirectory = " + outputDirectory);
         System.out.println("targetPackage = " + targetPackage);
-        System.out.println("eventInterfaces = " + eventInterfaces);
+        System.out.println("eventInterfaces = " + Arrays.toString(eventInterfaces));
     }
 }

@@ -5,10 +5,11 @@
 package fi.jumi.core.files;
 
 import fi.jumi.core.files.dummies.DummyTest;
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import java.io.*;
-import java.net.*;
+import java.net.URL;
 import java.util.Arrays;
 
 import static org.mockito.Mockito.*;
@@ -20,28 +21,28 @@ public class FileSystemTestClassFinderTest {
     private TestClassFinderListener listener = mock(TestClassFinderListener.class);
 
     @Test
-    public void finds_an_explicitly_named_class() throws IOException, URISyntaxException {
+    public void finds_an_explicitly_named_class() throws IOException {
         findTestsMatchingPattern(DummyTest.class.getName());
 
         verify(listener).onTestClassFound(DummyTest.class);
     }
 
     @Test
-    public void is_silent_if_no_test_classes_match_the_pattern() throws URISyntaxException {
+    public void is_silent_if_no_test_classes_match_the_pattern() {
         findTestsMatchingPattern(DUMMIES_PACKAGE + ".NoSuchTest");
 
         verifyZeroInteractions(listener);
     }
 
-    private void findTestsMatchingPattern(String pattern) throws URISyntaxException {
+    private void findTestsMatchingPattern(String pattern) {
         File classesDir = getClassesDirectory(getClass());
         FileSystemTestClassFinder finder = new FileSystemTestClassFinder(Arrays.asList(classesDir), pattern);
         finder.findTestClasses(listener);
     }
 
-    private static File getClassesDirectory(Class<?> clazz) throws URISyntaxException {
+    private static File getClassesDirectory(Class<?> clazz) {
         URL classFile = clazz.getResource(clazz.getSimpleName() + ".class");
-        File file = new File(classFile.toURI());
+        File file = FileUtils.toFile(classFile);
         int directoryDepth = clazz.getName().split("\\.").length;
         for (int i = 0; i < directoryDepth; i++) {
             file = file.getParentFile();
