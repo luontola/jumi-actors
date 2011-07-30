@@ -163,7 +163,8 @@
                 <version>1.0.1</version>
                 <executions>
                     <execution>
-                        <id>enforce-maven</id>
+                        <!-- XXX: Using a different ID than in oss-parent to avoid overriding its checks by accident -->
+                        <id>enforce-maven-3</id>
                         <goals>
                             <goal>enforce</goal>
                         </goals>
