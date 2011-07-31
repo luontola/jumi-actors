@@ -4,6 +4,9 @@
 
 package fi.jumi.codegenerator;
 
+import org.codehaus.plexus.util.StringUtils;
+
+import java.lang.reflect.Method;
 import java.util.*;
 
 @SuppressWarnings({"StringConcatenationInsideStringBufferAppend"})
@@ -68,13 +71,62 @@ public class EventStubGenerator {
 
         sb.append("\n");
 
-        // TODO: use reflection to get the methods
-        sb.append("    public void onSomething(String param1, String param2) {\n");
-        sb.append("        sender.send(new OnSomethingEvent(param1, param2));\n");
-        sb.append("    }\n");
+        for (Method method : listenerType.getMethods()) {
+            sb.append(methodCallToEventDelegator(method));
+        }
 
         sb.append("}\n");
         return sb.toString();
+    }
+
+    private StringBuilder methodCallToEventDelegator(Method method) {
+        List<Parameter> parameters = new ArrayList<Parameter>();
+
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        for (int i = 0, parameterTypesLength = parameterTypes.length; i < parameterTypesLength; i++) {
+            Class<?> parameterType = parameterTypes[i];
+
+            // TODO: dig actual parameter names from bytecode (doesn't work for interfaces?), or source file
+            parameters.add(new Parameter(parameterType.getName(), "param" + (i + 1)));
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("    public void " + method.getName() + "(" + asFormalArguments(parameters) + ") {\n");
+        sb.append("        sender.send(new " + eventName(method) + "(" + asActualArguments(parameters) + "));\n");
+        sb.append("    }\n");
+        return sb;
+    }
+
+    private StringBuilder asFormalArguments(List<Parameter> parameters) {
+        StringBuilder sb = new StringBuilder();
+        for (Parameter parameter : parameters) {
+            if (sb.length() > 0) {
+                sb.append(", ");
+            }
+            sb.append(getSimpleName(parameter.type) + " " + parameter.name);
+        }
+        return sb;
+    }
+
+    private StringBuilder asActualArguments(List<Parameter> parameters) {
+        StringBuilder sb = new StringBuilder();
+        for (Parameter parameter : parameters) {
+            if (sb.length() > 0) {
+                sb.append(", ");
+            }
+            sb.append(parameter.name);
+        }
+        return sb;
+    }
+
+    private class Parameter {
+        public final String type;
+        public final String name;
+
+        private Parameter(String type, String name) {
+            this.type = type;
+            this.name = name;
+        }
     }
 
     private String packageStatement() {
@@ -122,6 +174,10 @@ public class EventStubGenerator {
 
     private String backendName() {
         return "EventTo" + listenerName();
+    }
+
+    private String eventName(Method method) {
+        return StringUtils.capitalizeFirstLetter(method.getName()) + "Event";
     }
 
     private String listenerName() {
