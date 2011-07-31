@@ -22,6 +22,19 @@
             <artifactId>maven-plugin-api</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+
     </dependencies>
+
+    <build>
+        <testResources>
+            <testResource>
+                <directory>${project.build.testSourceDirectory}</directory>
+            </testResource>
+        </testResources>
+    </build>
 
 </project>

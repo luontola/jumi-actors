@@ -5,6 +5,7 @@ TODO NEXT:
 		- compile event interface sources as in maven-compiler-plugin, output to temp dir (unless it's a library class)
 		- load classes from temp dir, use reflection to find out methods
 		- write generated sources (maybe use a template for file headers etc.)
+	- put end-to-end tests in their own package (test.fi.jumi?), separate them from unit tests
 	- making sure that non-thread-safe classes are used only from one thread
 		- annotate classes with http://code.google.com/p/jsr-305/
 		- create a Java agent and use it in end-to-end tests

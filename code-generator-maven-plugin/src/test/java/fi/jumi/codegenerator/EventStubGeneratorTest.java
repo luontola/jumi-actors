@@ -5,7 +5,10 @@
 package fi.jumi.codegenerator;
 
 import fi.jumi.codegenerator.dummy.DummyListenerFactory;
+import org.apache.commons.io.IOUtils;
 import org.junit.*;
+
+import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -44,9 +47,10 @@ public class EventStubGeneratorTest {
     }
 
     @Test
-    public void generates_factory_class() {
-        assertEquals("fi/jumi/codegenerator/dummy/DummyListenerFactory.java", generator.getFactoryPath());
-        // TODO: file content
+    public void generates_factory_class() throws IOException {
+        String expectedPath = "fi/jumi/codegenerator/dummy/DummyListenerFactory.java";
+        assertEquals(expectedPath, generator.getFactoryPath());
+        assertEquals(readFile(expectedPath), generator.getFactorySource());
     }
 
     @Test
@@ -65,5 +69,9 @@ public class EventStubGeneratorTest {
     @Ignore
     public void generates_event_classes() {
         // TODO
+    }
+
+    private String readFile(String resource) throws IOException {
+        return IOUtils.toString(getClass().getClassLoader().getResourceAsStream(resource));
     }
 }
