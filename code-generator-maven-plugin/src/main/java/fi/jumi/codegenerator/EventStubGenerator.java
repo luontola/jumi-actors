@@ -16,24 +16,15 @@ public class EventStubGenerator {
     private String senderInterface;
 
     public String getFactoryPath() {
-        return fileForClass(listenerName() + "Factory");
-    }
-
-    private String listenerName() {
-        return listenerType.getSimpleName();
+        return fileForClass(factoryName());
     }
 
     public String getFactorySource() {
         StringBuilder sb = new StringBuilder();
-        sb.append("package " + targetPackage + ";\n");
-        sb.append("\n");
+        sb.append(packageStatement());
+        sb.append(importStatements());
 
-        for (String classToImport : classesToImport()) {
-            sb.append("import " + classToImport + ";\n");
-        }
-        sb.append("\n");
-
-        sb.append("public class " + listenerName() + "Factory implements " + genericFactoryType() + " {\n");
+        sb.append("public class " + factoryName() + " implements " + genericFactoryType() + " {\n");
         sb.append("\n");
 
         sb.append("    public Class<" + listenerName() + "> getType() {\n");
@@ -43,18 +34,60 @@ public class EventStubGenerator {
         sb.append("\n");
 
         sb.append("    public " + listenerName() + " newFrontend(" + genericSenderType() + " target) {\n");
-        sb.append("        return new " + listenerName() + "ToEvent(target);\n");
+        sb.append("        return new " + frontendName() + "(target);\n");
         sb.append("    }\n");
 
         sb.append("\n");
 
         sb.append("    public " + genericSenderType() + " newBackend(" + listenerName() + " target) {\n");
-        sb.append("        return new EventTo" + listenerName() + "(target);\n");
+        sb.append("        return new " + backendName() + "(target);\n");
         sb.append("    }\n");
 
         sb.append("}\n");
-
         return sb.toString();
+    }
+
+    public String getFrontendPath() {
+        return fileForClass(frontendName());
+    }
+
+    public String getFrontendSource() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(packageStatement());
+        sb.append(importStatements());
+
+        sb.append("public class " + frontendName() + " implements " + listenerName() + " {\n");
+        sb.append("\n");
+
+        sb.append("    private final " + genericSenderType() + " sender;\n");
+        sb.append("\n");
+
+        sb.append("    public " + frontendName() + "(" + genericSenderType() + " sender) {\n");
+        sb.append("        this.sender = sender;\n");
+        sb.append("    }\n");
+
+        sb.append("\n");
+
+        // TODO: use reflection to get the methods
+        sb.append("    public void onSomething(String param1, String param2) {\n");
+        sb.append("        sender.send(new OnSomethingEvent(param1, param2));\n");
+        sb.append("    }\n");
+
+        sb.append("}\n");
+        return sb.toString();
+    }
+
+    private String packageStatement() {
+        return "package " + targetPackage + ";\n\n";
+    }
+
+    private StringBuilder importStatements() {
+        StringBuilder sb = new StringBuilder();
+        for (String classToImport : classesToImport()) {
+            sb.append("import " + classToImport + ";\n");
+        }
+        sb.append("\n");
+        return sb;
     }
 
     private Collection<String> classesToImport() {
@@ -79,6 +112,22 @@ public class EventStubGenerator {
         return senderInterfaceName() + "<" + eventInterfaceName() + "<" + listenerName() + ">>";
     }
 
+    private String factoryName() {
+        return listenerName() + "Factory";
+    }
+
+    private String frontendName() {
+        return listenerName() + "ToEvent";
+    }
+
+    private String backendName() {
+        return "EventTo" + listenerName();
+    }
+
+    private String listenerName() {
+        return listenerType.getSimpleName();
+    }
+
     private String eventInterfaceName() {
         return getSimpleName(eventInterface);
     }
@@ -91,7 +140,7 @@ public class EventStubGenerator {
         return getSimpleName(senderInterface);
     }
 
-    private String getPackage(String className) {
+    private static String getPackage(String className) {
         return className.substring(0, className.lastIndexOf('.'));
     }
 
