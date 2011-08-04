@@ -2,6 +2,8 @@
 TODO NEXT:
 - refactor results of passing "suite with zero tests"
 	!! - code generation for events
+		OK - generate the source
+		!! - find out how to integration test maven plugins
 		- compile event interface sources as in maven-compiler-plugin, output to temp dir (unless it's a library class)
 		- load classes from temp dir, use reflection to find out methods
 		- write generated sources (maybe use a template for file headers etc.)
