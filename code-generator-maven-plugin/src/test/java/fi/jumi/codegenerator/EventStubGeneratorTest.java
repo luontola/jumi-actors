@@ -9,7 +9,11 @@ import org.apache.commons.io.IOUtils;
 import org.junit.*;
 
 import java.io.IOException;
+import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -63,8 +67,19 @@ public class EventStubGeneratorTest {
 
     @Test
     public void generates_event_classes() throws IOException {
-        assertClassEquals("fi/jumi/codegenerator/dummy/OnSomethingEvent.java", generator.getEvent());
+        assertClassEquals("fi/jumi/codegenerator/dummy/OnSomethingEvent.java", generator.getEvents().get(0));
     }
+
+    @Test
+    public void generates_event_classes_for_every_listener_method() {
+        generator.setListenerType(TwoMethodInterface.class);
+
+        List<GeneratedClass> events = generator.getEvents();
+        assertThat(events.size(), is(2));
+        assertThat(events.get(0).path, endsWith("OnOneEvent.java"));
+        assertThat(events.get(1).path, endsWith("OnTwoEvent.java"));
+    }
+
 
     private static void assertClassEquals(String expectedPath, GeneratedClass actual) throws IOException {
         assertEquals(expectedPath, actual.path);
@@ -73,5 +88,13 @@ public class EventStubGeneratorTest {
 
     private static String readFile(String resource) throws IOException {
         return IOUtils.toString(EventStubGenerator.class.getClassLoader().getResourceAsStream(resource));
+    }
+
+    @SuppressWarnings({"UnusedDeclaration"})
+    private interface TwoMethodInterface {
+
+        void onOne();
+
+        void onTwo();
     }
 }

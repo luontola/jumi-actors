@@ -117,24 +117,31 @@ public class EventStubGenerator {
         return new GeneratedClass(fileForClass(className), source.toString());
     }
 
-    // TODO: multiple events
-    public GeneratedClass getEvent() {
-        Method method = listenerType.getMethods()[0];
+    public List<GeneratedClass> getEvents() {
+        List<GeneratedClass> events = new ArrayList<GeneratedClass>();
+        for (Method method : listenerType.getMethods()) {
+            String className = myEventWrapperName(method);
+            ArgumentList arguments = new ArgumentList(method);
 
-        String className = myEventWrapperName(method);
-        ArgumentList arguments = new ArgumentList(method);
+            StringBuilder methods = new StringBuilder();
+            methods.append("    public void fireOn(" + listenerName() + " target) {\n");
+            methods.append("        target." + method.getName() + "(" + arguments.toActualArguments() + ");\n");
+            methods.append("    }\n");
 
-        StringBuilder methods = new StringBuilder();
-        methods.append("    public void fireOn(" + listenerName() + " target) {\n");
-        methods.append("        target." + method.getName() + "(" + arguments.toActualArguments() + ");\n");
-        methods.append("    }\n");
+            StringBuilder source = new StringBuilder();
+            source.append(packageStatement());
+            source.append(importStatements());
+            source.append(classBody(className, eventInterface(), arguments, methods));
 
-        StringBuilder source = new StringBuilder();
-        source.append(packageStatement());
-        source.append(importStatements());
-        source.append(classBody(className, eventInterface(), arguments, methods));
+            events.add(new GeneratedClass(fileForClass(className), source.toString()));
+        }
 
-        return new GeneratedClass(fileForClass(className), source.toString());
+        Collections.sort(events, new Comparator<GeneratedClass>() {
+            public int compare(GeneratedClass o1, GeneratedClass o2) {
+                return o1.path.compareTo(o2.path);
+            }
+        });
+        return events;
     }
 
     // source fragments
