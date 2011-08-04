@@ -4,7 +4,7 @@
 
 package fi.jumi.codegenerator;
 
-import fi.jumi.codegenerator.java.Type;
+import fi.jumi.codegenerator.java.*;
 import org.codehaus.plexus.util.StringUtils;
 
 import java.lang.reflect.Method;
@@ -18,6 +18,26 @@ public class EventStubGenerator {
     private Type eventInterface;
     private Type factoryInterface;
     private Type senderInterface;
+
+    public void setListenerType(Class<?> listenerType) {
+        this.listenerType = listenerType;
+    }
+
+    public void setTargetPackage(String targetPackage) {
+        this.targetPackage = targetPackage;
+    }
+
+    public void setEventInterface(String eventInterface) {
+        this.eventInterface = new Type(eventInterface);
+    }
+
+    public void setFactoryInterface(String factoryInterface) {
+        this.factoryInterface = new Type(factoryInterface);
+    }
+
+    public void setSenderInterface(String senderInterface) {
+        this.senderInterface = new Type(senderInterface);
+    }
 
     public String getFactoryPath() {
         return fileForClass(factoryName());
@@ -85,52 +105,12 @@ public class EventStubGenerator {
     }
 
     private StringBuilder methodCallToEventDelegator(Method method) {
-        // TODO: extract abstraction: ArgumentList
-        List<Parameter> parameters = new ArrayList<Parameter>();
-
-        Class<?>[] parameterTypes = method.getParameterTypes();
-        for (int i = 0, parameterTypesLength = parameterTypes.length; i < parameterTypesLength; i++) {
-            Class<?> parameterType = parameterTypes[i];
-            parameters.add(new Parameter(new Type(parameterType), "arg" + i));
-        }
-
+        ArgumentList arguments = new ArgumentList(method);
         StringBuilder sb = new StringBuilder();
-        sb.append("    public void " + method.getName() + "(" + asFormalArguments(parameters) + ") {\n");
-        sb.append("        sender.send(new " + eventName(method) + "(" + asActualArguments(parameters) + "));\n");
+        sb.append("    public void " + method.getName() + "(" + arguments.toFormalArguments() + ") {\n");
+        sb.append("        sender.send(new " + eventName(method) + "(" + arguments.toActualArguments() + "));\n");
         sb.append("    }\n");
         return sb;
-    }
-
-    private StringBuilder asFormalArguments(List<Parameter> parameters) {
-        StringBuilder sb = new StringBuilder();
-        for (Parameter parameter : parameters) {
-            if (sb.length() > 0) {
-                sb.append(", ");
-            }
-            sb.append(parameter.type.getSimpleName() + " " + parameter.name);
-        }
-        return sb;
-    }
-
-    private StringBuilder asActualArguments(List<Parameter> parameters) {
-        StringBuilder sb = new StringBuilder();
-        for (Parameter parameter : parameters) {
-            if (sb.length() > 0) {
-                sb.append(", ");
-            }
-            sb.append(parameter.name);
-        }
-        return sb;
-    }
-
-    private class Parameter {
-        public final Type type;
-        public final String name;
-
-        private Parameter(Type type, String name) {
-            this.type = type;
-            this.name = name;
-        }
     }
 
     private String packageStatement() {
@@ -205,25 +185,5 @@ public class EventStubGenerator {
 
     private String fileForClass(String className) {
         return targetPackage.replace('.', '/') + "/" + className + ".java";
-    }
-
-    public void setListenerType(Class<?> listenerType) {
-        this.listenerType = listenerType;
-    }
-
-    public void setTargetPackage(String targetPackage) {
-        this.targetPackage = targetPackage;
-    }
-
-    public void setEventInterface(String eventInterface) {
-        this.eventInterface = new Type(eventInterface);
-    }
-
-    public void setFactoryInterface(String factoryInterface) {
-        this.factoryInterface = new Type(factoryInterface);
-    }
-
-    public void setSenderInterface(String senderInterface) {
-        this.senderInterface = new Type(senderInterface);
     }
 }
