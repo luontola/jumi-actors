@@ -4,6 +4,7 @@
 
 package fi.jumi.codegenerator;
 
+import fi.jumi.codegenerator.java.Type;
 import org.codehaus.plexus.util.StringUtils;
 
 import java.lang.reflect.Method;
@@ -14,9 +15,9 @@ public class EventStubGenerator {
 
     private Class<?> listenerType;
     private String targetPackage;
-    private String eventInterface;
-    private String factoryInterface;
-    private String senderInterface;
+    private Type eventInterface;
+    private Type factoryInterface;
+    private Type senderInterface;
 
     public String getFactoryPath() {
         return fileForClass(factoryName());
@@ -27,6 +28,7 @@ public class EventStubGenerator {
         sb.append(packageStatement());
         sb.append(importStatements());
 
+        // TODO: class(name, interface)?
         sb.append("public class " + factoryName() + " implements " + genericFactoryType() + " {\n");
         sb.append("\n");
 
@@ -42,6 +44,8 @@ public class EventStubGenerator {
 
         sb.append("\n");
 
+        // TODO: method(name, args, body)?
+        // TODO: returnNewInstance(classname, args)?
         sb.append("    public " + genericSenderType() + " newBackend(" + listenerName() + " target) {\n");
         sb.append("        return new " + backendName() + "(target);\n");
         sb.append("    }\n");
@@ -65,6 +69,7 @@ public class EventStubGenerator {
         sb.append("    private final " + genericSenderType() + " sender;\n");
         sb.append("\n");
 
+        // TODO: constructor(classname, args)? fields based on constructor?
         sb.append("    public " + frontendName() + "(" + genericSenderType() + " sender) {\n");
         sb.append("        this.sender = sender;\n");
         sb.append("    }\n");
@@ -80,12 +85,13 @@ public class EventStubGenerator {
     }
 
     private StringBuilder methodCallToEventDelegator(Method method) {
+        // TODO: extract abstraction: ArgumentList
         List<Parameter> parameters = new ArrayList<Parameter>();
 
         Class<?>[] parameterTypes = method.getParameterTypes();
         for (int i = 0, parameterTypesLength = parameterTypes.length; i < parameterTypesLength; i++) {
             Class<?> parameterType = parameterTypes[i];
-            parameters.add(new Parameter(parameterType.getName(), "arg" + i));
+            parameters.add(new Parameter(new Type(parameterType), "arg" + i));
         }
 
         StringBuilder sb = new StringBuilder();
@@ -101,7 +107,7 @@ public class EventStubGenerator {
             if (sb.length() > 0) {
                 sb.append(", ");
             }
-            sb.append(getSimpleName(parameter.type) + " " + parameter.name);
+            sb.append(parameter.type.getSimpleName() + " " + parameter.name);
         }
         return sb;
     }
@@ -118,10 +124,10 @@ public class EventStubGenerator {
     }
 
     private class Parameter {
-        public final String type;
+        public final Type type;
         public final String name;
 
-        private Parameter(String type, String name) {
+        private Parameter(Type type, String name) {
             this.type = type;
             this.name = name;
         }
@@ -141,24 +147,27 @@ public class EventStubGenerator {
     }
 
     private Collection<String> classesToImport() {
-        SortedSet<String> singleClassImports = new TreeSet<String>();
-        singleClassImports.add(listenerType.getName());
+        SortedSet<Type> singleClassImports = new TreeSet<Type>();
+        singleClassImports.add(new Type(listenerType));
         singleClassImports.add(eventInterface);
         singleClassImports.add(factoryInterface);
         singleClassImports.add(senderInterface);
+        // TODO: application classes used in listener methods
 
         SortedSet<String> wildcardImports = new TreeSet<String>();
-        for (String singleClassImport : singleClassImports) {
-            wildcardImports.add(getPackage(singleClassImport) + ".*");
+        for (Type singleClassImport : singleClassImports) {
+            wildcardImports.add(singleClassImport.getPackage() + ".*");
         }
         return wildcardImports;
     }
 
     private String genericFactoryType() {
+        // TODO: type parameters as arguments
         return factoryInterfaceName() + "<" + listenerName() + ">";
     }
 
     private String genericSenderType() {
+        // TODO: type parameters as arguments
         return senderInterfaceName() + "<" + eventInterfaceName() + "<" + listenerName() + ">>";
     }
 
@@ -183,30 +192,20 @@ public class EventStubGenerator {
     }
 
     private String eventInterfaceName() {
-        return getSimpleName(eventInterface);
+        return eventInterface.getSimpleName();
     }
 
     private String factoryInterfaceName() {
-        return getSimpleName(factoryInterface);
+        return factoryInterface.getSimpleName();
     }
 
     private String senderInterfaceName() {
-        return getSimpleName(senderInterface);
-    }
-
-    private static String getPackage(String className) {
-        return className.substring(0, className.lastIndexOf('.'));
-    }
-
-    private static String getSimpleName(String className) {
-        return className.substring(className.lastIndexOf('.') + 1);
+        return senderInterface.getSimpleName();
     }
 
     private String fileForClass(String className) {
         return targetPackage.replace('.', '/') + "/" + className + ".java";
     }
-
-    // generated setters
 
     public void setListenerType(Class<?> listenerType) {
         this.listenerType = listenerType;
@@ -217,14 +216,14 @@ public class EventStubGenerator {
     }
 
     public void setEventInterface(String eventInterface) {
-        this.eventInterface = eventInterface;
+        this.eventInterface = new Type(eventInterface);
     }
 
     public void setFactoryInterface(String factoryInterface) {
-        this.factoryInterface = factoryInterface;
+        this.factoryInterface = new Type(factoryInterface);
     }
 
     public void setSenderInterface(String senderInterface) {
-        this.senderInterface = senderInterface;
+        this.senderInterface = new Type(senderInterface);
     }
 }
