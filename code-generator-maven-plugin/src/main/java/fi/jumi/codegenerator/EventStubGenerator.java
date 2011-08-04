@@ -48,33 +48,30 @@ public class EventStubGenerator {
     }
 
     public String getFactorySource() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(packageStatement());
-        sb.append(importStatements());
+        StringBuilder methods = new StringBuilder();
 
-        // TODO: class(name, interface)?
-        sb.append("public class " + myFactoryName() + " implements " + factoryName() + " {\n");
-        sb.append("\n");
+        methods.append("    public Class<" + listenerName() + "> getType() {\n");
+        methods.append("        return " + listenerName() + ".class;\n");
+        methods.append("    }\n");
 
-        sb.append("    public Class<" + listenerName() + "> getType() {\n");
-        sb.append("        return " + listenerName() + ".class;\n");
-        sb.append("    }\n");
+        methods.append("\n");
 
-        sb.append("\n");
+        methods.append("    public " + listenerName() + " newFrontend(" + senderName() + " target) {\n");
+        methods.append("        return new " + myFrontendName() + "(target);\n");
+        methods.append("    }\n");
 
-        sb.append("    public " + listenerName() + " newFrontend(" + senderName() + " target) {\n");
-        sb.append("        return new " + myFrontendName() + "(target);\n");
-        sb.append("    }\n");
-
-        sb.append("\n");
+        methods.append("\n");
 
         // TODO: method(name, args, body)?
         // TODO: returnNewInstance(classname, args)?
-        sb.append("    public " + senderName() + " newBackend(" + listenerName() + " target) {\n");
-        sb.append("        return new " + myBackendName() + "(target);\n");
-        sb.append("    }\n");
+        methods.append("    public " + senderName() + " newBackend(" + listenerName() + " target) {\n");
+        methods.append("        return new " + myBackendName() + "(target);\n");
+        methods.append("    }\n");
 
-        sb.append("}\n");
+        StringBuilder sb = new StringBuilder();
+        sb.append(packageStatement());
+        sb.append(importStatements());
+        sb.append(classBody(myFactoryName(), factoryName(), new ArgumentList(), methods));
         return sb.toString();
     }
 
@@ -83,30 +80,26 @@ public class EventStubGenerator {
     }
 
     public String getFrontendSource() {
+        Argument sender = new Argument(new Type(senderName()), "sender");
+
+        // TODO: extract a domain class to represent methods?
+        StringBuilder methods = new StringBuilder();
+        for (Method method : listenerType.getMethods()) {
+            methods.append(delegateMethodToSender(method, sender));
+        }
+
         StringBuilder sb = new StringBuilder();
         sb.append(packageStatement());
         sb.append(importStatements());
-
-        sb.append("public class " + myFrontendName() + " implements " + listenerName() + " {\n");
-        sb.append("\n");
-
-        sb.append(constructor(myFrontendName(), new Parameter(new Type(senderName()), "sender")));
-
-        sb.append("\n");
-
-        for (Method method : listenerType.getMethods()) {
-            sb.append(methodCallToEventDelegator(method));
-        }
-
-        sb.append("}\n");
+        sb.append(classBody(myFrontendName(), listenerName(), new ArgumentList(sender), methods));
         return sb.toString();
     }
 
-    private StringBuilder methodCallToEventDelegator(Method method) {
+    private StringBuilder delegateMethodToSender(Method method, Argument sender) {
         ArgumentList arguments = new ArgumentList(method);
         StringBuilder sb = new StringBuilder();
         sb.append("    public void " + method.getName() + "(" + arguments.toFormalArguments() + ") {\n");
-        sb.append("        sender.send(new " + myEventWrapperName(method) + "(" + arguments.toActualArguments() + "));\n");
+        sb.append("        " + sender.name + ".send(new " + myEventWrapperName(method) + "(" + arguments.toActualArguments() + "));\n");
         sb.append("    }\n");
         return sb;
     }
@@ -116,29 +109,22 @@ public class EventStubGenerator {
     }
 
     public String getBackendSource() {
+        Argument listener = new Argument(listenerInterface(), "listener");
+
+        StringBuilder methods = new StringBuilder();
+        methods.append("    public void send(" + eventName() + " message) {\n");
+        methods.append("        message.fireOn(" + listener.name + ");\n");
+        methods.append("    }\n");
+
         StringBuilder sb = new StringBuilder();
         sb.append(packageStatement());
         sb.append(importStatements());
-
-        sb.append("public class " + myBackendName() + " implements " + senderName() + " {\n");
-        sb.append("\n");
-
-        Parameter listener = new Parameter(listenerInterface(), "listener");
-        sb.append(constructor(myBackendName(), listener));
-
-        sb.append("\n");
-
-        sb.append("    public void send(" + eventName() + " message) {\n");
-        sb.append("        message.fireOn(" + listener.name + ");\n");
-        sb.append("    }\n");
-
-        sb.append("}\n");
-
+        sb.append(classBody(myBackendName(), senderName(), new ArgumentList(listener), methods));
         return sb.toString();
     }
 
-
     // source fragments
+
 
     private String packageStatement() {
         return "package " + targetPackage + ";\n\n";
@@ -168,14 +154,35 @@ public class EventStubGenerator {
         return wildcardImports;
     }
 
-    private StringBuilder constructor(String className, Parameter arg0) {
-        // TODO: generify to multiple arguments
+    private StringBuilder classBody(String className, String interfaces, ArgumentList fields, StringBuilder methods) {
         StringBuilder sb = new StringBuilder();
-        sb.append("    private final " + arg0.type.getSimpleName() + " " + arg0.name + ";\n");
+        sb.append("public class " + className + " implements " + interfaces + " {\n");
         sb.append("\n");
+        if (fields.size() > 0) {
+            sb.append(fields(fields));
+            sb.append("\n");
+            sb.append(constructor(className, fields));
+            sb.append("\n");
+        }
+        sb.append(methods);
+        sb.append("}\n");
+        return sb;
+    }
 
-        sb.append("    public " + className + "(" + arg0.type.getSimpleName() + " " + arg0.name + ") {\n");
-        sb.append("        this." + arg0.name + " = " + arg0.name + ";\n");
+    private StringBuilder fields(ArgumentList fields) {
+        StringBuilder sb = new StringBuilder();
+        for (Argument argument : fields) {
+            sb.append("    private final " + argument.type.getSimpleName() + " " + argument.name + ";\n");
+        }
+        return sb;
+    }
+
+    private StringBuilder constructor(String className, ArgumentList fields) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("    public " + className + "(" + fields.toFormalArguments() + ") {\n");
+        for (Argument argument : fields) {
+            sb.append("        this." + argument.name + " = " + argument.name + ";\n");
+        }
         sb.append("    }\n");
         return sb;
     }

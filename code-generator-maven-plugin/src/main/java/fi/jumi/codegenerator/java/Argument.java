@@ -4,12 +4,12 @@
 
 package fi.jumi.codegenerator.java;
 
-public class Parameter {
+public class Argument {
 
     public final Type type;
     public final String name;
 
-    public Parameter(Type type, String name) {
+    public Argument(Type type, String name) {
         this.type = type;
         this.name = name;
     }
