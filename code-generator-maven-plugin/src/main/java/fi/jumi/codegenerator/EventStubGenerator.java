@@ -15,12 +15,14 @@ public class EventStubGenerator {
 
     private Class<?> listenerType;
     private String targetPackage;
+    private Type listenerInterface;
     private Type eventInterface;
     private Type factoryInterface;
     private Type senderInterface;
 
     public void setListenerType(Class<?> listenerType) {
         this.listenerType = listenerType;
+        this.listenerInterface = new Type(listenerType);
     }
 
     public void setTargetPackage(String targetPackage) {
@@ -49,7 +51,7 @@ public class EventStubGenerator {
         sb.append(importStatements());
 
         // TODO: class(name, interface)?
-        sb.append("public class " + factoryName() + " implements " + genericFactoryType() + " {\n");
+        sb.append("public class " + factoryName() + " implements " + factoryInterfaceName() + " {\n");
         sb.append("\n");
 
         sb.append("    public Class<" + listenerName() + "> getType() {\n");
@@ -58,7 +60,7 @@ public class EventStubGenerator {
 
         sb.append("\n");
 
-        sb.append("    public " + listenerName() + " newFrontend(" + genericSenderType() + " target) {\n");
+        sb.append("    public " + listenerName() + " newFrontend(" + senderName() + " target) {\n");
         sb.append("        return new " + frontendName() + "(target);\n");
         sb.append("    }\n");
 
@@ -66,7 +68,7 @@ public class EventStubGenerator {
 
         // TODO: method(name, args, body)?
         // TODO: returnNewInstance(classname, args)?
-        sb.append("    public " + genericSenderType() + " newBackend(" + listenerName() + " target) {\n");
+        sb.append("    public " + senderName() + " newBackend(" + listenerName() + " target) {\n");
         sb.append("        return new " + backendName() + "(target);\n");
         sb.append("    }\n");
 
@@ -86,11 +88,11 @@ public class EventStubGenerator {
         sb.append("public class " + frontendName() + " implements " + listenerName() + " {\n");
         sb.append("\n");
 
-        sb.append("    private final " + genericSenderType() + " sender;\n");
+        sb.append("    private final " + senderName() + " sender;\n");
         sb.append("\n");
 
         // TODO: constructor(classname, args)? fields based on constructor?
-        sb.append("    public " + frontendName() + "(" + genericSenderType() + " sender) {\n");
+        sb.append("    public " + frontendName() + "(" + senderName() + " sender) {\n");
         sb.append("        this.sender = sender;\n");
         sb.append("    }\n");
 
@@ -128,7 +130,7 @@ public class EventStubGenerator {
 
     private Collection<String> classesToImport() {
         SortedSet<Type> singleClassImports = new TreeSet<Type>();
-        singleClassImports.add(new Type(listenerType));
+        singleClassImports.add(listenerInterface);
         singleClassImports.add(eventInterface);
         singleClassImports.add(factoryInterface);
         singleClassImports.add(senderInterface);
@@ -141,14 +143,28 @@ public class EventStubGenerator {
         return wildcardImports;
     }
 
-    private String genericFactoryType() {
-        // TODO: type parameters as arguments
-        return factoryInterfaceName() + "<" + listenerName() + ">";
+    private String factoryInterfaceName() {
+        return genericFactoryInterfaceName(listenerName());
     }
 
-    private String genericSenderType() {
-        // TODO: type parameters as arguments
-        return senderInterfaceName() + "<" + eventInterfaceName() + "<" + listenerName() + ">>";
+    private String genericFactoryInterfaceName(String t) {
+        return factoryInterface.getSimpleName() + "<" + t + ">";
+    }
+
+    private String senderName() {
+        return genericSenderInterface(genericEventInterfaceName(listenerName()));
+    }
+
+    private String genericEventInterfaceName(String t) {
+        return eventInterface.getSimpleName() + "<" + t + ">";
+    }
+
+    private String genericSenderInterface(String t) {
+        return senderInterface.getSimpleName() + "<" + t + ">";
+    }
+
+    private String listenerName() {
+        return listenerInterface.getSimpleName();
     }
 
     private String factoryName() {
@@ -165,22 +181,6 @@ public class EventStubGenerator {
 
     private String eventName(Method method) {
         return StringUtils.capitalizeFirstLetter(method.getName()) + "Event";
-    }
-
-    private String listenerName() {
-        return listenerType.getSimpleName();
-    }
-
-    private String eventInterfaceName() {
-        return eventInterface.getSimpleName();
-    }
-
-    private String factoryInterfaceName() {
-        return factoryInterface.getSimpleName();
-    }
-
-    private String senderInterfaceName() {
-        return senderInterface.getSimpleName();
     }
 
     private String fileForClass(String className) {
