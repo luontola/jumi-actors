@@ -68,9 +68,10 @@ public class EventStubGeneratorTest {
     }
 
     @Test
-    @Ignore
-    public void generates_event_classes() {
-        // TODO
+    public void generates_event_classes() throws IOException {
+        String expectedPath = "fi/jumi/codegenerator/dummy/OnSomethingEvent.java";
+        assertEquals(expectedPath, generator.getEventPath());
+        assertEquals(readFile(expectedPath), generator.getEventSource());
     }
 
     private String readFile(String resource) throws IOException {

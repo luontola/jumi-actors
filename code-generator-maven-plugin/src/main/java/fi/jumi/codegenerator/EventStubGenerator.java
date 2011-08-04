@@ -123,6 +123,28 @@ public class EventStubGenerator {
         return sb.toString();
     }
 
+    // TODO: multiple events
+    public String getEventPath() {
+        Method method = listenerType.getMethods()[0];
+        return fileForClass(myEventWrapperName(method));
+    }
+
+    public String getEventSource() {
+        Method method = listenerType.getMethods()[0];
+        ArgumentList arguments = new ArgumentList(method);
+
+        StringBuilder methods = new StringBuilder();
+        methods.append("    public void fireOn(" + listenerName() + " target) {\n");
+        methods.append("        target." + method.getName() + "(" + arguments.toActualArguments() + ");\n");
+        methods.append("    }\n");
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(packageStatement());
+        sb.append(importStatements());
+        sb.append(classBody(myEventWrapperName(method), eventInterface(), arguments, methods));
+        return sb.toString();
+    }
+
     // source fragments
 
 
