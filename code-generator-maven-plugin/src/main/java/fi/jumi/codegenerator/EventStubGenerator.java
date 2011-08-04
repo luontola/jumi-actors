@@ -85,9 +85,7 @@ public class EventStubGenerator {
         Class<?>[] parameterTypes = method.getParameterTypes();
         for (int i = 0, parameterTypesLength = parameterTypes.length; i < parameterTypesLength; i++) {
             Class<?> parameterType = parameterTypes[i];
-
-            // TODO: dig actual parameter names from bytecode (doesn't work for interfaces?), or source file
-            parameters.add(new Parameter(parameterType.getName(), "param" + (i + 1)));
+            parameters.add(new Parameter(parameterType.getName(), "arg" + i));
         }
 
         StringBuilder sb = new StringBuilder();

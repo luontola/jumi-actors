@@ -55,7 +55,7 @@ public class EventStubGeneratorTest {
 
     @Test
     public void generates_frontend_class() throws IOException {
-          String expectedPath = "fi/jumi/codegenerator/dummy/DummyListenerToEvent.java";
+        String expectedPath = "fi/jumi/codegenerator/dummy/DummyListenerToEvent.java";
         assertEquals(expectedPath, generator.getFrontendPath());
         assertEquals(readFile(expectedPath), generator.getFrontendSource());
     }

@@ -6,5 +6,5 @@ package fi.jumi.codegenerator;
 
 public interface DummyListener {
 
-    void onSomething(String param1, String param2);
+    void onSomething(String foo, String bar);
 }

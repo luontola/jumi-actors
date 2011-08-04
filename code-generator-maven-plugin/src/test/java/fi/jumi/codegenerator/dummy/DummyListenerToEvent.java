@@ -10,7 +10,7 @@ public class DummyListenerToEvent implements DummyListener {
         this.sender = sender;
     }
 
-    public void onSomething(String param1, String param2) {
-        sender.send(new OnSomethingEvent(param1, param2));
+    public void onSomething(String arg0, String arg1) {
+        sender.send(new OnSomethingEvent(arg0, arg1));
     }
 }

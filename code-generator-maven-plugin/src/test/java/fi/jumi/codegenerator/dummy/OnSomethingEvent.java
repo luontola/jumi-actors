@@ -4,15 +4,15 @@ import fi.jumi.codegenerator.*;
 
 public class OnSomethingEvent implements MyEvent<DummyListener> {
 
-    private final String param1;
-    private final String param2;
+    private final String arg0;
+    private final String arg1;
 
-    public OnSomethingEvent(String param1, String param2) {
-        this.param1 = param1;
-        this.param2 = param2;
+    public OnSomethingEvent(String arg0, String arg1) {
+        this.arg0 = arg0;
+        this.arg1 = arg1;
     }
 
     public void fireOn(DummyListener target) {
-        target.onSomething(param1, param2);
+        target.onSomething(arg0, arg1);
     }
 }
