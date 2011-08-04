@@ -20,6 +20,8 @@ public class EventStubGenerator {
     private Type factoryInterface;
     private Type senderInterface;
 
+    // configuration
+
     public void setListenerType(Class<?> listenerType) {
         this.listenerType = listenerType;
         this.listenerInterface = new Type(listenerType);
@@ -40,6 +42,8 @@ public class EventStubGenerator {
     public void setSenderInterface(String senderInterface) {
         this.senderInterface = new Type(senderInterface);
     }
+
+    // public API
 
     public String getFactoryPath() {
         return fileForClass(factoryName());
@@ -110,10 +114,47 @@ public class EventStubGenerator {
         ArgumentList arguments = new ArgumentList(method);
         StringBuilder sb = new StringBuilder();
         sb.append("    public void " + method.getName() + "(" + arguments.toFormalArguments() + ") {\n");
-        sb.append("        sender.send(new " + eventName(method) + "(" + arguments.toActualArguments() + "));\n");
+        sb.append("        sender.send(new " + eventWrapperName(method) + "(" + arguments.toActualArguments() + "));\n");
         sb.append("    }\n");
         return sb;
     }
+
+    public String getBackendPath() {
+        return fileForClass(backendName());
+    }
+
+    public String getBackendSource() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(packageStatement());
+        sb.append(importStatements());
+
+        sb.append("public class " + backendName() + " implements " + senderName() + " {\n");
+        sb.append("\n");
+
+        String arg0type = listenerName();
+        String arg0name = "listener";
+
+        sb.append("    private final " + arg0type + " " + arg0name + ";\n");
+        sb.append("\n");
+
+        // TODO: constructor(classname, args)? fields based on constructor?
+        sb.append("    public " + backendName() + "(" + arg0type + " " + arg0name + ") {\n");
+        sb.append("        this." + arg0name + " = " + arg0name + ";\n");
+        sb.append("    }\n");
+
+        sb.append("\n");
+
+        sb.append("    public void send(" + eventName() + " message) {\n");
+        sb.append("        message.fireOn(listener);\n");
+        sb.append("    }\n");
+
+        sb.append("}\n");
+
+        return sb.toString();
+    }
+
+
+    // source fragments
 
     private String packageStatement() {
         return "package " + targetPackage + ";\n\n";
@@ -151,6 +192,10 @@ public class EventStubGenerator {
         return factoryInterface.getSimpleName() + "<" + t + ">";
     }
 
+    private String eventName() {
+        return genericEventInterfaceName(listenerName());
+    }
+
     private String senderName() {
         return genericSenderInterface(genericEventInterfaceName(listenerName()));
     }
@@ -179,7 +224,7 @@ public class EventStubGenerator {
         return "EventTo" + listenerName();
     }
 
-    private String eventName(Method method) {
+    private String eventWrapperName(Method method) {
         return StringUtils.capitalizeFirstLetter(method.getName()) + "Event";
     }
 
