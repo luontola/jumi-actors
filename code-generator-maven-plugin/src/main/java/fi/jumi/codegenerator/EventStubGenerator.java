@@ -71,7 +71,7 @@ public class EventStubGenerator {
         StringBuilder sb = new StringBuilder();
         sb.append(packageStatement());
         sb.append(importStatements());
-        sb.append(classBody(myFactoryName(), factoryName(), new ArgumentList(), methods));
+        sb.append(classBody(myFactoryName(), factoryInterface(), new ArgumentList(), methods));
         return sb.toString();
     }
 
@@ -80,7 +80,7 @@ public class EventStubGenerator {
     }
 
     public String getFrontendSource() {
-        Argument sender = new Argument(new Type(senderName()), "sender");
+        Argument sender = new Argument(senderInterface(), "sender");
 
         // TODO: extract a domain class to represent methods?
         StringBuilder methods = new StringBuilder();
@@ -91,7 +91,7 @@ public class EventStubGenerator {
         StringBuilder sb = new StringBuilder();
         sb.append(packageStatement());
         sb.append(importStatements());
-        sb.append(classBody(myFrontendName(), listenerName(), new ArgumentList(sender), methods));
+        sb.append(classBody(myFrontendName(), listenerInterface(), new ArgumentList(sender), methods));
         return sb.toString();
     }
 
@@ -119,7 +119,7 @@ public class EventStubGenerator {
         StringBuilder sb = new StringBuilder();
         sb.append(packageStatement());
         sb.append(importStatements());
-        sb.append(classBody(myBackendName(), senderName(), new ArgumentList(listener), methods));
+        sb.append(classBody(myBackendName(), senderInterface(), new ArgumentList(listener), methods));
         return sb.toString();
     }
 
@@ -154,9 +154,9 @@ public class EventStubGenerator {
         return wildcardImports;
     }
 
-    private StringBuilder classBody(String className, String interfaces, ArgumentList fields, StringBuilder methods) {
+    private StringBuilder classBody(String className, Type myInterface, ArgumentList fields, StringBuilder methods) {
         StringBuilder sb = new StringBuilder();
-        sb.append("public class " + className + " implements " + interfaces + " {\n");
+        sb.append("public class " + className + " implements " + myInterface.getSimpleName() + " {\n");
         sb.append("\n");
         if (fields.size() > 0) {
             sb.append(fields(fields));
@@ -234,10 +234,6 @@ public class EventStubGenerator {
         return eventInterfaceRaw.withTypeParameter(t);
     }
 
-
-    private String factoryName() {
-        return factoryInterface().getSimpleName();
-    }
 
     private Type factoryInterface() {
         return factoryInterface(listenerInterface());
