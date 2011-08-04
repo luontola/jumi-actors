@@ -32,4 +32,8 @@ public class Type implements Comparable<Type> {
     public String toString() {
         return name;
     }
+
+    public Type withTypeParameter(Type t) {
+        return new Type(name + "<" + t.getSimpleName() + ">");
+    }
 }
