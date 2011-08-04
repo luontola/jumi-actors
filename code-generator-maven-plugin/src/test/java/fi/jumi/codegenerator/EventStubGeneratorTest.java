@@ -48,33 +48,30 @@ public class EventStubGeneratorTest {
 
     @Test
     public void generates_factory_class() throws IOException {
-        String expectedPath = "fi/jumi/codegenerator/dummy/DummyListenerFactory.java";
-        assertEquals(expectedPath, generator.getFactoryPath());
-        assertEquals(readFile(expectedPath), generator.getFactorySource());
+        assertClassEquals("fi/jumi/codegenerator/dummy/DummyListenerFactory.java", generator.getFactory());
     }
 
     @Test
     public void generates_frontend_class() throws IOException {
-        String expectedPath = "fi/jumi/codegenerator/dummy/DummyListenerToEvent.java";
-        assertEquals(expectedPath, generator.getFrontendPath());
-        assertEquals(readFile(expectedPath), generator.getFrontendSource());
+        assertClassEquals("fi/jumi/codegenerator/dummy/DummyListenerToEvent.java", generator.getFrontend());
     }
 
     @Test
     public void generates_backend_class() throws IOException {
-        String expectedPath = "fi/jumi/codegenerator/dummy/EventToDummyListener.java";
-        assertEquals(expectedPath, generator.getBackendPath());
-        assertEquals(readFile(expectedPath), generator.getBackendSource());
+        assertClassEquals("fi/jumi/codegenerator/dummy/EventToDummyListener.java", generator.getBackend());
     }
 
     @Test
     public void generates_event_classes() throws IOException {
-        String expectedPath = "fi/jumi/codegenerator/dummy/OnSomethingEvent.java";
-        assertEquals(expectedPath, generator.getEventPath());
-        assertEquals(readFile(expectedPath), generator.getEventSource());
+        assertClassEquals("fi/jumi/codegenerator/dummy/OnSomethingEvent.java", generator.getEvent());
     }
 
-    private String readFile(String resource) throws IOException {
-        return IOUtils.toString(getClass().getClassLoader().getResourceAsStream(resource));
+    private static void assertClassEquals(String expectedPath, GeneratedClass actual) throws IOException {
+        assertEquals(expectedPath, actual.path);
+        assertEquals(readFile(expectedPath), actual.source);
+    }
+
+    private static String readFile(String resource) throws IOException {
+        return IOUtils.toString(EventStubGenerator.class.getClassLoader().getResourceAsStream(resource));
     }
 }

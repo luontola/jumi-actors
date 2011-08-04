@@ -43,11 +43,8 @@ public class EventStubGenerator {
 
     // public API
 
-    public String getFactoryPath() {
-        return fileForClass(myFactoryName());
-    }
-
-    public String getFactorySource() {
+    public GeneratedClass getFactory() {
+        String className = myFactoryName();
         StringBuilder methods = new StringBuilder();
 
         methods.append("    public Class<" + listenerName() + "> getType() {\n");
@@ -68,18 +65,16 @@ public class EventStubGenerator {
         methods.append("        return new " + myBackendName() + "(target);\n");
         methods.append("    }\n");
 
-        StringBuilder sb = new StringBuilder();
-        sb.append(packageStatement());
-        sb.append(importStatements());
-        sb.append(classBody(myFactoryName(), factoryInterface(), new ArgumentList(), methods));
-        return sb.toString();
+        StringBuilder source = new StringBuilder();
+        source.append(packageStatement());
+        source.append(importStatements());
+        source.append(classBody(className, factoryInterface(), new ArgumentList(), methods));
+
+        return new GeneratedClass(fileForClass(className), source.toString());
     }
 
-    public String getFrontendPath() {
-        return fileForClass(myFrontendName());
-    }
-
-    public String getFrontendSource() {
+    public GeneratedClass getFrontend() {
+        String className = myFrontendName();
         Argument sender = new Argument(senderInterface(), "sender");
 
         // TODO: extract a domain class to represent methods?
@@ -88,11 +83,12 @@ public class EventStubGenerator {
             methods.append(delegateMethodToSender(method, sender));
         }
 
-        StringBuilder sb = new StringBuilder();
-        sb.append(packageStatement());
-        sb.append(importStatements());
-        sb.append(classBody(myFrontendName(), listenerInterface(), new ArgumentList(sender), methods));
-        return sb.toString();
+        StringBuilder source = new StringBuilder();
+        source.append(packageStatement());
+        source.append(importStatements());
+        source.append(classBody(className, listenerInterface(), new ArgumentList(sender), methods));
+
+        return new GeneratedClass(fileForClass(className), source.toString());
     }
 
     private StringBuilder delegateMethodToSender(Method method, Argument sender) {
@@ -104,11 +100,8 @@ public class EventStubGenerator {
         return sb;
     }
 
-    public String getBackendPath() {
-        return fileForClass(myBackendName());
-    }
-
-    public String getBackendSource() {
+    public GeneratedClass getBackend() {
+        String className = myBackendName();
         Argument listener = new Argument(listenerInterface(), "listener");
 
         StringBuilder methods = new StringBuilder();
@@ -116,21 +109,19 @@ public class EventStubGenerator {
         methods.append("        message.fireOn(" + listener.name + ");\n");
         methods.append("    }\n");
 
-        StringBuilder sb = new StringBuilder();
-        sb.append(packageStatement());
-        sb.append(importStatements());
-        sb.append(classBody(myBackendName(), senderInterface(), new ArgumentList(listener), methods));
-        return sb.toString();
+        StringBuilder source = new StringBuilder();
+        source.append(packageStatement());
+        source.append(importStatements());
+        source.append(classBody(className, senderInterface(), new ArgumentList(listener), methods));
+
+        return new GeneratedClass(fileForClass(className), source.toString());
     }
 
     // TODO: multiple events
-    public String getEventPath() {
+    public GeneratedClass getEvent() {
         Method method = listenerType.getMethods()[0];
-        return fileForClass(myEventWrapperName(method));
-    }
 
-    public String getEventSource() {
-        Method method = listenerType.getMethods()[0];
+        String className = myEventWrapperName(method);
         ArgumentList arguments = new ArgumentList(method);
 
         StringBuilder methods = new StringBuilder();
@@ -138,11 +129,12 @@ public class EventStubGenerator {
         methods.append("        target." + method.getName() + "(" + arguments.toActualArguments() + ");\n");
         methods.append("    }\n");
 
-        StringBuilder sb = new StringBuilder();
-        sb.append(packageStatement());
-        sb.append(importStatements());
-        sb.append(classBody(myEventWrapperName(method), eventInterface(), arguments, methods));
-        return sb.toString();
+        StringBuilder source = new StringBuilder();
+        source.append(packageStatement());
+        source.append(importStatements());
+        source.append(classBody(className, eventInterface(), arguments, methods));
+
+        return new GeneratedClass(fileForClass(className), source.toString());
     }
 
     // source fragments
