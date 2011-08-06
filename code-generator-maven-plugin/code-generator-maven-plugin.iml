@@ -7,8 +7,6 @@
       <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/annotations" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/test-annotations" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/resources" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/it/precompiled-interface/src/main/java" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/it/precompiled-interface/src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/resources" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
@@ -25,14 +23,29 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Maven: org.apache.maven:maven-plugin-api:3.0.3" level="project" />
     <orderEntry type="library" name="Maven: org.apache.maven:maven-model:3.0.3" level="project" />
-    <orderEntry type="library" name="Maven: org.codehaus.plexus:plexus-utils:2.0.6" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.plexus:plexus-utils:1.5.15" level="project" />
     <orderEntry type="library" name="Maven: org.apache.maven:maven-artifact:3.0.3" level="project" />
     <orderEntry type="library" name="Maven: org.sonatype.sisu:sisu-inject-plexus:2.1.1" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.plexus:plexus-component-annotations:1.5.5" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.plexus:plexus-classworlds:2.4" level="project" />
     <orderEntry type="library" name="Maven: org.sonatype.sisu:sisu-inject-bean:2.1.1" level="project" />
     <orderEntry type="library" name="Maven: org.sonatype.sisu:sisu-guice:no_aop:2.9.4" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.maven:maven-project:2.2.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.maven:maven-settings:2.2.1" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.plexus:plexus-interpolation:1.11" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.plexus:plexus-container-default:1.0-alpha-9-stable-1" level="project" />
+    <orderEntry type="library" name="Maven: junit:junit:3.8.1" level="project" />
+    <orderEntry type="library" name="Maven: classworlds:classworlds:1.1-alpha-2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.maven:maven-profile:2.2.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.maven:maven-artifact-manager:2.2.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.maven:maven-repository-metadata:2.2.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.maven.wagon:wagon-provider-api:1.0-beta-6" level="project" />
+    <orderEntry type="library" name="Maven: backport-util-concurrent:backport-util-concurrent:3.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.maven:maven-plugin-registry:2.2.1" level="project" />
+    <orderEntry type="module" module-name="jumi-core" />
+    <orderEntry type="module" module-name="jumi-api" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.functionaljava:functionaljava:3.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.hamcrest:hamcrest-library:1.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.hamcrest:hamcrest-core:1.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit-dep:4.8.2" level="project" />

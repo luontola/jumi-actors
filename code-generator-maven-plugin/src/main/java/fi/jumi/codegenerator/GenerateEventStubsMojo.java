@@ -4,10 +4,13 @@
 
 package fi.jumi.codegenerator;
 
+import fi.jumi.core.actors.*;
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.*;
+import org.apache.maven.project.MavenProject;
 
-import java.io.File;
-import java.util.Arrays;
+import java.io.*;
+import java.util.*;
 
 /**
  * @goal generate-event-stubs
@@ -26,6 +29,13 @@ public class GenerateEventStubsMojo extends AbstractMojo {
     public File outputDirectory;
 
     /**
+     * TODO
+     *
+     * @parameter default-value="${project.build.directory}/generated-sources/test-jumi"
+     */
+    public File testOutputDirectory;
+
+    /**
      * @parameter
      */
     public String targetPackage;
@@ -35,12 +45,45 @@ public class GenerateEventStubsMojo extends AbstractMojo {
      */
     public String[] eventInterfaces;
 
-    public void execute() throws MojoExecutionException {
-        getLog().info("Hello, world.");
+    /**
+     * The Maven Project Object
+     *
+     * @parameter expression="${project}"
+     * @readonly
+     */
+    protected MavenProject project;
 
-        System.out.println("sourceDirectory = " + sourceDirectory);
-        System.out.println("outputDirectory = " + outputDirectory);
-        System.out.println("targetPackage = " + targetPackage);
-        System.out.println("eventInterfaces = " + Arrays.toString(eventInterfaces));
+
+    public void execute() throws MojoExecutionException {
+        for (String eventInterface : eventInterfaces) {
+            EventStubGenerator generator = new EventStubGenerator();
+            try {
+                // TODO: use classpath of the project
+                generator.setListenerType(Class.forName(eventInterface));
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+            generator.setTargetPackage(targetPackage);
+
+            // TODO: extract actors into jumi-actors module, make these non-configurable
+            generator.setEventInterface(Event.class.getName());
+            generator.setFactoryInterface(ListenerFactory.class.getName());
+            generator.setSenderInterface(MessageSender.class.getName());
+
+            List<GeneratedClass> generated = new ArrayList<GeneratedClass>();
+            generated.add(generator.getFactory());
+            generated.add(generator.getFrontend());
+            generated.add(generator.getBackend());
+            generated.addAll(generator.getEvents());
+
+            for (GeneratedClass c : generated) {
+                try {
+                    FileUtils.write(new File(outputDirectory, c.path), c.source); // TODO: encoding
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            project.addCompileSourceRoot(outputDirectory.getAbsolutePath());
+        }
     }
 }

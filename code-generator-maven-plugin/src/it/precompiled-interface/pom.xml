@@ -12,17 +12,15 @@
 
     <groupId>fi.jumi.it</groupId>
     <artifactId>precompiled-interface</artifactId>
-    <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <dependencies>
 
-        <!--
         <dependency>
+            <!-- TODO: use jumi-actors module -->
             <groupId>fi.jumi</groupId>
             <artifactId>jumi-core</artifactId>
         </dependency>
-        -->
 
     </dependencies>
 
@@ -39,7 +37,7 @@
                             <goal>generate-event-stubs</goal>
                         </goals>
                         <configuration>
-                            <targetPackage>example</targetPackage>
+                            <targetPackage>example.generated</targetPackage>
                             <eventInterfaces>
                                 <interface>java.lang.Runnable</interface>
                             </eventInterfaces>
