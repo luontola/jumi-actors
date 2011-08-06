@@ -6,7 +6,7 @@ package fi.jumi.core.dynamicevents;
 
 import fi.jumi.core.actors.Event;
 
-import java.io.Serializable;
+import java.io.*;
 import java.lang.reflect.*;
 import java.util.Arrays;
 
@@ -15,19 +15,12 @@ public class DynamicEvent<T> implements Event<T>, Serializable {
     private transient Method method;
     private final Object[] args;
 
-    // TODO: use events generated at compile time, to get rid of these sub-optimal dynamic events, while keeping the code maintainable
-    private final String methodName;
-
     public DynamicEvent(Method method, Object[] args) {
         this.method = method;
         this.args = args;
-        this.methodName = method.getName();
     }
 
     public void fireOn(T target) {
-        if (method == null) {
-            method = getMethodByName(methodName, target);
-        }
         try {
             method.setAccessible(true);
             method.invoke(target, args);
@@ -38,18 +31,26 @@ public class DynamicEvent<T> implements Event<T>, Serializable {
         }
     }
 
-    private static Method getMethodByName(String name, Object obj) {
-        // XXX: there is some issue which causes Netty to not be able to deserialize java.lang.Class instances, so this hack is needed
-        // TODO: wait for https://issues.jboss.org/browse/NETTY-419 to be fixed
-        for (Method m : obj.getClass().getMethods()) {
-            if (m.getName().equals(name)) {
-                return m;
-            }
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.defaultWriteObject();
+        out.writeObject(method.getName());
+        out.writeObject(method.getDeclaringClass());
+        out.writeObject(method.getParameterTypes());
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        String name = (String) in.readObject();
+        Class<?> declaringClass = (Class<?>) in.readObject();
+        Class<?>[] parameterTypes = (Class<?>[]) in.readObject();
+        try {
+            method = declaringClass.getMethod(name, parameterTypes);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
         }
-        throw new IllegalArgumentException("method not found: " + name);
     }
 
     public String toString() {
-        return getClass().getSimpleName() + "(" + methodName + ", " + method + ", " + Arrays.toString(args) + ")";
+        return getClass().getSimpleName() + "(" + method + ", " + Arrays.toString(args) + ")";
     }
 }
