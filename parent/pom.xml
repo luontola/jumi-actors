@@ -88,6 +88,11 @@
 
             <dependency>
                 <groupId>fi.jumi</groupId>
+                <artifactId>jumi-actors</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>fi.jumi</groupId>
                 <artifactId>jumi-api</artifactId>
                 <version>${project.version}</version>
             </dependency>

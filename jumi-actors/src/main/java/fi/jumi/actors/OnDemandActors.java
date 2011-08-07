@@ -2,9 +2,11 @@
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
-package fi.jumi.core.actors;
+package fi.jumi.actors;
 
-public interface Event<T> {
+public interface OnDemandActors {
 
-    void fireOn(T target);
+    void startUnattendedWorker(Runnable worker, Runnable onFinished);
+
+    <T> T createSecondaryActor(Class<T> type, T target);
 }

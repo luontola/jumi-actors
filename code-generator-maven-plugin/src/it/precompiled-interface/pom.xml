@@ -17,9 +17,8 @@
     <dependencies>
 
         <dependency>
-            <!-- TODO: use jumi-actors module -->
             <groupId>fi.jumi</groupId>
-            <artifactId>jumi-core</artifactId>
+            <artifactId>jumi-actors</artifactId>
         </dependency>
 
     </dependencies>

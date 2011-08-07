@@ -2,10 +2,8 @@
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
-package fi.jumi.core.actors;
+package fi.jumi.actors;
 
-public interface MessageReceiver<T> {
-    T take() throws InterruptedException;
-
-    T poll();
+public interface MessageSender<T> {
+    void send(T message);
 }

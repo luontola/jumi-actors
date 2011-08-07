@@ -2,9 +2,9 @@
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
-package fi.jumi.core.dynamicevents;
+package fi.jumi.actors.dynamicevents;
 
-import fi.jumi.core.actors.Event;
+import fi.jumi.actors.Event;
 
 import java.io.*;
 import java.lang.reflect.*;

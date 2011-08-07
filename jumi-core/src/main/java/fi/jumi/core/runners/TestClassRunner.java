@@ -6,7 +6,7 @@ package fi.jumi.core.runners;
 
 import fi.jumi.api.drivers.*;
 import fi.jumi.core.Startable;
-import fi.jumi.core.actors.OnDemandActors;
+import fi.jumi.actors.OnDemandActors;
 
 import java.util.*;
 

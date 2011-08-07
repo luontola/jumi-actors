@@ -6,9 +6,9 @@ package fi.jumi.core.runners;
 
 import fi.jumi.api.drivers.*;
 import fi.jumi.core.*;
-import fi.jumi.core.actors.SingleThreadedActors;
+import fi.jumi.actors.SingleThreadedActors;
 import fi.jumi.core.drivers.DriverFinder;
-import fi.jumi.core.dynamicevents.DynamicListenerFactory;
+import fi.jumi.actors.dynamicevents.DynamicListenerFactory;
 import fi.jumi.core.files.*;
 import org.junit.Test;
 import org.mockito.InOrder;

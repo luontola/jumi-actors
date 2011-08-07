@@ -4,7 +4,7 @@
 
 package fi.jumi.core;
 
-import fi.jumi.core.actors.OnDemandActors;
+import fi.jumi.actors.OnDemandActors;
 import fi.jumi.core.drivers.*;
 import fi.jumi.core.files.*;
 import fi.jumi.core.runners.SuiteRunner;

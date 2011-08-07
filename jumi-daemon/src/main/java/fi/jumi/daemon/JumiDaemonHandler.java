@@ -5,8 +5,8 @@
 package fi.jumi.daemon;
 
 import fi.jumi.core.*;
-import fi.jumi.core.actors.*;
-import fi.jumi.core.dynamicevents.DynamicListenerFactory;
+import fi.jumi.actors.*;
+import fi.jumi.actors.dynamicevents.DynamicListenerFactory;
 import org.jboss.netty.channel.*;
 
 public class JumiDaemonHandler extends SimpleChannelHandler {

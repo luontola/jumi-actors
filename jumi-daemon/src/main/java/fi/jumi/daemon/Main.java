@@ -5,8 +5,8 @@
 package fi.jumi.daemon;
 
 import fi.jumi.core.*;
-import fi.jumi.core.actors.MultiThreadedActors;
-import fi.jumi.core.dynamicevents.DynamicListenerFactory;
+import fi.jumi.actors.MultiThreadedActors;
+import fi.jumi.actors.dynamicevents.DynamicListenerFactory;
 import fi.jumi.core.files.TestClassFinderListener;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.*;

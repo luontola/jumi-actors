@@ -2,17 +2,17 @@
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
-package fi.jumi.core.dynamicevents;
+package fi.jumi.actors.dynamicevents;
 
-import fi.jumi.core.actors.*;
+import fi.jumi.actors.*;
 
 import java.lang.reflect.*;
 
-public class DynamicListenerToDynamicEvent<T> implements InvocationHandler {
+public class DynamicListenerToEvent<T> implements InvocationHandler {
 
     private final MessageSender<Event<T>> target;
 
-    public DynamicListenerToDynamicEvent(MessageSender<Event<T>> target) {
+    public DynamicListenerToEvent(MessageSender<Event<T>> target) {
         this.target = target;
     }
 

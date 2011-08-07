@@ -27,9 +27,8 @@
         </dependency>
 
         <dependency>
-            <!-- TODO: extract actors to their own module -->
             <groupId>fi.jumi</groupId>
-            <artifactId>jumi-core</artifactId>
+            <artifactId>jumi-actors</artifactId>
         </dependency>
 
         <dependency>

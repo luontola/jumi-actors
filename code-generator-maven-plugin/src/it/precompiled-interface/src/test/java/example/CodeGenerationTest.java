@@ -1,7 +1,7 @@
 package example;
 
 import example.generated.*;
-import fi.jumi.core.actors.*;
+import fi.jumi.actors.*;
 import org.junit.Test;
 
 import static org.mockito.Mockito.*;

@@ -5,8 +5,8 @@
 package fi.jumi.launcher;
 
 import fi.jumi.core.*;
-import fi.jumi.core.actors.*;
-import fi.jumi.core.dynamicevents.*;
+import fi.jumi.actors.*;
+import fi.jumi.actors.dynamicevents.*;
 import fi.jumi.launcher.daemon.Daemon;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.NullWriter;
@@ -27,7 +27,7 @@ public class JumiLauncher {
     private Process process;
 
     private final SuiteStateCollector suite = new SuiteStateCollector();
-    private final JumiLauncherHandler handler = new JumiLauncherHandler(new DynamicEventToDynamicListener<SuiteListener>(suite));
+    private final JumiLauncherHandler handler = new JumiLauncherHandler(new EventToDynamicListener<SuiteListener>(suite));
     private final List<File> classPath = new ArrayList<File>();
     private String testsToIncludePattern;
 

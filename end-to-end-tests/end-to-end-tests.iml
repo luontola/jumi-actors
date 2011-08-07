@@ -22,6 +22,7 @@
     <orderEntry type="module" module-name="jumi-api" />
     <orderEntry type="module" module-name="jumi-launcher" scope="TEST" />
     <orderEntry type="module" module-name="jumi-core" scope="TEST" />
+    <orderEntry type="module" module-name="jumi-actors" scope="TEST" />
     <orderEntry type="library" scope="TEST" name="Maven: commons-io:commons-io:2.0.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.functionaljava:functionaljava:3.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.jboss.netty:netty:3.2.5.Final" level="project" />

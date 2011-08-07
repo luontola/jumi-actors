@@ -5,7 +5,7 @@
 package fi.jumi.launcher;
 
 import fi.jumi.core.*;
-import fi.jumi.core.actors.*;
+import fi.jumi.actors.*;
 import org.jboss.netty.channel.*;
 
 public class JumiLauncherHandler extends SimpleChannelHandler {

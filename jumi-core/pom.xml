@@ -23,6 +23,10 @@
 
         <dependency>
             <groupId>fi.jumi</groupId>
+            <artifactId>jumi-actors</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>fi.jumi</groupId>
             <artifactId>jumi-api</artifactId>
         </dependency>
 
@@ -78,7 +82,8 @@
                         <configuration>
                             <artifactSet>
                                 <excludes>
-                                    <!-- Regular dependencies -->
+                                    <!-- Regular dependencies (transitive) -->
+                                    <exclude>fi.jumi:jumi-actors</exclude>
                                     <exclude>fi.jumi:jumi-api</exclude>
                                 </excludes>
                             </artifactSet>

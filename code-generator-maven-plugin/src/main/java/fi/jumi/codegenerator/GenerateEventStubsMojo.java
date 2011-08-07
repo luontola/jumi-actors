@@ -4,7 +4,7 @@
 
 package fi.jumi.codegenerator;
 
-import fi.jumi.core.actors.*;
+import fi.jumi.actors.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.*;
 import org.apache.maven.project.MavenProject;
@@ -27,13 +27,6 @@ public class GenerateEventStubsMojo extends AbstractMojo {
      * @parameter default-value="${project.build.directory}/generated-sources/jumi"
      */
     public File outputDirectory;
-
-    /**
-     * TODO
-     *
-     * @parameter default-value="${project.build.directory}/generated-sources/test-jumi"
-     */
-    public File testOutputDirectory;
 
     /**
      * @parameter
@@ -65,7 +58,7 @@ public class GenerateEventStubsMojo extends AbstractMojo {
             }
             generator.setTargetPackage(targetPackage);
 
-            // TODO: extract actors into jumi-actors module, make these non-configurable
+            // TODO: make these non-configurable
             generator.setEventInterface(Event.class.getName());
             generator.setFactoryInterface(ListenerFactory.class.getName());
             generator.setSenderInterface(MessageSender.class.getName());
