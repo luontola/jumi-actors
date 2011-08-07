@@ -49,19 +49,14 @@ public class GenerateEventStubsMojo extends AbstractMojo {
 
     public void execute() throws MojoExecutionException {
         for (String eventInterface : eventInterfaces) {
-            EventStubGenerator generator = new EventStubGenerator();
+            // TODO: use classpath of the project
+            Class<?> listenerType;
             try {
-                // TODO: use classpath of the project
-                generator.setListenerType(Class.forName(eventInterface));
+                listenerType = Class.forName(eventInterface);
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
-            generator.setTargetPackage(targetPackage);
-
-            // TODO: make these non-configurable
-            generator.setEventInterface(Event.class.getName());
-            generator.setFactoryInterface(ListenerFactory.class.getName());
-            generator.setSenderInterface(MessageSender.class.getName());
+            EventStubGenerator generator = new EventStubGenerator(listenerType, targetPackage);
 
             List<GeneratedClass> generated = new ArrayList<GeneratedClass>();
             generated.add(generator.getFactory());

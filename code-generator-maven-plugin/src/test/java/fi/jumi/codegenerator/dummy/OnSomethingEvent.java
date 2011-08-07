@@ -1,8 +1,9 @@
 package fi.jumi.codegenerator.dummy;
 
+import fi.jumi.actors.*;
 import fi.jumi.codegenerator.*;
 
-public class OnSomethingEvent implements MyEvent<DummyListener> {
+public class OnSomethingEvent implements Event<DummyListener> {
 
     private final String arg0;
     private final String arg1;

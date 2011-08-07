@@ -4,6 +4,7 @@
 
 package fi.jumi.codegenerator;
 
+import fi.jumi.actors.*;
 import fi.jumi.codegenerator.java.*;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -13,35 +14,16 @@ import java.util.*;
 @SuppressWarnings({"StringConcatenationInsideStringBufferAppend"})
 public class EventStubGenerator {
 
-    private Class<?> listenerType;
-    private String targetPackage;
-    private Type eventInterfaceRaw;
-    private Type factoryInterfaceRaw;
-    private Type senderInterfaceRaw;
+    private final Class<?> listenerType;
+    private final String targetPackage;
+    private final Type eventInterfaceRaw = new Type(Event.class);
+    private final Type factoryInterfaceRaw = new Type(ListenerFactory.class);
+    private final Type senderInterfaceRaw = new Type(MessageSender.class);
 
-    // configuration
-
-    public void setListenerType(Class<?> listenerType) {
+    public EventStubGenerator(Class<?> listenerType, String targetPackage) {
         this.listenerType = listenerType;
-    }
-
-    public void setTargetPackage(String targetPackage) {
         this.targetPackage = targetPackage;
     }
-
-    public void setEventInterface(String eventInterface) {
-        this.eventInterfaceRaw = new Type(eventInterface);
-    }
-
-    public void setFactoryInterface(String factoryInterface) {
-        this.factoryInterfaceRaw = new Type(factoryInterface);
-    }
-
-    public void setSenderInterface(String senderInterface) {
-        this.senderInterfaceRaw = new Type(senderInterface);
-    }
-
-    // public API
 
     public GeneratedClass getFactory() {
         String className = myFactoryName();

@@ -1,18 +1,19 @@
 package fi.jumi.codegenerator.dummy;
 
+import fi.jumi.actors.*;
 import fi.jumi.codegenerator.*;
 
-public class DummyListenerFactory implements MyListenerFactory<DummyListener> {
+public class DummyListenerFactory implements ListenerFactory<DummyListener> {
 
     public Class<DummyListener> getType() {
         return DummyListener.class;
     }
 
-    public DummyListener newFrontend(MyMessageSender<MyEvent<DummyListener>> target) {
+    public DummyListener newFrontend(MessageSender<Event<DummyListener>> target) {
         return new DummyListenerToEvent(target);
     }
 
-    public MyMessageSender<MyEvent<DummyListener>> newBackend(DummyListener target) {
+    public MessageSender<Event<DummyListener>> newBackend(DummyListener target) {
         return new EventToDummyListener(target);
     }
 }

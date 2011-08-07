@@ -1,8 +1,9 @@
 package fi.jumi.codegenerator.dummy;
 
+import fi.jumi.actors.*;
 import fi.jumi.codegenerator.*;
 
-public class EventToDummyListener implements MyMessageSender<MyEvent<DummyListener>> {
+public class EventToDummyListener implements MessageSender<Event<DummyListener>> {
 
     private final DummyListener listener;
 
@@ -10,7 +11,7 @@ public class EventToDummyListener implements MyMessageSender<MyEvent<DummyListen
         this.listener = listener;
     }
 
-    public void send(MyEvent<DummyListener> message) {
+    public void send(Event<DummyListener> message) {
         message.fireOn(listener);
     }
 }

@@ -4,6 +4,7 @@
 
 package fi.jumi.codegenerator;
 
+import fi.jumi.actors.*;
 import fi.jumi.codegenerator.dummy.DummyListenerFactory;
 import org.apache.commons.io.IOUtils;
 import org.junit.*;
@@ -19,16 +20,13 @@ import static org.mockito.Mockito.*;
 
 public class EventStubGeneratorTest {
 
+    private static final String TARGET_PACKAGE = "fi.jumi.codegenerator.dummy";
+
     private EventStubGenerator generator;
 
     @Before
     public void setUp() {
-        generator = new EventStubGenerator();
-        generator.setListenerType(DummyListener.class);
-        generator.setTargetPackage("fi.jumi.codegenerator.dummy");
-        generator.setEventInterface(MyEvent.class.getName());
-        generator.setFactoryInterface(MyListenerFactory.class.getName());
-        generator.setSenderInterface(MyMessageSender.class.getName());
+        generator = new EventStubGenerator(DummyListener.class, TARGET_PACKAGE);
     }
 
     @Test
@@ -42,7 +40,7 @@ public class EventStubGeneratorTest {
     public void stubs_forward_events_from_frontend_to_backend() {
         DummyListener target = mock(DummyListener.class);
         DummyListenerFactory factory = new DummyListenerFactory();
-        MyMessageSender<MyEvent<DummyListener>> backend = factory.newBackend(target);
+        MessageSender<Event<DummyListener>> backend = factory.newBackend(target);
         DummyListener frontend = factory.newFrontend(backend);
 
         frontend.onSomething("foo", "bar");
@@ -72,7 +70,7 @@ public class EventStubGeneratorTest {
 
     @Test
     public void generates_event_classes_for_every_listener_method() {
-        generator.setListenerType(TwoMethodInterface.class);
+        generator = new EventStubGenerator(TwoMethodInterface.class, TARGET_PACKAGE);
 
         List<GeneratedClass> events = generator.getEvents();
         assertThat(events.size(), is(2));
