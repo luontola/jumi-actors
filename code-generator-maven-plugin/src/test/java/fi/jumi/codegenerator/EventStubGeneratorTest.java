@@ -78,6 +78,19 @@ public class EventStubGeneratorTest {
         assertThat(events.get(1).path, endsWith("OnTwoEvent.java"));
     }
 
+    @Test
+    public void add_imports_for_all_method_parameter_types() {
+        generator = new EventStubGenerator(ExternalLibraryReferencingListener.class, TARGET_PACKAGE);
+
+        GeneratedClass event = generator.getEvents().get(0);
+        assertThat(event.source, containsString("import java.util.*;"));
+
+        GeneratedClass frontend = generator.getFrontend();
+        assertThat(frontend.source, containsString("import java.util.*;"));
+
+        // TODO: single class imports if less than N classes?
+    }
+
 
     private static void assertClassEquals(String expectedPath, GeneratedClass actual) throws IOException {
         assertEquals(expectedPath, actual.path);
@@ -88,11 +101,18 @@ public class EventStubGeneratorTest {
         return IOUtils.toString(EventStubGenerator.class.getClassLoader().getResourceAsStream(resource));
     }
 
+
     @SuppressWarnings({"UnusedDeclaration"})
     private interface TwoMethodInterface {
 
         void onOne();
 
         void onTwo();
+    }
+
+    @SuppressWarnings({"UnusedDeclaration"})
+    private interface ExternalLibraryReferencingListener {
+
+        void onSomething(List<String> buffer);
     }
 }

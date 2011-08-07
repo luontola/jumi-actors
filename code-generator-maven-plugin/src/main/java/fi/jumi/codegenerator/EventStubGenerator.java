@@ -134,26 +134,35 @@ public class EventStubGenerator {
     }
 
     private StringBuilder importStatements() {
+        // TODO: do not add unnecessary imports, but check that which ones are really needed by the current class
+        List<Type> additionalImports = new ArrayList<Type>();
+        for (Method method : listenerType.getMethods()) {
+            for (Class<?> clazz : method.getParameterTypes()) {
+                additionalImports.add(new Type(clazz));
+            }
+        }
+
         StringBuilder sb = new StringBuilder();
-        for (String classToImport : classesToImport()) {
+        for (String classToImport : classesToImport(additionalImports)) {
             sb.append("import " + classToImport + ";\n");
         }
         sb.append("\n");
         return sb;
     }
 
-    private Collection<String> classesToImport() {
+    private Collection<String> classesToImport(List<Type> additionalImports) {
         SortedSet<Type> singleClassImports = new TreeSet<Type>();
         singleClassImports.add(listenerInterface());
         singleClassImports.add(eventInterfaceRaw);
         singleClassImports.add(factoryInterfaceRaw);
         singleClassImports.add(senderInterfaceRaw);
-        // TODO: application classes used in listener methods
+        singleClassImports.addAll(additionalImports);
 
         SortedSet<String> wildcardImports = new TreeSet<String>();
         for (Type singleClassImport : singleClassImports) {
             wildcardImports.add(singleClassImport.getPackage() + ".*");
         }
+        wildcardImports.remove("java.lang.*");
         return wildcardImports;
     }
 
