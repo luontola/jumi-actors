@@ -45,7 +45,6 @@
     <build>
         <plugins>
 
-            <!--
             <plugin>
                 <groupId>fi.jumi</groupId>
                 <artifactId>code-generator-maven-plugin</artifactId>
@@ -58,16 +57,16 @@
                             <targetPackage>fi.jumi.core.events</targetPackage>
                             <eventInterfaces>
                                 <interface>java.lang.Runnable</interface>
-                                <interface>fi.jumi.core.CommandListener</interface>
-                                <interface>fi.jumi.core.Startable</interface>
-                                <interface>fi.jumi.core.SuiteListener</interface>
-                                <interface>fi.jumi.core.files.TestClassFinderListener</interface>
+                                <!-- TODO: add support for generating stubs from source files -->
+                                <!--<interface>fi.jumi.core.CommandListener</interface>-->
+                                <!--<interface>fi.jumi.core.Startable</interface>-->
+                                <!--<interface>fi.jumi.core.SuiteListener</interface>-->
+                                <!--<interface>fi.jumi.core.files.TestClassFinderListener</interface>-->
                             </eventInterfaces>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
-            -->
 
             <!-- Hide external dependencies -->
 
