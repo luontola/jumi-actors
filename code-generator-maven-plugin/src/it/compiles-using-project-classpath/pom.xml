@@ -11,7 +11,7 @@
     </parent>
 
     <groupId>fi.jumi.it</groupId>
-    <artifactId>loads-from-project-classpath</artifactId>
+    <artifactId>compiles-using-project-classpath</artifactId>
     <packaging>jar</packaging>
 
     <dependencies>
@@ -43,9 +43,7 @@
                         <configuration>
                             <targetPackage>example.generated</targetPackage>
                             <eventInterfaces>
-                                <!-- We need an interface from some external library, which is not on
-                                     this plugin's classpath, and which has only void methods. -->
-                                <interface>org.jboss.netty.util.ExternalResourceReleasable</interface>
+                                <interface>example.ExampleListener</interface>
                             </eventInterfaces>
                         </configuration>
                     </execution>

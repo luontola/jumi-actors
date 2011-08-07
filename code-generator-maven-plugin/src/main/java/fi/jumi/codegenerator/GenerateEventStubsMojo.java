@@ -93,48 +93,77 @@ public class GenerateEventStubsMojo extends AbstractMojo {
 
     private Class<?> loadClass(String eventInterface) throws MojoExecutionException {
         try {
-            URLClassLoader loader = new URLClassLoader(FileUtils.toURLs(toFiles(projectClasspath)));
-            return loader.loadClass(eventInterface);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            return loadFromClasspath(eventInterface, toFiles(projectClasspath));
         } catch (ClassNotFoundException e) {
             // the class is part of this project and is still a source file
         }
 
+        compileClass(eventInterface, tempDirectory);
+
+        List<File> classpath = new ArrayList<File>();
+        classpath.add(tempDirectory);
+        classpath.addAll(Arrays.asList(toFiles(projectClasspath)));
+
+        try {
+            return loadFromClassPath(eventInterface, classpath);
+        } catch (ClassNotFoundException e) {
+            throw new MojoExecutionException("Could not load event interface: " + eventInterface, e);
+        }
+    }
+
+    private void compileClass(String classToCompile, File targetDir) throws MojoExecutionException {
         HashSet<String> includes = new HashSet<String>();
-        includes.add(eventInterface.replace('.', '/') + ".java");
+        includes.add(classToCompile.replace('.', '/') + ".java");
 
         CompilerConfiguration config = new CompilerConfiguration();
         if (sourceDirectory.isDirectory()) {
             config.addSourceLocation(sourceDirectory.getAbsolutePath());
         }
         config.setIncludes(includes);
-        config.setOutputLocation(tempDirectory.getAbsolutePath());
+        config.setOutputLocation(targetDir.getAbsolutePath());
         config.setSourceVersion("1.6"); // TODO: use the current project's setting
         config.setTargetVersion("1.6"); // TODO: use the current project's setting
-        // TODO: compile using project classpath
+        config.setClasspathEntries(Arrays.asList(projectClasspath));
 
         try {
             JavacCompiler javac = new JavacCompiler();
             getLog().debug("Compiling event interface using: " + Arrays.toString(javac.createCommandLine(config)));
             List<CompilerError> messages = javac.compile(config);
-            printCompilerMessages(messages);
-
+            checkForCompilerErrors(messages, classToCompile);
         } catch (CompilerException e) {
-            throw new MojoExecutionException("Cannot compile event interface: " + eventInterface, e);
-        }
-
-        try {
-            URL[] urls = FileUtils.toURLs(new File[]{tempDirectory});
-            URLClassLoader loader = new URLClassLoader(urls);
-            return loader.loadClass(eventInterface);
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            throw new MojoExecutionException("Cannot load event interface: " + eventInterface, e);
+            throw new MojoExecutionException("Cannot compile event interface: " + classToCompile, e);
         }
     }
+
+    private static Class<?> loadFromClassPath(String className, List<File> classpath) throws ClassNotFoundException {
+        return loadFromClasspath(className, classpath.toArray(new File[classpath.size()]));
+    }
+
+    private static Class<?> loadFromClasspath(String className, File[] classpath) throws ClassNotFoundException {
+        try {
+            URL[] urls = FileUtils.toURLs(classpath);
+            URLClassLoader loader = new URLClassLoader(urls);
+            return loader.loadClass(className);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void checkForCompilerErrors(List<CompilerError> messages, String eventInterface) throws MojoExecutionException {
+        if (!messages.isEmpty()) {
+            String compilerMessages = "";
+            boolean hadErrors = false;
+            for (CompilerError message : messages) {
+                hadErrors |= message.isError();
+                compilerMessages += "\n" + message;
+            }
+            if (hadErrors) {
+                throw new MojoExecutionException("There were compiler errors when compiling the event interface: "
+                        + eventInterface + compilerMessages);
+            }
+        }
+    }
+
 
     private static File[] toFiles(String[] paths) {
         File[] files = new File[paths.length];
@@ -142,15 +171,5 @@ public class GenerateEventStubsMojo extends AbstractMojo {
             files[i] = new File(paths[i]);
         }
         return files;
-    }
-
-    private void printCompilerMessages(List<CompilerError> messages) {
-        for (CompilerError message : messages) {
-            if (message.isError()) {
-                getLog().error(message.toString());
-            } else {
-                getLog().warn(message.toString());
-            }
-        }
     }
 }
