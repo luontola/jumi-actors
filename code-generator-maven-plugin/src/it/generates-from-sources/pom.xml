@@ -6,12 +6,12 @@
     <parent>
         <groupId>fi.jumi</groupId>
         <artifactId>parent</artifactId>
-        <version>@pom.version@</version>
+        <version>@project.version@</version>
         <relativePath>../../../../parent/pom.xml</relativePath>
     </parent>
 
     <groupId>fi.jumi.it</groupId>
-    <artifactId>precompiled-interface</artifactId>
+    <artifactId>generates-from-sources</artifactId>
     <packaging>jar</packaging>
 
     <dependencies>
@@ -29,7 +29,7 @@
             <plugin>
                 <groupId>fi.jumi</groupId>
                 <artifactId>code-generator-maven-plugin</artifactId>
-                <version>@pom.version@</version>
+                <version>@project.version@</version>
                 <executions>
                     <execution>
                         <goals>
@@ -38,7 +38,7 @@
                         <configuration>
                             <targetPackage>example.generated</targetPackage>
                             <eventInterfaces>
-                                <interface>java.lang.Runnable</interface>
+                                <interface>example.ExampleListener</interface>
                             </eventInterfaces>
                         </configuration>
                     </execution>
