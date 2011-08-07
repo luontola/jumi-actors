@@ -56,8 +56,7 @@
                     <localRepositoryPath>${project.build.directory}/it-repo</localRepositoryPath>
                     <settingsFile>${basedir}/src/it/settings.xml</settingsFile>
                     <goals>
-                        <goal>clean</goal>
-                        <goal>verify</goal>
+                        <goal>test</goal>
                     </goals>
                 </configuration>
                 <executions>
