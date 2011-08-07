@@ -84,7 +84,7 @@ public class GenerateEventStubsMojo extends AbstractMojo {
         }
 
         HashSet<String> includes = new HashSet<String>();
-        includes.add(eventInterface.replace('.', '/') + ".java"); // TODO: write a test for this
+        includes.add(eventInterface.replace('.', '/') + ".java");
 
         CompilerConfiguration config = new CompilerConfiguration();
         config.addSourceLocation(sourceDirectory.getAbsolutePath());

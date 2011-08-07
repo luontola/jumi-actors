@@ -70,7 +70,9 @@
                     <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
                     <localRepositoryPath>${project.build.directory}/it-repo</localRepositoryPath>
                     <settingsFile>${basedir}/src/it/settings.xml</settingsFile>
+                    <postBuildHookScript>verify</postBuildHookScript>
                     <goals>
+                        <goal>clean</goal>
                         <goal>test</goal>
                     </goals>
                 </configuration>
