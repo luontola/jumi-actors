@@ -11,10 +11,13 @@ TODO NEXT:
 				http://mojo.codehaus.org/shitty-maven-plugin/
 				http://maven.apache.org/plugins/maven-invoker-plugin/
 				- examples in javascript-maven-tools
-		!! - compile event interface sources as in maven-compiler-plugin, output to temp dir (unless it's a library class)
+		OK - compile event interface sources as in maven-compiler-plugin, output to temp dir (unless it's a library class)
 		OK - load classes from temp dir, use reflection to find out methods
 		OK - write generated sources (maybe use a template for file headers etc.)
-		- generate stubs also for test sources?
+		!! - use project classpath in loading and compiling
+		- more tests for using the compiler
+		SKIP - generate stubs also for test sources?
+		- rename code-generator-maven-plugin to jumi-actors-maven-plugin
 	- put end-to-end tests in their own package (test.fi.jumi?), separate them from unit tests
 		- or use JUnit categories, maybe with a custom runner?
 	- making sure that non-thread-safe classes are used only from one thread
