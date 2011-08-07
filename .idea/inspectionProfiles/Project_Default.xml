@@ -36,7 +36,7 @@
       <option name="IGNORE_DEPRECATED" value="false" />
       <option name="IGNORE_JAVADOC_PERIOD" value="true" />
       <option name="IGNORE_DUPLICATED_THROWS" value="false" />
-      <option name="myAdditionalJavadocTags" value="parameter,phase,goal,readonly" />
+      <option name="myAdditionalJavadocTags" value="aggregator,execute,goal,phase,requiresDirectInvocation,requiresProject,requiresReports,requiresOnline,parameter,component,required,readonly,requiresDependencyResolution,threadSafe" />
     </inspection_tool>
     <inspection_tool class="ListIndexOfReplaceableByContains" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="MethodMayBeSynchronized" enabled="true" level="WARNING" enabled_by_default="true" />

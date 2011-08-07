@@ -17,31 +17,46 @@ import java.util.*;
 /**
  * @goal generate-event-stubs
  * @phase generate-sources
+ * @requiresDependencyResolution compile
+ * @threadSafe
  */
 public class GenerateEventStubsMojo extends AbstractMojo {
 
     /**
      * @parameter default-value="${project.build.sourceDirectory}"
+     * @required
      */
     public File sourceDirectory;
 
     /**
      * @parameter default-value="${project.build.directory}/generated-sources/jumi"
+     * @required
      */
     public File outputDirectory;
 
     /**
+     * @parameter default-value="${project.compileClasspathElements}"
+     * @required
+     * @readonly
+     */
+    private String[] projectClasspath;
+
+
+    /**
      * @parameter default-value="${project.build.directory}/jumi"
+     * @required
      */
     public File tempDirectory;
 
     /**
      * @parameter
+     * @required
      */
     public String targetPackage;
 
     /**
      * @parameter
+     * @required
      */
     public String[] eventInterfaces;
 
@@ -49,6 +64,7 @@ public class GenerateEventStubsMojo extends AbstractMojo {
      * The Maven Project Object
      *
      * @parameter expression="${project}"
+     * @required
      * @readonly
      */
     protected MavenProject project;
@@ -75,10 +91,12 @@ public class GenerateEventStubsMojo extends AbstractMojo {
         }
     }
 
-    private Class<?> loadClass(String eventInterface) {
-        // TODO: use classpath of the project
+    private Class<?> loadClass(String eventInterface) throws MojoExecutionException {
         try {
-            return Class.forName(eventInterface);
+            URLClassLoader loader = new URLClassLoader(FileUtils.toURLs(toFiles(projectClasspath)));
+            return loader.loadClass(eventInterface);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {
             // the class is part of this project and is still a source file
         }
@@ -87,7 +105,9 @@ public class GenerateEventStubsMojo extends AbstractMojo {
         includes.add(eventInterface.replace('.', '/') + ".java");
 
         CompilerConfiguration config = new CompilerConfiguration();
-        config.addSourceLocation(sourceDirectory.getAbsolutePath());
+        if (sourceDirectory.isDirectory()) {
+            config.addSourceLocation(sourceDirectory.getAbsolutePath());
+        }
         config.setIncludes(includes);
         config.setOutputLocation(tempDirectory.getAbsolutePath());
         config.setSourceVersion("1.6"); // TODO: use the current project's setting
@@ -100,8 +120,8 @@ public class GenerateEventStubsMojo extends AbstractMojo {
             List<CompilerError> messages = javac.compile(config);
             printCompilerMessages(messages);
 
-        } catch (CompilerException e1) {
-            throw new RuntimeException(e1);
+        } catch (CompilerException e) {
+            throw new MojoExecutionException("Cannot compile event interface: " + eventInterface, e);
         }
 
         try {
@@ -112,8 +132,16 @@ public class GenerateEventStubsMojo extends AbstractMojo {
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            throw new MojoExecutionException("Cannot load event interface: " + eventInterface, e);
         }
+    }
+
+    private static File[] toFiles(String[] paths) {
+        File[] files = new File[paths.length];
+        for (int i = 0; i < paths.length; i++) {
+            files[i] = new File(paths[i]);
+        }
+        return files;
     }
 
     private void printCompilerMessages(List<CompilerError> messages) {
