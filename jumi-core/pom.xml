@@ -49,63 +49,19 @@
                 <groupId>fi.jumi</groupId>
                 <artifactId>jumi-actors-maven-plugin</artifactId>
                 <executions>
-                    <!-- TODO: generate subpackages based on interface name -->
                     <execution>
                         <id>runnable</id>
                         <goals>
                             <goal>generate-event-stubs</goal>
                         </goals>
                         <configuration>
-                            <targetPackage>fi.jumi.core.events.runnable</targetPackage>
+                            <targetPackage>fi.jumi.core.events</targetPackage>
+                            <createSubPackages>true</createSubPackages>
                             <eventInterfaces>
                                 <interface>java.lang.Runnable</interface>
-                            </eventInterfaces>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>command</id>
-                        <goals>
-                            <goal>generate-event-stubs</goal>
-                        </goals>
-                        <configuration>
-                            <targetPackage>fi.jumi.core.events.command</targetPackage>
-                            <eventInterfaces>
                                 <interface>fi.jumi.core.CommandListener</interface>
-                            </eventInterfaces>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>startable</id>
-                        <goals>
-                            <goal>generate-event-stubs</goal>
-                        </goals>
-                        <configuration>
-                            <targetPackage>fi.jumi.core.events.startable</targetPackage>
-                            <eventInterfaces>
                                 <interface>fi.jumi.core.Startable</interface>
-                            </eventInterfaces>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>suite</id>
-                        <goals>
-                            <goal>generate-event-stubs</goal>
-                        </goals>
-                        <configuration>
-                            <targetPackage>fi.jumi.core.events.suite</targetPackage>
-                            <eventInterfaces>
                                 <interface>fi.jumi.core.SuiteListener</interface>
-                            </eventInterfaces>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>testclassfinder</id>
-                        <goals>
-                            <goal>generate-event-stubs</goal>
-                        </goals>
-                        <configuration>
-                            <targetPackage>fi.jumi.core.events.testclassfinder</targetPackage>
-                            <eventInterfaces>
                                 <interface>fi.jumi.core.files.TestClassFinderListener</interface>
                             </eventInterfaces>
                         </configuration>

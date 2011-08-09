@@ -4,6 +4,7 @@
 
 package fi.jumi.codegenerator;
 
+import fi.jumi.codegenerator.java.Type;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.*;
 import org.apache.maven.project.MavenProject;
@@ -55,6 +56,12 @@ public class GenerateEventStubsMojo extends AbstractMojo {
     public String targetPackage;
 
     /**
+     * @parameter default-value="false"
+     * @required
+     */
+    public boolean createSubPackages;
+
+    /**
      * @parameter
      * @required
      */
@@ -72,7 +79,7 @@ public class GenerateEventStubsMojo extends AbstractMojo {
 
     public void execute() throws MojoExecutionException {
         for (String eventInterface : eventInterfaces) {
-            EventStubGenerator generator = new EventStubGenerator(loadClass(eventInterface), targetPackage);
+            EventStubGenerator generator = new EventStubGenerator(loadClass(eventInterface), getTargetPackage(eventInterface));
 
             List<GeneratedClass> generated = new ArrayList<GeneratedClass>();
             generated.add(generator.getFactory());
@@ -88,6 +95,17 @@ public class GenerateEventStubsMojo extends AbstractMojo {
                 }
             }
             project.addCompileSourceRoot(outputDirectory.getAbsolutePath());
+        }
+    }
+
+    private String getTargetPackage(String eventInterface) {
+        // TODO: write a unit test for this
+        if (createSubPackages) {
+            Type type = new Type(eventInterface);
+            String subpackage = type.getSimpleName().replaceAll("Listener$", "").toLowerCase(Locale.ENGLISH);
+            return targetPackage + "." + subpackage;
+        } else {
+            return targetPackage;
         }
     }
 
