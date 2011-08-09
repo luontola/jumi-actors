@@ -18,6 +18,12 @@ TODO NEXT:
 		OK - more tests for using the compiler
 		SKIP - generate stubs also for test sources?
 		- rename code-generator-maven-plugin to jumi-actors-maven-plugin
+		OK - build tests for jumi-actors
+		- @Generated annotation
+		- annotation to suppress unchecked warnings due to type erasure?
+		- begin using the generated code
+		- toString?
+		- plugin pom: add-source with http://mojo.codehaus.org/build-helper-maven-plugin/
 	- put end-to-end tests in their own package (test.fi.jumi?), separate them from unit tests
 		- or use JUnit categories, maybe with a custom runner?
 	- making sure that non-thread-safe classes are used only from one thread

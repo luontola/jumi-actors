@@ -45,8 +45,8 @@ public class BuildTest {
     public void init() throws IOException {
         projectPoms = TestEnvironment.getProjectPoms();
         File[] projectJars = TestEnvironment.getProjectJars();
-//        assertThat("project JARs", projectJars.length, is(5));
-//        actorsJar = pick("jumi-actors", projectJars);
+        assertThat("project JARs", projectJars.length, is(5));
+        actorsJar = pick("jumi-actors", projectJars);
         apiJar = pick("jumi-api", projectJars);
         coreJar = pick("jumi-core", projectJars);
         daemonJar = pick("jumi-daemon", projectJars);
@@ -67,6 +67,14 @@ public class BuildTest {
         assertJarContainsOnly(Daemon.getDaemonJarAsStream(),
                 POM_FILES,
                 BASE_PACKAGE
+        );
+    }
+
+    @Test
+    public void contents_of_actors_jar() throws IOException {
+        assertJarContainsOnly(actorsJar,
+                POM_FILES,
+                BASE_PACKAGE + "actors/"
         );
     }
 
@@ -108,13 +116,14 @@ public class BuildTest {
 
     @Test
     public void project_artifact_poms_do_not_have_external_dependencies() throws Exception {
-        assertThat("project POMs", projectPoms.length, is(4));
+        assertThat("project POMs", projectPoms.length, is(5));
         for (File projectPom : projectPoms) {
             Document doc = parseXml(projectPom);
 
             String artifactId = getArtifactId(doc);
             List<String> dependencies = getRuntimeDependencies(doc);
-            assertThat("dependencies of " + artifactId + " were " + dependencies, dependencies, is(DEPENDENCIES.get(artifactId)));
+            List<String> expectedDependencies = DEPENDENCIES.get(artifactId);
+            assertThat("dependencies of " + artifactId + " were " + dependencies, dependencies, is(expectedDependencies));
         }
     }
 

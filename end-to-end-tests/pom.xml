@@ -116,6 +116,18 @@
 
                                 <artifactItem>
                                     <groupId>fi.jumi</groupId>
+                                    <artifactId>jumi-actors</artifactId>
+                                    <version>${project.version}</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>fi.jumi</groupId>
+                                    <artifactId>jumi-actors</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>pom</type>
+                                </artifactItem>
+
+                                <artifactItem>
+                                    <groupId>fi.jumi</groupId>
                                     <artifactId>jumi-api</artifactId>
                                     <version>${project.version}</version>
                                 </artifactItem>
