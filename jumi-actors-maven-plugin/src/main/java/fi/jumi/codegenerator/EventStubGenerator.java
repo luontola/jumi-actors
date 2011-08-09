@@ -8,6 +8,7 @@ import fi.jumi.actors.*;
 import fi.jumi.codegenerator.java.*;
 import org.codehaus.plexus.util.StringUtils;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -50,7 +51,7 @@ public class EventStubGenerator {
         StringBuilder source = new StringBuilder();
         source.append(packageStatement());
         source.append(importStatements());
-        source.append(classBody(className, factoryInterface(), new ArgumentList(), methods));
+        source.append(classBody(className, new ArgumentList(), methods, factoryInterface()));
 
         return new GeneratedClass(fileForClass(className), source.toString());
     }
@@ -68,7 +69,7 @@ public class EventStubGenerator {
         StringBuilder source = new StringBuilder();
         source.append(packageStatement());
         source.append(importStatements());
-        source.append(classBody(className, listenerInterface(), new ArgumentList(sender), methods));
+        source.append(classBody(className, new ArgumentList(sender), methods, listenerInterface()));
 
         return new GeneratedClass(fileForClass(className), source.toString());
     }
@@ -94,7 +95,7 @@ public class EventStubGenerator {
         StringBuilder source = new StringBuilder();
         source.append(packageStatement());
         source.append(importStatements());
-        source.append(classBody(className, senderInterface(), new ArgumentList(listener), methods));
+        source.append(classBody(className, new ArgumentList(listener), methods, senderInterface()));
 
         return new GeneratedClass(fileForClass(className), source.toString());
     }
@@ -110,10 +111,12 @@ public class EventStubGenerator {
             methods.append("        target." + method.getName() + "(" + arguments.toActualArguments() + ");\n");
             methods.append("    }\n");
 
+            Type serializableInterface = new Type(Serializable.class);
+
             StringBuilder source = new StringBuilder();
             source.append(packageStatement());
-            source.append(importStatements());
-            source.append(classBody(className, eventInterface(), arguments, methods));
+            source.append(importStatements(serializableInterface));
+            source.append(classBody(className, arguments, methods, eventInterface(), serializableInterface));
 
             events.add(new GeneratedClass(fileForClass(className), source.toString()));
         }
@@ -133,17 +136,19 @@ public class EventStubGenerator {
         return "package " + targetPackage + ";\n\n";
     }
 
-    private StringBuilder importStatements() {
+    private StringBuilder importStatements(Type... moreImports) {
+        // TODO: extract class Imports
         // TODO: do not add unnecessary imports, but check that which ones are really needed by the current class
-        List<Type> additionalImports = new ArrayList<Type>();
+        List<Type> imports = new ArrayList<Type>();
         for (Method method : listenerType.getMethods()) {
             for (Class<?> clazz : method.getParameterTypes()) {
-                additionalImports.add(new Type(clazz));
+                imports.add(new Type(clazz));
             }
         }
+        Collections.addAll(imports, moreImports);
 
         StringBuilder sb = new StringBuilder();
-        for (String classToImport : classesToImport(additionalImports)) {
+        for (String classToImport : classesToImport(imports)) {
             sb.append("import " + classToImport + ";\n");
         }
         sb.append("\n");
@@ -166,9 +171,9 @@ public class EventStubGenerator {
         return wildcardImports;
     }
 
-    private StringBuilder classBody(String className, Type myInterface, ArgumentList fields, StringBuilder methods) {
+    private StringBuilder classBody(String className, ArgumentList fields, StringBuilder methods, Type... interfaces) {
         StringBuilder sb = new StringBuilder();
-        sb.append("public class " + className + " implements " + myInterface.getSimpleName() + " {\n");
+        sb.append("public class " + className + " implements " + toImplementsDeclaration(interfaces) + " {\n");
         sb.append("\n");
         if (fields.size() > 0) {
             sb.append(fields(fields));
@@ -178,6 +183,17 @@ public class EventStubGenerator {
         }
         sb.append(methods);
         sb.append("}\n");
+        return sb;
+    }
+
+    private static StringBuilder toImplementsDeclaration(Type[] types) {
+        StringBuilder sb = new StringBuilder();
+        for (Type type : types) {
+            if (sb.length() > 0) {
+                sb.append(", ");
+            }
+            sb.append(type.getSimpleName());
+        }
         return sb;
     }
 

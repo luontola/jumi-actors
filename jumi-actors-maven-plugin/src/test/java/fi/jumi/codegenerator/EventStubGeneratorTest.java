@@ -9,12 +9,12 @@ import fi.jumi.codegenerator.dummy.DummyListenerFactory;
 import org.apache.commons.io.IOUtils;
 import org.junit.*;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.endsWith;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -46,6 +46,18 @@ public class EventStubGeneratorTest {
         frontend.onSomething("foo", "bar");
 
         verify(target).onSomething("foo", "bar");
+    }
+
+    @Test
+    public void event_classes_are_serializable() {
+        MessageQueue<Event<DummyListener>> spy = new MessageQueue<Event<DummyListener>>();
+        DummyListenerFactory factory = new DummyListenerFactory();
+        DummyListener frontend = factory.newFrontend(spy);
+
+        frontend.onSomething("foo", "bar");
+        Event<DummyListener> event = spy.poll();
+
+        assertThat(event, is(instanceOf(Serializable.class)));
     }
 
     @Test

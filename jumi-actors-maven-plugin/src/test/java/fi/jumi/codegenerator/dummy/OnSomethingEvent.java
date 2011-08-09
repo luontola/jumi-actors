@@ -2,8 +2,9 @@ package fi.jumi.codegenerator.dummy;
 
 import fi.jumi.actors.*;
 import fi.jumi.codegenerator.*;
+import java.io.*;
 
-public class OnSomethingEvent implements Event<DummyListener> {
+public class OnSomethingEvent implements Event<DummyListener>, Serializable {
 
     private final String arg0;
     private final String arg1;
