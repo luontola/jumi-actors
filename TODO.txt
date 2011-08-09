@@ -2,36 +2,11 @@
 TODO NEXT:
 - refactor results of passing "suite with zero tests"
 	- use maven <prerequisites> element instead of verifier: http://maven.apache.org/pom.html
-	!! - code generation for events
-		OK - generate the source
-		OK - find out how to integration test maven plugins
-			- maven-mule-plugin looks like a good example on mojo unit testing support
-			- shitty or invoker plugin appears to be best for integration testing
-				http://stackoverflow.com/questions/3276739/getting-started-with-maven-plugin-testing
-				http://mojo.codehaus.org/shitty-maven-plugin/
-				http://maven.apache.org/plugins/maven-invoker-plugin/
-				- examples in javascript-maven-tools
-		OK - compile event interface sources as in maven-compiler-plugin, output to temp dir (unless it's a library class)
-		OK - load classes from temp dir, use reflection to find out methods
-		OK - write generated sources (maybe use a template for file headers etc.)
-		OK - use project classpath in loading and compiling
-		OK - more tests for using the compiler
-		SKIP - generate stubs also for test sources?
-		OK - rename code-generator-maven-plugin to jumi-actors-maven-plugin
-		OK - build tests for jumi-actors
-		OK - generate subpackages based on interface name
-		OK - file encoding
-		- @Generated annotation
-		- annotation to suppress unchecked warnings due to type erasure?
-		OK - begin using the generated code
-		- toString?
-		- plugin pom: add-source with http://mojo.codehaus.org/build-helper-maven-plugin/
-		- install plugin to local repository to avoid false alarms in jumi-core pom
-	- put end-to-end tests in their own package (test.fi.jumi?), separate them from unit tests
-		- or use JUnit categories, maybe with a custom runner?
 	- making sure that non-thread-safe classes are used only from one thread
 		- annotate classes with http://code.google.com/p/jsr-305/
 		- create a Java agent and use it in end-to-end tests
+	- put end-to-end tests in their own package (test.fi.jumi?), separate them from unit tests
+		- or use JUnit categories, maybe with a custom runner?
 - end-to-end tests: failing tests (includes reporting stack trace)
 	- test execution might be best implemented using regular thread pools instead of actors
 		- CPU bound threads should use an optimal number of threads per core
@@ -46,6 +21,12 @@ TODO NEXT:
 	- connect to existing process
 	- if daemon dies unexpectedly (System.exit/halt, JVM crash etc.), report it and restart next time
 	- make it reliable
+- refactor jumi-actors-maven-plugin
+	- @Generated annotation
+	- annotation to suppress unchecked warnings due to type erasure?
+	- toString?
+	- plugin pom: add-source with http://mojo.codehaus.org/build-helper-maven-plugin/
+	- install plugin to local repository to avoid false alarms in jumi-core pom
 
 - organize the project so that it's possible to run unit tests separate from end-to-end tests
 	- maybe using ClasspathSuite?
