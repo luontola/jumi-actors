@@ -19,11 +19,13 @@ TODO NEXT:
 		SKIP - generate stubs also for test sources?
 		OK - rename code-generator-maven-plugin to jumi-actors-maven-plugin
 		OK - build tests for jumi-actors
+		- generate subpackages based on interface name
 		- @Generated annotation
 		- annotation to suppress unchecked warnings due to type erasure?
-		- begin using the generated code
+		OK - begin using the generated code
 		- toString?
 		- plugin pom: add-source with http://mojo.codehaus.org/build-helper-maven-plugin/
+		- install plugin to local repository to avoid false alarms in jumi-core pom
 	- put end-to-end tests in their own package (test.fi.jumi?), separate them from unit tests
 		- or use JUnit categories, maybe with a custom runner?
 	- making sure that non-thread-safe classes are used only from one thread

@@ -4,9 +4,10 @@
 
 package fi.jumi.launcher;
 
-import fi.jumi.core.*;
 import fi.jumi.actors.*;
-import fi.jumi.actors.dynamicevents.*;
+import fi.jumi.actors.dynamicevents.EventToDynamicListener;
+import fi.jumi.core.*;
+import fi.jumi.core.events.command.CommandListenerFactory;
 import fi.jumi.launcher.daemon.Daemon;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.NullWriter;
@@ -55,9 +56,7 @@ public class JumiLauncher {
 
     private Event<CommandListener> genereteStartupCommand() {
         MessageQueue<Event<CommandListener>> spy = new MessageQueue<Event<CommandListener>>();
-        new DynamicListenerFactory<CommandListener>(CommandListener.class)
-                .newFrontend(spy)
-                .runTests(classPath, testsToIncludePattern);
+        new CommandListenerFactory().newFrontend(spy).runTests(classPath, testsToIncludePattern);
         return spy.poll();
     }
 

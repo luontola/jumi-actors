@@ -4,11 +4,13 @@
 
 package fi.jumi.core.runners;
 
+import fi.jumi.actors.SingleThreadedActors;
 import fi.jumi.api.drivers.*;
 import fi.jumi.core.*;
-import fi.jumi.actors.SingleThreadedActors;
 import fi.jumi.core.drivers.DriverFinder;
-import fi.jumi.actors.dynamicevents.DynamicListenerFactory;
+import fi.jumi.core.events.runnable.RunnableFactory;
+import fi.jumi.core.events.startable.StartableFactory;
+import fi.jumi.core.events.testclassfinder.TestClassFinderListenerFactory;
 import fi.jumi.core.files.*;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -23,7 +25,10 @@ public class SuiteRunnerTest {
     private final InOrder inOrder = inOrder(listener);
 
     private final SingleThreadedActors actors = new SingleThreadedActors(
-            DynamicListenerFactory.factoriesFor(Startable.class, Runnable.class, TestClassFinderListener.class));
+            new StartableFactory(),
+            new RunnableFactory(),
+            new TestClassFinderListenerFactory()
+    );
 
     @Test
     public void suite_with_zero_test_classes() throws InterruptedException {

@@ -4,10 +4,13 @@
 
 package fi.jumi.daemon;
 
-import fi.jumi.core.*;
 import fi.jumi.actors.MultiThreadedActors;
-import fi.jumi.actors.dynamicevents.DynamicListenerFactory;
-import fi.jumi.core.files.TestClassFinderListener;
+import fi.jumi.core.*;
+import fi.jumi.core.events.command.CommandListenerFactory;
+import fi.jumi.core.events.runnable.RunnableFactory;
+import fi.jumi.core.events.startable.StartableFactory;
+import fi.jumi.core.events.suite.SuiteListenerFactory;
+import fi.jumi.core.events.testclassfinder.TestClassFinderListenerFactory;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.socket.oio.OioClientSocketChannelFactory;
@@ -25,13 +28,13 @@ public class Main {
 
         int launcherPort = Integer.parseInt(args[0]);
 
-        MultiThreadedActors actors = new MultiThreadedActors(DynamicListenerFactory.factoriesFor(
-                Startable.class,
-                Runnable.class,
-                TestClassFinderListener.class,
-                SuiteListener.class,
-                CommandListener.class
-        ));
+        MultiThreadedActors actors = new MultiThreadedActors(
+                new StartableFactory(),
+                new RunnableFactory(),
+                new TestClassFinderListenerFactory(),
+                new SuiteListenerFactory(),
+                new CommandListenerFactory()
+        );
         CommandListener toCoordinator = actors.createPrimaryActor(CommandListener.class, new TestRunCoordinator(actors), "Coordinator");
 
         connectToLauncher(launcherPort, toCoordinator);
