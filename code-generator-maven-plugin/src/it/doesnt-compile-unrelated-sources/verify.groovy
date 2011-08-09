@@ -1,13 +1,7 @@
-private def errorMessage(String message) {
-  def error = "ERROR: " + message
-  System.out.println(error)
-  return error
-}
+import static org.junit.Assert.*
 
-if (!new File(basedir, "target/jumi/example/ExampleListener.class").exists()) {
-  return errorMessage("should have compiled the listener class")
-}
+def compiledListenerClass = new File(basedir, "target/jumi/example/ExampleListener.class")
+assertTrue("should have compiled the listener class", compiledListenerClass.exists())
 
-if (new File(basedir, "target/jumi/example/Unrelated.class").exists()) {
-  return errorMessage("should not have compiled other classes than the listener")
-}
+def compiledUnrelatedClass = new File(basedir, "target/jumi/example/Unrelated.class")
+assertFalse("should not have compiled other classes than the listener", compiledUnrelatedClass.exists())

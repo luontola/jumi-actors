@@ -1,9 +1,4 @@
-private def errorMessage(String message) {
-  def error = "ERROR: " + message
-  System.out.println(error)
-  return error
-}
+import static org.junit.Assert.*
 
-if (!new File(basedir, "target/generated-sources/jumi/example/generated/ExampleListenerFactory.java").exists()) {
-  return errorMessage("should have compiled the event interface with external libraries on the classpath")
-}
+def generatedSourceFile = new File(basedir, "target/generated-sources/jumi/example/generated/ExampleListenerFactory.java")
+assertTrue("should have compiled the event interface with external libraries on the classpath", generatedSourceFile.exists())
