@@ -10,10 +10,10 @@
         <relativePath>../parent/pom.xml</relativePath>
     </parent>
 
-    <artifactId>code-generator-maven-plugin</artifactId>
+    <artifactId>jumi-actors-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
 
-    <name>code-generator-maven-plugin</name>
+    <name>jumi-actors-maven-plugin</name>
 
     <dependencies>
 

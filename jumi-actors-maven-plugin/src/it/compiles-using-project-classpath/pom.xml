@@ -11,7 +11,7 @@
     </parent>
 
     <groupId>fi.jumi.it</groupId>
-    <artifactId>doesnt-compile-unrelated-sources</artifactId>
+    <artifactId>compiles-using-project-classpath</artifactId>
     <packaging>jar</packaging>
 
     <dependencies>
@@ -21,6 +21,11 @@
             <artifactId>jumi-actors</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.jboss.netty</groupId>
+            <artifactId>netty</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -28,7 +33,7 @@
 
             <plugin>
                 <groupId>fi.jumi</groupId>
-                <artifactId>code-generator-maven-plugin</artifactId>
+                <artifactId>jumi-actors-maven-plugin</artifactId>
                 <version>@project.version@</version>
                 <executions>
                     <execution>

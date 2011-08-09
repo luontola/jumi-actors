@@ -195,7 +195,7 @@
 
                 <plugin>
                     <groupId>fi.jumi</groupId>
-                    <artifactId>code-generator-maven-plugin</artifactId>
+                    <artifactId>jumi-actors-maven-plugin</artifactId>
                     <version>${project.version}</version>
                 </plugin>
 
