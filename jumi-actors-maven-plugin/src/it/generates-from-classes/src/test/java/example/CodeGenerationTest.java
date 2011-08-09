@@ -9,7 +9,7 @@ import static org.mockito.Mockito.*;
 public class CodeGenerationTest {
 
     @Test
-    public void foo() {
+    public void generates_a_working_listener_factory() {
         Runnable target = mock(Runnable.class);
         ListenerFactory<Runnable> factory = new RunnableFactory();
         MessageSender<Event<Runnable>> backend = factory.newBackend(target);

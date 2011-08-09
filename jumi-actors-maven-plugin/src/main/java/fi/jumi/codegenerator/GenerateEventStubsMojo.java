@@ -24,6 +24,12 @@ import java.util.*;
 public class GenerateEventStubsMojo extends AbstractMojo {
 
     /**
+     * @parameter default-value="${project.build.sourceEncoding}"
+     * @required
+     */
+    public String encoding;
+
+    /**
      * @parameter default-value="${project.build.sourceDirectory}"
      * @required
      */
@@ -89,7 +95,7 @@ public class GenerateEventStubsMojo extends AbstractMojo {
 
             for (GeneratedClass c : generated) {
                 try {
-                    FileUtils.write(new File(outputDirectory, c.path), c.source); // TODO: encoding
+                    FileUtils.write(new File(outputDirectory, c.path), c.source, encoding);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -139,6 +145,7 @@ public class GenerateEventStubsMojo extends AbstractMojo {
         }
         config.setIncludes(includes);
         config.setOutputLocation(targetDir.getAbsolutePath());
+        config.setSourceEncoding(encoding);
         config.setSourceVersion("1.6"); // TODO: use the current project's setting
         config.setTargetVersion("1.6"); // TODO: use the current project's setting
         config.setClasspathEntries(Arrays.asList(projectClasspath));

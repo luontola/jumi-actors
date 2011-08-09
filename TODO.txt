@@ -20,7 +20,7 @@ TODO NEXT:
 		OK - rename code-generator-maven-plugin to jumi-actors-maven-plugin
 		OK - build tests for jumi-actors
 		OK - generate subpackages based on interface name
-		!! - file encoding
+		OK - file encoding
 		- @Generated annotation
 		- annotation to suppress unchecked warnings due to type erasure?
 		OK - begin using the generated code
