@@ -15,10 +15,66 @@
 
     <name>thread-safety-agent</name>
 
+    <properties>
+        <shadedPrefix>fi.jumi.threadsafetyagent.INTERNAL</shadedPrefix>
+    </properties>
+
     <dependencies>
 
-        <!-- No dependencies -->
+        <dependency>
+            <groupId>asm</groupId>
+            <artifactId>asm</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>asm</groupId>
+            <artifactId>asm-util</artifactId>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
+
+    <build>
+        <plugins>
+
+            <!-- Hide external dependencies -->
+
+            <plugin>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <!-- TODO: premain -->
+                                    <mainClass>fi.jumi.daemon.Main</mainClass>
+                                </transformer>
+                            </transformers>
+                            <relocations>
+                                <!-- Hidden dependencies -->
+                                <relocation>
+                                    <pattern>org.objectweb.asm</pattern>
+                                    <shadedPattern>${shadedPrefix}.org.objectweb.asm</shadedPattern>
+                                </relocation>
+                            </relocations>
+                            <filters>
+                                <!-- Throw away license files, POMs etc. of hidden dependencies -->
+                                <filter>
+                                    <artifact>asm:asm</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/**</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
 
 </project>
