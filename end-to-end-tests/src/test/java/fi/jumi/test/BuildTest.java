@@ -5,6 +5,8 @@
 package fi.jumi.test;
 
 import fi.jumi.launcher.daemon.Daemon;
+import org.hamcrest.Matcher;
+import org.hamcrest.core.CombinableMatcher;
 import org.intellij.lang.annotations.Language;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +22,7 @@ import java.util.jar.*;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
@@ -113,6 +115,36 @@ public class BuildTest {
                 POM_FILES,
                 BASE_PACKAGE
         ));
+    }
+
+    @Test
+    @SuppressWarnings({"unchecked"})
+    public void none_of_the_artifacts_may_have_dependencies_to_external_libraries() {
+        for (Object[] data : data()) {
+            String artifactId = (String) data[0];
+            List<String> dependencies = (List<String>) data[1];
+
+            for (String dependency : dependencies) {
+                assertThat("artifact " + artifactId, dependency, startsWith("fi.jumi:"));
+            }
+        }
+    }
+
+    @Test
+    @SuppressWarnings({"unchecked"})
+    public void none_of_the_artifacts_may_contain_classes_from_external_libraries_without_shading_them() {
+        for (Object[] data : data()) {
+            String artifactId = (String) data[0];
+            List<String> contents = (List<String>) data[2];
+
+            for (String content : contents) {
+                // XXX: doesn't work inlined, Java's/Hamcrest's generics are broken
+                Matcher m1 = startsWith(POM_FILES);
+                Matcher m2 = startsWith(BASE_PACKAGE);
+                CombinableMatcher matcher = either(m2).or(m1);
+                assertThat("artifact " + artifactId, content, matcher);
+            }
+        }
     }
 
 
