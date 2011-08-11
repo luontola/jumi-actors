@@ -7,6 +7,7 @@ TODO NEXT:
 		- create a Java agent and use it in end-to-end tests
 	- put end-to-end tests in their own package (test.fi.jumi?), separate them from unit tests
 		- or use JUnit categories, maybe with a custom runner?
+	- make BuildTest parameterized: http://junit.sourceforge.net/javadoc/org/junit/runners/Parameterized.html
 - end-to-end tests: failing tests (includes reporting stack trace)
 	- test execution might be best implemented using regular thread pools instead of actors
 		- CPU bound threads should use an optimal number of threads per core
@@ -25,6 +26,7 @@ TODO NEXT:
 	- @Generated annotation
 	- annotation to suppress unchecked warnings due to type erasure?
 	- toString?
+	- Externalizable? should give overall best performance without additional dependencies: https://github.com/eishay/jvm-serializers/wiki/
 	- plugin pom: add-source with http://mojo.codehaus.org/build-helper-maven-plugin/
 	- install plugin to local repository to avoid false alarms in jumi-core pom
 
