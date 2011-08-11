@@ -189,6 +189,28 @@
                 </executions>
             </plugin>
 
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <!-- XXX: workaround for an issue with maven-shade-plugin
+                                     There appears to be some stale state from previous executions of the Shade plugin,
+                                     which manifest themselves as "We have a duplicate" warnings on build and also
+                                     as some classes not being updated on build. -->
+                                <delete file="${project.build.directory}/${project.build.finalName}.${project.packaging}"/>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
         <pluginManagement>
             <plugins>
