@@ -18,6 +18,7 @@ import java.io.*;
 import java.util.*;
 import java.util.jar.*;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertTrue;
@@ -30,30 +31,30 @@ public class BuildTest {
 
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][]{
+        return asList(new Object[][]{
                 {"jumi-actors",
-                        Arrays.asList(),
-                        Arrays.asList(
+                        asList(),
+                        asList(
                                 POM_FILES,
                                 BASE_PACKAGE + "actors/")
                 },
                 {"jumi-api",
-                        Arrays.asList(),
-                        Arrays.asList(
+                        asList(),
+                        asList(
                                 POM_FILES,
                                 BASE_PACKAGE + "api/")
                 },
                 {"jumi-core",
-                        Arrays.asList(
+                        asList(
                                 "fi.jumi:jumi-actors",
                                 "fi.jumi:jumi-api"),
-                        Arrays.asList(
+                        asList(
                                 POM_FILES,
                                 BASE_PACKAGE + "core/")
                 },
                 {"jumi-daemon",
-                        Arrays.asList(),
-                        Arrays.asList(
+                        asList(),
+                        asList(
                                 POM_FILES,
                                 BASE_PACKAGE + "actors/",
                                 BASE_PACKAGE + "api/",
@@ -61,11 +62,17 @@ public class BuildTest {
                                 BASE_PACKAGE + "daemon/")
                 },
                 {"jumi-launcher",
-                        Arrays.asList(
+                        asList(
                                 "fi.jumi:jumi-core"),
-                        Arrays.asList(
+                        asList(
                                 POM_FILES,
                                 BASE_PACKAGE + "launcher/")
+                },
+                {"thread-safety-agent",
+                        asList(),
+                        asList(
+                                POM_FILES,
+                                BASE_PACKAGE + "threadsafetyagent/")
                 },
         });
     }
@@ -98,7 +105,11 @@ public class BuildTest {
 
     @Test
     public void embedded_daemon_jar_contains_only_jumi_classes() throws IOException {
-        assertJarContainsOnly(Daemon.getDaemonJarAsStream(), Arrays.asList(
+        // XXX: not a parameterized test; it's also quite slow so let's run it only once
+        if (!artifactId.equals("jumi-daemon")) {
+            return;
+        }
+        assertJarContainsOnly(Daemon.getDaemonJarAsStream(), asList(
                 POM_FILES,
                 BASE_PACKAGE
         ));

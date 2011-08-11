@@ -174,6 +174,18 @@
                                     <type>pom</type>
                                 </artifactItem>
 
+                                <artifactItem>
+                                    <groupId>fi.jumi</groupId>
+                                    <artifactId>thread-safety-agent</artifactId>
+                                    <version>${project.version}</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>fi.jumi</groupId>
+                                    <artifactId>thread-safety-agent</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>pom</type>
+                                </artifactItem>
+
                             </artifactItems>
                             <overWriteReleases>true</overWriteReleases>
                             <overWriteSnapshots>true</overWriteSnapshots>

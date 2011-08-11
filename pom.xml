@@ -17,6 +17,7 @@
         <module>jumi-core</module>
         <module>jumi-daemon</module>
         <module>jumi-launcher</module>
+        <module>thread-safety-agent</module>
         <module>end-to-end-tests</module>
         <module>parent</module>
     </modules>
