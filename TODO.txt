@@ -1,13 +1,11 @@
 
 TODO NEXT:
 - refactor results of passing "suite with zero tests"
-	- use maven <prerequisites> element instead of verifier: http://maven.apache.org/pom.html
 	- making sure that non-thread-safe classes are used only from one thread
 		- annotate classes with http://code.google.com/p/jsr-305/
 		- create a Java agent and use it in end-to-end tests
 	- put end-to-end tests in their own package (test.fi.jumi?), separate them from unit tests
 		- or use JUnit categories, maybe with a custom runner?
-	- make BuildTest parameterized: http://junit.sourceforge.net/javadoc/org/junit/runners/Parameterized.html
 - end-to-end tests: failing tests (includes reporting stack trace)
 	- test execution might be best implemented using regular thread pools instead of actors
 		- CPU bound threads should use an optimal number of threads per core

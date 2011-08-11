@@ -6,7 +6,9 @@ package fi.jumi.test;
 
 import fi.jumi.launcher.daemon.Daemon;
 import org.intellij.lang.annotations.Language;
-import org.junit.*;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.w3c.dom.*;
 
 import javax.xml.namespace.QName;
@@ -20,116 +22,92 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertTrue;
 
+@RunWith(Parameterized.class)
 public class BuildTest {
 
     private static final String POM_FILES = "META-INF/maven/fi.jumi/";
     private static final String BASE_PACKAGE = "fi/jumi/";
-    private static final Map<String, List<String>> DEPENDENCIES = new HashMap<String, List<String>>();
 
-    static {
-        DEPENDENCIES.put("jumi-actors", Arrays.<String>asList());
-        DEPENDENCIES.put("jumi-api", Arrays.<String>asList());
-        DEPENDENCIES.put("jumi-core", Arrays.asList("fi.jumi:jumi-actors", "fi.jumi:jumi-api"));
-        DEPENDENCIES.put("jumi-daemon", Arrays.<String>asList());
-        DEPENDENCIES.put("jumi-launcher", Arrays.asList("fi.jumi:jumi-core"));
+    @Parameterized.Parameters
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][]{
+                {"jumi-actors",
+                        Arrays.asList(),
+                        Arrays.asList(
+                                POM_FILES,
+                                BASE_PACKAGE + "actors/")
+                },
+                {"jumi-api",
+                        Arrays.asList(),
+                        Arrays.asList(
+                                POM_FILES,
+                                BASE_PACKAGE + "api/")
+                },
+                {"jumi-core",
+                        Arrays.asList(
+                                "fi.jumi:jumi-actors",
+                                "fi.jumi:jumi-api"),
+                        Arrays.asList(
+                                POM_FILES,
+                                BASE_PACKAGE + "core/")
+                },
+                {"jumi-daemon",
+                        Arrays.asList(),
+                        Arrays.asList(
+                                POM_FILES,
+                                BASE_PACKAGE + "actors/",
+                                BASE_PACKAGE + "api/",
+                                BASE_PACKAGE + "core/",
+                                BASE_PACKAGE + "daemon/")
+                },
+                {"jumi-launcher",
+                        Arrays.asList(
+                                "fi.jumi:jumi-core"),
+                        Arrays.asList(
+                                POM_FILES,
+                                BASE_PACKAGE + "launcher/")
+                },
+        });
     }
 
-    private File[] projectPoms;
-    private File actorsJar;
-    private File apiJar;
-    private File coreJar;
-    private File daemonJar;
-    private File launcherJar;
+    private final String artifactId;
+    private final List<String> expectedDependencies;
+    private final List<String> expectedContents;
+    private final File jarFile;
+    private final File pomFile;
 
-    @Before
-    public void init() throws IOException {
-        projectPoms = TestEnvironment.getProjectPoms();
-        File[] projectJars = TestEnvironment.getProjectJars();
-        assertThat("project JARs", projectJars.length, is(5));
-        actorsJar = pick("jumi-actors", projectJars);
-        apiJar = pick("jumi-api", projectJars);
-        coreJar = pick("jumi-core", projectJars);
-        daemonJar = pick("jumi-daemon", projectJars);
-        launcherJar = pick("jumi-launcher", projectJars);
+    public BuildTest(String artifactId, List<String> expectedDependencies, List<String> expectedContents) {
+        this.artifactId = artifactId;
+        this.expectedDependencies = expectedDependencies;
+        this.expectedContents = expectedContents;
+        this.jarFile = TestEnvironment.getProjectJar(artifactId);
+        this.pomFile = TestEnvironment.getProjectPom(artifactId);
     }
 
-    private static File pick(String namePrefix, File[] files) {
-        for (File file : files) {
-            if (file.getName().startsWith(namePrefix)) {
-                return file;
-            }
-        }
-        throw new IllegalArgumentException("file starting with " + namePrefix + " not found in " + Arrays.toString(files));
+    @Test
+    public void jar_contains_only_allowed_files() throws Exception {
+        assertJarContainsOnly(jarFile, expectedContents);
+    }
+
+    @Test
+    public void pom_contains_only_allowed_dependencies() throws Exception {
+        Document pom = parseXml(pomFile);
+        List<String> dependencies = getRuntimeDependencies(pom);
+        assertThat("dependencies of " + artifactId, dependencies, is(expectedDependencies));
     }
 
     @Test
     public void embedded_daemon_jar_contains_only_jumi_classes() throws IOException {
-        assertJarContainsOnly(Daemon.getDaemonJarAsStream(),
+        assertJarContainsOnly(Daemon.getDaemonJarAsStream(), Arrays.asList(
                 POM_FILES,
                 BASE_PACKAGE
-        );
+        ));
     }
 
-    @Test
-    public void contents_of_actors_jar() throws IOException {
-        assertJarContainsOnly(actorsJar,
-                POM_FILES,
-                BASE_PACKAGE + "actors/"
-        );
-    }
-
-    @Test
-    public void contents_of_api_jar() throws IOException {
-        assertJarContainsOnly(apiJar,
-                POM_FILES,
-                BASE_PACKAGE + "api/"
-        );
-
-    }
-
-    @Test
-    public void contents_of_core_jar() throws IOException {
-        assertJarContainsOnly(coreJar,
-                POM_FILES,
-                BASE_PACKAGE + "core/"
-        );
-    }
-
-    @Test
-    public void contents_of_daemon_jar() throws IOException {
-        assertJarContainsOnly(daemonJar,
-                POM_FILES,
-                BASE_PACKAGE + "actors/",
-                BASE_PACKAGE + "api/",
-                BASE_PACKAGE + "core/",
-                BASE_PACKAGE + "daemon/"
-        );
-    }
-
-    @Test
-    public void contents_of_launcher_jar() throws IOException {
-        assertJarContainsOnly(launcherJar,
-                POM_FILES,
-                BASE_PACKAGE + "launcher/"
-        );
-    }
-
-    @Test
-    public void project_artifact_poms_do_not_have_external_dependencies() throws Exception {
-        assertThat("project POMs", projectPoms.length, is(5));
-        for (File projectPom : projectPoms) {
-            Document doc = parseXml(projectPom);
-
-            String artifactId = getArtifactId(doc);
-            List<String> dependencies = getRuntimeDependencies(doc);
-            List<String> expectedDependencies = DEPENDENCIES.get(artifactId);
-            assertThat("dependencies of " + artifactId + " were " + dependencies, dependencies, is(expectedDependencies));
-        }
-    }
 
     // helper methods
 
-    private static void assertJarContainsOnly(File jar, String... whitelist) throws IOException {
+    private static void assertJarContainsOnly(File jar, List<String> whitelist) throws IOException {
         try {
             assertJarContainsOnly(new FileInputStream(jar), whitelist);
         } catch (AssertionError e) {
@@ -137,7 +115,7 @@ public class BuildTest {
         }
     }
 
-    private static void assertJarContainsOnly(InputStream jarAsStream, String... whitelist) throws IOException {
+    private static void assertJarContainsOnly(InputStream jarAsStream, List<String> whitelist) throws IOException {
         JarInputStream in = new JarInputStream(jarAsStream);
         JarEntry entry;
         while ((entry = in.getNextJarEntry()) != null) {
@@ -145,17 +123,13 @@ public class BuildTest {
         }
     }
 
-    private static void assertIsWhitelisted(JarEntry entry, String... whitelist) {
+    private static void assertIsWhitelisted(JarEntry entry, List<String> whitelist) {
         boolean allowed = false;
         for (String s : whitelist) {
             allowed |= entry.getName().startsWith(s);
             allowed |= s.startsWith(entry.getName());
         }
         assertTrue("contained a not allowed entry: " + entry, allowed);
-    }
-
-    private static String getArtifactId(Document doc) throws XPathExpressionException {
-        return xpath("/project/artifactId", doc);
     }
 
     private static List<String> getRuntimeDependencies(Document doc) throws XPathExpressionException {

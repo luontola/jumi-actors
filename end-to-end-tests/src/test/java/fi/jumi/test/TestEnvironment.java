@@ -30,20 +30,24 @@ public class TestEnvironment {
         SAMPLE_CLASSES = new File(testing.getProperty("test.sampleClasses")).getAbsoluteFile();
     }
 
-    public static File[] getProjectJars() {
-        return PROJECT_ARTIFACTS_DIR.listFiles(new FilenameFilter() {
+    public static File getProjectJar(final String artifactId) {
+        File[] files = PROJECT_ARTIFACTS_DIR.listFiles(new FilenameFilter() {
             public boolean accept(File dir, String name) {
-                return name.endsWith(".jar");
+                return name.startsWith(artifactId) && name.endsWith(".jar");
             }
         });
+        assert files.length == 1 : "expected one file but got " + files.length;
+        return files[0];
     }
 
-    public static File[] getProjectPoms() {
-        return PROJECT_ARTIFACTS_DIR.listFiles(new FilenameFilter() {
+    public static File getProjectPom(final String artifactId) {
+        File[] files = PROJECT_ARTIFACTS_DIR.listFiles(new FilenameFilter() {
             public boolean accept(File dir, String name) {
-                return name.endsWith(".pom");
+                return name.startsWith(artifactId) && name.endsWith(".pom");
             }
         });
+        assert files.length == 1 : "expected one file but got " + files.length;
+        return files[0];
     }
 
     public static File getSandboxDir() {
