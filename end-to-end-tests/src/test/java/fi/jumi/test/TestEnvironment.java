@@ -30,23 +30,21 @@ public class TestEnvironment {
         SAMPLE_CLASSES = new File(testing.getProperty("test.sampleClasses")).getAbsoluteFile();
     }
 
-    public static File getProjectJar(final String artifactId) {
-        File[] files = PROJECT_ARTIFACTS_DIR.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.startsWith(artifactId) && name.endsWith(".jar");
-            }
-        });
-        assert files.length == 1 : "expected one file but got " + files.length;
-        return files[0];
+    public static File getProjectJar(String artifactId) {
+        return getProjectArtifact(artifactId, ".jar");
     }
 
-    public static File getProjectPom(final String artifactId) {
+    public static File getProjectPom(String artifactId) {
+        return getProjectArtifact(artifactId, ".pom");
+    }
+
+    private static File getProjectArtifact(final String prefix, final String suffix) {
         File[] files = PROJECT_ARTIFACTS_DIR.listFiles(new FilenameFilter() {
             public boolean accept(File dir, String name) {
-                return name.startsWith(artifactId) && name.endsWith(".pom");
+                return name.startsWith(prefix) && name.endsWith(suffix);
             }
         });
-        assert files.length == 1 : "expected one file but got " + files.length;
+        assert files.length == 1 : "expected one " + prefix + "*" + suffix + " artifact but got " + files.length;
         return files[0];
     }
 
