@@ -31,7 +31,7 @@ public class JumiLauncher {
     private final JumiLauncherHandler handler = new JumiLauncherHandler(new EventToDynamicListener<SuiteListener>(suite));
     private final List<File> classPath = new ArrayList<File>();
     private String testsToIncludePattern;
-    private String[] jvmOptions;
+    private String[] jvmOptions = new String[0];
 
     // TODO: this class has multiple responsibilities, split to smaller parts?
     // - configuring the test run
