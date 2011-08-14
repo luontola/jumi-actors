@@ -5,12 +5,13 @@
 package fi.jumi.test;
 
 import fi.jumi.launcher.daemon.Daemon;
+import fi.jumi.test.PartiallyParameterized.NonParameterized;
 import org.hamcrest.Matcher;
 import org.hamcrest.core.CombinableMatcher;
 import org.intellij.lang.annotations.Language;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 import org.w3c.dom.*;
 
 import javax.xml.namespace.QName;
@@ -25,7 +26,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertTrue;
 
-@RunWith(Parameterized.class)
+@RunWith(PartiallyParameterized.class)
 public class BuildTest {
 
     private static final String POM_FILES = "META-INF/maven/fi.jumi/";
@@ -41,7 +42,7 @@ public class BuildTest {
         this.expectedContents = expectedContents;
     }
 
-    @Parameterized.Parameters
+    @Parameters
     public static Collection<Object[]> data() {
         return asList(new Object[][]{
                 {"jumi-actors",
@@ -104,11 +105,8 @@ public class BuildTest {
     }
 
     @Test
+    @NonParameterized
     public void embedded_daemon_jar_contains_only_jumi_classes() throws IOException {
-        // XXX: not a parameterized test; it's also quite slow so let's run it only once
-        if (!artifactId.equals("jumi-daemon")) {
-            return;
-        }
         assertJarContainsOnly(Daemon.getDaemonJarAsStream(), asList(
                 POM_FILES,
                 BASE_PACKAGE
@@ -116,6 +114,7 @@ public class BuildTest {
     }
 
     @Test
+    @NonParameterized
     @SuppressWarnings({"unchecked"})
     public void none_of_the_artifacts_may_have_dependencies_to_external_libraries() {
         for (Object[] data : data()) {
@@ -129,6 +128,7 @@ public class BuildTest {
     }
 
     @Test
+    @NonParameterized
     @SuppressWarnings({"unchecked"})
     public void none_of_the_artifacts_may_contain_classes_from_external_libraries_without_shading_them() {
         for (Object[] data : data()) {

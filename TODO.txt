@@ -1,12 +1,11 @@
 
 TODO NEXT:
 - refactor results of passing "suite with zero tests"
-	- making sure that non-thread-safe classes are used only from one thread
+	!! - making sure that non-thread-safe classes are used only from one thread
 		- annotate classes with http://code.google.com/p/jsr-305/
 		- create a Java agent and use it in end-to-end tests
 	- put end-to-end tests in their own package (test.fi.jumi?), separate them from unit tests
 		- or use JUnit categories, maybe with a custom runner?
-	- BuildTest: write an extension of the Parameterized runner which allows mixing regular and parameterized tests in the same class
 - end-to-end tests: failing tests (includes reporting stack trace)
 	- test execution might be best implemented using regular thread pools instead of actors
 		- CPU bound threads should use an optimal number of threads per core
