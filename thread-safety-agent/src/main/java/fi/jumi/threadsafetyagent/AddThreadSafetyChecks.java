@@ -4,6 +4,7 @@
 
 package fi.jumi.threadsafetyagent;
 
+import fi.jumi.threadsafetyagent.util.DoNotTransformException;
 import org.objectweb.asm.*;
 
 import static java.lang.Math.max;
@@ -22,19 +23,28 @@ public class AddThreadSafetyChecks extends ClassAdapter {
     }
 
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-        super.visit(version, access, name, signature, superName, interfaces);
+        if ((access & ACC_INTERFACE) == ACC_INTERFACE) {
+            throw new DoNotTransformException();
+        }
         myClassName = name;
+        super.visit(version, access, name, signature, superName, interfaces);
     }
 
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
+//        if (isInstanceMethod(access)) {
         if (name.equals("<init>")) {
             mv = new InstantiateChecker(mv);
         } else {
             // TODO: ignore static fields
             mv = new CallChecker(mv);
         }
+//        }
         return mv;
+    }
+
+    private static boolean isInstanceMethod(int access) {
+        return (access & ACC_STATIC) == 0;
     }
 
     public void visitEnd() {

@@ -8,7 +8,7 @@ import fi.jumi.threadsafetyagent.util.*;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.util.CheckClassAdapter;
+import org.objectweb.asm.util.*;
 
 import javax.annotation.concurrent.*;
 import java.lang.instrument.ClassFileTransformer;
@@ -20,10 +20,11 @@ public class AddThreadSafetyChecksTest {
     @Rule
     public final ExpectedException thrown = ExpectedException.none();
 
-//    @Test
-//    public void experiment() throws Exception {
-//        ASMifierClassVisitor.main(new String[] {"fi.jumi.threadsafetyagent.AddThreadSafetyChecksTest$ReferenceImplementation"});
-//    }
+    @Test
+    public void experiment() throws Exception {
+        // TODO: remove me
+        ASMifierClassVisitor.main(new String[] {InterfaceAnnotatedNotThreadSafe.class.getName()});
+    }
 
     @Test
     public void reference_implementation_checks_current_thread() throws Throwable {
@@ -35,6 +36,11 @@ public class AddThreadSafetyChecksTest {
     public void not_thread_safe_annotated_classes_are_checked() throws Throwable {
         Runnable target = (Runnable) newInstrumentedInstance(NotThreadSafeClass.class);
         assertChecksThreadSafety(target);
+    }
+
+    @Test
+    public void interfaces_are_not_transformed() throws Exception {
+        instrumentClass(InterfaceAnnotatedNotThreadSafe.class);
     }
 
     // TODO: ignore non-annotated
@@ -98,5 +104,10 @@ public class AddThreadSafetyChecksTest {
     public static class NonAnnotatedClass implements Runnable {
         public void run() {
         }
+    }
+
+    @NotThreadSafe
+    public static interface InterfaceAnnotatedNotThreadSafe {
+        void shouldNotAddCodeToThisMethod();
     }
 }

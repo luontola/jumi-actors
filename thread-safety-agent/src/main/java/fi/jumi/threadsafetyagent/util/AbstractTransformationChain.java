@@ -21,9 +21,13 @@ public abstract class AbstractTransformationChain implements ClassFileTransforme
         } else {
             cw = new ClassWriter(0);
         }
-        ClassVisitor cv = getAdapters(cw);
-        cr.accept(cv, 0);
-        return cw.toByteArray();
+        try {
+            ClassVisitor cv = getAdapters(cw);
+            cr.accept(cv, 0);
+            return cw.toByteArray();
+        } catch (DoNotTransformException e) {
+            return classfileBuffer;
+        }
     }
 
     /**

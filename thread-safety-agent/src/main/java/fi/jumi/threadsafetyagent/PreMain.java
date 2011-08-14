@@ -4,20 +4,14 @@
 
 package fi.jumi.threadsafetyagent;
 
-import java.lang.instrument.*;
-import java.security.ProtectionDomain;
+import java.lang.instrument.Instrumentation;
 
 public class PreMain {
 
     // For details on Java agents, see http://java.sun.com/javase/6/docs/api/java/lang/instrument/package-summary.html
 
     public static void premain(String agentArgs, Instrumentation inst) {
-
-        // TODO
-        inst.addTransformer(new ClassFileTransformer() {
-            public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
-                return new byte[0];
-            }
-        });
+        // TODO: enable the agent once it works
+        //inst.addTransformer(new ThreadSafetyCheckerTransformer());
     }
 }
