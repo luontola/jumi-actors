@@ -212,13 +212,13 @@
                             <goal>run</goal>
                         </goals>
                         <configuration>
-                            <tasks>
+                            <target>
                                 <!-- XXX: workaround for an issue with maven-shade-plugin
                                      There appears to be some stale state from previous executions of the Shade plugin,
                                      which manifest themselves as "We have a duplicate" warnings on build and also
                                      as some classes not being updated on build. -->
                                 <delete file="${project.build.directory}/${project.build.finalName}.${project.packaging}"/>
-                            </tasks>
+                            </target>
                         </configuration>
                     </execution>
                 </executions>
