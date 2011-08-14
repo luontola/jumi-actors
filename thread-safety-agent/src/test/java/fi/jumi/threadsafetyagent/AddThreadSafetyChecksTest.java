@@ -4,7 +4,7 @@
 
 package fi.jumi.threadsafetyagent;
 
-import fi.jumi.threadsafetyagent.util.*;
+import fi.jumi.threadsafetyagent.util.TransformationTestClassLoader;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.objectweb.asm.ClassVisitor;
@@ -21,6 +21,7 @@ public class AddThreadSafetyChecksTest {
     public final ExpectedException thrown = ExpectedException.none();
 
     @Test
+    @Ignore
     public void experiment() throws Exception {
         // TODO: remove me
         ASMifierClassVisitor.main(new String[]{InterfaceAnnotatedNotThreadSafe.class.getName()});
@@ -75,11 +76,9 @@ public class AddThreadSafetyChecksTest {
     }
 
     private static Class<?> instrumentClass(Class<?> cls) throws Exception {
-        ClassFileTransformer transformer = new AbstractTransformationChain() {
+        ClassFileTransformer transformer = new ThreadSafetyCheckerTransformer() {
             protected ClassVisitor getAdapters(ClassVisitor cv) {
-                cv = new CheckClassAdapter(cv);
-                cv = new AddThreadSafetyChecks(cv);
-                return cv;
+                return super.getAdapters(new CheckClassAdapter(cv));
             }
         };
         ClassLoader loader = new TransformationTestClassLoader(cls.getName(), transformer);

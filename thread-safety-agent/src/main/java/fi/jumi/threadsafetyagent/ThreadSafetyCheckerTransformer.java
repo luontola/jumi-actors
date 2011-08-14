@@ -12,6 +12,7 @@ public class ThreadSafetyCheckerTransformer extends AbstractTransformationChain 
     protected ClassVisitor getAdapters(ClassVisitor cv) {
         // the adapter declared last is processed first
         cv = new AddThreadSafetyChecks(cv);
+        cv = new EnabledWhenAnnotatedWith("javax/annotation/concurrent/NotThreadSafe", cv);
         return cv;
     }
 }
