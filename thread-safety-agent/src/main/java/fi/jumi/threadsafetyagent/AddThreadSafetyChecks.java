@@ -7,16 +7,20 @@ package fi.jumi.threadsafetyagent;
 import fi.jumi.threadsafetyagent.util.DoNotTransformException;
 import org.objectweb.asm.*;
 
+import java.util.*;
+
 import static java.lang.Math.max;
 import static org.objectweb.asm.Opcodes.*;
 
 public class AddThreadSafetyChecks extends ClassAdapter {
 
+    private static final String ENABLER_ANNOTATION_DESC = "Ljavax/annotation/concurrent/NotThreadSafe;";
     private static final String CHECKER_CLASS = "fi/jumi/threadsafetyagent/ThreadSafetyChecker";
     private static final String CHECKER_CLASS_DESC = "L" + CHECKER_CLASS + ";";
     private static final String CHECKER_FIELD = "$Jumi$threadSafetyChecker";
 
     private String myClassName;
+    private List<String> classAnnotations = new ArrayList<String>();
 
     public AddThreadSafetyChecks(ClassVisitor cv) {
         super(cv);
@@ -30,6 +34,11 @@ public class AddThreadSafetyChecks extends ClassAdapter {
         super.visit(version, access, name, signature, superName, interfaces);
     }
 
+    public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+        classAnnotations.add(desc);
+        return super.visitAnnotation(desc, visible);
+    }
+
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
         if (isConstructor(name)) {
@@ -40,6 +49,26 @@ public class AddThreadSafetyChecks extends ClassAdapter {
         return mv;
     }
 
+    public void visitEnd() {
+        checkIsTransformationEnabled();
+        createCheckerField();
+        super.visitEnd();
+    }
+
+
+    // helper methods
+
+    private void checkIsTransformationEnabled() {
+        if (!classAnnotations.contains(ENABLER_ANNOTATION_DESC)) {
+            throw new DoNotTransformException();
+        }
+    }
+
+    private void createCheckerField() {
+        FieldVisitor fv = this.visitField(ACC_PRIVATE + ACC_FINAL, CHECKER_FIELD, CHECKER_CLASS_DESC, null, null);
+        fv.visitEnd();
+    }
+
     private static boolean isConstructor(String name) {
         return name.equals("<init>");
     }
@@ -48,16 +77,8 @@ public class AddThreadSafetyChecks extends ClassAdapter {
         return (access & ACC_STATIC) == 0;
     }
 
-    public void visitEnd() {
-        createCheckerField();
-        super.visitEnd();
-    }
 
-    private void createCheckerField() {
-        FieldVisitor fv = this.visitField(ACC_PRIVATE + ACC_FINAL, CHECKER_FIELD, CHECKER_CLASS_DESC, null, null);
-        fv.visitEnd();
-    }
-
+    // method transformers
 
     private class InstantiateChecker extends MethodAdapter {
         public InstantiateChecker(MethodVisitor mv) {

@@ -33,9 +33,16 @@ public class AddThreadSafetyChecksTest {
     }
 
     @Test
-    public void not_thread_safe_annotated_classes_are_checked() throws Throwable {
+    public void classes_annotated_NotThreadSafe_are_transformed() throws Throwable {
         Runnable target = (Runnable) newInstrumentedInstance(NotThreadSafeClass.class);
         assertChecksThreadSafety(target);
+    }
+
+    @Test
+    public void non_annotated_and_thread_safe_classes_are_not_transformed() throws Throwable {
+        assertDoesNotCheckThreadSafety((Runnable) newInstrumentedInstance(NonAnnotatedClass.class));
+        assertDoesNotCheckThreadSafety((Runnable) newInstrumentedInstance(ThreadSafeClass.class));
+        assertDoesNotCheckThreadSafety((Runnable) newInstrumentedInstance(ImmutableClass.class));
     }
 
     @Test
@@ -49,10 +56,6 @@ public class AddThreadSafetyChecksTest {
         clazz.getMethod("staticMethod").invoke(null);
     }
 
-    // TODO: ignore non-annotated
-    // TODO: transforms non-thread-safe
-    // TODO: ignore thread-safe & immutable
-
 
     // helpers
 
@@ -62,11 +65,16 @@ public class AddThreadSafetyChecksTest {
         runInNewThread("T2", target);
     }
 
+    private void assertDoesNotCheckThreadSafety(Runnable target) throws Throwable {
+        runInNewThread("T1", target);
+        runInNewThread("T2", target);
+    }
+
     private static Object newInstrumentedInstance(Class<?> cls) throws Exception {
         return instrumentClass(cls).newInstance();
     }
 
-    private static Class<?> instrumentClass(Class<?> cls) throws ClassNotFoundException {
+    private static Class<?> instrumentClass(Class<?> cls) throws Exception {
         ClassFileTransformer transformer = new AbstractTransformationChain() {
             protected ClassVisitor getAdapters(ClassVisitor cv) {
                 cv = new CheckClassAdapter(cv);
