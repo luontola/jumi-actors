@@ -8,7 +8,7 @@ private def assertGeneratedFile(File suffixless) {
   assertTrue("did not generate file: " + suffixless, suffixless.exists())
 }
 
-def generatedDir = new File(basedir, "target/generated-sources/jumi")
+def generatedDir = new File(basedir, "target/generated-sources/jumi-actors")
 
 assertGeneratedFile(new File(generatedDir, "example/generated/suffixless/SuffixlessFactory.java"))
 assertGeneratedFile(new File(generatedDir, "example/generated/typical/TypicalListenerFactory.java"))

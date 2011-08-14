@@ -6,11 +6,13 @@ import static org.hamcrest.MatcherAssert.assertThat
 import static org.hamcrest.Matchers.*
 import org.apache.commons.io.FileUtils
 
-def compiledListenerClass = new File(basedir, "target/jumi/example/ExampleListener.class")
+def tempDir = new File(basedir, "target/jumi-actors")
+
+def compiledListenerClass = new File(tempDir, "example/ExampleListener.class")
 assertThat("should have compiled the listener class", compiledListenerClass.exists())
 
-File[] workDir = [new File(basedir, "target/jumi")]
-def loader = new URLClassLoader(FileUtils.toURLs(workDir))
+File[] classpath = [tempDir]
+def loader = new URLClassLoader(FileUtils.toURLs(classpath))
 def listenerClass = loader.loadClass("example.ExampleListener")
 def someUtf8Text = listenerClass.getField("SOME_UTF8_TEXT").get(null)
 assertThat("should have compiled the listener class using project encoding", "åäö", is(someUtf8Text))

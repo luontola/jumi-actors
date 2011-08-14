@@ -36,7 +36,7 @@ public class GenerateEventStubsMojo extends AbstractMojo {
     public File sourceDirectory;
 
     /**
-     * @parameter default-value="${project.build.directory}/generated-sources/jumi"
+     * @parameter default-value="${project.build.directory}/generated-sources/jumi-actors"
      * @required
      */
     public File outputDirectory;
@@ -48,9 +48,8 @@ public class GenerateEventStubsMojo extends AbstractMojo {
      */
     private String[] projectClasspath;
 
-
     /**
-     * @parameter default-value="${project.build.directory}/jumi"
+     * @parameter default-value="${project.build.directory}/jumi-actors"
      * @required
      */
     public File tempDirectory;
