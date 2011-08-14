@@ -18,6 +18,7 @@
     <orderEntry type="library" name="Maven: asm:asm:3.3.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: asm:asm-util:3.3.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: asm:asm-tree:3.3.1" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: commons-io:commons-io:2.0.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.hamcrest:hamcrest-library:1.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.hamcrest:hamcrest-core:1.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit-dep:4.8.2" level="project" />
