@@ -9,7 +9,8 @@ import org.junit.*;
 import org.junit.rules.ExpectedException;
 
 import java.io.*;
-import java.util.concurrent.*;
+
+import static fi.jumi.threadsafetyagent.ThreadUtil.runInNewThread;
 
 public class ThreadSafetyCheckerTest {
 
@@ -51,17 +52,6 @@ public class ThreadSafetyCheckerTest {
                 checker.checkCurrentThread();
             }
         });
-    }
-
-    private static void runInNewThread(String threadName, Runnable target) throws Throwable {
-        FutureTask<Object> future = new FutureTask<Object>(target, null);
-        new Thread(future, threadName).start();
-        try {
-            future.get();
-        } catch (ExecutionException e) {
-            //e.getCause().printStackTrace();
-            throw e.getCause();
-        }
     }
 
     private StackTraceContainsMatcher stackTraceContains(String s) {
