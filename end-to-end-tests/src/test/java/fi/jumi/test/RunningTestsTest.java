@@ -22,6 +22,16 @@ public class RunningTestsTest {
     // TODO: use a proper sandbox utility
     private final File sandboxDir = new File(TestEnvironment.getSandboxDir(), UUID.randomUUID().toString());
 
+    private JumiLauncher launcher;
+
+    @Before
+    public void commonSetup() {
+        launcher = new JumiLauncher();
+        printProcessOutput(launcher);
+        launcher.setJumiHome(sandboxDir);
+        launcher.setJvmOptions("-javaagent:" + TestEnvironment.getProjectJar("thread-safety-agent").getAbsolutePath());
+    }
+
     @Before
     public void createSandbox() throws IOException {
         assertTrue("Unable to create " + sandboxDir, sandboxDir.mkdirs());
@@ -39,9 +49,6 @@ public class RunningTestsTest {
 
     @Test(timeout = TIMEOUT)
     public void suite_with_zero_tests() throws Exception {
-        JumiLauncher launcher = new JumiLauncher();
-        printProcessOutput(launcher);
-        launcher.setJumiHome(sandboxDir);
         launcher.addToClassPath(TestEnvironment.getSampleClasses());
         launcher.setTestsToInclude("sample.notests.*Test");
         launcher.start();
@@ -52,9 +59,6 @@ public class RunningTestsTest {
 
     @Test(timeout = TIMEOUT)
     public void suite_with_one_test() throws Exception {
-        JumiLauncher launcher = new JumiLauncher();
-        printProcessOutput(launcher);
-        launcher.setJumiHome(sandboxDir);
         launcher.addToClassPath(TestEnvironment.getSampleClasses());
         launcher.setTestsToInclude("sample.OnePassingTest");
         launcher.start();

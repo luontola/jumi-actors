@@ -31,6 +31,7 @@ public class JumiLauncher {
     private final JumiLauncherHandler handler = new JumiLauncherHandler(new EventToDynamicListener<SuiteListener>(suite));
     private final List<File> classPath = new ArrayList<File>();
     private String testsToIncludePattern;
+    private String[] jvmOptions;
 
     // TODO: this class has multiple responsibilities, split to smaller parts?
     // - configuring the test run
@@ -90,11 +91,17 @@ public class JumiLauncher {
         File extractedJar = new File(jumiHome, "lib/" + Daemon.getDaemonJarName());
         copyToFile(embeddedJar, extractedJar);
 
+        List<String> command = new ArrayList<String>();
+        command.add(javaExecutable.getAbsolutePath());
+        Collections.addAll(command, jvmOptions);
+        command.add("-jar");
+        command.add(extractedJar.getAbsolutePath());
+        command.add(String.valueOf(launcherPort));
+
         ProcessBuilder builder = new ProcessBuilder();
         builder.directory(jumiHome);
         builder.redirectErrorStream(true);
-        builder.command(javaExecutable.getAbsolutePath(), "-jar", extractedJar.getAbsolutePath(),
-                String.valueOf(launcherPort));
+        builder.command(command);
         process = builder.start();
 
         copyInBackground(process.getInputStream(), outputListener);
@@ -150,6 +157,10 @@ public class JumiLauncher {
 
     public void setTestsToInclude(String pattern) {
         testsToIncludePattern = pattern;
+    }
+
+    public void setJvmOptions(String... jvmOptions) {
+        this.jvmOptions = jvmOptions;
     }
 
     public int getTotalTests() {
