@@ -32,15 +32,16 @@ public class AddThreadSafetyChecks extends ClassAdapter {
 
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
-//        if (isInstanceMethod(access)) {
-        if (name.equals("<init>")) {
+        if (isConstructor(name)) {
             mv = new InstantiateChecker(mv);
-        } else {
-            // TODO: ignore static fields
+        } else if (isInstanceMethod(access)) {
             mv = new CallChecker(mv);
         }
-//        }
         return mv;
+    }
+
+    private static boolean isConstructor(String name) {
+        return name.equals("<init>");
     }
 
     private static boolean isInstanceMethod(int access) {

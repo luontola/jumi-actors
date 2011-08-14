@@ -23,7 +23,7 @@ public class AddThreadSafetyChecksTest {
     @Test
     public void experiment() throws Exception {
         // TODO: remove me
-        ASMifierClassVisitor.main(new String[] {InterfaceAnnotatedNotThreadSafe.class.getName()});
+        ASMifierClassVisitor.main(new String[]{InterfaceAnnotatedNotThreadSafe.class.getName()});
     }
 
     @Test
@@ -41,6 +41,12 @@ public class AddThreadSafetyChecksTest {
     @Test
     public void interfaces_are_not_transformed() throws Exception {
         instrumentClass(InterfaceAnnotatedNotThreadSafe.class);
+    }
+
+    @Test
+    public void static_methods_are_not_transformed() throws Exception {
+        Class<?> clazz = instrumentClass(NotThreadSafeClassWithStaticMethods.class);
+        clazz.getMethod("staticMethod").invoke(null);
     }
 
     // TODO: ignore non-annotated
@@ -109,5 +115,12 @@ public class AddThreadSafetyChecksTest {
     @NotThreadSafe
     public static interface InterfaceAnnotatedNotThreadSafe {
         void shouldNotAddCodeToThisMethod();
+    }
+
+    @NotThreadSafe
+    public static class NotThreadSafeClassWithStaticMethods {
+        public static void staticMethod() {
+            // should not add code to this method
+        }
     }
 }
