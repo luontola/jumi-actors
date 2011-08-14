@@ -31,6 +31,16 @@ public class BuildTest {
     private static final String POM_FILES = "META-INF/maven/fi.jumi/";
     private static final String BASE_PACKAGE = "fi/jumi/";
 
+    private final String artifactId;
+    private final List<String> expectedDependencies;
+    private final List<String> expectedContents;
+
+    public BuildTest(String artifactId, List<String> expectedDependencies, List<String> expectedContents) {
+        this.artifactId = artifactId;
+        this.expectedDependencies = expectedDependencies;
+        this.expectedContents = expectedContents;
+    }
+
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
         return asList(new Object[][]{
@@ -79,30 +89,18 @@ public class BuildTest {
         });
     }
 
-    private final String artifactId;
-    private final List<String> expectedDependencies;
-    private final List<String> expectedContents;
-    private final File jarFile;
-    private final File pomFile;
-
-    public BuildTest(String artifactId, List<String> expectedDependencies, List<String> expectedContents) {
-        this.artifactId = artifactId;
-        this.expectedDependencies = expectedDependencies;
-        this.expectedContents = expectedContents;
-        this.jarFile = TestEnvironment.getProjectJar(artifactId);
-        this.pomFile = TestEnvironment.getProjectPom(artifactId);
+    @Test
+    public void pom_contains_only_allowed_dependencies() throws Exception {
+        File pomFile = TestEnvironment.getProjectPom(artifactId);
+        Document pom = parseXml(pomFile);
+        List<String> dependencies = getRuntimeDependencies(pom);
+        assertThat("dependencies of " + artifactId, dependencies, is(expectedDependencies));
     }
 
     @Test
     public void jar_contains_only_allowed_files() throws Exception {
+        File jarFile = TestEnvironment.getProjectJar(artifactId);
         assertJarContainsOnly(jarFile, expectedContents);
-    }
-
-    @Test
-    public void pom_contains_only_allowed_dependencies() throws Exception {
-        Document pom = parseXml(pomFile);
-        List<String> dependencies = getRuntimeDependencies(pom);
-        assertThat("dependencies of " + artifactId, dependencies, is(expectedDependencies));
     }
 
     @Test
