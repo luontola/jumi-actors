@@ -30,9 +30,8 @@ public class RunningTestsTest {
         printProcessOutput(launcher);
         launcher.setJumiHome(sandboxDir);
 
-        // TODO: is adding to classpath really required, or will it happend automatically?
         String threadSafetyAgent = TestEnvironment.getProjectJar("thread-safety-agent").getAbsolutePath();
-        launcher.setJvmOptions("-javaagent:" + threadSafetyAgent, "-cp", threadSafetyAgent);
+        launcher.setJvmOptions("-javaagent:" + threadSafetyAgent);
     }
 
     @Before
