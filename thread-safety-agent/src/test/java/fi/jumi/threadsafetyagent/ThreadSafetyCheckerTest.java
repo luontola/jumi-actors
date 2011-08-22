@@ -54,6 +54,52 @@ public class ThreadSafetyCheckerTest {
         });
     }
 
+    @Test
+    public void fails_at_most_once_per_thread() throws Throwable {
+        runInNewThread("T1", new Runnable() {
+            public void run() {
+                checker.checkCurrentThread();
+            }
+        });
+        try {
+            checker.checkCurrentThread();
+        } catch (AssertionError e) {
+            // ignore first failure
+        }
+
+        // should not throw an exception
+        checker.checkCurrentThread();
+    }
+
+    @Test
+    public void fails_for_each_new_thread() throws Throwable {
+        runInNewThread("T1", new Runnable() {
+            public void run() {
+                checker.checkCurrentThread();
+            }
+        });
+        try {
+            runInNewThread("T2", new Runnable() {
+                public void run() {
+                    checker.checkCurrentThread();
+                }
+            });
+        } catch (AssertionError e) {
+            // ignore first failure
+        }
+
+        thrown.expect(AssertionError.class);
+        thrown.expect(stackTraceContains("T1"));
+        thrown.expect(stackTraceContains("T2"));
+        thrown.expect(stackTraceContains("T3"));
+
+        runInNewThread("T3", new Runnable() {
+            public void run() {
+                checker.checkCurrentThread();
+            }
+        });
+    }
+
     private StackTraceContainsMatcher stackTraceContains(String s) {
         return new StackTraceContainsMatcher(s);
     }

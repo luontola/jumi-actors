@@ -4,37 +4,37 @@
 
 package fi.jumi.threadsafetyagent;
 
-import java.util.Collection;
-import java.util.concurrent.*;
+import javax.annotation.concurrent.ThreadSafe;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
+@ThreadSafe
 public class ThreadSafetyChecker {
 
-    private final ConcurrentMap<Thread, CallLocation> calledFromThreads = new ConcurrentHashMap<Thread, CallLocation>();
+    private final Set<Thread> calledFromThreads = new CopyOnWriteArraySet<Thread>();
+    private CallLocation callLocations = null;
 
-    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
     public void checkCurrentThread() {
         Thread currentThread = Thread.currentThread();
-        if (!calledFromThreads.containsKey(currentThread)) {
-            calledFromThreads.put(currentThread, new CallLocation());
+        // TODO: performance optimization; check last thread against a non-volatile field?
+        if (!calledFromThreads.contains(currentThread)) {
+            registerCall(currentThread);
         }
+    }
+
+    private synchronized void registerCall(Thread currentThread) {
+        calledFromThreads.add(currentThread);
+        callLocations = new CallLocation(callLocations);
         if (calledFromThreads.size() > 1) {
             AssertionError e = new AssertionError("non-thread-safe instance called from multiple threads");
-            e.initCause(chainUp(calledFromThreads.values()));
+            e.initCause(callLocations);
             throw e;
         }
     }
 
-    private static Throwable chainUp(Collection<? extends Throwable> exceptions) {
-        Throwable cause = null;
-        for (Throwable e : exceptions) {
-            cause = e.initCause(cause);
-        }
-        return cause;
-    }
-
     private static class CallLocation extends RuntimeException {
-        public CallLocation() {
-            super("Called from thread " + Thread.currentThread());
+        public CallLocation(CallLocation previousLocations) {
+            super("Called from thread " + Thread.currentThread(), previousLocations);
         }
     }
 }
