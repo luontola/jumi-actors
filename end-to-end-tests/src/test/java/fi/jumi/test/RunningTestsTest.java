@@ -30,8 +30,10 @@ public class RunningTestsTest {
         printProcessOutput(launcher);
         launcher.setJumiHome(sandboxDir);
 
-        String threadSafetyAgent = TestEnvironment.getProjectJar("thread-safety-agent").getAbsolutePath();
-        launcher.setJvmOptions("-javaagent:" + threadSafetyAgent);
+        if (System.getProperty("jumi.useThreadSafetyAgent", "false").equals("true")) {
+            String threadSafetyAgent = TestEnvironment.getProjectJar("thread-safety-agent").getAbsolutePath();
+            launcher.setJvmOptions("-javaagent:" + threadSafetyAgent);
+        }
     }
 
     @Before

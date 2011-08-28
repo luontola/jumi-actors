@@ -75,6 +75,13 @@
                         <include>**/*Test.class</include>
                     </includes>
                     <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                    <systemProperties>
+                        <property>
+                            <name>jumi.useThreadSafetyAgent</name>
+                            <value>true</value>
+                        </property>
+                    </systemProperties>
+                    <argLine>"-javaagent:${test.projectArtifactsDir}\thread-safety-agent-${project.version}.jar"</argLine>
                 </configuration>
                 <executions>
                     <execution>
