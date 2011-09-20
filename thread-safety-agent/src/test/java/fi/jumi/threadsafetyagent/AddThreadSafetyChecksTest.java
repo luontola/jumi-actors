@@ -8,24 +8,26 @@ import fi.jumi.threadsafetyagent.util.TransformationTestClassLoader;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.util.*;
+import org.objectweb.asm.util.CheckClassAdapter;
 
 import javax.annotation.concurrent.*;
 import java.lang.instrument.ClassFileTransformer;
 
 import static fi.jumi.threadsafetyagent.ThreadUtil.runInNewThread;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 public class AddThreadSafetyChecksTest {
+
+    private static final String DUMMY_EXCEPTION = "dummy exception";
 
     @Rule
     public final ExpectedException thrown = ExpectedException.none();
 
-    @Test
-    @Ignore
-    public void experiment() throws Exception {
-        // TODO: remove me
-        ASMifierClassVisitor.main(new String[]{InterfaceAnnotatedNotThreadSafe.class.getName()});
-    }
+//    @Test
+//    public void experiment() throws Exception {
+//        ASMifierClassVisitor.main(new String[]{"-debug", ReferenceImplementation.class.getName()});
+//    }
 
     @Test
     public void reference_implementation_checks_current_thread() throws Throwable {
@@ -57,8 +59,27 @@ public class AddThreadSafetyChecksTest {
         clazz.getMethod("staticMethod").invoke(null);
     }
 
+    @Test
+    public void stack_trace_for_generated_code_contains_a_line_number() throws Throwable {
+        Runnable instrumented = (Runnable) newInstrumentedInstance(NotThreadSafeClass.class);
+        int generatedLine = getThreadSafetyCheckerExceptionLineNumber(instrumented);
 
-    // helpers
+        assertThat(generatedLine, is(greaterThanOrEqualTo(1)));
+    }
+
+    @Test
+    public void line_number_for_generated_bytecode_is_the_first_line_of_the_method() throws Exception {
+        int secondLine = getDummyExceptionLineNumber(new ThrowExceptionOnSecondLine());
+        int firstLine = secondLine - 1;
+
+        Runnable instrumented = (Runnable) newInstrumentedInstance(ThrowExceptionOnSecondLine.class);
+        int generatedLine = getThreadSafetyCheckerExceptionLineNumber(instrumented);
+
+        assertThat(generatedLine, is(firstLine));
+    }
+
+
+    // bytecode generation helpers
 
     private void assertChecksThreadSafety(Runnable target) throws Throwable {
         runInNewThread("T1", target);
@@ -81,7 +102,7 @@ public class AddThreadSafetyChecksTest {
                 return super.getAdapters(new CheckClassAdapter(cv));
             }
         };
-        ClassLoader loader = new TransformationTestClassLoader(cls.getName(), transformer);
+        ClassLoader loader = new TransformationTestClassLoader(cls.getName(), transformer, null);
         return loader.loadClass(cls.getName());
     }
 
@@ -128,6 +149,65 @@ public class AddThreadSafetyChecksTest {
     public static class NotThreadSafeClassWithStaticMethods {
         public static void staticMethod() {
             // should not add code to this method
+        }
+    }
+
+
+    // line number helpers
+
+    private static int getDummyExceptionLineNumber(Runnable notIstrumented) {
+        Throwable t = getDummyExceptionThrownBy(notIstrumented);
+        return getLineNumber(notIstrumented.getClass(), "run", t);
+    }
+
+    private static int getThreadSafetyCheckerExceptionLineNumber(Runnable instrumented) {
+        Throwable t = getThreadSafetyException(instrumented);
+        return getLineNumber(instrumented.getClass(), "run", t);
+    }
+
+    private static Throwable getDummyExceptionThrownBy(Runnable notIstrumented) { // TODO: remove duplication?
+        try {
+            notIstrumented.run();
+            return null;
+        } catch (Exception e) {
+            assertThat("class should NOT have been instrumented", e.getMessage(), is(DUMMY_EXCEPTION));
+            return e;
+        }
+    }
+
+    private static Throwable getThreadSafetyException(Runnable instrumented) {
+        try {
+            runInNewThread("T1", instrumented);
+        } catch (Throwable throwable) {
+            // ignore any exception naturally thrown by the method
+        }
+        try {
+            runInNewThread("T2", instrumented);
+            return null;
+        } catch (Throwable t) {
+            assertThat("class should have been instrumented", t.getMessage(), is(not(DUMMY_EXCEPTION)));
+            return t;
+        }
+    }
+
+    private static int getLineNumber(Class<?> clazz, String methodName, Throwable t) {
+        for (StackTraceElement stackFrame : t.getStackTrace()) {
+            if (stackFrame.getClassName().equals(clazz.getName())
+                    && stackFrame.getMethodName().equals(methodName)) {
+                return stackFrame.getLineNumber();
+            }
+        }
+        throw new IllegalArgumentException("stack trace did not contain calls to method " + clazz.getName() + "." + methodName, t);
+    }
+
+    @NotThreadSafe
+    public static class ThrowExceptionOnSecondLine implements Runnable {
+        public void run() {
+            // Dummy line, to make the exception throw to be the second line.
+            // This tests against duplicate line number entries, in which case
+            // the JVM would apparently use the last matching entry in the line number table.
+            Thread.yield();
+            throw new RuntimeException(DUMMY_EXCEPTION);
         }
     }
 }

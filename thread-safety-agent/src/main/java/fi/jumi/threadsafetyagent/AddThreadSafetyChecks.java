@@ -17,6 +17,7 @@ public class AddThreadSafetyChecks extends ClassAdapter {
     private static final String CHECKER_FIELD = "$Jumi$threadSafetyChecker";
 
     private String myClassName;
+    private Label lastGeneratedCode;
 
     public AddThreadSafetyChecks(ClassVisitor cv) {
         super(cv);
@@ -93,10 +94,22 @@ public class AddThreadSafetyChecks extends ClassAdapter {
         public void visitCode() {
             super.visitCode();
 
+            // use line number of the first non-generated instruction
+            lastGeneratedCode = new Label();
+            super.visitLabel(lastGeneratedCode);
+
             // insert to the beginning of the method
             super.visitVarInsn(ALOAD, 0);
             super.visitFieldInsn(GETFIELD, myClassName, CHECKER_FIELD, CHECKER_CLASS_DESC);
             super.visitMethodInsn(INVOKEVIRTUAL, CHECKER_CLASS, "checkCurrentThread", "()V");
+        }
+
+        public void visitLineNumber(int line, Label start) {
+            if (lastGeneratedCode != null) {
+                super.visitLineNumber(line, lastGeneratedCode);
+                lastGeneratedCode = null;
+            }
+            super.visitLineNumber(line, start);
         }
 
         public void visitMaxs(int maxStack, int maxLocals) {

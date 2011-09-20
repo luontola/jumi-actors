@@ -38,7 +38,7 @@ public class ClassFileTransformerSpec {
 
     private static Object createWithTransformer(Class<?> clazz, ClassFileTransformer transformer) throws Exception {
         String className = clazz.getName();
-        ClassLoader loader = new TransformationTestClassLoader(className, transformer);
+        ClassLoader loader = new TransformationTestClassLoader(className, transformer, null);
         return loader.loadClass(className).newInstance();
     }
 

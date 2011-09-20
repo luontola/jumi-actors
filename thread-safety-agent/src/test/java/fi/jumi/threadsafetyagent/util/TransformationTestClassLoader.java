@@ -4,7 +4,7 @@
 
 package fi.jumi.threadsafetyagent.util;
 
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.*;
 
 import java.io.*;
 import java.lang.instrument.*;
@@ -13,11 +13,13 @@ public class TransformationTestClassLoader extends ClassLoader {
 
     private final ClassNameMatcher classesToInstrument;
     private final ClassFileTransformer transformer;
+    private final File dirToWriteClasses;
 
-    public TransformationTestClassLoader(String classesToInstrumentPattern, ClassFileTransformer transformer) {
+    public TransformationTestClassLoader(String classesToInstrumentPattern, ClassFileTransformer transformer, File dirToWriteClasses) {
         super(TransformationTestClassLoader.class.getClassLoader());
         this.classesToInstrument = new ClassNameMatcher(classesToInstrumentPattern);
         this.transformer = transformer;
+        this.dirToWriteClasses = dirToWriteClasses;
     }
 
     public synchronized Class<?> loadClass(String name) throws ClassNotFoundException {
@@ -31,6 +33,13 @@ public class TransformationTestClassLoader extends ClassLoader {
     protected Class<?> findClass(String name) throws ClassNotFoundException {
         try {
             byte[] b = transformer.transform(this, name, null, null, readClassBytes(name));
+            if (dirToWriteClasses != null) {
+                try {
+                    FileUtils.writeByteArrayToFile(new File(dirToWriteClasses, name + ".class"), b);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
             return defineClass(name, b, 0, b.length);
 
         } catch (IllegalClassFormatException e) {
