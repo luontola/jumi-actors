@@ -9,6 +9,9 @@ import fi.jumi.core.*;
 import fi.jumi.core.events.suite.SuiteListenerFactory;
 import org.jboss.netty.channel.*;
 
+import javax.annotation.concurrent.*;
+
+@ThreadSafe
 public class JumiDaemonHandler extends SimpleChannelHandler {
     private final CommandListener coordinator;
 

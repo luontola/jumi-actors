@@ -6,8 +6,10 @@ package fi.jumi.core;
 
 import fi.jumi.api.drivers.TestId;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.concurrent.*;
 
+@ThreadSafe
 public class SuiteStateCollector implements SuiteListener {
     private volatile SuiteResults state = new SuiteResults();
     private final CountDownLatch finished = new CountDownLatch(1);

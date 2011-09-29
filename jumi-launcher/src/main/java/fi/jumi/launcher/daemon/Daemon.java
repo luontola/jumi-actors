@@ -6,9 +6,11 @@ package fi.jumi.launcher.daemon;
 
 import org.apache.commons.io.IOUtils;
 
+import javax.annotation.concurrent.Immutable;
 import java.io.*;
 import java.util.Properties;
 
+@Immutable
 public class Daemon {
 
     private static final String daemonJarName;
@@ -24,6 +26,9 @@ public class Daemon {
         } finally {
             IOUtils.closeQuietly(in);
         }
+    }
+
+    private Daemon() {
     }
 
     public static String getDaemonJarName() {

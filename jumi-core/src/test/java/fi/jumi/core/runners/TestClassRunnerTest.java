@@ -9,6 +9,7 @@ import fi.jumi.api.drivers.*;
 import fi.jumi.core.Startable;
 import fi.jumi.core.events.runnable.RunnableFactory;
 import fi.jumi.core.events.startable.StartableFactory;
+import fi.jumi.core.events.testclass.TestClassListenerFactory;
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -23,7 +24,8 @@ public class TestClassRunnerTest {
 
     private final SingleThreadedActors actors = new SingleThreadedActors(
             new StartableFactory(),
-            new RunnableFactory()
+            new RunnableFactory(),
+            new TestClassListenerFactory()
     );
 
     @Test

@@ -18,13 +18,13 @@ public class FindingTestsTest {
 
     private TestClassRunnerListener listener = mock(TestClassRunnerListener.class);
     private TestClassRunner runner = new TestClassRunner(testClass, null, listener, null);
+    private SuiteNotifier notifier = new DefaultSuiteNotifier(runner);
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void finding_tests_multiple_times_is_idempotent() {
-        SuiteNotifier notifier = runner.getSuiteNotifier();
         notifier.fireTestFound(TestId.ROOT, "root");
         notifier.fireTestFound(TestId.ROOT, "root");
 
@@ -33,7 +33,6 @@ public class FindingTestsTest {
 
     @Test
     public void tests_must_be_found_always_with_the_same_name() {
-        SuiteNotifier notifier = runner.getSuiteNotifier();
         notifier.fireTestFound(TestId.ROOT, "name 1");
 
         thrown.expect(IllegalStateException.class);
@@ -43,8 +42,6 @@ public class FindingTestsTest {
 
     @Test
     public void parents_must_be_found_before_children() {
-        SuiteNotifier notifier = runner.getSuiteNotifier();
-
         thrown.expect(IllegalStateException.class);
         thrown.expectMessage("parent of TestId(0) must be found first");
         notifier.fireTestFound(TestId.of(0), "child");
@@ -54,8 +51,6 @@ public class FindingTestsTest {
 
     @Test
     public void notifies_the_listener_about_found_tests() {
-        SuiteNotifier notifier = runner.getSuiteNotifier();
-
         notifier.fireTestFound(TestId.ROOT, "root");
 
         verify(listener).onTestFound(TestId.ROOT, "root");
@@ -63,8 +58,6 @@ public class FindingTestsTest {
 
     @Test
     public void notifies_the_listener_about_found_tests_only_once() {
-        SuiteNotifier notifier = runner.getSuiteNotifier();
-
         notifier.fireTestFound(TestId.ROOT, "root");
         notifier.fireTestFound(TestId.ROOT, "root");
 

@@ -4,13 +4,15 @@
 
 package fi.jumi.core.runners;
 
+import fi.jumi.actors.OnDemandActors;
 import fi.jumi.api.drivers.*;
 import fi.jumi.core.Startable;
-import fi.jumi.actors.OnDemandActors;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import java.util.*;
 
-public class TestClassRunner implements Startable {
+@NotThreadSafe
+public class TestClassRunner implements Startable, TestClassListener {
 
     private final Class<?> testClass;
     private final Class<? extends Driver> driverClass;
@@ -29,8 +31,8 @@ public class TestClassRunner implements Startable {
     }
 
     public void start() {
-        SuiteNotifier notifier = getSuiteNotifier();
-        DriverRunner worker = new DriverRunner(notifier);
+        SuiteNotifier notifier = new DefaultSuiteNotifier(actors.createSecondaryActor(TestClassListener.class, this));
+        DriverRunner worker = new DriverRunner(testClass, driverClass, notifier);
 
         actors.startUnattendedWorker(worker, new Runnable() {
             public void run() {
@@ -43,10 +45,6 @@ public class TestClassRunner implements Startable {
     public Collection<String> getTestNames() {
         // XXX: smelly getter; remove it and move the responsibility somewhere else
         return Collections.unmodifiableCollection(tests.values());
-    }
-
-    public SuiteNotifier getSuiteNotifier() {
-        return new DefaultSuiteNotifier(this);
     }
 
     public void onTestFound(TestId id, String name) {
@@ -78,10 +76,15 @@ public class TestClassRunner implements Startable {
 
 
     // TODO: decouple DriverRunner from TestClassRunner (at least once long-lived drivers are added)
-    private class DriverRunner implements Runnable {
+    @NotThreadSafe
+    private static class DriverRunner implements Runnable {
+        private final Class<?> testClass;
+        private final Class<? extends Driver> driverClass;
         private final SuiteNotifier suiteNotifier;
 
-        public DriverRunner(SuiteNotifier suiteNotifier) {
+        public DriverRunner(Class<?> testClass, Class<? extends Driver> driverClass, SuiteNotifier suiteNotifier) {
+            this.testClass = testClass;
+            this.driverClass = driverClass;
             this.suiteNotifier = suiteNotifier;
         }
 

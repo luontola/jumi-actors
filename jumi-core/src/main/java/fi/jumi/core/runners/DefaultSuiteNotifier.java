@@ -8,9 +8,9 @@ import fi.jumi.api.drivers.*;
 
 public class DefaultSuiteNotifier implements SuiteNotifier {
 
-    private final TestClassRunner listener;
+    private final TestClassListener listener;
 
-    public DefaultSuiteNotifier(TestClassRunner listener) {
+    public DefaultSuiteNotifier(TestClassListener listener) {
         this.listener = listener;
     }
 

@@ -9,9 +9,11 @@ import fi.jumi.core.drivers.*;
 import fi.jumi.core.files.*;
 import fi.jumi.core.runners.SuiteRunner;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import java.io.File;
 import java.util.List;
 
+@NotThreadSafe
 public class TestRunCoordinator implements CommandListener {
 
     private final OnDemandActors actors;

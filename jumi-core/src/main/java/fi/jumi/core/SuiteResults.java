@@ -8,6 +8,9 @@ import fi.jumi.api.drivers.TestId;
 import fj.Ord;
 import fj.data.TreeMap;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public class SuiteResults {
 
     private final boolean finished;

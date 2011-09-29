@@ -10,6 +10,7 @@ import fi.jumi.core.events.command.CommandListenerFactory;
 import fi.jumi.core.events.runnable.RunnableFactory;
 import fi.jumi.core.events.startable.StartableFactory;
 import fi.jumi.core.events.suite.SuiteListenerFactory;
+import fi.jumi.core.events.testclass.TestClassListenerFactory;
 import fi.jumi.core.events.testclassfinder.TestClassFinderListenerFactory;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.*;
@@ -18,9 +19,11 @@ import org.jboss.netty.handler.codec.serialization.*;
 import org.jboss.netty.handler.logging.LoggingHandler;
 import org.jboss.netty.logging.InternalLogLevel;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 
+@ThreadSafe
 public class Main {
 
     public static void main(String[] args) {
@@ -33,7 +36,8 @@ public class Main {
                 new RunnableFactory(),
                 new TestClassFinderListenerFactory(),
                 new SuiteListenerFactory(),
-                new CommandListenerFactory()
+                new CommandListenerFactory(),
+                new TestClassListenerFactory()
         );
         CommandListener toCoordinator = actors.createPrimaryActor(CommandListener.class, new TestRunCoordinator(actors), "Coordinator");
 

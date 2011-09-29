@@ -16,11 +16,15 @@ import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.socket.oio.OioServerSocketChannelFactory;
 import org.jboss.netty.handler.codec.serialization.*;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.util.*;
 import java.util.concurrent.*;
 
+// TODO: annotate all classes
+
+@ThreadSafe
 public class JumiLauncher {
     private File jumiHome; // TODO: default to "~/.jumi"
     private Writer outputListener = new NullWriter();

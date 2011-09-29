@@ -4,11 +4,13 @@
 
 package fi.jumi.api.drivers;
 
+import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 
 /**
  * Uniquely identifies a single test in the tree of all tests. Immutable.
  */
+@Immutable
 public abstract class TestId implements Comparable<TestId>, Serializable {
 
     public static final TestId ROOT = new Root();

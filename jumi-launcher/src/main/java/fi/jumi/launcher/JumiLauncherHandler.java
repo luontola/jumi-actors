@@ -4,10 +4,13 @@
 
 package fi.jumi.launcher;
 
-import fi.jumi.core.*;
 import fi.jumi.actors.*;
+import fi.jumi.core.*;
 import org.jboss.netty.channel.*;
 
+import javax.annotation.concurrent.ThreadSafe;
+
+@ThreadSafe
 public class JumiLauncherHandler extends SimpleChannelHandler {
 
     private final MessageSender<Event<SuiteListener>> toLauncher;
