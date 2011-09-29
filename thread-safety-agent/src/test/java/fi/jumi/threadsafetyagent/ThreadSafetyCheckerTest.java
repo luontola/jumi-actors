@@ -51,8 +51,8 @@ public class ThreadSafetyCheckerTest {
         // from which threads it was called
         Throwable cause2 = t.getCause();
         Throwable cause1 = t.getCause().getCause();
-        assertThat(cause2.getMessage(), is("called from thread T2"));
-        assertThat(cause1.getMessage(), is("called from thread T1"));
+        assertThat(cause2.getMessage(), is("called from thread: T2"));
+        assertThat(cause1.getMessage(), is("called from thread: T1"));
 
         // from where it was called
         assertThat(t, stackTraceContains(getClass().getName()));
@@ -104,6 +104,42 @@ public class ThreadSafetyCheckerTest {
         });
     }
 
+    @Test
+    public void exception_cause_stack_traces_mention_for_each_thread_from_where_the_calls_were_made() throws Throwable {
+        runInNewThread("T1", new Runnable() {
+            public void run() {
+                callLocation1();
+            }
+        });
+        Throwable t = getExceptionFromNewThread("T2", new Runnable() {
+            public void run() {
+                callLocation2();
+            }
+        });
+
+        String[] traces = stackTraceAsText(t).toString().split("Caused by: ");
+        assertThat(traces.length, is(3));
+
+        String cause1 = traces[2];
+        assertThat(cause1, containsString("T1"));
+        assertThat(cause1, containsString("callLocation1"));
+
+        String cause2 = traces[1];
+        assertThat(cause2, containsString("T2"));
+        assertThat(cause2, containsString("callLocation2"));
+    }
+
+    private void callLocation2() {
+        checker.checkCurrentThread();
+    }
+
+    private void callLocation1() {
+        checker.checkCurrentThread();
+    }
+
+
+    // helpers
+
     private StackTraceContainsMatcher stackTraceContains(String s) {
         return new StackTraceContainsMatcher(s);
     }
@@ -116,17 +152,17 @@ public class ThreadSafetyCheckerTest {
         }
 
         protected boolean matchesSafely(Throwable item) {
-            return stackTraceToString(item).indexOf(expected) >= 0;
-        }
-
-        private StringBuffer stackTraceToString(Throwable item) {
-            StringWriter stackTrace = new StringWriter();
-            item.printStackTrace(new PrintWriter(stackTrace));
-            return stackTrace.getBuffer();
+            return stackTraceAsText(item).indexOf(expected) >= 0;
         }
 
         public void describeTo(Description description) {
             description.appendText("stack trace contains ").appendValue(expected);
         }
+    }
+
+    private static StringBuffer stackTraceAsText(Throwable t) {
+        StringWriter result = new StringWriter();
+        t.printStackTrace(new PrintWriter(result));
+        return result.getBuffer();
     }
 }

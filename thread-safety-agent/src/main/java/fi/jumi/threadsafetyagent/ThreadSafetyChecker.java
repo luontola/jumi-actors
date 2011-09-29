@@ -26,7 +26,11 @@ public class ThreadSafetyChecker {
         calledFromThreads.add(currentThread);
         callLocations = new CallLocation(callLocations);
         if (calledFromThreads.size() > 1) {
-            AssertionError e = new AssertionError("non-thread-safe instance called from multiple threads: " + threadNames(calledFromThreads));
+            AssertionError e = new AssertionError("non-thread-safe instance called from multiple threads: " + threadNames(calledFromThreads)) {
+                public Throwable fillInStackTrace() {
+                    return this;
+                }
+            };
             e.initCause(callLocations);
             throw e;
         }
@@ -50,7 +54,7 @@ public class ThreadSafetyChecker {
 
     private static class CallLocation extends RuntimeException {
         public CallLocation(CallLocation previousLocations) {
-            super("called from thread " + Thread.currentThread().getName(), previousLocations);
+            super("called from thread: " + Thread.currentThread().getName(), previousLocations);
         }
     }
 }

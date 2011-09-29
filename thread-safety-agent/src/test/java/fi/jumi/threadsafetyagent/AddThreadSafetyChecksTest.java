@@ -162,7 +162,7 @@ public class AddThreadSafetyChecksTest {
 
     private static int getThreadSafetyCheckerExceptionLineNumber(Runnable instrumented) {
         Throwable t = getThreadSafetyException(instrumented);
-        return getLineNumber(instrumented.getClass(), "run", t);
+        return getLineNumber(instrumented.getClass(), "run", t.getCause());
     }
 
     private static Throwable getDummyExceptionThrownBy(Runnable notIstrumented) { // TODO: remove duplication?
