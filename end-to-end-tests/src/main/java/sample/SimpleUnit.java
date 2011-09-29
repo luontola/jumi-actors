@@ -6,11 +6,14 @@ package sample;
 
 import fi.jumi.api.drivers.*;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.Executor;
 
+@NotThreadSafe
 public class SimpleUnit implements Driver {
+
     public void findTests(Class<?> testClass, SuiteNotifier notifier, Executor executor) {
         notifier.fireTestFound(TestId.ROOT, testClass.getSimpleName());
 
@@ -40,6 +43,8 @@ public class SimpleUnit implements Driver {
         return results;
     }
 
+
+    @NotThreadSafe
     private static class RunTestMethod implements Runnable {
         private final Method testMethod;
         private final TestId testMethodId;

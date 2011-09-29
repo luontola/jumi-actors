@@ -6,8 +6,10 @@ package fi.jumi.actors.dynamicevents;
 
 import fi.jumi.actors.*;
 
+import javax.annotation.concurrent.Immutable;
 import java.lang.reflect.*;
 
+@Immutable
 public class DynamicListenerFactory<T> implements ListenerFactory<T> {
 
     private final Class<T> type;

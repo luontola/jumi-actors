@@ -4,12 +4,15 @@
 
 package fi.jumi.core.runners;
 
+import fi.jumi.actors.OnDemandActors;
 import fi.jumi.api.drivers.*;
 import fi.jumi.core.*;
-import fi.jumi.actors.OnDemandActors;
 import fi.jumi.core.drivers.DriverFinder;
 import fi.jumi.core.files.*;
 
+import javax.annotation.concurrent.NotThreadSafe;
+
+@NotThreadSafe
 public class SuiteRunner implements Startable, TestClassFinderListener {
 
     private final SuiteListener suiteListener;

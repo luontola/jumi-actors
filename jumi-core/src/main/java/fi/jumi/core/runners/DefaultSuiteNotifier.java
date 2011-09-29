@@ -6,6 +6,9 @@ package fi.jumi.core.runners;
 
 import fi.jumi.api.drivers.*;
 
+import javax.annotation.concurrent.ThreadSafe;
+
+@ThreadSafe
 public class DefaultSuiteNotifier implements SuiteNotifier {
 
     private final TestClassListener listener;

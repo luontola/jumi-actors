@@ -7,6 +7,9 @@ package fi.jumi.core.drivers;
 import fi.jumi.api.RunVia;
 import fi.jumi.api.drivers.Driver;
 
+import javax.annotation.concurrent.NotThreadSafe;
+
+@NotThreadSafe
 public class RunViaAnnotationDriverFinder implements DriverFinder {
 
     public Class<? extends Driver> findTestClassDriver(Class<?> testClass) {

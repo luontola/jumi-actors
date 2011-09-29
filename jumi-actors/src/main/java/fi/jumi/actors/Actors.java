@@ -4,6 +4,9 @@
 
 package fi.jumi.actors;
 
+import javax.annotation.concurrent.*;
+
+@ThreadSafe
 public abstract class Actors implements LongLivedActors, OnDemandActors {
 
     private final ListenerFactory<?>[] factories;
@@ -79,6 +82,7 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
     }
 
 
+    @NotThreadSafe
     protected class ActorContext<T> implements Runnable {
         private final MessageQueue<Event<T>> queue;
         private final Runnable actor;
@@ -99,6 +103,7 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
         }
     }
 
+    @NotThreadSafe
     private static class UnattendedWorker implements Runnable {
         private final Runnable worker;
         private final Runnable onFinished;
@@ -117,6 +122,7 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
         }
     }
 
+    @ThreadSafe
     private static class CustomTargetEvent<T> implements Event<Object> {
         private final Event<T> message;
         private final T target;

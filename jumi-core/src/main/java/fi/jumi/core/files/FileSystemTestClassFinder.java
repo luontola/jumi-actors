@@ -4,10 +4,12 @@
 
 package fi.jumi.core.files;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import java.io.File;
 import java.net.*;
 import java.util.List;
 
+@NotThreadSafe
 public class FileSystemTestClassFinder implements TestClassFinder {
 
     private final List<File> classPath;

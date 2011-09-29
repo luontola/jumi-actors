@@ -4,8 +4,10 @@
 
 package fi.jumi.actors;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import java.util.*;
 
+@NotThreadSafe
 public class SingleThreadedActors extends Actors {
 
     private List<EventPoller<?>> pollers = new ArrayList<EventPoller<?>>();

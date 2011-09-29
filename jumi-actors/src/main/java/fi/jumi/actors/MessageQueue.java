@@ -4,8 +4,10 @@
 
 package fi.jumi.actors;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.concurrent.*;
 
+@ThreadSafe
 public class MessageQueue<T> implements MessageSender<T>, MessageReceiver<T> {
 
     private final BlockingQueue<T> queue = new LinkedBlockingQueue<T>();

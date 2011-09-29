@@ -4,9 +4,11 @@
 
 package fi.jumi.actors;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.*;
 import java.util.concurrent.*;
 
+@ThreadSafe
 public class MultiThreadedActors extends Actors {
 
     private final Set<Thread> actorThreads = Collections.synchronizedSet(new HashSet<Thread>());

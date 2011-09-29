@@ -6,8 +6,10 @@ package fi.jumi.actors.dynamicevents;
 
 import fi.jumi.actors.*;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.lang.reflect.*;
 
+@ThreadSafe
 public class DynamicListenerToEvent<T> implements InvocationHandler {
 
     private final MessageSender<Event<T>> target;

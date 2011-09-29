@@ -7,7 +7,7 @@ TODO NEXT:
 		OK - use the agent in end-to-end tests, enable with a system property toggle?
 		OK - failure messages do not contain line number for the method which calls checkCurrentThread()
 		OK - only print the name of the thread in exception messages, not full Thread.toString()
-		- annotate classes with http://code.google.com/p/jsr-305/
+		OK - annotate classes with http://code.google.com/p/jsr-305/
 		- performance optimization: compare current thread with last value using == (lastThread field shouldn't need to be even volatile)
 	- code generator: get generic method parameter types using java.lang.reflect.Method#getGenericParameterTypes, use it to also replace the current generics printing (ParameterizedType can be created from a dummy field)
 	- put end-to-end tests in their own package (test.fi.jumi?), separate them from unit tests

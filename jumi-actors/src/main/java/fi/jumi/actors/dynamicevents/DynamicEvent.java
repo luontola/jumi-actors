@@ -6,10 +6,12 @@ package fi.jumi.actors.dynamicevents;
 
 import fi.jumi.actors.Event;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.io.*;
 import java.lang.reflect.*;
 import java.util.Arrays;
 
+@ThreadSafe
 public class DynamicEvent<T> implements Event<T>, Serializable {
 
     private transient Method method;
