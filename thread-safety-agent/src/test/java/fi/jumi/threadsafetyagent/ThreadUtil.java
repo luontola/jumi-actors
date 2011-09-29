@@ -17,4 +17,13 @@ public class ThreadUtil {
             throw e.getCause();
         }
     }
+
+    public static Throwable getExceptionFromNewThread(String threadName, Runnable target) {
+        try {
+            runInNewThread(threadName, target);
+        } catch (Throwable throwable) {
+            return throwable;
+        }
+        throw new AssertionError("Expected to throw an exception but did not throw anything");
+    }
 }

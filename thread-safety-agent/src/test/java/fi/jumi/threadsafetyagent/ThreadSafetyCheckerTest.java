@@ -10,7 +10,9 @@ import org.junit.rules.ExpectedException;
 
 import java.io.*;
 
-import static fi.jumi.threadsafetyagent.ThreadUtil.runInNewThread;
+import static fi.jumi.threadsafetyagent.ThreadUtil.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 public class ThreadSafetyCheckerTest {
 
@@ -37,21 +39,23 @@ public class ThreadSafetyCheckerTest {
             }
         });
 
-        thrown.expect(AssertionError.class);
-        thrown.expectMessage("non-thread-safe instance called from multiple threads");
-
-        // from which threads it was called
-        thrown.expect(stackTraceContains("T1"));
-        thrown.expect(stackTraceContains("T2"));
-
-        // from where it was called
-        thrown.expect(stackTraceContains(getClass().getName()));
-
-        runInNewThread("T2", new Runnable() {
+        Throwable t = getExceptionFromNewThread("T2", new Runnable() {
             public void run() {
                 checker.checkCurrentThread();
             }
         });
+
+        assertThat(t, is(instanceOf(AssertionError.class)));
+        assertThat(t.getMessage(), is("non-thread-safe instance called from multiple threads: T1, T2"));
+
+        // from which threads it was called
+        Throwable cause2 = t.getCause();
+        Throwable cause1 = t.getCause().getCause();
+        assertThat(cause2.getMessage(), is("called from thread T2"));
+        assertThat(cause1.getMessage(), is("called from thread T1"));
+
+        // from where it was called
+        assertThat(t, stackTraceContains(getClass().getName()));
     }
 
     @Test
@@ -112,9 +116,13 @@ public class ThreadSafetyCheckerTest {
         }
 
         protected boolean matchesSafely(Throwable item) {
+            return stackTraceToString(item).indexOf(expected) >= 0;
+        }
+
+        private StringBuffer stackTraceToString(Throwable item) {
             StringWriter stackTrace = new StringWriter();
             item.printStackTrace(new PrintWriter(stackTrace));
-            return stackTrace.getBuffer().indexOf(expected) >= 0;
+            return stackTrace.getBuffer();
         }
 
         public void describeTo(Description description) {
