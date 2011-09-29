@@ -11,7 +11,6 @@ public class PreMain {
     // For details on Java agents, see http://java.sun.com/javase/6/docs/api/java/lang/instrument/package-summary.html
 
     public static void premain(String agentArgs, Instrumentation inst) {
-        // TODO: enable the agent once it works
-        //inst.addTransformer(new ThreadSafetyCheckerTransformer());
+        inst.addTransformer(new ThreadSafetyCheckerTransformer());
     }
 }
