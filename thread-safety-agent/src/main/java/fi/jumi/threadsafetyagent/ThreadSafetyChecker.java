@@ -6,23 +6,37 @@ package fi.jumi.threadsafetyagent;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 @ThreadSafe
 public class ThreadSafetyChecker {
 
-    private final Set<Thread> calledFromThreads = new CopyOnWriteArraySet<Thread>();
+    /**
+     * Not volatile, because it is not required for thread safety;
+     * it would only would impose a read barrier and might reduce performance.
+     */
+    private Thread lastThread = null;
+
+    private final Set<Thread> calledFromThreads = new HashSet<Thread>(1, 1);
     private CallLocation callLocations = null;
+
 
     public void checkCurrentThread() {
         Thread currentThread = Thread.currentThread();
-        // TODO: performance optimization; check last thread against a non-volatile field?
-        if (!calledFromThreads.contains(currentThread)) {
-            registerCall(currentThread);
+
+        // Performance optimization: avoid checking a thread twice
+        // when called repeatedly from the same thread, which is the most common case.
+        if (currentThread == lastThread) {
+            return;
         }
+        lastThread = currentThread;
+
+        fullCheck(currentThread);
     }
 
-    private synchronized void registerCall(Thread currentThread) {
+    private synchronized void fullCheck(Thread currentThread) {
+        if (calledFromThreads.contains(currentThread)) {
+            return;
+        }
         calledFromThreads.add(currentThread);
         callLocations = new CallLocation(callLocations);
         if (calledFromThreads.size() > 1) {
