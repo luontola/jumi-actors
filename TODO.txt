@@ -1,6 +1,6 @@
 
 TODO NEXT:
-- end-to-end tests: failing tests (includes reporting stack trace)
+- end-to-end tests: failing tests
 	!! - write a test
 	- make it pass
 	- test execution might be best implemented using regular thread pools instead of actors
@@ -14,6 +14,7 @@ TODO NEXT:
 		- extract domain objects for classes and methods, then gather imports using the visitor pattern?
 	- put end-to-end tests in their own package (test.fi.jumi?), separate them from unit tests
 		- or use JUnit categories, maybe with a custom runner?
+- end-to-end tests: reporting exception stack traces
 - end-to-end tests: failures outside tests (in drivers and core)
 	- actor tests print dummy exceptions; solve by having a custom pluggable exception handler which doesn't print stack traces of a DummyException class
 - end-to-end tests: reporting test output
@@ -23,6 +24,8 @@ TODO NEXT:
 	- if daemon dies unexpectedly (System.exit/halt, JVM crash etc.), report it and restart next time
 	- make it reliable
 - refactor jumi-actors-maven-plugin
+	- DummyListenerToEvent: rename sender to target
+	- EventToDummyListener: rename listener to target
 	- @Generated annotation
 	- annotation to suppress unchecked warnings due to type erasure?
 	- toString?

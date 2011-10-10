@@ -23,6 +23,7 @@ public class ThreadSafetyChecker {
     public void checkCurrentThread() {
         Thread currentThread = Thread.currentThread();
 
+        // TODO: measure the usefulness of this optimization later, in a scenario which is not dominated by class loading overhead 
         // Performance optimization: avoid checking a thread twice
         // when called repeatedly from the same thread, which is the most common case.
         if (currentThread == lastThread) {
