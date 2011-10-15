@@ -6,13 +6,18 @@ package fi.jumi.actors;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.concurrent.*;
+import java.util.logging.*;
 
 @ThreadSafe
 public class MessageQueue<T> implements MessageSender<T>, MessageReceiver<T> {
 
+    private static final Logger logger = Logger.getLogger(MessageQueue.class.getName());
+
     private final BlockingQueue<T> queue = new LinkedBlockingQueue<T>();
 
     public void send(T message) {
+        // TODO: use FINE level, find out how to configure it to be shown
+        logger.log(Level.INFO, "SEND {0}", message);
         try {
             queue.put(message);
         } catch (InterruptedException e) {
@@ -21,10 +26,14 @@ public class MessageQueue<T> implements MessageSender<T>, MessageReceiver<T> {
     }
 
     public T take() throws InterruptedException {
-        return queue.take();
+        T message = queue.take();
+        logger.log(Level.INFO, "TAKE {0}", message);
+        return message;
     }
 
     public T poll() {
-        return queue.poll();
+        T message = queue.poll();
+        logger.log(Level.INFO, "POLL {0}", message);
+        return message;
     }
 }

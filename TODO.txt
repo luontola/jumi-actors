@@ -3,6 +3,7 @@ TODO NEXT:
 - end-to-end tests: failing tests
 	!! - write a test
 	- make it pass
+	- toString methods for generated events would make debugging easier
 	- test execution might be best implemented using regular thread pools instead of actors
 		- CPU bound threads should use an optimal number of threads per core
 		- they take no input when running, so no actor handle needs to be created for them
