@@ -8,5 +8,13 @@ import fi.jumi.api.drivers.TestId;
 
 public interface TestClassListener {
 
+    // XXX: duplicate method signatures in TestClassListener and TestClassRunnerListener
+
     void onTestFound(TestId id, String name);
+
+    void onTestStarted(TestId id);
+
+    void onFailure(TestId id, Throwable cause);
+
+    void onTestFinished(TestId id);
 }

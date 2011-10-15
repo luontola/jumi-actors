@@ -73,6 +73,18 @@ public class SuiteRunner implements Startable, TestClassFinderListener {
                 suiteListener.onTestFound(testClass.getName(), id, name);
             }
 
+            public void onTestStarted(TestId id) {
+                System.out.println("SuiteRunner.onTestStarted");
+            }
+
+            public void onFailure(TestId id, Throwable cause) {
+                System.out.println("SuiteRunner.onFailure");
+            }
+
+            public void onTestFinished(TestId id) {
+                System.out.println("SuiteRunner.onTestFinished");
+            }
+
             public void onTestClassFinished() {
                 fireWorkerFinished();
             }

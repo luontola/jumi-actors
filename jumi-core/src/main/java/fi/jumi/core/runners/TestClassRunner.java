@@ -57,6 +57,18 @@ public class TestClassRunner implements Startable, TestClassListener {
         }
     }
 
+    public void onTestStarted(TestId id) {
+        listener.onTestStarted(id);
+    }
+
+    public void onFailure(TestId id, Throwable cause) {
+        listener.onFailure(id, cause);
+    }
+
+    public void onTestFinished(TestId id) {
+        listener.onTestFinished(id);
+    }
+
     private boolean hasNotBeenFoundBefore(TestId id) {
         return !tests.containsKey(id);
     }

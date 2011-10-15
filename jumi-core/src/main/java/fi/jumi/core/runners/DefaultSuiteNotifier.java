@@ -22,6 +22,7 @@ public class DefaultSuiteNotifier implements SuiteNotifier {
     }
 
     public TestNotifier fireTestStarted(TestId id) {
-        return null; // TODO
+        listener.onTestStarted(id);
+        return new DefaultTestNotifier(id, listener);
     }
 }

@@ -16,8 +16,7 @@ public class MessageQueue<T> implements MessageSender<T>, MessageReceiver<T> {
     private final BlockingQueue<T> queue = new LinkedBlockingQueue<T>();
 
     public void send(T message) {
-        // TODO: use FINE level, find out how to configure it to be shown
-        logger.log(Level.INFO, "SEND {0}", message);
+        logger.log(Level.FINE, "SEND {0}", message);
         try {
             queue.put(message);
         } catch (InterruptedException e) {
@@ -27,13 +26,13 @@ public class MessageQueue<T> implements MessageSender<T>, MessageReceiver<T> {
 
     public T take() throws InterruptedException {
         T message = queue.take();
-        logger.log(Level.INFO, "TAKE {0}", message);
+        logger.log(Level.FINE, "TAKE {0}", message);
         return message;
     }
 
     public T poll() {
         T message = queue.poll();
-        logger.log(Level.INFO, "POLL {0}", message);
+        logger.log(Level.FINE, "POLL {0}", message);
         return message;
     }
 }

@@ -1,15 +1,16 @@
 
 TODO NEXT:
 - end-to-end tests: failing tests
-	!! - write a test
-	- make it pass
-	- toString methods for generated events would make debugging easier
+	OK - write a test
+	!! - make it pass
+- misc refactoring
 	- test execution might be best implemented using regular thread pools instead of actors
 		- CPU bound threads should use an optimal number of threads per core
 		- they take no input when running, so no actor handle needs to be created for them
 		OK - the thing which coordinates a test class's workers might need to be an actor (it receives events from the tests), but it should also be able to exit itself when it has done its work
 	- bullet proofing the public api, cross-references from javadocs to tests (a new xref tag?)
 	- refactor EventStubGenerator:
+		- toString methods for generated events would make debugging easier
 		- get generic method parameter types using java.lang.reflect.Method#getGenericParameterTypes, use it to also replace the current generics printing (ParameterizedType can be created from a dummy field)
 		- extract domain object for imports
 		- extract domain objects for classes and methods, then gather imports using the visitor pattern?

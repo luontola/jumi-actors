@@ -17,6 +17,7 @@ import java.util.concurrent.Executor;
 
 import static org.mockito.Mockito.*;
 
+@SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
 public class TestClassRunnerTest {
 
     private final TestClassRunnerListener listener = mock(TestClassRunnerListener.class);
@@ -50,6 +51,22 @@ public class TestClassRunnerTest {
         verifyNoMoreInteractions(listener);
     }
 
+    @Test
+    public void test_class_with_one_failing_test() {
+        TestClassRunner runner = new TestClassRunner(DummyTest.class, OneFailingTestDriver.class, listener, actors);
+
+        runAndAwaitCompletion(runner);
+
+        inOrder.verify(listener).onTestFound(TestId.ROOT, "root test");
+        inOrder.verify(listener).onTestStarted(TestId.ROOT);
+        inOrder.verify(listener).onFailure(eq(TestId.ROOT), any(Exception.class));
+        inOrder.verify(listener).onTestFinished(TestId.ROOT);
+        inOrder.verify(listener).onTestClassFinished();
+        verifyNoMoreInteractions(listener);
+    }
+
+    // TODO: how to distinguish between events from concurrent executions of the same test?
+
     private void runAndAwaitCompletion(TestClassRunner runner) {
         actors.createPrimaryActor(Startable.class, runner, "TestClassRunner").start();
         actors.processEventsUntilIdle();
@@ -67,6 +84,15 @@ public class TestClassRunnerTest {
     static class OneTestDriver implements Driver {
         public void findTests(Class<?> testClass, SuiteNotifier notifier, Executor executor) {
             notifier.fireTestFound(TestId.ROOT, "root test");
+        }
+    }
+
+    static class OneFailingTestDriver implements Driver {
+        public void findTests(Class<?> testClass, SuiteNotifier notifier, Executor executor) {
+            notifier.fireTestFound(TestId.ROOT, "root test");
+            TestNotifier tn = notifier.fireTestStarted(TestId.ROOT);
+            tn.fireFailure(new Exception("dummy failure"));
+            tn.fireTestFinished();
         }
     }
 }
