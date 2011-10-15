@@ -40,4 +40,12 @@ public class SuiteResults {
     public int getTotalTests() {
         return tests.size();
     }
+
+    public int getPassingTests() {
+        return tests.size(); // TODO
+    }
+
+    public int getFailingTests() {
+        return 0; // TODO
+    }
 }

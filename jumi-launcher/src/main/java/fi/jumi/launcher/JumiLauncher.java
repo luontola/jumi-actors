@@ -170,4 +170,12 @@ public class JumiLauncher {
     public int getTotalTests() {
         return suite.getState().getTotalTests();
     }
+
+    public int getPassingTests() {
+        return suite.getState().getPassingTests();
+    }
+
+    public int getFailingTests() {
+        return suite.getState().getFailingTests();
+    }
 }

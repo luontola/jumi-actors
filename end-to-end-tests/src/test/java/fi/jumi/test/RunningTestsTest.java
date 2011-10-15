@@ -28,13 +28,28 @@ public class RunningTestsTest {
     }
 
     @Test(timeout = TIMEOUT)
-    public void suite_with_one_test() throws Exception {
+    public void suite_with_one_passing_test() throws Exception {
         launcher.addToClassPath(TestEnvironment.getSampleClasses());
         launcher.setTestsToInclude("sample.OnePassingTest");
         launcher.start();
         launcher.awaitSuiteFinished();
 
         assertThat("total tests", launcher.getTotalTests(), is(2)); // test class plus its one test method
+        assertThat("passing tests", launcher.getPassingTests(), is(2));
+        assertThat("failing tests", launcher.getFailingTests(), is(0));
+    }
+
+    @Ignore("not implemented")
+    @Test(timeout = TIMEOUT)
+    public void suite_with_one_failing_test() throws Exception {
+        launcher.addToClassPath(TestEnvironment.getSampleClasses());
+        launcher.setTestsToInclude("sample.OneFailingTest");
+        launcher.start();
+        launcher.awaitSuiteFinished();
+
+        assertThat("total tests", launcher.getTotalTests(), is(2)); // test class plus its one test method
+        assertThat("passing tests", launcher.getPassingTests(), is(1));
+        assertThat("failing tests", launcher.getFailingTests(), is(1));
     }
 
     // TODO: passing & failing tests
