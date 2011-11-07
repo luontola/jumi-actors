@@ -11,18 +11,12 @@ import fi.jumi.core.events.runnable.RunnableFactory;
 import fi.jumi.core.events.startable.StartableFactory;
 import fi.jumi.core.events.testclass.TestClassListenerFactory;
 import org.junit.Test;
-import org.mockito.InOrder;
 
 import java.util.concurrent.Executor;
 
-import static org.mockito.Mockito.*;
-
-@SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
 public class TestClassRunnerTest {
 
-    private final TestClassRunnerListener listener = mock(TestClassRunnerListener.class);
-    private final InOrder inOrder = inOrder(listener);
-
+    private final SpyListener listener = new SpyListener();
     private final SingleThreadedActors actors = new SingleThreadedActors(
             new StartableFactory(),
             new RunnableFactory(),
@@ -31,45 +25,38 @@ public class TestClassRunnerTest {
 
     @Test
     public void test_class_with_zero_tests() {
-        TestClassRunner runner = new TestClassRunner(DummyTest.class, ZeroTestsDriver.class, listener, actors);
-
-        runAndAwaitCompletion(runner);
-
         // TODO: is this an allowed situation? in practice it means that the class is not reported anywhere
-        inOrder.verify(listener).onTestClassFinished();
-        verifyNoMoreInteractions(listener);
+        listener.onTestClassFinished();
+
+        runAndAwaitCompletion(new TestClassRunner(DummyTest.class, ZeroTestsDriver.class, listener, actors));
     }
 
     @Test
     public void test_class_with_only_root_test() {
-        TestClassRunner runner = new TestClassRunner(DummyTest.class, OneTestDriver.class, listener, actors);
+        listener.onTestFound(TestId.ROOT, "root test");
+        listener.onTestClassFinished();
 
-        runAndAwaitCompletion(runner);
-
-        inOrder.verify(listener).onTestFound(TestId.ROOT, "root test");
-        inOrder.verify(listener).onTestClassFinished();
-        verifyNoMoreInteractions(listener);
+        runAndAwaitCompletion(new TestClassRunner(DummyTest.class, OneTestDriver.class, listener, actors));
     }
 
     @Test
     public void test_class_with_one_failing_test() {
-        TestClassRunner runner = new TestClassRunner(DummyTest.class, OneFailingTestDriver.class, listener, actors);
+        listener.onTestFound(TestId.ROOT, "root test");
+        listener.onTestStarted(TestId.ROOT);
+        listener.onFailure(TestId.ROOT, new Exception("dummy failure"));
+        listener.onTestFinished(TestId.ROOT);
+        listener.onTestClassFinished();
 
-        runAndAwaitCompletion(runner);
-
-        inOrder.verify(listener).onTestFound(TestId.ROOT, "root test");
-        inOrder.verify(listener).onTestStarted(TestId.ROOT);
-        inOrder.verify(listener).onFailure(eq(TestId.ROOT), any(Exception.class));
-        inOrder.verify(listener).onTestFinished(TestId.ROOT);
-        inOrder.verify(listener).onTestClassFinished();
-        verifyNoMoreInteractions(listener);
+        runAndAwaitCompletion(new TestClassRunner(DummyTest.class, OneFailingTestDriver.class, listener, actors));
     }
 
     // TODO: how to distinguish between events from concurrent executions of the same test?
 
     private void runAndAwaitCompletion(TestClassRunner runner) {
+        listener.replay();
         actors.createPrimaryActor(Startable.class, runner, "TestClassRunner").start();
         actors.processEventsUntilIdle();
+        listener.verify();
     }
 
 
