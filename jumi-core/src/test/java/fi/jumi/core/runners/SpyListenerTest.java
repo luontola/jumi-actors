@@ -12,7 +12,8 @@ import static org.hamcrest.Matchers.*;
 
 public class SpyListenerTest {
 
-    private SpyListener spy = new SpyListener();
+    private SpyListener<TestClassRunnerListener> spy = new SpyListener<TestClassRunnerListener>(TestClassRunnerListener.class);
+    private TestClassRunnerListener listener = spy.getListener();
 
     @Test
     public void no_expectations() {
@@ -25,12 +26,12 @@ public class SpyListenerTest {
 
     @Test
     public void matching_expectations() {
-        spy.onTestStarted(TestId.ROOT);
-        spy.onTestFinished(TestId.ROOT);
+        listener.onTestStarted(TestId.ROOT);
+        listener.onTestFinished(TestId.ROOT);
         spy.replay();
 
-        spy.onTestStarted(TestId.ROOT);
-        spy.onTestFinished(TestId.ROOT);
+        listener.onTestStarted(TestId.ROOT);
+        listener.onTestFinished(TestId.ROOT);
 
         passes();
     }
@@ -38,84 +39,84 @@ public class SpyListenerTest {
     // TODO: write as white-box unit tests, instead of two "POS" and "NEG" test methods
     @Test
     public void throwable_arguments_are_matched_by_type_and_message_POS() {
-        spy.onFailure(TestId.ROOT, new IllegalArgumentException("foo"));
+        listener.onFailure(TestId.ROOT, new IllegalArgumentException("foo"));
         spy.replay();
 
-        spy.onFailure(TestId.ROOT, new IllegalArgumentException("foo"));
+        listener.onFailure(TestId.ROOT, new IllegalArgumentException("foo"));
 
         passes();
     }
 
     @Test
     public void throwable_arguments_are_matched_by_type_and_message_NEG() {
-        spy.onFailure(TestId.ROOT, new IllegalArgumentException("foo"));
+        listener.onFailure(TestId.ROOT, new IllegalArgumentException("foo"));
         spy.replay();
 
-        spy.onFailure(TestId.ROOT, new IllegalArgumentException("bar"));
+        listener.onFailure(TestId.ROOT, new IllegalArgumentException("bar"));
 
         fails();
     }
 
     @Test
     public void fails_if_wrong_method_is_called() {
-        spy.onTestStarted(TestId.ROOT);
+        listener.onTestStarted(TestId.ROOT);
         spy.replay();
 
-        spy.onTestFinished(TestId.ROOT);
+        listener.onTestFinished(TestId.ROOT);
 
         fails();
     }
 
     @Test
     public void fails_if_right_method_is_called_with_wrong_parameters() {
-        spy.onTestStarted(TestId.of(1));
+        listener.onTestStarted(TestId.of(1));
         spy.replay();
 
-        spy.onTestFinished(TestId.of(2));
+        listener.onTestFinished(TestId.of(2));
 
         fails();
     }
 
     @Test
     public void fails_if_right_calls_were_made_in_wrong_order() {
-        spy.onTestStarted(TestId.ROOT);
-        spy.onTestFinished(TestId.ROOT);
+        listener.onTestStarted(TestId.ROOT);
+        listener.onTestFinished(TestId.ROOT);
         spy.replay();
 
-        spy.onTestFinished(TestId.ROOT);
-        spy.onTestStarted(TestId.ROOT);
+        listener.onTestFinished(TestId.ROOT);
+        listener.onTestStarted(TestId.ROOT);
 
         fails();
     }
 
     @Test
     public void fails_if_there_were_fewer_calls_than_expected() {
-        spy.onTestStarted(TestId.ROOT);
-        spy.onTestFinished(TestId.ROOT);
+        listener.onTestStarted(TestId.ROOT);
+        listener.onTestFinished(TestId.ROOT);
         spy.replay();
 
-        spy.onTestStarted(TestId.ROOT);
+        listener.onTestStarted(TestId.ROOT);
 
         fails();
     }
 
     @Test
     public void fails_if_there_were_more_calls_than_expected() {
-        spy.onTestStarted(TestId.ROOT);
-        spy.onTestFinished(TestId.ROOT);
+        listener.onTestStarted(TestId.ROOT);
+        listener.onTestFinished(TestId.ROOT);
         spy.replay();
 
-        spy.onTestStarted(TestId.ROOT);
-        spy.onTestFinished(TestId.ROOT);
-        spy.onTestFinished(TestId.ROOT);
+        listener.onTestStarted(TestId.ROOT);
+        listener.onTestFinished(TestId.ROOT);
+        listener.onTestFinished(TestId.ROOT);
 
         fails();
     }
 
     @Test
     public void failure_messages_contain_an_ordered_list_of_all_expected_method_calls() {
-        spy.onTestStarted(TestId.ROOT);
-        spy.onTestFinished(TestId.ROOT);
+        listener.onTestStarted(TestId.ROOT);
+        listener.onTestFinished(TestId.ROOT);
         spy.replay();
 
         String message = fails();
@@ -127,8 +128,8 @@ public class SpyListenerTest {
     public void failure_messages_contain_an_ordered_list_of_all_actual_method_calls() {
         spy.replay();
 
-        spy.onTestStarted(TestId.ROOT);
-        spy.onTestFinished(TestId.ROOT);
+        listener.onTestStarted(TestId.ROOT);
+        listener.onTestFinished(TestId.ROOT);
 
         String message = fails();
         assertThat(message, containsString("1. onTestStarted(TestId())"));
@@ -137,12 +138,12 @@ public class SpyListenerTest {
 
     @Test
     public void failure_messages_highlight_the_problematic_calls() {
-        spy.onTestStarted(TestId.ROOT);
-        spy.onTestFinished(TestId.ROOT);
+        listener.onTestStarted(TestId.ROOT);
+        listener.onTestFinished(TestId.ROOT);
         spy.replay();
 
-        spy.onTestStarted(TestId.ROOT);
-        spy.onTestFinished(TestId.of(1));
+        listener.onTestStarted(TestId.ROOT);
+        listener.onTestFinished(TestId.of(1));
 
         String message = fails();
         assertThat(message, containsString("2. onTestFinished(TestId())\n" + SpyListener.ERROR_MARKER));

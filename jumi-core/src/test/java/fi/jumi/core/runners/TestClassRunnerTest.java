@@ -16,7 +16,8 @@ import java.util.concurrent.Executor;
 
 public class TestClassRunnerTest {
 
-    private final SpyListener listener = new SpyListener();
+    private final SpyListener<TestClassRunnerListener> spy = new SpyListener<TestClassRunnerListener>(TestClassRunnerListener.class);
+    private final TestClassRunnerListener listener = spy.getListener();
     private final SingleThreadedActors actors = new SingleThreadedActors(
             new StartableFactory(),
             new RunnableFactory(),
@@ -53,10 +54,10 @@ public class TestClassRunnerTest {
     // TODO: how to distinguish between events from concurrent executions of the same test?
 
     private void runAndAwaitCompletion(TestClassRunner runner) {
-        listener.replay();
+        spy.replay();
         actors.createPrimaryActor(Startable.class, runner, "TestClassRunner").start();
         actors.processEventsUntilIdle();
-        listener.verify();
+        spy.verify();
     }
 
 

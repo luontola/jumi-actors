@@ -4,40 +4,37 @@
 
 package fi.jumi.core.runners;
 
-import fi.jumi.api.drivers.TestId;
-
+import java.lang.reflect.*;
 import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class SpyListener implements TestClassRunnerListener {
+public class SpyListener<T> implements InvocationHandler {
 
     // TODO: refactor this into a generic class, using dynamic proxies
 
     static final String ERROR_MARKER = "     ^^^^^^^^^^^^^^";
 
+    private final Class<T> listenerType;
     private final List<Call> expectations = new ArrayList<Call>();
     private final List<Call> actualCalls = new ArrayList<Call>();
     private List<Call> current = expectations;
 
-    public void onTestFound(TestId id, String name) {
-        current.add(new Call("onTestFound", id, name));
+    public SpyListener(Class<T> listenerType) {
+        this.listenerType = listenerType;
     }
 
-    public void onTestStarted(TestId id) {
-        current.add(new Call("onTestStarted", id));
+    public T getListener() {
+        Object proxy = Proxy.newProxyInstance(getClass().getClassLoader(), new Class<?>[]{listenerType}, this);
+        return listenerType.cast(proxy);
     }
 
-    public void onFailure(TestId id, Throwable cause) {
-        current.add(new Call("onFailure", id, cause));
-    }
-
-    public void onTestFinished(TestId id) {
-        current.add(new Call("onTestFinished", id));
-    }
-
-    public void onTestClassFinished() {
-        current.add(new Call("onTestClassFinished"));
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        if (args == null) {
+            args = new Object[0];
+        }
+        current.add(new Call(method.getName(), args));
+        return null;
     }
 
     public void replay() {
@@ -79,7 +76,8 @@ public class SpyListener implements TestClassRunnerListener {
         return "  " + (i + 1) + ". " + list.get(i) + "\n";
     }
 
-    private class Call {
+
+    private static class Call {
         private final String methodName;
         private final Object[] args;
 

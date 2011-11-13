@@ -6,8 +6,10 @@ TODO NEXT:
 		OK - TestClassRunnerTest: test class with one failing test
 		- refactor TestClassRunnerTest
 			OK - tests for SpyTestClassRunnerListener
-			!! - make it generic, using dynamic proxies
-			- use it in all tests, remove mocks
+			OK - use it in all tests, remove mocks
+			OK - make it generic, using dynamic proxies
+			- refactor tests to not use a domain interface
+		- see what fails next: executor is null (write a test in TestClassRunnerTest)
 	- make it right
 		- duplicate method signatures in TestClassListener and TestClassRunnerListener
 - misc refactoring
