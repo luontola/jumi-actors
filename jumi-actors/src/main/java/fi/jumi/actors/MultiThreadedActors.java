@@ -12,10 +12,15 @@ import java.util.concurrent.*;
 public class MultiThreadedActors extends Actors {
 
     private final Set<Thread> actorThreads = Collections.synchronizedSet(new HashSet<Thread>());
-    private final ExecutorService unattendedWorkers = Executors.newCachedThreadPool();
+    private final ExecutorService unattendedWorkers;
 
     public MultiThreadedActors(ListenerFactory<?>... factories) {
+        this(Executors.newCachedThreadPool(), factories);
+    }
+
+    public MultiThreadedActors(ExecutorService threadPool, ListenerFactory<?>... factories) {
         super(factories);
+        unattendedWorkers = threadPool;
     }
 
     protected <T> void startEventPoller(String name, MessageQueue<Event<T>> queue, MessageSender<Event<T>> receiver) {

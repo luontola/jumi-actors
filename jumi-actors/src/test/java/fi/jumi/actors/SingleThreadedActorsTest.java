@@ -18,7 +18,6 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
             protected void handleUncaughtException(Object source, Throwable uncaughtException) {
                 // Rethrowing here would break the general contracts from ActorsContract,
                 // even though by default it's best in unit tests to fail early.
-                // TODO: do a similar thing also in MultiThreadedActorsTest, to avoid noise in test run logs?
             }
         };
         createdActors.add(actors);

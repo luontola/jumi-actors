@@ -18,7 +18,19 @@ public class MultiThreadedActorsTest extends ActorsContract<MultiThreadedActors>
     private final List<MultiThreadedActors> createdActorses = new ArrayList<MultiThreadedActors>();
 
     protected MultiThreadedActors newActors(ListenerFactory<?>... factories) {
-        MultiThreadedActors actors = new MultiThreadedActors(factories);
+        class SilentUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {
+            public void uncaughtException(Thread t, Throwable e) {
+                // do not print failures; it keeps the test logs cleaner
+            }
+        }
+        ScheduledThreadPoolExecutor threadPool = new ScheduledThreadPoolExecutor(1, new ThreadFactory() {
+            public Thread newThread(Runnable r) {
+                Thread t = new Thread(r);
+                t.setUncaughtExceptionHandler(new SilentUncaughtExceptionHandler());
+                return t;
+            }
+        });
+        MultiThreadedActors actors = new MultiThreadedActors(threadPool, factories);
         createdActorses.add(actors);
         return actors;
     }
