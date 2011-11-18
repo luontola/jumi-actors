@@ -21,7 +21,7 @@ import org.jboss.netty.logging.InternalLogLevel;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.net.InetSocketAddress;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 @ThreadSafe
 public class Main {
@@ -39,7 +39,8 @@ public class Main {
                 new CommandListenerFactory(),
                 new TestClassListenerFactory()
         );
-        CommandListener toCoordinator = actors.createPrimaryActor(CommandListener.class, new TestRunCoordinator(actors), "Coordinator");
+        Executor executor = Executors.newFixedThreadPool(1);
+        CommandListener toCoordinator = actors.createPrimaryActor(CommandListener.class, new TestRunCoordinator(actors, executor), "Coordinator");
 
         connectToLauncher(launcherPort, toCoordinator);
     }

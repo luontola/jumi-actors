@@ -9,7 +9,10 @@ TODO NEXT:
 			OK - use it in all tests, remove mocks
 			OK - make it generic, using dynamic proxies
 			OK - refactor tests to not use a domain interface
-		!! - see what fails next: executor is null (write a test in TestClassRunnerTest)
+		!! - see what fails next
+			OK - executor is null (write a test in TestClassRunnerTest)
+			!! - daemon is not sending events about failures
+			- SuiteStateCollector does not implement onTestStarted, onTestFinished, onFailure
 	- make it right
 		- duplicate method signatures in TestClassListener and TestClassRunnerListener
 - misc refactoring
@@ -31,6 +34,9 @@ TODO NEXT:
 - end-to-end tests: failures outside tests (in drivers and core)
 	- actor tests print dummy exceptions; solve by having a custom pluggable exception handler which doesn't print stack traces of a DummyException class
 - end-to-end tests: reporting test output
+- end-to-end tests: multiple tests
+	- identify concurrent test runs with a unique ID
+	- run on more than one thread; performance must improve (write a performance test with sleeps?)
 - end-to-end tests: persistent daemon process
 	- should drive better design on launcher side
 	- connect to existing process

@@ -28,6 +28,7 @@ public class SuiteRunnerTest {
             new TestClassFinderListenerFactory(),
             new TestClassListenerFactory()
     );
+    private final Executor executor = new SynchronousExecutor();
 
     @Test
     public void suite_with_zero_test_classes() {
@@ -89,7 +90,7 @@ public class SuiteRunnerTest {
 
     private void runAndCheckExpectations(Class<? extends Driver> driverClass, TestClassFinder testClassFinder) {
         spy.replay();
-        SuiteRunner runner = new SuiteRunner(listener, testClassFinder, new StubDriverFinder(driverClass), actors);
+        SuiteRunner runner = new SuiteRunner(listener, testClassFinder, new StubDriverFinder(driverClass), actors, executor);
         actors.createPrimaryActor(Startable.class, runner, "SuiteRunner").start();
         actors.processEventsUntilIdle();
         spy.verify();
@@ -108,21 +109,27 @@ public class SuiteRunnerTest {
     }
 
     static class OneTestDriver implements Driver {
-        public void findTests(Class<?> testClass, SuiteNotifier notifier, Executor executor) {
+        public void findTests(Class<?> testClass, final SuiteNotifier notifier, Executor executor) {
             notifier.fireTestFound(TestId.ROOT, testClass.getSimpleName());
-            // TODO: use executor
-            TestNotifier tn = notifier.fireTestStarted(TestId.ROOT);
-            tn.fireTestFinished();
+            executor.execute(new Runnable() {
+                public void run() {
+                    TestNotifier tn = notifier.fireTestStarted(TestId.ROOT);
+                    tn.fireTestFinished();
+                }
+            });
         }
     }
 
     static class OneFailingTestDriver implements Driver {
-        public void findTests(Class<?> testClass, SuiteNotifier notifier, Executor executor) {
+        public void findTests(Class<?> testClass, final SuiteNotifier notifier, Executor executor) {
             notifier.fireTestFound(TestId.ROOT, testClass.getSimpleName());
-            // TODO: use executor
-            TestNotifier tn = notifier.fireTestStarted(TestId.ROOT);
-            tn.fireFailure(new Exception("dummy failure"));
-            tn.fireTestFinished();
+            executor.execute(new Runnable() {
+                public void run() {
+                    TestNotifier tn = notifier.fireTestStarted(TestId.ROOT);
+                    tn.fireFailure(new Exception("dummy failure"));
+                    tn.fireTestFinished();
+                }
+            });
         }
     }
 

@@ -20,16 +20,19 @@ public class SuiteRunner implements Startable, TestClassFinderListener {
     private final TestClassFinder testClassFinder;
     private final DriverFinder driverFinder;
     private final OnDemandActors actors;
+    private final Executor executor;
     private int workers = 0;
 
     public SuiteRunner(SuiteListener suiteListener,
                        TestClassFinder testClassFinder,
                        DriverFinder driverFinder,
-                       OnDemandActors actors) {
+                       OnDemandActors actors,
+                       Executor executor) {
         this.suiteListener = suiteListener;
         this.testClassFinder = testClassFinder;
         this.driverFinder = driverFinder;
         this.actors = actors;
+        this.executor = executor;
     }
 
     public void start() {
@@ -90,7 +93,6 @@ public class SuiteRunner implements Startable, TestClassFinderListener {
                 fireWorkerFinished();
             }
         };
-        Executor executor = null; // FIXME
         new TestClassRunner(testClass, driverClass, listener, actors, executor).start();
     }
 }

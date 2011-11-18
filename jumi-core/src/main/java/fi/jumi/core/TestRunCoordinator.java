@@ -12,15 +12,18 @@ import fi.jumi.core.runners.SuiteRunner;
 import javax.annotation.concurrent.NotThreadSafe;
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 @NotThreadSafe
 public class TestRunCoordinator implements CommandListener {
 
     private final OnDemandActors actors;
+    private final Executor executor;
     private SuiteListener listener = null;
 
-    public TestRunCoordinator(OnDemandActors actors) {
+    public TestRunCoordinator(OnDemandActors actors, Executor executor) {
         this.actors = actors;
+        this.executor = executor;
     }
 
     public void addSuiteListener(SuiteListener listener) {
@@ -30,7 +33,7 @@ public class TestRunCoordinator implements CommandListener {
     public void runTests(final List<File> classPath, final String testsToIncludePattern) {
         TestClassFinder testClassFinder = new FileSystemTestClassFinder(classPath, testsToIncludePattern);
         DriverFinder driverFinder = new RunViaAnnotationDriverFinder();
-        SuiteRunner suiteRunner = new SuiteRunner(listener, testClassFinder, driverFinder, actors);
+        SuiteRunner suiteRunner = new SuiteRunner(listener, testClassFinder, driverFinder, actors, executor);
 
         actors.createSecondaryActor(Startable.class, suiteRunner).start();
     }
