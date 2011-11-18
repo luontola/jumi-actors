@@ -26,25 +26,34 @@ public class SingleThreadedActors extends Actors {
     }
 
     public void processEventsUntilIdle() {
+        // TODO: messy method
         boolean idle;
         do {
             idle = true;
             for (EventPoller<?> poller : pollers) {
-                if (poller.processMessage()) {
+                try {
+                    if (poller.processMessage()) {
+                        idle = false;
+                    }
+                } catch (Throwable t) {
                     idle = false;
+                    handleUncaughtException(poller, t);
                 }
             }
             for (Runnable worker : workers) {
                 try {
                     worker.run();
                 } catch (Throwable t) {
-                    // TODO: rethrow or send to a custom exception handler?
-                    t.printStackTrace();
+                    handleUncaughtException(worker, t);
                 }
                 idle = false;
             }
             workers.clear();
         } while (!idle);
+    }
+
+    protected void handleUncaughtException(Object source, Throwable uncaughtException) {
+        throw new Error("uncaught exception from " + source, uncaughtException);
     }
 
 

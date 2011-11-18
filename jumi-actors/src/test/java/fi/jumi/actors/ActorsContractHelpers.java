@@ -99,7 +99,7 @@ public abstract class ActorsContractHelpers<T extends Actors> {
             super.run();
 
             // the stack trace will be funny, because it doesn't start from where it was thrown; let's wrap it
-            throw new RuntimeException(exception);
+            throw new RuntimeException("rethrowing another exception", exception);
         }
     }
 
