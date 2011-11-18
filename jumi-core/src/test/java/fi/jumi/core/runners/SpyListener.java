@@ -45,6 +45,9 @@ public class SpyListener<T> implements InvocationHandler {
     }
 
     public void verify() {
+        if (current != actualCalls) {
+            throw new IllegalStateException("replay() was not called");
+        }
         String message = "not all expectations were met\n";
 
         message += "Expected:\n";

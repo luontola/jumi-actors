@@ -154,6 +154,11 @@ public class SpyListenerTest {
         spy.replay();
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void cannot_call_verify_without_first_calling_replay() {
+        spy.verify();
+    }
+
 
     // helper methods
 
