@@ -30,6 +30,18 @@ public class SuiteStateCollector implements SuiteListener {
         state = state.withTest(id, name);
     }
 
+    public void onTestStarted(String testClass, TestId id) {
+        throw new UnsupportedOperationException("not implemented"); // TODO
+    }
+
+    public void onTestFinished(String testClass, TestId id) {
+        throw new UnsupportedOperationException("not implemented"); // TODO
+    }
+
+    public void onFailure(String testClass, TestId id, Throwable cause) {
+        throw new UnsupportedOperationException("not implemented"); // TODO
+    }
+
     public void awaitSuiteFinished() throws InterruptedException {
         finished.await();
     }

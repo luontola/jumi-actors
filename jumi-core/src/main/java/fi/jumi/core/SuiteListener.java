@@ -8,11 +8,15 @@ import fi.jumi.api.drivers.TestId;
 
 public interface SuiteListener {
 
-    // TODO: code-generate all the event classes based on this interface
-
     void onSuiteStarted();
 
     void onSuiteFinished();
 
     void onTestFound(String testClass, TestId id, String name);
+
+    void onTestStarted(String testClass, TestId id);
+
+    void onTestFinished(String testClass, TestId id);
+
+    void onFailure(String testClass, TestId id, Throwable cause);
 }

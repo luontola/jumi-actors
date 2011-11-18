@@ -9,10 +9,11 @@ TODO NEXT:
 			OK - use it in all tests, remove mocks
 			OK - make it generic, using dynamic proxies
 			OK - refactor tests to not use a domain interface
-		- see what fails next: executor is null (write a test in TestClassRunnerTest)
+		!! - see what fails next: executor is null (write a test in TestClassRunnerTest)
 	- make it right
 		- duplicate method signatures in TestClassListener and TestClassRunnerListener
 - misc refactoring
+	- when an event interface contains many methods, there are no spaces between methods in SuiteListenerToEvent
 	- test execution might be best implemented using regular thread pools instead of actors
 		- CPU bound threads should use an optimal number of threads per core
 		- they take no input when running, so no actor handle needs to be created for them
@@ -21,6 +22,7 @@ TODO NEXT:
 	- refactor EventStubGenerator:
 		- toString methods for generated events would make debugging easier
 		- get generic method parameter types using java.lang.reflect.Method#getGenericParameterTypes, use it to also replace the current generics printing (ParameterizedType can be created from a dummy field)
+			- for example listener method with a List<String> parameter
 		- extract domain object for imports
 		- extract domain objects for classes and methods, then gather imports using the visitor pattern?
 	- put end-to-end tests in their own package (test.fi.jumi?), separate them from unit tests
