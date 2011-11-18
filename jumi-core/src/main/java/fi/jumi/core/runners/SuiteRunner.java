@@ -11,6 +11,7 @@ import fi.jumi.core.drivers.DriverFinder;
 import fi.jumi.core.files.*;
 
 import javax.annotation.concurrent.NotThreadSafe;
+import java.util.concurrent.Executor;
 
 @NotThreadSafe
 public class SuiteRunner implements Startable, TestClassFinderListener {
@@ -89,6 +90,7 @@ public class SuiteRunner implements Startable, TestClassFinderListener {
                 fireWorkerFinished();
             }
         };
-        new TestClassRunner(testClass, driverClass, listener, actors).start();
+        Executor executor = null; // FIXME
+        new TestClassRunner(testClass, driverClass, listener, actors, executor).start();
     }
 }

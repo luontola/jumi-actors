@@ -17,7 +17,7 @@ public class FindingTestsTest {
     private final Class<DummyTest> testClass = DummyTest.class;
 
     private TestClassRunnerListener listener = mock(TestClassRunnerListener.class);
-    private TestClassRunner runner = new TestClassRunner(testClass, null, listener, null);
+    private TestClassRunner runner = new TestClassRunner(testClass, null, listener, null, null);
     private SuiteNotifier notifier = new DefaultSuiteNotifier(runner);
 
     @Rule

@@ -23,21 +23,24 @@ public class TestClassRunnerTest {
             new RunnableFactory(),
             new TestClassListenerFactory()
     );
+    private final Executor executor = new SynchronousExecutor();
 
     @Test
     public void test_class_with_zero_tests() {
         // TODO: is this an allowed situation? in practice it means that the class is not reported anywhere
         listener.onTestClassFinished();
 
-        runAndAwaitCompletion(new TestClassRunner(DummyTest.class, ZeroTestsDriver.class, listener, actors));
+        runAndAwaitCompletion(new TestClassRunner(DummyTest.class, ZeroTestsDriver.class, listener, actors, executor));
     }
 
     @Test
     public void test_class_with_only_root_test() {
         listener.onTestFound(TestId.ROOT, "root test");
+        listener.onTestStarted(TestId.ROOT);
+        listener.onTestFinished(TestId.ROOT);
         listener.onTestClassFinished();
 
-        runAndAwaitCompletion(new TestClassRunner(DummyTest.class, OneTestDriver.class, listener, actors));
+        runAndAwaitCompletion(new TestClassRunner(DummyTest.class, OneTestDriver.class, listener, actors, executor));
     }
 
     @Test
@@ -48,7 +51,17 @@ public class TestClassRunnerTest {
         listener.onTestFinished(TestId.ROOT);
         listener.onTestClassFinished();
 
-        runAndAwaitCompletion(new TestClassRunner(DummyTest.class, OneFailingTestDriver.class, listener, actors));
+        runAndAwaitCompletion(new TestClassRunner(DummyTest.class, OneFailingTestDriver.class, listener, actors, executor));
+    }
+
+    @Test
+    public void the_executor_can_be_used_to_run_tests() {
+        listener.onTestFound(TestId.ROOT, "root test");
+        listener.onTestStarted(TestId.ROOT);
+        listener.onTestFinished(TestId.ROOT);
+        listener.onTestClassFinished();
+
+        runAndAwaitCompletion(new TestClassRunner(DummyTest.class, UseExecutorDriver.class, listener, actors, executor));
     }
 
     // TODO: how to distinguish between events from concurrent executions of the same test?
@@ -72,6 +85,8 @@ public class TestClassRunnerTest {
     static class OneTestDriver implements Driver {
         public void findTests(Class<?> testClass, SuiteNotifier notifier, Executor executor) {
             notifier.fireTestFound(TestId.ROOT, "root test");
+            TestNotifier tn = notifier.fireTestStarted(TestId.ROOT);
+            tn.fireTestFinished();
         }
     }
 
@@ -81,6 +96,18 @@ public class TestClassRunnerTest {
             TestNotifier tn = notifier.fireTestStarted(TestId.ROOT);
             tn.fireFailure(new Exception("dummy failure"));
             tn.fireTestFinished();
+        }
+    }
+
+    static class UseExecutorDriver implements Driver {
+        public void findTests(Class<?> testClass, final SuiteNotifier notifier, Executor executor) {
+            notifier.fireTestFound(TestId.ROOT, "root test");
+            executor.execute(new Runnable() {
+                public void run() {
+                    TestNotifier tn = notifier.fireTestStarted(TestId.ROOT);
+                    tn.fireTestFinished();
+                }
+            });
         }
     }
 }

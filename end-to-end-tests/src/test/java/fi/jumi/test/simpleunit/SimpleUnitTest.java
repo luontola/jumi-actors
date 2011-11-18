@@ -24,7 +24,7 @@ public class SimpleUnitTest {
     private SimpleUnit driver = new SimpleUnit();
 
     private Class<OnePassingTest> testClass = OnePassingTest.class;
-    private TestClassRunner results = new TestClassRunner(null, null, dummyListener, null); // XXX: use something else to collect the results?
+    private TestClassRunner results = new TestClassRunner(null, null, dummyListener, null, null); // XXX: use something else to collect the results?
     private SuiteNotifier notifier = new DefaultSuiteNotifier(results);
 
     @Test

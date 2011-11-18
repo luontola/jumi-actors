@@ -10,6 +10,7 @@ import fi.jumi.core.Startable;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.*;
+import java.util.concurrent.Executor;
 
 @NotThreadSafe
 public class TestClassRunner implements Startable, TestClassListener {
@@ -19,20 +20,23 @@ public class TestClassRunner implements Startable, TestClassListener {
     private final TestClassRunnerListener listener;
     private final OnDemandActors actors;
     private final Map<TestId, String> tests = new HashMap<TestId, String>();
+    private final Executor executor;
 
     public TestClassRunner(Class<?> testClass,
                            Class<? extends Driver> driverClass,
                            TestClassRunnerListener listener,
-                           OnDemandActors actors) {
+                           OnDemandActors actors,
+                           Executor executor) {
         this.testClass = testClass;
         this.driverClass = driverClass;
         this.listener = listener;
         this.actors = actors;
+        this.executor = executor;
     }
 
     public void start() {
         SuiteNotifier notifier = new DefaultSuiteNotifier(actors.createSecondaryActor(TestClassListener.class, this));
-        DriverRunner worker = new DriverRunner(testClass, driverClass, notifier);
+        DriverRunner worker = new DriverRunner(testClass, driverClass, notifier, executor);
 
         actors.startUnattendedWorker(worker, new Runnable() {
             public void run() {
@@ -93,15 +97,17 @@ public class TestClassRunner implements Startable, TestClassListener {
         private final Class<?> testClass;
         private final Class<? extends Driver> driverClass;
         private final SuiteNotifier suiteNotifier;
+        private final Executor executor;
 
-        public DriverRunner(Class<?> testClass, Class<? extends Driver> driverClass, SuiteNotifier suiteNotifier) {
+        public DriverRunner(Class<?> testClass, Class<? extends Driver> driverClass, SuiteNotifier suiteNotifier, Executor executor) {
             this.testClass = testClass;
             this.driverClass = driverClass;
             this.suiteNotifier = suiteNotifier;
+            this.executor = executor;
         }
 
         public void run() {
-            newDriverInstance().findTests(testClass, suiteNotifier, null);
+            newDriverInstance().findTests(testClass, suiteNotifier, executor);
         }
 
         private Driver newDriverInstance() {
