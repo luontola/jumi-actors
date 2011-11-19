@@ -52,7 +52,6 @@
 
             <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>1.4</version>
                 <executions>
                     <execution>
                         <goals>
