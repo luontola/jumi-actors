@@ -39,7 +39,12 @@ public class Main {
                 new CommandListenerFactory(),
                 new TestClassListenerFactory()
         );
-        Executor executor = Executors.newFixedThreadPool(1);
+        // TODO: support an asynchronous thread pool - the SuiteRunner must wait until the pool is idle
+        Executor executor = new Executor() {
+            public void execute(Runnable command) {
+                command.run();
+            }
+        };
         CommandListener toCoordinator = actors.createPrimaryActor(CommandListener.class, new TestRunCoordinator(actors, executor), "Coordinator");
 
         connectToLauncher(launcherPort, toCoordinator);
