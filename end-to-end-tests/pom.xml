@@ -34,6 +34,12 @@
             <artifactId>jumi-launcher</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>fi.jumi</groupId>
+            <artifactId>jumi-core</artifactId>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
 
         <dependency>
             <groupId>commons-io</groupId>

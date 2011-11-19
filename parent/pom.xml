@@ -103,6 +103,12 @@
             </dependency>
             <dependency>
                 <groupId>fi.jumi</groupId>
+                <artifactId>jumi-core</artifactId>
+                <version>${project.version}</version>
+                <type>test-jar</type>
+            </dependency>
+            <dependency>
+                <groupId>fi.jumi</groupId>
                 <artifactId>jumi-launcher</artifactId>
                 <version>${project.version}</version>
             </dependency>
