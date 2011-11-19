@@ -2,12 +2,12 @@
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
-package sample;
+package fi.jumi.test.simpleunit;
 
 import fi.jumi.api.drivers.*;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.Executor;
 
@@ -19,16 +19,15 @@ public class SimpleUnit implements Driver {
 
         List<Method> testMethods = getTestMethods(testClass);
         if (testMethods.size() == 0) {
-            // TODO
-//            TestNotifier tn = notifier.fireTestStarted(TestId.ROOT);
-//            tn.fireFailure(new AssertionError("No tests found from " + testClass));
-//            tn.fireTestFinished();
+            TestNotifier tn = notifier.fireTestStarted(TestId.ROOT);
+            tn.fireFailure(new IllegalArgumentException("No test methods in " + testClass));
+            tn.fireTestFinished();
         }
 
         TestId testMethodId = TestId.ROOT.getFirstChild();
         for (Method testMethod : testMethods) {
             notifier.fireTestFound(testMethodId, testMethod.getName());
-            executor.execute(new RunTestMethod(testMethod, testMethodId));
+            executor.execute(new RunTestMethod(testMethod, testMethodId, notifier));
             testMethodId = testMethodId.getNextSibling();
         }
     }
@@ -48,19 +47,39 @@ public class SimpleUnit implements Driver {
     private static class RunTestMethod implements Runnable {
         private final Method testMethod;
         private final TestId testMethodId;
+        private final SuiteNotifier notifier;
 
-        public RunTestMethod(Method testMethod, TestId testMethodId) {
+        public RunTestMethod(Method testMethod, TestId testMethodId, SuiteNotifier notifier) {
             this.testMethod = testMethod;
             this.testMethodId = testMethodId;
+            this.notifier = notifier;
         }
 
         public void run() {
-            Class<?> testClass = testMethod.getDeclaringClass();
-            // TODO
-            // - fire test started
-            // - create an instance of test class
-            // - call the test method
-            // - fire test finished
+            TestNotifier tn = notifier.fireTestStarted(TestId.ROOT);
+            try {
+                Object instance = testMethod.getDeclaringClass().newInstance();
+                invokeTestMethodOn(instance);
+
+            } catch (Throwable t) {
+                tn.fireFailure(t);
+            } finally {
+                tn.fireTestFinished();
+            }
+        }
+
+        private void invokeTestMethodOn(Object instance) {
+            TestNotifier tn = notifier.fireTestStarted(testMethodId);
+            try {
+                testMethod.invoke(instance);
+
+            } catch (InvocationTargetException e) {
+                tn.fireFailure(e.getTargetException());
+            } catch (Throwable t) {
+                tn.fireFailure(t);
+            } finally {
+                tn.fireTestFinished();
+            }
         }
     }
 }

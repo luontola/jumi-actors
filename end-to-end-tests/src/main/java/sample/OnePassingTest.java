@@ -5,6 +5,7 @@
 package sample;
 
 import fi.jumi.api.RunVia;
+import fi.jumi.test.simpleunit.SimpleUnit;
 
 @RunVia(SimpleUnit.class)
 @SuppressWarnings({"UnusedDeclaration"})
