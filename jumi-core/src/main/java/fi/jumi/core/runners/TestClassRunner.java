@@ -46,12 +46,8 @@ public class TestClassRunner implements Startable, TestClassListener {
         });
     }
 
-    public Collection<String> getTestNames() {
-        // XXX: smelly getter; remove it and move the responsibility somewhere else
-        return Collections.unmodifiableCollection(tests.values());
-    }
-
     public void onTestFound(TestId id, String name) {
+        // TODO: is this worthwhile? move to SuiteRunner.TestClassRunnerListenerToSuiteListener?
         if (hasNotBeenFoundBefore(id)) {
             checkParentWasFoundFirst(id);
             tests.put(id, name);

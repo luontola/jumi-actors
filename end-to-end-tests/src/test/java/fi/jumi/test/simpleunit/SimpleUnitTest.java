@@ -9,36 +9,32 @@ import fi.jumi.core.runners.*;
 import org.junit.Test;
 import sample.*;
 
-import java.util.Collection;
 import java.util.concurrent.*;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 public class SimpleUnitTest {
     private static final long TIMEOUT = 1000;
 
-    private TestClassRunnerListener dummyListener = mock(TestClassRunnerListener.class);
     private ExecutorService executor = Executors.newCachedThreadPool();
     private SimpleUnit driver = new SimpleUnit();
 
-    private TestClassRunner results = new TestClassRunner(null, null, dummyListener, null, null); // XXX: use something else to collect the results?
-
     @Test
     public void the_test_class_is_named_after_its_simple_name() throws InterruptedException {
-        executeTestClass(OnePassingTest.class, results);
+        TestClassListener listener = mock(TestClassListener.class);
 
-        assertThat(results.getTestNames(), hasItem("OnePassingTest"));
+        executeTestClass(OnePassingTest.class, listener);
+
+        verify(listener).onTestFound(TestId.ROOT, "OnePassingTest");
     }
 
     @Test
     public void the_tests_are_methods_whose_name_starts_with_test() throws InterruptedException {
-        executeTestClass(OnePassingTest.class, results);
+        TestClassListener listener = mock(TestClassListener.class);
 
-        Collection<String> testNames = results.getTestNames();
-        assertThat(testNames, hasItem("testPassing"));
-        assertThat(testNames.size(), is(2)); // one root plus the one passing test
+        executeTestClass(OnePassingTest.class, listener);
+
+        verify(listener).onTestFound(TestId.of(0), "testPassing");
     }
 
     @Test

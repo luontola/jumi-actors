@@ -8,8 +8,6 @@ import fi.jumi.api.drivers.*;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 
 public class FindingTestsTest {
@@ -24,11 +22,18 @@ public class FindingTestsTest {
     public ExpectedException thrown = ExpectedException.none();
 
     @Test
-    public void finding_tests_multiple_times_is_idempotent() {
+    public void notifies_the_listener_about_found_tests() {
+        notifier.fireTestFound(TestId.ROOT, "root");
+
+        verify(listener).onTestFound(TestId.ROOT, "root");
+    }
+
+    @Test
+    public void notifies_the_listener_about_found_tests_only_once() {
         notifier.fireTestFound(TestId.ROOT, "root");
         notifier.fireTestFound(TestId.ROOT, "root");
 
-        assertThat(runner.getTestNames().size(), is(1));
+        verify(listener, atMost(1)).onTestFound(TestId.ROOT, "root");
     }
 
     @Test
@@ -47,22 +52,7 @@ public class FindingTestsTest {
         notifier.fireTestFound(TestId.of(0), "child");
     }
 
-    // TODO: should younger siblings be found first?
-
-    @Test
-    public void notifies_the_listener_about_found_tests() {
-        notifier.fireTestFound(TestId.ROOT, "root");
-
-        verify(listener).onTestFound(TestId.ROOT, "root");
-    }
-
-    @Test
-    public void notifies_the_listener_about_found_tests_only_once() {
-        notifier.fireTestFound(TestId.ROOT, "root");
-        notifier.fireTestFound(TestId.ROOT, "root");
-
-        verify(listener, atMost(1)).onTestFound(TestId.ROOT, "root");
-    }
+    // TODO: should also younger siblings be found first?
 
 
     private class DummyTest {
