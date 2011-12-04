@@ -2,18 +2,18 @@
 TODO NEXT:
 - end-to-end tests: failing tests
 	OK - write a test
-	!! - make it pass
+	OK - make it pass
 		OK - TestClassRunnerTest: test class with one failing test
 		OK - refactor TestClassRunnerTest
 			OK - tests for SpyTestClassRunnerListener
 			OK - use it in all tests, remove mocks
 			OK - make it generic, using dynamic proxies
 			OK - refactor tests to not use a domain interface
-		!! - see what fails next
+		OK - see what fails next
 			OK - executor is null (write a test in TestClassRunnerTest)
 			OK - daemon is not sending events about failures
 				OK - implement fi.jumi.test.simpleunit.SimpleUnit.RunTestMethod#run
-			!! - SuiteStateCollector does not implement onTestStarted, onTestFinished, onFailure
+			OK - SuiteStateCollector does not implement onTestStarted, onTestFinished, onFailure
 	- make it right
 		- duplicate method signatures in TestClassListener and TestClassRunnerListener
 - misc refactoring

@@ -11,6 +11,7 @@ import java.util.concurrent.*;
 
 @ThreadSafe
 public class SuiteStateCollector implements SuiteListener {
+
     private volatile SuiteResults state = new SuiteResults();
     private final CountDownLatch finished = new CountDownLatch(1);
 
@@ -27,19 +28,19 @@ public class SuiteStateCollector implements SuiteListener {
     }
 
     public void onTestFound(String testClass, TestId id, String name) {
-        state = state.withTest(id, name);
+        state = state.withTest(testClass, id, name);
     }
 
     public void onTestStarted(String testClass, TestId id) {
-        throw new UnsupportedOperationException("not implemented"); // TODO
+        // TODO
     }
 
     public void onTestFinished(String testClass, TestId id) {
-        throw new UnsupportedOperationException("not implemented"); // TODO
+        // TODO
     }
 
     public void onFailure(String testClass, TestId id, Throwable cause) {
-        throw new UnsupportedOperationException("not implemented"); // TODO
+        state = state.withFailure(testClass, id, cause);
     }
 
     public void awaitSuiteFinished() throws InterruptedException {
