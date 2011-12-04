@@ -1,36 +1,22 @@
 
 TODO NEXT:
-- end-to-end tests: failing tests
-	OK - write a test
-	OK - make it pass
-		OK - TestClassRunnerTest: test class with one failing test
-		OK - refactor TestClassRunnerTest
-			OK - tests for SpyTestClassRunnerListener
-			OK - use it in all tests, remove mocks
-			OK - make it generic, using dynamic proxies
-			OK - refactor tests to not use a domain interface
-		OK - see what fails next
-			OK - executor is null (write a test in TestClassRunnerTest)
-			OK - daemon is not sending events about failures
-				OK - implement fi.jumi.test.simpleunit.SimpleUnit.RunTestMethod#run
-			OK - SuiteStateCollector does not implement onTestStarted, onTestFinished, onFailure
-	- make it right
-		- duplicate method signatures in TestClassListener and TestClassRunnerListener
 - misc refactoring
-	- when an event interface contains many methods, there are no spaces between methods in SuiteListenerToEvent
-	- test execution might be best implemented using regular thread pools instead of actors
-		- CPU bound threads should use an optimal number of threads per core
-		- they take no input when running, so no actor handle needs to be created for them
-		OK - the thing which coordinates a test class's workers might need to be an actor (it receives events from the tests), but it should also be able to exit itself when it has done its work
-	- bullet proofing the public api, cross-references from javadocs to tests (a new xref tag?)
-	- refactor EventStubGenerator:
+	!! - refactor EventStubGenerator:
 		- toString methods for generated events would make debugging easier
+		- when an event interface contains many methods, there are no spaces between methods in SuiteListenerToEvent
 		- get generic method parameter types using java.lang.reflect.Method#getGenericParameterTypes, use it to also replace the current generics printing (ParameterizedType can be created from a dummy field)
 			- for example listener method with a List<String> parameter
 		- extract domain object for imports
 		- extract domain objects for classes and methods, then gather imports using the visitor pattern?
 	- put end-to-end tests in their own package (test.fi.jumi?), separate them from unit tests
 		- or use JUnit categories, maybe with a custom runner?
+	- test execution might be best implemented using regular thread pools instead of actors
+		- CPU bound threads should use an optimal number of threads per core
+		- they take no input when running, so no actor handle needs to be created for them
+		OK - the thing which coordinates a test class's workers might need to be an actor (it receives events from the tests), but it should also be able to exit itself when it has done its work
+	- bullet proofing the public api, cross-references from javadocs to tests (a new xref tag?)
+	- duplicate method signatures in TestClassListener and TestClassRunnerListener
+	- should SuiteRunner or TestClassRunner be responsible for filtering duplicate onTestFound events?
 - end-to-end tests: reporting exception stack traces
 - end-to-end tests: failures outside tests (in drivers and core)
 	- actor tests print dummy exceptions; solve by having a custom pluggable exception handler which doesn't print stack traces of a DummyException class
