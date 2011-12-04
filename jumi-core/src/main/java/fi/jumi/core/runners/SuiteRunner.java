@@ -16,19 +16,19 @@ import java.util.concurrent.Executor;
 @NotThreadSafe
 public class SuiteRunner implements Startable, TestClassFinderListener {
 
-    private final SuiteListener suiteListener;
+    private final SuiteListener listener;
     private final TestClassFinder testClassFinder;
     private final DriverFinder driverFinder;
     private final OnDemandActors actors;
     private final Executor executor;
     private int workers = 0;
 
-    public SuiteRunner(SuiteListener suiteListener,
+    public SuiteRunner(SuiteListener listener,
                        TestClassFinder testClassFinder,
                        DriverFinder driverFinder,
                        OnDemandActors actors,
                        Executor executor) {
-        this.suiteListener = suiteListener;
+        this.listener = listener;
         this.testClassFinder = testClassFinder;
         this.driverFinder = driverFinder;
         this.actors = actors;
@@ -37,7 +37,7 @@ public class SuiteRunner implements Startable, TestClassFinderListener {
 
     public void start() {
         // XXX: this call might not be needed (it could even be harmful because of asynchrony); the caller of SuiteRunner knows when the suite is started
-        suiteListener.onSuiteStarted();
+        listener.onSuiteStarted();
 
         final TestClassFinderListener finderListener = actors.createSecondaryActor(TestClassFinderListener.class, this);
         startUnattendedWorker(new Runnable() {
@@ -64,7 +64,7 @@ public class SuiteRunner implements Startable, TestClassFinderListener {
         workers--;
         assert workers >= 0;
         if (workers == 0) {
-            suiteListener.onSuiteFinished();
+            listener.onSuiteFinished();
         }
     }
 
@@ -72,27 +72,36 @@ public class SuiteRunner implements Startable, TestClassFinderListener {
         Class<? extends Driver> driverClass = driverFinder.findTestClassDriver(testClass);
 
         fireWorkerStarted();
-        TestClassRunnerListener listener = new TestClassRunnerListener() {
-            public void onTestFound(TestId id, String name) {
-                suiteListener.onTestFound(testClass.getName(), id, name);
-            }
+        new TestClassRunner(
+                testClass, driverClass, new TestClassRunnerListenerToSuiteListener(testClass), actors, executor
+        ).start();
+    }
 
-            public void onTestStarted(TestId id) {
-                suiteListener.onTestStarted(testClass.getName(), id);
-            }
+    private class TestClassRunnerListenerToSuiteListener implements TestClassRunnerListener {
+        private final Class<?> testClass;
 
-            public void onFailure(TestId id, Throwable cause) {
-                suiteListener.onFailure(testClass.getName(), id, cause);
-            }
+        public TestClassRunnerListenerToSuiteListener(Class<?> testClass) {
+            this.testClass = testClass;
+        }
 
-            public void onTestFinished(TestId id) {
-                suiteListener.onTestFinished(testClass.getName(), id);
-            }
+        public void onTestFound(TestId id, String name) {
+            listener.onTestFound(testClass.getName(), id, name);
+        }
 
-            public void onTestClassFinished() {
-                fireWorkerFinished();
-            }
-        };
-        new TestClassRunner(testClass, driverClass, listener, actors, executor).start();
+        public void onTestStarted(TestId id) {
+            listener.onTestStarted(testClass.getName(), id);
+        }
+
+        public void onFailure(TestId id, Throwable cause) {
+            listener.onFailure(testClass.getName(), id, cause);
+        }
+
+        public void onTestFinished(TestId id) {
+            listener.onTestFinished(testClass.getName(), id);
+        }
+
+        public void onTestClassFinished() {
+            fireWorkerFinished();
+        }
     }
 }
