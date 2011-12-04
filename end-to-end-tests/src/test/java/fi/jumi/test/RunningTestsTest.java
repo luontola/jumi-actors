@@ -39,7 +39,6 @@ public class RunningTestsTest {
         assertThat("failing tests", launcher.getFailingTests(), is(0));
     }
 
-    @Ignore("not implemented")
     @Test(timeout = TIMEOUT)
     public void suite_with_one_failing_test() throws Exception {
         launcher.addToClassPath(TestEnvironment.getSampleClasses());
