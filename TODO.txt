@@ -1,15 +1,7 @@
 
 TODO NEXT:
+- end-to-end tests: reporting exception stack traces
 - misc refactoring
-	!! - refactor EventStubGenerator:
-		OK - toString methods for generated events would make debugging easier
-		OK - when an event interface contains many methods, there are no spaces between methods in SuiteListenerToEvent
-		OK - get generic method parameter types using java.lang.reflect.Method#getGenericParameterTypes, use it to also replace the current generics printing (ParameterizedType can be created from a dummy field)
-			- for example listener method with a List<String> parameter
-		- in JavaType, replace conditionals with polymorphism
-		- extract domain object for imports
-		- extract domain objects for classes and methods, then gather imports using the visitor pattern?
-		- IDEA reformats imports differently than the code generator generates - unify them?
 	- put end-to-end tests in their own package (test.fi.jumi?), separate them from unit tests
 		- or use JUnit categories, maybe with a custom runner?
 	- test execution might be best implemented using regular thread pools instead of actors
@@ -19,7 +11,6 @@ TODO NEXT:
 	- bullet proofing the public api, cross-references from javadocs to tests (a new xref tag?)
 	- duplicate method signatures in TestClassListener and TestClassRunnerListener
 	- should SuiteRunner or TestClassRunner be responsible for filtering duplicate onTestFound events?
-- end-to-end tests: reporting exception stack traces
 - end-to-end tests: failures outside tests (in drivers and core)
 	- actor tests print dummy exceptions; solve by having a custom pluggable exception handler which doesn't print stack traces of a DummyException class
 - end-to-end tests: reporting test output
