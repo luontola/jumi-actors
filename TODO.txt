@@ -2,7 +2,7 @@
 TODO NEXT:
 - misc refactoring
 	!! - refactor EventStubGenerator:
-		- toString methods for generated events would make debugging easier
+		OK - toString methods for generated events would make debugging easier
 		OK - when an event interface contains many methods, there are no spaces between methods in SuiteListenerToEvent
 		- get generic method parameter types using java.lang.reflect.Method#getGenericParameterTypes, use it to also replace the current generics printing (ParameterizedType can be created from a dummy field)
 			- for example listener method with a List<String> parameter

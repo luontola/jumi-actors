@@ -9,4 +9,8 @@ public class OnOtherEvent implements Event<DummyListener>, Serializable {
     public void fireOn(DummyListener target) {
         target.onOther();
     }
+
+    public String toString() {
+        return "DummyListener.onOther()";
+    }
 }

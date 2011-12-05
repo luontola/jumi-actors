@@ -116,6 +116,11 @@ public class EventStubGenerator {
             methods.append("        target." + method.getName() + "(" + arguments.toActualArguments() + ");\n");
             methods.append("    }\n");
 
+            methods.append("\n");
+            methods.append("    public String toString() {\n");
+            methods.append("        return \"" + listenerName() + "." + method.getName() + "(" + arguments.toToString() + ")\";\n");
+            methods.append("    }\n");
+
             Type serializableInterface = new Type(Serializable.class);
 
             StringBuilder source = new StringBuilder();

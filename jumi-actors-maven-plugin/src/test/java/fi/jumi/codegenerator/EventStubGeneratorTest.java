@@ -64,6 +64,19 @@ public class EventStubGeneratorTest {
     }
 
     @Test
+    public void the_events_have_descriptive_toString_methods() {
+        MessageQueue<Event<DummyListener>> spy = new MessageQueue<Event<DummyListener>>();
+        DummyListenerFactory factory = new DummyListenerFactory();
+        DummyListener frontend = factory.newFrontend(spy);
+
+        frontend.onSomething("foo", "bar");
+        frontend.onOther();
+
+        assertThat(spy.poll().toString(), is("DummyListener.onSomething(foo, bar)"));
+        assertThat(spy.poll().toString(), is("DummyListener.onOther()"));
+    }
+
+    @Test
     public void generates_factory_class() throws IOException {
         assertClassEquals("fi/jumi/codegenerator/dummy/DummyListenerFactory.java", generator.getFactory());
     }

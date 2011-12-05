@@ -51,4 +51,15 @@ public class ArgumentList implements Iterable<Argument> {
         }
         return sb;
     }
+
+    public StringBuilder toToString() {
+        StringBuilder sb = new StringBuilder();
+        for (Argument argument : arguments) {
+            if (sb.length() > 0) {
+                sb.append(", ");
+            }
+            sb.append("\" + " + argument.name + " + \"");
+        }
+        return sb;
+    }
 }
