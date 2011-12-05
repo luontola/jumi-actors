@@ -4,8 +4,9 @@ TODO NEXT:
 	!! - refactor EventStubGenerator:
 		OK - toString methods for generated events would make debugging easier
 		OK - when an event interface contains many methods, there are no spaces between methods in SuiteListenerToEvent
-		- get generic method parameter types using java.lang.reflect.Method#getGenericParameterTypes, use it to also replace the current generics printing (ParameterizedType can be created from a dummy field)
+		OK - get generic method parameter types using java.lang.reflect.Method#getGenericParameterTypes, use it to also replace the current generics printing (ParameterizedType can be created from a dummy field)
 			- for example listener method with a List<String> parameter
+		- in JavaType, replace conditionals with polymorphism
 		- extract domain object for imports
 		- extract domain objects for classes and methods, then gather imports using the visitor pattern?
 		- IDEA reformats imports differently than the code generator generates - unify them?
@@ -33,7 +34,7 @@ TODO NEXT:
 - refactor jumi-actors-maven-plugin
 	- DummyListenerToEvent: rename sender to target
 	- EventToDummyListener: rename listener to target
-	- @Generated annotation
+	- @Generated annotation, example: @Generated(value = "fi.jumi.codegenerator.EventStubGenerator", comments = "Generated based on fi.jumi.codegenerator.DummyListener", date = "2000-01-01")
 	- annotation to suppress unchecked warnings due to type erasure?
 	- toString?
 	- Externalizable? should give overall best performance without additional dependencies: https://github.com/eishay/jvm-serializers/wiki/

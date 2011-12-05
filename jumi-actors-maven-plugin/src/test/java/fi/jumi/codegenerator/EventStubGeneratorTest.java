@@ -10,7 +10,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.*;
 
 import java.io.*;
-import java.util.List;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -109,7 +109,7 @@ public class EventStubGeneratorTest {
     }
 
     @Test
-    public void add_imports_for_all_method_parameter_types() {
+    public void adds_imports_for_all_method_parameter_types() {
         generator = new EventStubGenerator(ExternalLibraryReferencingListener.class, TARGET_PACKAGE);
 
         GeneratedClass event = generator.getEvents().get(0);
@@ -119,6 +119,32 @@ public class EventStubGeneratorTest {
         assertThat(frontend.source, containsString("import java.util.*;"));
 
         // TODO: single class imports if less than N classes?
+    }
+
+    @Test
+    public void adds_imports_for_type_parameters_of_method_parameter_types() {
+        generator = new EventStubGenerator(GenericParametersListener.class, TARGET_PACKAGE);
+
+        GeneratedClass event = generator.getEvents().get(0);
+        assertThat(event.source, containsString("import java.util.*"));
+        assertThat(event.source, containsString("import java.io.*"));
+
+        GeneratedClass frontend = generator.getFrontend();
+        assertThat(frontend.source, containsString("import java.util.*"));
+        assertThat(frontend.source, containsString("import java.io.*"));
+    }
+
+    @Test
+    public void raw_types_are_not_used() {
+        generator = new EventStubGenerator(GenericParametersListener.class, TARGET_PACKAGE);
+
+        GeneratedClass event = generator.getEvents().get(0);
+        assertThat(event.source, containsString("List<File>"));
+        assertThat(event.source, not(containsString("List ")));
+
+        GeneratedClass frontend = generator.getFrontend();
+        assertThat(frontend.source, containsString("List<File>"));
+        assertThat(frontend.source, not(containsString("List ")));
     }
 
 
@@ -143,6 +169,12 @@ public class EventStubGeneratorTest {
     @SuppressWarnings({"UnusedDeclaration"})
     private interface ExternalLibraryReferencingListener {
 
-        void onSomething(List<String> buffer);
+        void onSomething(Random random);
+    }
+
+    @SuppressWarnings({"UnusedDeclaration"})
+    private interface GenericParametersListener {
+
+        void onSomething(List<File> list);
     }
 }

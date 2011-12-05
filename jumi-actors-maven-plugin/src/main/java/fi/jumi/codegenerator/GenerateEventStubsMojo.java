@@ -4,7 +4,6 @@
 
 package fi.jumi.codegenerator;
 
-import fi.jumi.codegenerator.java.Type;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.*;
 import org.apache.maven.project.MavenProject;
@@ -106,12 +105,15 @@ public class GenerateEventStubsMojo extends AbstractMojo {
     private String getTargetPackage(String eventInterface) {
         // TODO: write a unit test for this
         if (createSubPackages) {
-            Type type = new Type(eventInterface);
-            String subpackage = type.getSimpleName().replaceAll("Listener$", "").toLowerCase(Locale.ENGLISH);
+            String subpackage = getSimpleName(eventInterface).replaceAll("Listener$", "").toLowerCase(Locale.ENGLISH);
             return targetPackage + "." + subpackage;
         } else {
             return targetPackage;
         }
+    }
+
+    private static String getSimpleName(String name) {
+        return name.substring(name.lastIndexOf('.') + 1);
     }
 
     private Class<?> loadClass(String eventInterface) throws MojoExecutionException {

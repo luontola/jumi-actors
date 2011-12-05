@@ -6,10 +6,10 @@ package fi.jumi.codegenerator.java;
 
 public class Argument {
 
-    public final Type type;
+    public final JavaType type;
     public final String name;
 
-    public Argument(Type type, String name) {
+    public Argument(JavaType type, String name) {
         this.type = type;
         this.name = name;
     }

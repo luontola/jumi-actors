@@ -9,21 +9,35 @@ import fi.jumi.codegenerator.java.*;
 import org.codehaus.plexus.util.StringUtils;
 
 import java.io.Serializable;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 import java.util.*;
 
 @SuppressWarnings({"StringConcatenationInsideStringBufferAppend"})
 public class EventStubGenerator {
 
-    private final Class<?> listenerType;
     private final String targetPackage;
-    private final Type eventInterfaceRaw = new Type(Event.class);
-    private final Type factoryInterfaceRaw = new Type(ListenerFactory.class);
-    private final Type senderInterfaceRaw = new Type(MessageSender.class);
+
+    private final JavaType listenerInterface;
+    private final Method[] listenerMethods;
+
+    private final JavaType factoryInterface;
+    private final JavaType eventInterface;
+    private final JavaType senderInterface;
 
     public EventStubGenerator(Class<?> listenerType, String targetPackage) {
-        this.listenerType = listenerType;
         this.targetPackage = targetPackage;
+
+        listenerInterface = new JavaType(listenerType);
+        listenerMethods = listenerType.getMethods();
+        Arrays.sort(listenerMethods, new Comparator<Method>() {
+            public int compare(Method m1, Method m2) {
+                return m1.getName().compareTo(m2.getName());
+            }
+        });
+
+        factoryInterface = new JavaType(ListenerFactory.class, listenerInterface);
+        eventInterface = new JavaType(Event.class, listenerInterface);
+        senderInterface = new JavaType(MessageSender.class, eventInterface);
     }
 
     public GeneratedClass getFactory() {
@@ -51,19 +65,19 @@ public class EventStubGenerator {
         StringBuilder source = new StringBuilder();
         source.append(packageStatement());
         source.append(importStatements());
-        source.append(classBody(className, new ArgumentList(), methods, factoryInterface()));
+        source.append(classBody(className, new ArgumentList(), methods, factoryInterface));
 
         return new GeneratedClass(fileForClass(className), source.toString());
     }
 
     public GeneratedClass getFrontend() {
         String className = myFrontendName();
-        Argument sender = new Argument(senderInterface(), "sender");
+        Argument sender = new Argument(senderInterface, "sender");
 
         // TODO: extract a domain class to represent methods?
         StringBuilder methods = new StringBuilder();
         boolean first = true;
-        for (Method method : listenerMethods()) {
+        for (Method method : listenerMethods) {
             if (!first) {
                 methods.append("\n");
             }
@@ -74,7 +88,7 @@ public class EventStubGenerator {
         StringBuilder source = new StringBuilder();
         source.append(packageStatement());
         source.append(importStatements());
-        source.append(classBody(className, new ArgumentList(sender), methods, listenerInterface()));
+        source.append(classBody(className, new ArgumentList(sender), methods, listenerInterface));
 
         return new GeneratedClass(fileForClass(className), source.toString());
     }
@@ -90,7 +104,7 @@ public class EventStubGenerator {
 
     public GeneratedClass getBackend() {
         String className = myBackendName();
-        Argument listener = new Argument(listenerInterface(), "listener");
+        Argument listener = new Argument(listenerInterface, "listener");
 
         StringBuilder methods = new StringBuilder();
         methods.append("    public void send(" + eventName() + " message) {\n");
@@ -100,14 +114,14 @@ public class EventStubGenerator {
         StringBuilder source = new StringBuilder();
         source.append(packageStatement());
         source.append(importStatements());
-        source.append(classBody(className, new ArgumentList(listener), methods, senderInterface()));
+        source.append(classBody(className, new ArgumentList(listener), methods, senderInterface));
 
         return new GeneratedClass(fileForClass(className), source.toString());
     }
 
     public List<GeneratedClass> getEvents() {
         List<GeneratedClass> events = new ArrayList<GeneratedClass>();
-        for (Method method : listenerMethods()) {
+        for (Method method : listenerMethods) {
             String className = myEventWrapperName(method);
             ArgumentList arguments = new ArgumentList(method);
 
@@ -121,12 +135,12 @@ public class EventStubGenerator {
             methods.append("        return \"" + listenerName() + "." + method.getName() + "(" + arguments.toToString() + ")\";\n");
             methods.append("    }\n");
 
-            Type serializableInterface = new Type(Serializable.class);
+            JavaType serializableInterface = new JavaType(Serializable.class);
 
             StringBuilder source = new StringBuilder();
             source.append(packageStatement());
             source.append(importStatements(serializableInterface));
-            source.append(classBody(className, arguments, methods, eventInterface(), serializableInterface));
+            source.append(classBody(className, arguments, methods, eventInterface, serializableInterface));
 
             events.add(new GeneratedClass(fileForClass(className), source.toString()));
         }
@@ -146,13 +160,15 @@ public class EventStubGenerator {
         return "package " + targetPackage + ";\n\n";
     }
 
-    private StringBuilder importStatements(Type... moreImports) {
+    private StringBuilder importStatements(JavaType... moreImports) {
         // TODO: extract class Imports
         // TODO: do not add unnecessary imports, but check that which ones are really needed by the current class
-        List<Type> imports = new ArrayList<Type>();
-        for (Method method : listenerMethods()) {
-            for (Class<?> clazz : method.getParameterTypes()) {
-                imports.add(new Type(clazz));
+        List<JavaType> imports = new ArrayList<JavaType>();
+        for (Method method : listenerMethods) {
+            for (Type type : method.getGenericParameterTypes()) {
+                JavaType t = new JavaType(type);
+                imports.add(t);
+                imports.addAll(t.getTypeArguments());
             }
         }
         Collections.addAll(imports, moreImports);
@@ -165,23 +181,27 @@ public class EventStubGenerator {
         return sb;
     }
 
-    private Collection<String> classesToImport(List<Type> additionalImports) {
-        SortedSet<Type> singleClassImports = new TreeSet<Type>();
-        singleClassImports.add(listenerInterface());
-        singleClassImports.add(eventInterfaceRaw);
-        singleClassImports.add(factoryInterfaceRaw);
-        singleClassImports.add(senderInterfaceRaw);
+    private Collection<String> classesToImport(List<JavaType> additionalImports) {
+        SortedSet<JavaType> singleClassImports = new TreeSet<JavaType>();
+        singleClassImports.add(listenerInterface);
+        singleClassImports.add(eventInterface);
+        singleClassImports.add(factoryInterface);
+        singleClassImports.add(senderInterface);
         singleClassImports.addAll(additionalImports);
 
         SortedSet<String> wildcardImports = new TreeSet<String>();
-        for (Type singleClassImport : singleClassImports) {
+        for (JavaType singleClassImport : singleClassImports) {
+            // XXX: ignore wildcards better
+            if (singleClassImport.getSimpleName().equals("?")) {
+                continue;
+            }
             wildcardImports.add(singleClassImport.getPackage() + ".*");
         }
         wildcardImports.remove("java.lang.*");
         return wildcardImports;
     }
 
-    private StringBuilder classBody(String className, ArgumentList fields, StringBuilder methods, Type... interfaces) {
+    private StringBuilder classBody(String className, ArgumentList fields, StringBuilder methods, JavaType... interfaces) {
         StringBuilder sb = new StringBuilder();
         sb.append("public class " + className + " implements " + toImplementsDeclaration(interfaces) + " {\n");
         sb.append("\n");
@@ -196,9 +216,9 @@ public class EventStubGenerator {
         return sb;
     }
 
-    private static StringBuilder toImplementsDeclaration(Type[] types) {
+    private static StringBuilder toImplementsDeclaration(JavaType[] types) {
         StringBuilder sb = new StringBuilder();
-        for (Type type : types) {
+        for (JavaType type : types) {
             if (sb.length() > 0) {
                 sb.append(", ");
             }
@@ -252,58 +272,14 @@ public class EventStubGenerator {
     // names of parameter classes
 
     private String listenerName() {
-        return listenerInterface().getSimpleName();
+        return listenerInterface.getSimpleName();
     }
-
-    private Type listenerInterface() {
-        return new Type(listenerType);
-    }
-
 
     private String eventName() {
-        return eventInterface().getSimpleName();
+        return eventInterface.getSimpleName();
     }
-
-    private Type eventInterface() {
-        return eventInterface(listenerInterface());
-    }
-
-    private Type eventInterface(Type t) {
-        return eventInterfaceRaw.withTypeParameter(t);
-    }
-
-
-    private Type factoryInterface() {
-        return factoryInterface(listenerInterface());
-    }
-
-    private Type factoryInterface(Type t) {
-        return factoryInterfaceRaw.withTypeParameter(t);
-    }
-
 
     private String senderName() {
-        return senderInterface().getSimpleName();
-    }
-
-    private Type senderInterface() {
-        return senderInterface(eventInterface());
-    }
-
-    private Type senderInterface(Type t) {
-        return senderInterfaceRaw.withTypeParameter(t);
-    }
-
-
-    // other helper methods
-
-    private Method[] listenerMethods() {
-        Method[] methods = listenerType.getMethods();
-        Arrays.sort(methods, new Comparator<Method>() {
-            public int compare(Method m1, Method m2) {
-                return m1.getName().compareTo(m2.getName());
-            }
-        });
-        return methods;
+        return senderInterface.getSimpleName();
     }
 }

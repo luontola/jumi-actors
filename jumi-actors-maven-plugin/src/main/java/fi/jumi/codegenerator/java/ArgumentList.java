@@ -4,7 +4,7 @@
 
 package fi.jumi.codegenerator.java;
 
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 import java.util.*;
 
 public class ArgumentList implements Iterable<Argument> {
@@ -12,9 +12,9 @@ public class ArgumentList implements Iterable<Argument> {
     private final List<Argument> arguments = new ArrayList<Argument>();
 
     public ArgumentList(Method method) {
-        Class<?>[] types = method.getParameterTypes();
+        Type[] types = method.getGenericParameterTypes();
         for (int i = 0; i < types.length; i++) {
-            this.arguments.add(new Argument(new Type(types[i]), "arg" + i));
+            this.arguments.add(new Argument(new JavaType(types[i]), "arg" + i));
         }
     }
 
