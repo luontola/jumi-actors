@@ -4,6 +4,7 @@
 
 package fi.jumi.codegenerator;
 
+import fi.jumi.codegenerator.java.GeneratedClass;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.*;
 import org.apache.maven.project.MavenProject;

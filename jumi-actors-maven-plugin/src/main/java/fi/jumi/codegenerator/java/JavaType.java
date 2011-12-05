@@ -39,6 +39,10 @@ public abstract class JavaType implements Comparable<JavaType> {
         return new JavaType[0];
     }
 
+    public static JavaType[] allOf(Type[] types) {
+        return asJavaTypes(types);
+    }
+
     private static JavaType[] asJavaTypes(Type[] args) {
         JavaType[] results = new JavaType[args.length];
         for (int i = 0; i < args.length; i++) {
@@ -57,7 +61,7 @@ public abstract class JavaType implements Comparable<JavaType> {
 
     public abstract String getSimpleName();
 
-    public abstract Collection<? extends JavaType> getRawTypesToImport();
+    public abstract List<Class<?>> getRawTypesToImport();
 
 
     private static class RawType extends JavaType {
@@ -80,8 +84,10 @@ public abstract class JavaType implements Comparable<JavaType> {
             return type.getSimpleName();
         }
 
-        public Collection<? extends JavaType> getRawTypesToImport() {
-            return Arrays.asList(this);
+        public List<Class<?>> getRawTypesToImport() {
+            ArrayList<Class<?>> imports = new ArrayList<Class<?>>();
+            imports.add(type);
+            return imports;
         }
     }
 
@@ -118,10 +124,12 @@ public abstract class JavaType implements Comparable<JavaType> {
             return result;
         }
 
-        public Collection<? extends JavaType> getRawTypesToImport() {
-            ArrayList<JavaType> imports = new ArrayList<JavaType>();
-            imports.add(this);
-            Collections.addAll(imports, typeArguments);
+        public List<Class<?>> getRawTypesToImport() {
+            List<Class<?>> imports = new ArrayList<Class<?>>();
+            imports.add(type);
+            for (JavaType typeArgument : typeArguments) {
+                imports.addAll(typeArgument.getRawTypesToImport());
+            }
             return imports;
         }
     }
@@ -145,7 +153,7 @@ public abstract class JavaType implements Comparable<JavaType> {
             return "?";
         }
 
-        public Collection<? extends JavaType> getRawTypesToImport() {
+        public List<Class<?>> getRawTypesToImport() {
             return Collections.emptyList();
         }
     }

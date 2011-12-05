@@ -6,6 +6,7 @@ package fi.jumi.codegenerator;
 
 import fi.jumi.actors.*;
 import fi.jumi.codegenerator.dummy.DummyListenerFactory;
+import fi.jumi.codegenerator.java.GeneratedClass;
 import org.apache.commons.io.IOUtils;
 import org.junit.*;
 
