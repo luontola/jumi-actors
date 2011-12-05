@@ -22,7 +22,7 @@ public class JavaTypeTest {
 
     @Test
     public void regular_type() {
-        JavaType t = new JavaType(NonGenericType.class);
+        JavaType t = JavaType.of(NonGenericType.class);
 
         assertThat(t.getPackage(), is("fi.jumi.codegenerator.java"));
         assertThat(t.getRawName(), is("NonGenericType"));
@@ -31,7 +31,7 @@ public class JavaTypeTest {
 
     @Test
     public void generic_type() throws Exception {
-        JavaType t = new JavaType(genericTypeOfField("SINGLE_TYPE_ARGUMENT"));
+        JavaType t = JavaType.of(genericTypeOfField("SINGLE_TYPE_ARGUMENT"));
 
         assertThat(t.getPackage(), is("fi.jumi.codegenerator.java"));
         assertThat(t.getRawName(), is("GenericType"));
@@ -40,7 +40,7 @@ public class JavaTypeTest {
 
     @Test
     public void wildcard_type() throws Exception {
-        JavaType t = new JavaType(genericTypeOfField("WILDCARD_TYPE_ARGUMENT"));
+        JavaType t = JavaType.of(genericTypeOfField("WILDCARD_TYPE_ARGUMENT"));
 
         assertThat(t.getPackage(), is("fi.jumi.codegenerator.java"));
         assertThat(t.getRawName(), is("GenericType"));
@@ -49,7 +49,7 @@ public class JavaTypeTest {
 
     @Test
     public void multiple_type_arguments() throws Exception {
-        JavaType t = new JavaType(genericTypeOfField("MULTIPLE_TYPE_ARGUMENTS"));
+        JavaType t = JavaType.of(genericTypeOfField("MULTIPLE_TYPE_ARGUMENTS"));
 
         assertThat(t.getRawName(), is("GenericType2"));
         assertThat(t.getSimpleName(), is("GenericType2<String, Integer>"));
@@ -58,7 +58,7 @@ public class JavaTypeTest {
 
     @Test
     public void nested_type_arguments() throws Exception {
-        JavaType t = new JavaType(genericTypeOfField("NESTED_TYPE_ARGUMENTS"));
+        JavaType t = JavaType.of(genericTypeOfField("NESTED_TYPE_ARGUMENTS"));
 
         assertThat(t.getRawName(), is("GenericType"));
         assertThat(t.getSimpleName(), is("GenericType<List<String>>"));

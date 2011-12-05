@@ -14,7 +14,7 @@ public class ArgumentList implements Iterable<Argument> {
     public ArgumentList(Method method) {
         Type[] types = method.getGenericParameterTypes();
         for (int i = 0; i < types.length; i++) {
-            this.arguments.add(new Argument(new JavaType(types[i]), "arg" + i));
+            this.arguments.add(new Argument(JavaType.of(types[i]), "arg" + i));
         }
     }
 

@@ -27,7 +27,7 @@ public class EventStubGenerator {
     public EventStubGenerator(Class<?> listenerType, String targetPackage) {
         this.targetPackage = targetPackage;
 
-        listenerInterface = new JavaType(listenerType);
+        listenerInterface = JavaType.of(listenerType);
         listenerMethods = listenerType.getMethods();
         Arrays.sort(listenerMethods, new Comparator<Method>() {
             public int compare(Method m1, Method m2) {
@@ -35,9 +35,9 @@ public class EventStubGenerator {
             }
         });
 
-        factoryInterface = new JavaType(ListenerFactory.class, listenerInterface);
-        eventInterface = new JavaType(Event.class, listenerInterface);
-        senderInterface = new JavaType(MessageSender.class, eventInterface);
+        factoryInterface = JavaType.of(ListenerFactory.class, listenerInterface);
+        eventInterface = JavaType.of(Event.class, listenerInterface);
+        senderInterface = JavaType.of(MessageSender.class, eventInterface);
     }
 
     public GeneratedClass getFactory() {
@@ -135,7 +135,7 @@ public class EventStubGenerator {
             methods.append("        return \"" + listenerName() + "." + method.getName() + "(" + arguments.toToString() + ")\";\n");
             methods.append("    }\n");
 
-            JavaType serializableInterface = new JavaType(Serializable.class);
+            JavaType serializableInterface = JavaType.of(Serializable.class);
 
             StringBuilder source = new StringBuilder();
             source.append(packageStatement());
@@ -166,9 +166,7 @@ public class EventStubGenerator {
         List<JavaType> imports = new ArrayList<JavaType>();
         for (Method method : listenerMethods) {
             for (Type type : method.getGenericParameterTypes()) {
-                JavaType t = new JavaType(type);
-                imports.add(t);
-                imports.addAll(t.getTypeArguments());
+                imports.addAll(JavaType.of(type).getRawTypesToImport());
             }
         }
         Collections.addAll(imports, moreImports);

@@ -7,20 +7,28 @@ package fi.jumi.codegenerator.java;
 import java.lang.reflect.*;
 import java.util.*;
 
-public class JavaType implements Comparable<JavaType> {
+public abstract class JavaType implements Comparable<JavaType> {
 
-    // TODO: replace conditionals with polymorphism
-
-    private final Type type;
-    private final JavaType[] typeArguments;
-
-    public JavaType(Type type, JavaType... typeArguments) {
-        this.type = type;
-        this.typeArguments = typeArguments;
+    public static JavaType of(Type type) {
+        return JavaType.of(type, typeArgumentsOf(type));
     }
 
-    public JavaType(Type type) {
-        this(type, typeArgumentsOf(type));
+    public static JavaType of(Type type, JavaType... typeArguments) {
+        if (type instanceof Class && typeArguments.length == 0) {
+            return new RawType((Class<?>) type);
+        }
+        if (type instanceof Class && typeArguments.length > 0) {
+            return new GenericType((Class<?>) type, typeArguments);
+        }
+        if (type instanceof ParameterizedType) {
+            ParameterizedType t = (ParameterizedType) type;
+            Class<?> rawType = (Class<?>) t.getRawType();
+            return new GenericType(rawType, typeArguments);
+        }
+        if (type instanceof WildcardType) {
+            return new GenericWildcardType();
+        }
+        throw new IllegalArgumentException("unsupported type " + type);
     }
 
     private static JavaType[] typeArgumentsOf(Type type) {
@@ -34,7 +42,7 @@ public class JavaType implements Comparable<JavaType> {
     private static JavaType[] asJavaTypes(Type[] args) {
         JavaType[] results = new JavaType[args.length];
         for (int i = 0; i < args.length; i++) {
-            results[i] = new JavaType(args[i]);
+            results[i] = JavaType.of(args[i]);
         }
         return results;
     }
@@ -43,75 +51,102 @@ public class JavaType implements Comparable<JavaType> {
         return getSimpleName().compareTo(that.getSimpleName());
     }
 
-    public String getPackage() {
-        if (this.type instanceof Class) {
-            Class<?> c = (Class<?>) this.type;
-            return c.getPackage().getName();
-        }
-        if (this.type instanceof ParameterizedType) {
-            ParameterizedType t = (ParameterizedType) this.type;
-            Class<?> c = (Class<?>) t.getRawType();
-            return c.getPackage().getName();
+    public abstract String getPackage();
+
+    public abstract String getRawName();
+
+    public abstract String getSimpleName();
+
+    public abstract Collection<? extends JavaType> getRawTypesToImport();
+
+
+    private static class RawType extends JavaType {
+        private final Class<?> type;
+
+        private RawType(Class<?> type) {
+            super();
+            this.type = type;
         }
 
-        throw new AssertionError("unknown type: " + this.type.getClass() + " of value " + this.type);
+        public String getPackage() {
+            return type.getPackage().getName();
+        }
+
+        public String getRawName() {
+            return type.getSimpleName();
+        }
+
+        public String getSimpleName() {
+            return type.getSimpleName();
+        }
+
+        public Collection<? extends JavaType> getRawTypesToImport() {
+            return Arrays.asList(this);
+        }
     }
 
-    public String getRawName() {
-        if (this.type instanceof Class) {
-            Class<?> c = (Class<?>) this.type;
-            return c.getSimpleName();
-        }
-        if (this.type instanceof ParameterizedType) {
-            ParameterizedType t = (ParameterizedType) this.type;
-            Class<?> c = (Class<?>) t.getRawType();
-            return c.getSimpleName();
+    private static class GenericType extends JavaType {
+        private final Class<?> type;
+        private final JavaType[] typeArguments;
+
+        private GenericType(Class<?> aClass, JavaType[] typeArguments) {
+            super();
+            this.type = aClass;
+            this.typeArguments = typeArguments;
         }
 
-        throw new AssertionError("unknown type: " + this.type.getClass() + " of value " + this.type);
+        public String getPackage() {
+            return type.getPackage().getName();
+        }
+
+        public String getRawName() {
+            return type.getSimpleName();
+        }
+
+        public String getSimpleName() {
+            return type.getSimpleName() + "<" + typeArgumentsAsString() + ">";
+        }
+
+        private String typeArgumentsAsString() {
+            String result = "";
+            for (int i = 0; i < typeArguments.length; i++) {
+                if (i > 0) {
+                    result += ", ";
+                }
+                result += typeArguments[i].getSimpleName();
+            }
+            return result;
+        }
+
+        public Collection<? extends JavaType> getRawTypesToImport() {
+            ArrayList<JavaType> imports = new ArrayList<JavaType>();
+            imports.add(this);
+            Collections.addAll(imports, typeArguments);
+            return imports;
+        }
     }
 
-    public String getSimpleName() {
-        if (this.typeArguments.length > 0) {
-            return getRawName() + "<" + typeArgumentsAsString() + ">";
+    private static class GenericWildcardType extends JavaType {
+
+        private GenericWildcardType() {
+            super();
         }
-        if (this.type instanceof Class) {
-            Class<?> c = (Class<?>) this.type;
-            return c.getSimpleName();
+
+        public String getPackage() {
+            throw new UnsupportedOperationException();
         }
-        if (this.type instanceof ParameterizedType) {
-            ParameterizedType t = (ParameterizedType) this.type;
-            Class<?> c = (Class<?>) t.getRawType();
-            return c.getSimpleName() + "<" + typeArgumentsAsString() + ">";
+
+        public String getRawName() {
+            throw new UnsupportedOperationException();
         }
-        if (this.type instanceof WildcardType) {
+
+        public String getSimpleName() {
             // TODO: upper and lower bounds
             return "?";
         }
 
-        throw new AssertionError("unknown type: " + this.type.getClass() + " of value " + this.type);
-    }
-
-    private String typeArgumentsAsString() {
-        String result = "";
-        for (int i = 0; i < typeArguments.length; i++) {
-            if (i > 0) {
-                result += ", ";
-            }
-            result += typeArguments[i].getSimpleName();
+        public Collection<? extends JavaType> getRawTypesToImport() {
+            return Collections.emptyList();
         }
-        return result;
-    }
-
-    public List<JavaType> getTypeArguments() {
-        return Arrays.asList(typeArguments);
-    }
-
-    @Override
-    public String toString() {
-        if (typeArguments.length > 0) {
-            return type.toString() + typeArguments.toString();
-        }
-        return type.toString();
     }
 }
