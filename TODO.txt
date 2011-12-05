@@ -3,11 +3,12 @@ TODO NEXT:
 - misc refactoring
 	!! - refactor EventStubGenerator:
 		- toString methods for generated events would make debugging easier
-		- when an event interface contains many methods, there are no spaces between methods in SuiteListenerToEvent
+		OK - when an event interface contains many methods, there are no spaces between methods in SuiteListenerToEvent
 		- get generic method parameter types using java.lang.reflect.Method#getGenericParameterTypes, use it to also replace the current generics printing (ParameterizedType can be created from a dummy field)
 			- for example listener method with a List<String> parameter
 		- extract domain object for imports
 		- extract domain objects for classes and methods, then gather imports using the visitor pattern?
+		- IDEA reformats imports differently than the code generator generates - unify them?
 	- put end-to-end tests in their own package (test.fi.jumi?), separate them from unit tests
 		- or use JUnit categories, maybe with a custom runner?
 	- test execution might be best implemented using regular thread pools instead of actors

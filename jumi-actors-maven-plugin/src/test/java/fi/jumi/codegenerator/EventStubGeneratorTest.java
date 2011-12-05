@@ -44,8 +44,11 @@ public class EventStubGeneratorTest {
         DummyListener frontend = factory.newFrontend(backend);
 
         frontend.onSomething("foo", "bar");
+        frontend.onOther();
 
         verify(target).onSomething("foo", "bar");
+        verify(target).onOther();
+        verifyNoMoreInteractions(target);
     }
 
     @Test
@@ -77,7 +80,9 @@ public class EventStubGeneratorTest {
 
     @Test
     public void generates_event_classes() throws IOException {
-        assertClassEquals("fi/jumi/codegenerator/dummy/OnSomethingEvent.java", generator.getEvents().get(0));
+        List<GeneratedClass> events = generator.getEvents();
+        assertClassEquals("fi/jumi/codegenerator/dummy/OnOtherEvent.java", events.get(0));
+        assertClassEquals("fi/jumi/codegenerator/dummy/OnSomethingEvent.java", events.get(1));
     }
 
     @Test

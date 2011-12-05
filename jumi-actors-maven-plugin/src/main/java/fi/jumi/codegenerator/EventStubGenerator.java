@@ -62,7 +62,12 @@ public class EventStubGenerator {
 
         // TODO: extract a domain class to represent methods?
         StringBuilder methods = new StringBuilder();
-        for (Method method : listenerType.getMethods()) {
+        boolean first = true;
+        for (Method method : listenerMethods()) {
+            if (!first) {
+                methods.append("\n");
+            }
+            first = false;
             methods.append(delegateMethodToSender(method, sender));
         }
 
@@ -102,7 +107,7 @@ public class EventStubGenerator {
 
     public List<GeneratedClass> getEvents() {
         List<GeneratedClass> events = new ArrayList<GeneratedClass>();
-        for (Method method : listenerType.getMethods()) {
+        for (Method method : listenerMethods()) {
             String className = myEventWrapperName(method);
             ArgumentList arguments = new ArgumentList(method);
 
@@ -140,7 +145,7 @@ public class EventStubGenerator {
         // TODO: extract class Imports
         // TODO: do not add unnecessary imports, but check that which ones are really needed by the current class
         List<Type> imports = new ArrayList<Type>();
-        for (Method method : listenerType.getMethods()) {
+        for (Method method : listenerMethods()) {
             for (Class<?> clazz : method.getParameterTypes()) {
                 imports.add(new Type(clazz));
             }
@@ -282,5 +287,18 @@ public class EventStubGenerator {
 
     private Type senderInterface(Type t) {
         return senderInterfaceRaw.withTypeParameter(t);
+    }
+
+
+    // other helper methods
+
+    private Method[] listenerMethods() {
+        Method[] methods = listenerType.getMethods();
+        Arrays.sort(methods, new Comparator<Method>() {
+            public int compare(Method m1, Method m2) {
+                return m1.getName().compareTo(m2.getName());
+            }
+        });
+        return methods;
     }
 }
