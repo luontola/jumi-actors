@@ -254,6 +254,10 @@
                 <plugin>
                     <artifactId>maven-shade-plugin</artifactId>
                     <version>1.4</version>
+                    <configuration>
+                        <!-- TODO: This also minimizes jumi-core when it's included in jumi-daemon. Keep watch whether it causes problems. -->
+                        <minimizeJar>true</minimizeJar>
+                    </configuration>
                 </plugin>
 
                 <plugin>
