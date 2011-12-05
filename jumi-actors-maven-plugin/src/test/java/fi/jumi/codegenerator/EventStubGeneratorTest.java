@@ -114,12 +114,10 @@ public class EventStubGeneratorTest {
         generator = new EventStubGenerator(ExternalLibraryReferencingListener.class, TARGET_PACKAGE);
 
         GeneratedClass event = generator.getEvents().get(0);
-        assertThat(event.source, containsString("import java.util.*;"));
+        assertThat(event.source, containsString("import java.util.Random;"));
 
         GeneratedClass frontend = generator.getFrontend();
-        assertThat(frontend.source, containsString("import java.util.*;"));
-
-        // TODO: single class imports if less than N classes?
+        assertThat(frontend.source, containsString("import java.util.Random;"));
     }
 
     @Test
@@ -127,12 +125,12 @@ public class EventStubGeneratorTest {
         generator = new EventStubGenerator(GenericParametersListener.class, TARGET_PACKAGE);
 
         GeneratedClass event = generator.getEvents().get(0);
-        assertThat(event.source, containsString("import java.util.*"));
-        assertThat(event.source, containsString("import java.io.*"));
+        assertThat(event.source, containsString("import java.util.List;"));
+        assertThat(event.source, containsString("import java.io.File;"));
 
         GeneratedClass frontend = generator.getFrontend();
-        assertThat(frontend.source, containsString("import java.util.*"));
-        assertThat(frontend.source, containsString("import java.io.*"));
+        assertThat(frontend.source, containsString("import java.util.List;"));
+        assertThat(frontend.source, containsString("import java.io.File;"));
     }
 
     @Test

@@ -1,7 +1,8 @@
 package fi.jumi.codegenerator.dummy;
 
-import fi.jumi.actors.*;
-import fi.jumi.codegenerator.*;
+import fi.jumi.actors.Event;
+import fi.jumi.actors.MessageSender;
+import fi.jumi.codegenerator.DummyListener;
 
 public class DummyListenerToEvent implements DummyListener {
 

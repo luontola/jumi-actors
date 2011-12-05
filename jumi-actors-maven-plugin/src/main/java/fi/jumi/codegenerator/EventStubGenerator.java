@@ -42,18 +42,25 @@ public class EventStubGenerator {
     public GeneratedClass getFactory() {
         ClassBuilder cb = new ClassBuilder(myFactoryName(), targetPackage);
         cb.implement(factoryInterface);
+
+        String listenerName = cb.getImportedName(listenerInterface);
+        String senderName = cb.getImportedName(senderInterface);
+
         cb.addMethod("" +
-                "    public Class<" + listenerName() + "> getType() {\n" +
-                "        return " + listenerName() + ".class;\n" +
+                "    public Class<" + listenerName + "> getType() {\n" +
+                "        return " + listenerName + ".class;\n" +
                 "    }\n");
+
         cb.addMethod("" +
-                "    public " + listenerName() + " newFrontend(" + senderName() + " target) {\n" +
+                "    public " + listenerName + " newFrontend(" + senderName + " target) {\n" +
                 "        return new " + myFrontendName() + "(target);\n" +
                 "    }\n");
+
         cb.addMethod("" +
-                "    public " + senderName() + " newBackend(" + listenerName() + " target) {\n" +
+                "    public " + senderName + " newBackend(" + listenerName + " target) {\n" +
                 "        return new " + myBackendName() + "(target);\n" +
                 "    }\n");
+
         return cb.build();
     }
 
@@ -63,20 +70,16 @@ public class EventStubGenerator {
         ClassBuilder cb = new ClassBuilder(myFrontendName(), targetPackage);
         cb.implement(listenerInterface);
         cb.fieldsAndConstructorParameters(new ArgumentList(sender));
+
         for (Method method : listenerMethods) {
-            cb.addImport(JavaType.allOf(method.getGenericParameterTypes()));
-            cb.addMethod(delegateMethodToSender(method, sender));
+            ArgumentList arguments = new ArgumentList(method);
+            cb.addImport(arguments);
+            cb.addMethod("" +
+                    "    public void " + method.getName() + "(" + arguments.toFormalArguments() + ") {\n" +
+                    "        " + sender.name + ".send(new " + myEventWrapperName(method) + "(" + arguments.toActualArguments() + "));\n" +
+                    "    }\n");
         }
         return cb.build();
-    }
-
-    private StringBuilder delegateMethodToSender(Method method, Argument sender) {
-        ArgumentList arguments = new ArgumentList(method);
-        StringBuilder sb = new StringBuilder();
-        sb.append("    public void " + method.getName() + "(" + arguments.toFormalArguments() + ") {\n");
-        sb.append("        " + sender.name + ".send(new " + myEventWrapperName(method) + "(" + arguments.toActualArguments() + "));\n");
-        sb.append("    }\n");
-        return sb;
     }
 
     public GeneratedClass getBackend() {
@@ -85,10 +88,13 @@ public class EventStubGenerator {
         ClassBuilder cb = new ClassBuilder(myBackendName(), targetPackage);
         cb.implement(senderInterface);
         cb.fieldsAndConstructorParameters(new ArgumentList(listener));
+
+        String eventName = cb.getImportedName(eventInterface);
         cb.addMethod("" +
-                "    public void send(" + eventName() + " message) {\n" +
+                "    public void send(" + eventName + " message) {\n" +
                 "        message.fireOn(" + listener.name + ");\n" +
                 "    }\n");
+
         return cb.build();
     }
 
@@ -102,15 +108,19 @@ public class EventStubGenerator {
             cb.implement(JavaType.of(Serializable.class));
             cb.fieldsAndConstructorParameters(arguments);
 
-            cb.addImport(JavaType.allOf(method.getGenericParameterTypes()));
+            String listenerName = cb.getImportedName(listenerInterface);
+            cb.addImport(arguments);
+
             cb.addMethod("" +
-                    "    public void fireOn(" + listenerName() + " target) {\n" +
+                    "    public void fireOn(" + listenerName + " target) {\n" +
                     "        target." + method.getName() + "(" + arguments.toActualArguments() + ");\n" +
                     "    }\n");
+
             cb.addMethod("" +
                     "    public String toString() {\n" +
-                    "        return \"" + listenerName() + "." + method.getName() + "(" + arguments.toToString() + ")\";\n" +
+                    "        return \"" + listenerName + "." + method.getName() + "(" + arguments.toToString() + ")\";\n" +
                     "    }\n");
+
             events.add(cb.build());
         }
 
@@ -126,33 +136,18 @@ public class EventStubGenerator {
     // names of generated classes
 
     private String myFactoryName() {
-        return listenerName() + "Factory";
+        return listenerInterface.getRawName() + "Factory";
     }
 
     private String myFrontendName() {
-        return listenerName() + "ToEvent";
+        return listenerInterface.getRawName() + "ToEvent";
     }
 
     private String myBackendName() {
-        return "EventTo" + listenerName();
+        return "EventTo" + listenerInterface.getRawName();
     }
 
     private String myEventWrapperName(Method method) {
         return StringUtils.capitalizeFirstLetter(method.getName()) + "Event";
-    }
-
-
-    // names of parameter classes
-
-    private String listenerName() {
-        return listenerInterface.getSimpleName();
-    }
-
-    private String eventName() {
-        return eventInterface.getSimpleName();
-    }
-
-    private String senderName() {
-        return senderInterface.getSimpleName();
     }
 }

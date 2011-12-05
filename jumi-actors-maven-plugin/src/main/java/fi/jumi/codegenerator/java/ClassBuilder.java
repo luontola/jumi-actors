@@ -14,7 +14,7 @@ public class ClassBuilder {
 
     private final StringBuilder methods = new StringBuilder();
     private final List<JavaType> interfaces = new ArrayList<JavaType>();
-    private final List<Class<?>> imports = new ArrayList<Class<?>>();
+    private final List<Class<?>> classesToImport = new ArrayList<Class<?>>();
     private ArgumentList constructorArguments = new ArgumentList();
 
     public ClassBuilder(String className, String targetPackage) {
@@ -29,16 +29,26 @@ public class ClassBuilder {
     }
 
     public ClassBuilder fieldsAndConstructorParameters(ArgumentList arguments) {
+        addImport(arguments);
+        this.constructorArguments = arguments;
+        return this;
+    }
+
+    public String getImportedName(JavaType type) {
+        addImport(type);
+        return type.getSimpleName();
+    }
+
+    public ClassBuilder addImport(ArgumentList arguments) {
         for (Argument argument : arguments) {
             addImport(argument.type);
         }
-        this.constructorArguments = arguments;
         return this;
     }
 
     public ClassBuilder addImport(JavaType... types) {
         for (JavaType type : types) {
-            imports.addAll(type.getRawTypesToImport());
+            classesToImport.addAll(type.getRawTypesToImport());
         }
         return this;
     }
@@ -55,10 +65,14 @@ public class ClassBuilder {
         StringBuilder source = new StringBuilder();
         source.append(packageStatement());
         source.append(importStatements());
-        source.append(classBody(className, constructorArguments, methods, interfaces));
-
+        source.append(classBody());
         return new GeneratedClass(fileForClass(className), source.toString());
     }
+
+    private String fileForClass(String className) {
+        return targetPackage.replace('.', '/') + "/" + className + ".java";
+    }
+
 
     // source fragments
 
@@ -66,30 +80,26 @@ public class ClassBuilder {
         return "package " + targetPackage + ";\n\n";
     }
 
-
-    private String fileForClass(String className) {
-        return targetPackage.replace('.', '/') + "/" + className + ".java";
-    }
-
     private StringBuilder importStatements() {
+        SortedSet<String> imports = new TreeSet<String>();
+        for (Class<?> type : classesToImport) {
+            String packageName = type.getPackage().getName();
+            // TODO: do not import classes from target package
+            if (packageName.equals("java.lang")) {
+                continue;
+            }
+            imports.add(type.getName());
+        }
+
         StringBuilder sb = new StringBuilder();
-        for (String classToImport : classesToImport()) {
-            sb.append("import " + classToImport + ";\n");
+        for (String anImport : imports) {
+            sb.append("import " + anImport + ";\n");
         }
         sb.append("\n");
         return sb;
     }
 
-    private Collection<String> classesToImport() {
-        SortedSet<String> wildcardImports = new TreeSet<String>();
-        for (Class<?> type : imports) {
-            wildcardImports.add(type.getPackage().getName() + ".*");
-        }
-        wildcardImports.remove("java.lang.*");
-        return wildcardImports;
-    }
-
-    private StringBuilder classBody(String className, ArgumentList constructorArguments, StringBuilder methods, List<JavaType> interfaces) {
+    private StringBuilder classBody() {
         StringBuilder sb = new StringBuilder();
         sb.append("public class " + className + " implements " + toImplementsDeclaration(interfaces) + " {\n");
         sb.append("\n");

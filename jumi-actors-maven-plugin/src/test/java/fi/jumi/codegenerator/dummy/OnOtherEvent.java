@@ -1,8 +1,8 @@
 package fi.jumi.codegenerator.dummy;
 
-import fi.jumi.actors.*;
-import fi.jumi.codegenerator.*;
-import java.io.*;
+import fi.jumi.actors.Event;
+import fi.jumi.codegenerator.DummyListener;
+import java.io.Serializable;
 
 public class OnOtherEvent implements Event<DummyListener>, Serializable {
 
