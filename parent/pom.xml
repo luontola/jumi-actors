@@ -289,4 +289,40 @@
         </pluginManagement>
     </build>
 
+    <profiles>
+        <profile>
+            <id>coverage-report</id>
+            <build>
+                <!-- XXX: All child modules must add some boilerplate to enable pitest-maven,
+                     because the plugin will fail if there are no sources. Otherwise we could
+                     get rid of <pluginManagement> and define the plugin here once and for all.
+                     Wait for http://code.google.com/p/pitestrunner/issues/detail?id=13 to be fixed. -->
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.pitest</groupId>
+                            <artifactId>pitest-maven</artifactId>
+                            <version>0.24</version>
+                            <executions>
+                                <execution>
+                                    <goals>
+                                        <goal>mutationCoverage</goal>
+                                    </goals>
+                                </execution>
+                            </executions>
+                            <configuration>
+                                <inScopeClasses>
+                                    <param>fi.jumi.*</param>
+                                </inScopeClasses>
+                                <targetClasses>
+                                    <param>fi.jumi.*</param>
+                                </targetClasses>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+    </profiles>
+
 </project>
