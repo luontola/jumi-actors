@@ -167,6 +167,16 @@
                 <version>3.3.1</version>
             </dependency>
 
+            <!-- Prevent dependency on junit:junit, use only junit:junit-dep
+                 (at least org.apache.maven:maven-project is affected by this) -->
+
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.8.2</version>
+                <scope>provided</scope>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
