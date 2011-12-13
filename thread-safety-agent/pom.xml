@@ -101,7 +101,7 @@
                             <excludedClasses>
                                 <!-- Negating certain 'if' in this class would dump all generated
                                      classes into the current working directory, polluting it. -->
-                                <class>fi.jumi.threadsafetyagent.util.TransformationTestClassLoader</class>
+                                <pattern>fi.jumi.threadsafetyagent.util.TransformationTestClassLoader</pattern>
                             </excludedClasses>
                         </configuration>
                     </plugin>

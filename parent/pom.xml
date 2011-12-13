@@ -311,12 +311,32 @@
                                 </execution>
                             </executions>
                             <configuration>
+                                <threads>4</threads>
                                 <inScopeClasses>
-                                    <param>fi.jumi.*</param>
+                                    <pattern>fi.jumi.*</pattern>
                                 </inScopeClasses>
                                 <targetClasses>
-                                    <param>fi.jumi.*</param>
+                                    <pattern>fi.jumi.*</pattern>
                                 </targetClasses>
+
+                                <!-- All mutators from http://pitest.org/quickstart/mutators/ (or org.pitest.mutationtest.Mutator) -->
+                                <mutators>
+                                    <mutator>CONDITIONALS_BOUNDARY</mutator>
+                                    <mutator>NEGATE_CONDITIONALS</mutator>
+                                    <mutator>MATH</mutator>
+                                    <mutator>INCREMENTS</mutator>
+                                    <mutator>INVERT_NEGS</mutator>
+                                    <mutator>INLINE_CONSTS</mutator>
+                                    <mutator>RETURN_VALS</mutator>
+                                    <mutator>VOID_METHOD_CALLS</mutator>
+                                    <mutator>NON_VOID_METHOD_CALLS</mutator>
+                                    <mutator>CONSTRUCTOR_CALLS</mutator>
+                                    <mutator>EXPERIMENTAL_INLINE_CONSTS</mutator>
+                                </mutators>
+
+                                <!-- Causes false warnings about <clinit> when a class contains assertions,
+                                     e.g. "removed call to java/lang/Class::desiredAssertionStatus : SURVIVED" -->
+                                <mutateStaticInitializers>true</mutateStaticInitializers>
                             </configuration>
                         </plugin>
                     </plugins>

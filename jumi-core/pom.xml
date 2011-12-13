@@ -149,7 +149,7 @@
                         <configuration>
                             <excludedClasses>
                                 <!-- Exclude generated classes -->
-                                <param>fi.jumi.core.events.*</param>
+                                <pattern>fi.jumi.core.events.*</pattern>
                             </excludedClasses>
                         </configuration>
                     </plugin>
