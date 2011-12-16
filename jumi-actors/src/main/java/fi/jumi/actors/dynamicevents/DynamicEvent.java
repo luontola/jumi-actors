@@ -24,7 +24,6 @@ public class DynamicEvent<T> implements Event<T>, Serializable {
 
     public void fireOn(T target) {
         try {
-            method.setAccessible(true);
             method.invoke(target, args);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
@@ -53,6 +52,8 @@ public class DynamicEvent<T> implements Event<T>, Serializable {
     }
 
     public String toString() {
-        return getClass().getSimpleName() + "(" + method + ", " + Arrays.toString(args) + ")";
+        String args = Arrays.toString(this.args);
+        args = args.substring(1, args.length() - 1);
+        return method.getDeclaringClass().getSimpleName() + "." + method.getName() + "(" + args + ")";
     }
 }
