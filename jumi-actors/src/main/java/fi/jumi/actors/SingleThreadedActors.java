@@ -40,20 +40,25 @@ public class SingleThreadedActors extends Actors {
                     handleUncaughtException(poller, t);
                 }
             }
-            for (Runnable worker : workers) {
+            for (Runnable worker : takeAll(workers)) {
+                idle = false;
                 try {
                     worker.run();
                 } catch (Throwable t) {
                     handleUncaughtException(worker, t);
                 }
-                idle = false;
             }
-            workers.clear();
         } while (!idle);
     }
 
     protected void handleUncaughtException(Object source, Throwable uncaughtException) {
         throw new Error("uncaught exception from " + source, uncaughtException);
+    }
+
+    private static ArrayList<Runnable> takeAll(List<Runnable> list) {
+        ArrayList<Runnable> copy = new ArrayList<Runnable>(list);
+        list.clear();
+        return copy;
     }
 
 

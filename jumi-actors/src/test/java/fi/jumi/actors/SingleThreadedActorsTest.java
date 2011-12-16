@@ -8,6 +8,9 @@ import org.junit.Test;
 
 import java.util.*;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
 public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActors> {
 
     private final List<SingleThreadedActors> createdActors = new ArrayList<SingleThreadedActors>();
@@ -59,5 +62,52 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
         thrown.expect(Error.class);
         thrown.expectMessage("uncaught exception");
         actors.processEventsUntilIdle();
+    }
+
+    @Test
+    public void will_keep_on_processing_messages_when_uncaught_exceptions_from_pollers_are_suppressed() {
+        final List<Throwable> uncaughtExceptions = new ArrayList<Throwable>();
+        SingleThreadedActors actors = new SingleThreadedActors(new DummyListenerFactory()) {
+            protected void handleUncaughtException(Object source, Throwable uncaughtException) {
+                uncaughtExceptions.add(uncaughtException);
+            }
+        };
+
+        DummyListener actor = actors.createPrimaryActor(DummyListener.class, new DummyListener() {
+            public void onSomething(String parameter) {
+                throw new RuntimeException("dummy exception");
+            }
+        }, "DummyActor");
+        actor.onSomething("one");
+        actor.onSomething("two");
+        actors.processEventsUntilIdle();
+
+        assertThat("uncaught exceptions count", uncaughtExceptions.size(), is(2));
+    }
+
+    @Test
+    public void will_keep_on_processing_messages_when_uncaught_exceptions_from_workers_are_suppressed_and_workers_launch_more_workers() {
+        final List<Throwable> uncaughtExceptions = new ArrayList<Throwable>();
+        final SingleThreadedActors actors = new SingleThreadedActors(new DummyListenerFactory()) {
+            protected void handleUncaughtException(Object source, Throwable uncaughtException) {
+                uncaughtExceptions.add(uncaughtException);
+            }
+        };
+
+        final Runnable worker2 = new Runnable() {
+            public void run() {
+                throw new RuntimeException("dummy exception");
+            }
+        };
+        Runnable worker1 = new Runnable() {
+            public void run() {
+                actors.doStartUnattendedWorker(worker2);
+                throw new RuntimeException("dummy exception");
+            }
+        };
+        actors.doStartUnattendedWorker(worker1);
+        actors.processEventsUntilIdle();
+
+        assertThat("uncaught exceptions count", uncaughtExceptions.size(), is(2));
     }
 }
