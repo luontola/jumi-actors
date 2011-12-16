@@ -41,7 +41,7 @@ public class ClassNameMatcher {
 
     private static boolean subpackagePatternAt(int i, String pattern) {
         return packagePatternAt(i, pattern)
-                && packagePatternAt(i + 1, pattern);
+                && packagePatternAt(i + 1, pattern); // PIT: false warning about "Replaced integer addition with subtraction"
     }
 
     private static boolean packagePatternAt(int i, String pattern) {
