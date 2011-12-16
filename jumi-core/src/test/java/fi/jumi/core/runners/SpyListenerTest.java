@@ -111,6 +111,16 @@ public class SpyListenerTest {
     }
 
     @Test
+    public void fails_if_an_overloaded_version_of_the_expected_method_was_called() {
+        listener.overloadedMethod(1);
+        spy.replay();
+
+        listener.overloadedMethod(1, 2);
+
+        fails();
+    }
+
+    @Test
     public void failure_messages_contain_an_ordered_list_of_all_expected_method_calls() {
         listener.onFirst();
         listener.onSecond();
@@ -198,5 +208,9 @@ public class SpyListenerTest {
         void onParameter(int parameter);
 
         void onException(Throwable cause);
+
+        void overloadedMethod(int one);
+
+        void overloadedMethod(int one, int two);
     }
 }

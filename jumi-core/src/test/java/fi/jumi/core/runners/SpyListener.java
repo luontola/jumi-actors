@@ -11,8 +11,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class SpyListener<T> implements InvocationHandler {
 
-    // TODO: refactor this into a generic class, using dynamic proxies
-
     static final String ERROR_MARKER = "     ^^^^^^^^^^^^^^";
 
     private final Class<T> listenerType;
