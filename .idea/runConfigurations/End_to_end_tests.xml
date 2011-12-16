@@ -23,6 +23,7 @@
       <value defaultName="singleModule" />
     </option>
     <envs />
+    <patterns />
     <RunnerSettings RunnerId="Run" />
     <ConfigurationWrapper RunnerId="Run" />
     <method>
