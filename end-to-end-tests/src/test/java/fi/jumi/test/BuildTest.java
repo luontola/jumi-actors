@@ -43,6 +43,7 @@ public class BuildTest {
     }
 
     @Parameters
+    @SuppressWarnings("unchecked")
     public static Collection<Object[]> data() {
         return asList(new Object[][]{
                 {"jumi-actors",
