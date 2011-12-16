@@ -7,7 +7,7 @@ package fi.jumi.codegenerator.java;
 import java.lang.reflect.*;
 import java.util.*;
 
-public abstract class JavaType implements Comparable<JavaType> {
+public abstract class JavaType {
 
     public static JavaType of(Type type) {
         return JavaType.of(type, typeArgumentsOf(type));
@@ -39,20 +39,12 @@ public abstract class JavaType implements Comparable<JavaType> {
         return new JavaType[0];
     }
 
-    public static JavaType[] allOf(Type[] types) {
-        return asJavaTypes(types);
-    }
-
     private static JavaType[] asJavaTypes(Type[] args) {
         JavaType[] results = new JavaType[args.length];
         for (int i = 0; i < args.length; i++) {
             results[i] = JavaType.of(args[i]);
         }
         return results;
-    }
-
-    public int compareTo(JavaType that) {
-        return getSimpleName().compareTo(that.getSimpleName());
     }
 
     public abstract String getPackage();
