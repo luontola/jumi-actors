@@ -213,4 +213,24 @@
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>coverage-report</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-maven</artifactId>
+                        <configuration>
+                            <excludedClasses>
+                                <!-- Disable mutation testing -->
+                                <pattern>*</pattern>
+                            </excludedClasses>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 </project>

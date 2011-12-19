@@ -51,6 +51,20 @@
         <minimumMavenVersion>3.0.3</minimumMavenVersion>
     </properties>
 
+    <pluginRepositories>
+        <!-- TODO: remove after upgrading to pitest-maven's production release -->
+        <pluginRepository>
+            <id>sonatype-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
     <dependencies>
 
         <!-- Testing -->
@@ -293,43 +307,37 @@
         <profile>
             <id>coverage-report</id>
             <build>
-                <!-- XXX: All child modules must add some boilerplate to enable pitest-maven,
-                     because the plugin will fail if there are no sources. Otherwise we could
-                     get rid of <pluginManagement> and define the plugin here once and for all.
-                     Wait for http://code.google.com/p/pitestrunner/issues/detail?id=13 to be fixed. -->
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.pitest</groupId>
-                            <artifactId>pitest-maven</artifactId>
-                            <!-- TODO: upgrade to production release (until then must build from source) -->
-                            <version>0.25-SNAPSHOT</version>
-                            <executions>
-                                <execution>
-                                    <goals>
-                                        <goal>mutationCoverage</goal>
-                                    </goals>
-                                </execution>
-                            </executions>
-                            <configuration>
-                                <threads>4</threads>
-                                <inScopeClasses>
-                                    <pattern>fi.jumi.*</pattern>
-                                </inScopeClasses>
-                                <targetClasses>
-                                    <pattern>fi.jumi.*</pattern>
-                                </targetClasses>
+                <plugins>
+                    <plugin>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-maven</artifactId>
+                        <version>0.25-SNAPSHOT</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>mutationCoverage</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <threads>4</threads>
+                            <inScopeClasses>
+                                <pattern>fi.jumi.*</pattern>
+                            </inScopeClasses>
+                            <targetClasses>
+                                <pattern>fi.jumi.*</pattern>
+                            </targetClasses>
+                            <failWhenNoMutations>false</failWhenNoMutations>
 
-                                <mutators>
-                                    <mutator>ALL</mutator>
-                                </mutators>
-                                <!-- NOTE: Causes false warnings about <clinit> when a class contains assertions,
-                                     e.g. "removed call to java/lang/Class::desiredAssertionStatus : SURVIVED" -->
-                                <mutateStaticInitializers>true</mutateStaticInitializers>
-                            </configuration>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
+                            <mutators>
+                                <mutator>ALL</mutator>
+                            </mutators>
+                            <!-- NOTE: Causes false warnings about <clinit> when a class contains assertions,
+                                       e.g. "removed call to java/lang/Class::desiredAssertionStatus : SURVIVED" -->
+                            <mutateStaticInitializers>true</mutateStaticInitializers>
+                        </configuration>
+                    </plugin>
+                </plugins>
             </build>
         </profile>
     </profiles>

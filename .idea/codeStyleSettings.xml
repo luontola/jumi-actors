@@ -4,6 +4,7 @@
     <option name="PER_PROJECT_SETTINGS">
       <value>
         <XML>
+          <option name="XML_ATTRIBUTE_WRAP" value="0" />
           <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />
         </XML>
       </value>
