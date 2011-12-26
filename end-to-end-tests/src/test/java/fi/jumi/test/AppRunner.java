@@ -10,39 +10,43 @@ import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
 import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertTrue;
 
 public class AppRunner implements MethodRule {
+
+    private static final String NEWLINE = System.getProperty("line.separator");
 
     // TODO: use a proper sandbox utility
     private final File sandboxDir = new File(TestEnvironment.getSandboxDir(), UUID.randomUUID().toString());
 
     private final JumiLauncher launcher = new JumiLauncher();
+    private final ByteArrayOutputStream out = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream err = new ByteArrayOutputStream();
 
     public void runTests(String testsToInclude) throws IOException, InterruptedException {
         launcher.addToClassPath(TestEnvironment.getSampleClasses());
         launcher.setTestsToInclude(testsToInclude);
         launcher.start();
-        launcher.awaitSuiteFinished();
+
+        TextUI ui = new TextUI(new PrintStream(out), new PrintStream(err), launcher);
+        ui.run();
     }
 
     public void checkTotalTests(int expected) {
-        assertThat("total tests", launcher.getTotalTests(), is(expected));
+        assertThat("total tests", out.toString(), containsString("Total: " + expected + NEWLINE));
     }
 
     public void checkFailingTests(int expected) {
-        assertThat("failing tests", launcher.getFailingTests(), is(expected));
+        assertThat("failing tests", out.toString(), containsString("Fail: " + expected + ","));
     }
 
     public void checkPassingTests(int expected) {
-        assertThat("passing tests", launcher.getPassingTests(), is(expected));
+        assertThat("passing tests", out.toString(), containsString("Pass: " + expected + ","));
     }
 
 
