@@ -6,6 +6,7 @@ package fi.jumi.test;
 
 import fi.jumi.launcher.JumiLauncher;
 import org.apache.commons.io.FileUtils;
+import org.junit.ComparisonFailure;
 import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
@@ -37,8 +38,14 @@ public class AppRunner implements MethodRule {
         launcher.setTestsToInclude(testsToInclude);
         launcher.start();
 
-        TextUI ui = new TextUI(new PrintStream(out), new PrintStream(err), launcher);
-        ui.run();
+        TextUI ui = new TextUI(new PrintStream(out), new PrintStream(out), launcher);
+        ui.runToCompletion();
+
+        synchronized (System.out) {
+            System.out.println("--- TEXT UI OUTPUT ----");
+            System.out.println(out.toString());
+            System.out.println("--- / TEXT UI OUTPUT ----");
+        }
     }
 
     public void checkTotalTests(int expected) {
@@ -53,8 +60,26 @@ public class AppRunner implements MethodRule {
         assertThat("passing tests", out.toString(), containsString("Pass: " + expected + ","));
     }
 
-    public void checkHasStackTrace(String stackTrace) {
-        assertThat("stack trace", out.toString(), containsString(stackTrace));
+    public void checkHasStackTrace(String... elements) {
+        String actual = out.toString();
+        int pos = 0;
+        for (String element : elements) {
+            pos = actual.indexOf(element, pos);
+            if (pos < 0) {
+                throw new ComparisonFailure("stack trace not found", asLines(elements), actual);
+            }
+        }
+    }
+
+    private static String asLines(String[] ss) {
+        StringBuilder sb = new StringBuilder();
+        for (String s : ss) {
+            if (sb.length() > 0) {
+                sb.append('\n');
+            }
+            sb.append(s);
+        }
+        return sb.toString();
     }
 
     // JUnit integration

@@ -4,9 +4,12 @@
 
 package fi.jumi.launcher;
 
-import fi.jumi.actors.*;
+import fi.jumi.actors.Event;
+import fi.jumi.actors.MessageQueue;
 import fi.jumi.actors.dynamicevents.EventToDynamicListener;
-import fi.jumi.core.*;
+import fi.jumi.core.CommandListener;
+import fi.jumi.core.SuiteListener;
+import fi.jumi.core.SuiteStateCollector;
 import fi.jumi.core.events.command.CommandListenerFactory;
 import fi.jumi.launcher.daemon.Daemon;
 import org.apache.commons.io.IOUtils;
@@ -14,13 +17,17 @@ import org.apache.commons.io.output.NullWriter;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.socket.oio.OioServerSocketChannelFactory;
-import org.jboss.netty.handler.codec.serialization.*;
+import org.jboss.netty.handler.codec.serialization.ObjectDecoder;
+import org.jboss.netty.handler.codec.serialization.ObjectEncoder;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.*;
 import java.net.InetSocketAddress;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 // TODO: annotate all classes
 
@@ -177,5 +184,9 @@ public class JumiLauncher {
 
     public int getFailingTests() {
         return suite.getState().getFailingTests();
+    }
+
+    public Throwable[] getFailureExceptions() {
+        return suite.getState().getFailureExceptions();
     }
 }

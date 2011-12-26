@@ -5,7 +5,8 @@
 package fi.jumi.core;
 
 import fi.jumi.api.drivers.TestId;
-import fj.*;
+import fj.F;
+import fj.Ord;
 import fj.data.TreeMap;
 
 import javax.annotation.concurrent.Immutable;
@@ -16,6 +17,11 @@ public class SuiteResults {
     private static final F<TestResults, Boolean> IS_PASSING = new F<TestResults, Boolean>() {
         public Boolean f(TestResults tr) {
             return tr.failure == null;
+        }
+    };
+    private static final F<TestResults, Throwable> GET_FAILURE = new F<TestResults, Throwable>() {
+        public Throwable f(TestResults testResults) {
+            return testResults.failure;
         }
     };
 
@@ -60,6 +66,10 @@ public class SuiteResults {
 
     public int getFailingTests() {
         return tests.values().removeAll(IS_PASSING).length();
+    }
+
+    public Throwable[] getFailureExceptions() {
+        return tests.values().removeAll(IS_PASSING).map(GET_FAILURE).array(Throwable[].class);
     }
 
     @Immutable

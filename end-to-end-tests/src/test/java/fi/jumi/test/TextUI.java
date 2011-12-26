@@ -22,11 +22,15 @@ public class TextUI {
         this.launcher = launcher;
     }
 
-    public void run() throws InterruptedException {
+    public void runToCompletion() throws InterruptedException {
         launcher.awaitSuiteFinished();
         int totalTests = launcher.getTotalTests();
         int passingTests = launcher.getPassingTests();
         int failingTests = launcher.getFailingTests();
+
+        for (Throwable throwable : launcher.getFailureExceptions()) {
+            throwable.printStackTrace(err);
+        }
 
         out.println("Pass: " + passingTests + ", Fail: " + failingTests + ", Total: " + totalTests);
     }

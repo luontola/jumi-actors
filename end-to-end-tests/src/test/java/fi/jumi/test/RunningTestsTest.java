@@ -4,7 +4,6 @@
 
 package fi.jumi.test;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import sample.OneFailingTest;
@@ -43,12 +42,11 @@ public class RunningTestsTest {
         app.checkFailingTests(1);
     }
 
-    @Ignore
     @Test(timeout = TIMEOUT)
     public void reports_failure_stack_traces() throws Exception {
         app.runTests(OneFailingTest.class);
 
-        app.checkHasStackTrace("java.lang.AssertionError: dummy failure\n\tat sample.OneFailingTest.testFailing");
+        app.checkHasStackTrace("java.lang.AssertionError: dummy failure", "at sample.OneFailingTest.testFailing");
     }
 
     // TODO: reporting test names
