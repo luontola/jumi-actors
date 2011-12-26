@@ -4,7 +4,7 @@
 
 package fi.jumi.launcher.ui;
 
-import fi.jumi.launcher.JumiLauncher;
+import fi.jumi.core.SuiteResults;
 
 import java.io.PrintStream;
 
@@ -14,22 +14,21 @@ public class TextUI {
 
     private final PrintStream out;
     private final PrintStream err;
-    private final JumiLauncher launcher;
+    private final SuiteResults results;
 
-    public TextUI(PrintStream out, PrintStream err, JumiLauncher launcher) {
+    public TextUI(PrintStream out, PrintStream err, SuiteResults results) {
         this.out = out;
         this.err = err;
-        this.launcher = launcher;
+        this.results = results;
     }
 
     public void runToCompletion() throws InterruptedException {
-        launcher.awaitSuiteFinished();
-        int totalTests = launcher.getTotalTests();
-        int passingTests = launcher.getPassingTests();
-        int failingTests = launcher.getFailingTests();
+        int totalTests = results.getTotalTests();
+        int passingTests = results.getPassingTests();
+        int failingTests = results.getFailingTests();
 
-        for (Throwable throwable : launcher.getFailureExceptions()) {
-            throwable.printStackTrace(err);
+        for (Throwable t : results.getFailureExceptions()) {
+            t.printStackTrace(err);
         }
 
         out.println("Pass: " + passingTests + ", Fail: " + failingTests + ", Total: " + totalTests);

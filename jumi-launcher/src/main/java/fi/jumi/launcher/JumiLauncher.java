@@ -9,6 +9,7 @@ import fi.jumi.actors.MessageQueue;
 import fi.jumi.actors.dynamicevents.EventToDynamicListener;
 import fi.jumi.core.CommandListener;
 import fi.jumi.core.SuiteListener;
+import fi.jumi.core.SuiteResults;
 import fi.jumi.core.SuiteStateCollector;
 import fi.jumi.core.events.command.CommandListenerFactory;
 import fi.jumi.launcher.daemon.Daemon;
@@ -174,19 +175,7 @@ public class JumiLauncher {
         this.jvmOptions = jvmOptions;
     }
 
-    public int getTotalTests() {
-        return suite.getState().getTotalTests();
-    }
-
-    public int getPassingTests() {
-        return suite.getState().getPassingTests();
-    }
-
-    public int getFailingTests() {
-        return suite.getState().getFailingTests();
-    }
-
-    public Throwable[] getFailureExceptions() {
-        return suite.getState().getFailureExceptions();
+    public SuiteResults getSuiteResults() {
+        return suite.getState();
     }
 }

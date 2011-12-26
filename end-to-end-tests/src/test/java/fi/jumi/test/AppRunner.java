@@ -39,7 +39,8 @@ public class AppRunner implements MethodRule {
         launcher.setTestsToInclude(testsToInclude);
         launcher.start();
 
-        TextUI ui = new TextUI(new PrintStream(out), new PrintStream(out), launcher);
+        launcher.awaitSuiteFinished(); // XXX: remove this line after TextUI handles concurrency itself
+        TextUI ui = new TextUI(new PrintStream(out), new PrintStream(out), launcher.getSuiteResults());
         ui.runToCompletion();
 
         synchronized (System.out) {
