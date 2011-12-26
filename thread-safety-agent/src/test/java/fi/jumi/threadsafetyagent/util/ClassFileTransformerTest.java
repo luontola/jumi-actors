@@ -5,14 +5,17 @@
 package fi.jumi.threadsafetyagent.util;
 
 import org.junit.Test;
-import org.objectweb.asm.*;
+import org.objectweb.asm.ClassAdapter;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 
 import java.lang.instrument.ClassFileTransformer;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-public class ClassFileTransformerSpec {
+public class ClassFileTransformerTest {
 
     @Test
     public void instruments_classes_with_the_provided_transformer() throws Exception {

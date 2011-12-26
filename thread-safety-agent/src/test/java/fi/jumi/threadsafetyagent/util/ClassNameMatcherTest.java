@@ -6,9 +6,10 @@ package fi.jumi.threadsafetyagent.util;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-public class ClassNameMatcherSpec {
+public class ClassNameMatcherTest {
 
     @Test
     public void matching_a_single_class() {
