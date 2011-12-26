@@ -31,4 +31,37 @@ public class TextUI {
 
         out.println("Pass: " + passingTests + ", Fail: " + failingTests + ", Total: " + totalTests);
     }
+
+    // TODO: spike code
+    /*
+    public void update() {
+        while (true) {
+            TestRunResult result = failedTestRunsStream.poll();
+            if (result == null) {
+                return;
+            }
+            print(result);
+        }
+        if (failedTestRuns.isClosed()) {
+            TestSuiteSummary result = summaryStream.poll();
+            if (result == null) {
+                return;
+            }
+            print(result)
+        }
+    }
+
+    public void updateUntilFinished() {
+        while (!failedTestRunsStream.isClosed()) {
+            TestRunResult result = failedTestRunsStream.take(); // blocking, raises exception if closed
+            print(result);
+        }
+        TestSuiteSummary result = summaryStream.take();
+        print(result)
+    }
+
+    public boolean isFinished() {
+        return failedTestRunsStream.isClosed() && summaryStream.isClosed();
+    }
+    */
 }
