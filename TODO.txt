@@ -1,6 +1,6 @@
 
 TODO NEXT:
-- end-to-end tests: reporting exception stack traces
+- end-to-end tests: text ui & reporting exception stack traces
 - misc refactoring
 	- put end-to-end tests in their own package (test.fi.jumi?), separate them from unit tests
 		- or use JUnit categories, maybe with a custom runner?

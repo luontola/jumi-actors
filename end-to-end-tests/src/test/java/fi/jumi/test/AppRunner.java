@@ -7,11 +7,16 @@ package fi.jumi.test;
 import fi.jumi.launcher.JumiLauncher;
 import org.apache.commons.io.FileUtils;
 import org.junit.rules.MethodRule;
-import org.junit.runners.model.*;
+import org.junit.runners.model.FrameworkMethod;
+import org.junit.runners.model.Statement;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.UUID;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertTrue;
 
 public class AppRunner implements MethodRule {
@@ -19,7 +24,29 @@ public class AppRunner implements MethodRule {
     // TODO: use a proper sandbox utility
     private final File sandboxDir = new File(TestEnvironment.getSandboxDir(), UUID.randomUUID().toString());
 
-    public final JumiLauncher launcher = new JumiLauncher();
+    private final JumiLauncher launcher = new JumiLauncher();
+
+    public void runTests(String testsToInclude) throws IOException, InterruptedException {
+        launcher.addToClassPath(TestEnvironment.getSampleClasses());
+        launcher.setTestsToInclude(testsToInclude);
+        launcher.start();
+        launcher.awaitSuiteFinished();
+    }
+
+    public void checkTotalTests(int expected) {
+        assertThat("total tests", launcher.getTotalTests(), is(expected));
+    }
+
+    public void checkFailingTests(int expected) {
+        assertThat("failing tests", launcher.getFailingTests(), is(expected));
+    }
+
+    public void checkPassingTests(int expected) {
+        assertThat("passing tests", launcher.getPassingTests(), is(expected));
+    }
+
+
+    // JUnit integration
 
     public Statement apply(final Statement base, FrameworkMethod method, Object target) {
         return new Statement() {

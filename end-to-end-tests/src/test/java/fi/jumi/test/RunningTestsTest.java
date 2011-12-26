@@ -4,54 +4,42 @@
 
 package fi.jumi.test;
 
-import fi.jumi.launcher.JumiLauncher;
-import org.junit.*;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import org.junit.Rule;
+import org.junit.Test;
 
 public class RunningTestsTest {
 
     private static final int TIMEOUT = 2000;
 
-    @Rule public final AppRunner app = new AppRunner();
-    private final JumiLauncher launcher = app.launcher;
+    @Rule
+    public final AppRunner app = new AppRunner();
+
 
     @Test(timeout = TIMEOUT)
     public void suite_with_zero_tests() throws Exception {
-        launcher.addToClassPath(TestEnvironment.getSampleClasses());
-        launcher.setTestsToInclude("sample.notests.*Test");
-        launcher.start();
-        launcher.awaitSuiteFinished();
+        app.runTests("sample.notests.*Test");
 
-        assertThat("total tests", launcher.getTotalTests(), is(0));
+        app.checkTotalTests(0);
     }
 
     @Test(timeout = TIMEOUT)
     public void suite_with_one_passing_test() throws Exception {
-        launcher.addToClassPath(TestEnvironment.getSampleClasses());
-        launcher.setTestsToInclude("sample.OnePassingTest");
-        launcher.start();
-        launcher.awaitSuiteFinished();
+        app.runTests("sample.OnePassingTest");
 
-        assertThat("total tests", launcher.getTotalTests(), is(2)); // test class plus its one test method
-        assertThat("passing tests", launcher.getPassingTests(), is(2));
-        assertThat("failing tests", launcher.getFailingTests(), is(0));
+        app.checkTotalTests(2);
+        app.checkPassingTests(2);
+        app.checkFailingTests(0);
     }
 
     @Test(timeout = TIMEOUT)
     public void suite_with_one_failing_test() throws Exception {
-        launcher.addToClassPath(TestEnvironment.getSampleClasses());
-        launcher.setTestsToInclude("sample.OneFailingTest");
-        launcher.start();
-        launcher.awaitSuiteFinished();
+        app.runTests("sample.OneFailingTest");
 
-        assertThat("total tests", launcher.getTotalTests(), is(2)); // test class plus its one test method
-        assertThat("passing tests", launcher.getPassingTests(), is(1));
-        assertThat("failing tests", launcher.getFailingTests(), is(1));
+        app.checkTotalTests(2);
+        app.checkPassingTests(1);
+        app.checkFailingTests(1);
     }
 
-    // TODO: passing & failing tests
     // TODO: reporting test names
     // TODO: reporting stack traces
 }
