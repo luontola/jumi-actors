@@ -5,6 +5,7 @@
 package fi.jumi.test;
 
 import fi.jumi.launcher.JumiLauncher;
+import fi.jumi.launcher.ui.TextUI;
 import org.apache.commons.io.FileUtils;
 import org.junit.ComparisonFailure;
 import org.junit.rules.MethodRule;
