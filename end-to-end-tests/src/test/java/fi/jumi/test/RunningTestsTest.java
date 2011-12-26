@@ -4,8 +4,11 @@
 
 package fi.jumi.test;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+import sample.OneFailingTest;
+import sample.OnePassingTest;
 
 public class RunningTestsTest {
 
@@ -17,14 +20,14 @@ public class RunningTestsTest {
 
     @Test(timeout = TIMEOUT)
     public void suite_with_zero_tests() throws Exception {
-        app.runTests("sample.notests.*Test");
+        app.runTests("sample.notests.NoSuchTest");
 
         app.checkTotalTests(0);
     }
 
     @Test(timeout = TIMEOUT)
     public void suite_with_one_passing_test() throws Exception {
-        app.runTests("sample.OnePassingTest");
+        app.runTests(OnePassingTest.class);
 
         app.checkTotalTests(2);
         app.checkPassingTests(2);
@@ -33,13 +36,20 @@ public class RunningTestsTest {
 
     @Test(timeout = TIMEOUT)
     public void suite_with_one_failing_test() throws Exception {
-        app.runTests("sample.OneFailingTest");
+        app.runTests(OneFailingTest.class);
 
         app.checkTotalTests(2);
         app.checkPassingTests(1);
         app.checkFailingTests(1);
     }
 
+    @Ignore
+    @Test(timeout = TIMEOUT)
+    public void reports_failure_stack_traces() throws Exception {
+        app.runTests(OneFailingTest.class);
+
+        app.checkHasStackTrace("java.lang.AssertionError: dummy failure\n\tat sample.OneFailingTest.testFailing");
+    }
+
     // TODO: reporting test names
-    // TODO: reporting stack traces
 }

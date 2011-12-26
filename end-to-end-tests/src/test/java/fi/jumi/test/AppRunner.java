@@ -28,6 +28,10 @@ public class AppRunner implements MethodRule {
     private final ByteArrayOutputStream out = new ByteArrayOutputStream();
     private final ByteArrayOutputStream err = new ByteArrayOutputStream();
 
+    public void runTests(Class<?> clazz) throws IOException, InterruptedException {
+        runTests(clazz.getName());
+    }
+
     public void runTests(String testsToInclude) throws IOException, InterruptedException {
         launcher.addToClassPath(TestEnvironment.getSampleClasses());
         launcher.setTestsToInclude(testsToInclude);
@@ -49,6 +53,9 @@ public class AppRunner implements MethodRule {
         assertThat("passing tests", out.toString(), containsString("Pass: " + expected + ","));
     }
 
+    public void checkHasStackTrace(String stackTrace) {
+        assertThat("stack trace", out.toString(), containsString(stackTrace));
+    }
 
     // JUnit integration
 
