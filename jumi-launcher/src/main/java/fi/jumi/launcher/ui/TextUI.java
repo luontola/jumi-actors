@@ -10,8 +10,6 @@ import java.io.PrintStream;
 
 public class TextUI {
 
-    // XXX: spike code
-
     private final PrintStream out;
     private final PrintStream err;
     private final SuiteResults results;
@@ -22,7 +20,7 @@ public class TextUI {
         this.results = results;
     }
 
-    public void runToCompletion() throws InterruptedException {
+    public void runToCompletion() {
         int totalTests = results.getTotalTests();
         int passingTests = results.getPassingTests();
         int failingTests = results.getFailingTests();
