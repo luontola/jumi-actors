@@ -59,11 +59,11 @@ public class TestIdTest {
         values.add(TestId.of(1, 2));
         values.add(TestId.of(2, 1));
 
-        Set<Integer> hashCodes = new HashSet<Integer>();
+        Set<Integer> uniqueHashCodes = new HashSet<Integer>();
         for (TestId value : values) {
-            hashCodes.add(value.hashCode());
+            uniqueHashCodes.add(value.hashCode());
         }
-        assertThat(hashCodes.size(), is(values.size()));
+        assertThat("unique hash codes", uniqueHashCodes.size(), is(values.size()));
     }
 
     @Test
