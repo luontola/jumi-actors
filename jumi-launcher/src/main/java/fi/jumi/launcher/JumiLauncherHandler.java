@@ -4,8 +4,10 @@
 
 package fi.jumi.launcher;
 
-import fi.jumi.actors.*;
-import fi.jumi.core.*;
+import fi.jumi.actors.Event;
+import fi.jumi.actors.MessageSender;
+import fi.jumi.core.CommandListener;
+import fi.jumi.core.SuiteListener;
 import org.jboss.netty.channel.*;
 
 import javax.annotation.concurrent.ThreadSafe;
@@ -13,11 +15,11 @@ import javax.annotation.concurrent.ThreadSafe;
 @ThreadSafe
 public class JumiLauncherHandler extends SimpleChannelHandler {
 
-    private final MessageSender<Event<SuiteListener>> toLauncher;
+    private final MessageSender<Event<SuiteListener>> target;
     private volatile Event<CommandListener> startupCommand;
 
-    public JumiLauncherHandler(MessageSender<Event<SuiteListener>> toLauncher) {
-        this.toLauncher = toLauncher;
+    public JumiLauncherHandler(MessageSender<Event<SuiteListener>> target) {
+        this.target = target;
     }
 
     public void setStartupCommand(Event<CommandListener> startupCommand) {
@@ -32,7 +34,7 @@ public class JumiLauncherHandler extends SimpleChannelHandler {
     }
 
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-        toLauncher.send((Event<SuiteListener>) e.getMessage());
+        target.send((Event<SuiteListener>) e.getMessage());
     }
 
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {

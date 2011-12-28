@@ -4,6 +4,9 @@
 
 package fi.jumi.test;
 
+import fi.jumi.actors.dynamicevents.EventToDynamicListener;
+import fi.jumi.core.SuiteListener;
+import fi.jumi.core.SuiteStateCollector;
 import fi.jumi.launcher.JumiLauncher;
 import fi.jumi.launcher.ui.TextUI;
 import org.apache.commons.io.FileUtils;
@@ -26,7 +29,8 @@ public class AppRunner implements MethodRule {
     // TODO: use a proper sandbox utility
     private final File sandboxDir = new File(TestEnvironment.getSandboxDir(), UUID.randomUUID().toString());
 
-    private final JumiLauncher launcher = new JumiLauncher();
+    private final SuiteStateCollector suiteStateCollector = new SuiteStateCollector();
+    private final JumiLauncher launcher = new JumiLauncher(new EventToDynamicListener<SuiteListener>(suiteStateCollector));
     private final ByteArrayOutputStream out = new ByteArrayOutputStream();
     private final ByteArrayOutputStream err = new ByteArrayOutputStream();
 
@@ -39,8 +43,8 @@ public class AppRunner implements MethodRule {
         launcher.setTestsToInclude(testsToInclude);
         launcher.start();
 
-        launcher.awaitSuiteFinished(); // XXX: remove this line after TextUI handles concurrency itself
-        TextUI ui = new TextUI(new PrintStream(out), new PrintStream(out), launcher.getSuiteResults());
+        suiteStateCollector.awaitSuiteFinished(); // XXX: remove this line after TextUI handles concurrency itself
+        TextUI ui = new TextUI(new PrintStream(out), new PrintStream(out), suiteStateCollector.getState());
         ui.runToCompletion();
 
         synchronized (System.out) {

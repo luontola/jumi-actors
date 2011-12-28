@@ -6,11 +6,9 @@ package fi.jumi.launcher;
 
 import fi.jumi.actors.Event;
 import fi.jumi.actors.MessageQueue;
-import fi.jumi.actors.dynamicevents.EventToDynamicListener;
+import fi.jumi.actors.MessageSender;
 import fi.jumi.core.CommandListener;
 import fi.jumi.core.SuiteListener;
-import fi.jumi.core.SuiteResults;
-import fi.jumi.core.SuiteStateCollector;
 import fi.jumi.core.events.command.CommandListenerFactory;
 import fi.jumi.launcher.daemon.Daemon;
 import org.apache.commons.io.IOUtils;
@@ -28,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 // TODO: annotate all classes
 
@@ -39,11 +36,14 @@ public class JumiLauncher {
     private File javaExecutable = new File(System.getProperty("java.home"), "bin/java");
     private Process process;
 
-    private final SuiteStateCollector suite = new SuiteStateCollector();
-    private final JumiLauncherHandler handler = new JumiLauncherHandler(new EventToDynamicListener<SuiteListener>(suite));
+    private final JumiLauncherHandler handler;
     private final List<File> classPath = new ArrayList<File>();
     private String testsToIncludePattern;
     private String[] jvmOptions = new String[0];
+
+    public JumiLauncher(MessageSender<Event<SuiteListener>> eventTarget) {
+        handler = new JumiLauncherHandler(eventTarget);
+    }
 
     // TODO: this class has multiple responsibilities, split to smaller parts?
     // - configuring the test run
@@ -154,14 +154,6 @@ public class JumiLauncher {
         }
     }
 
-    public void awaitSuiteFinished() throws InterruptedException {
-        suite.awaitSuiteFinished();
-    }
-
-    public boolean awaitSuiteFinished(long timeout, TimeUnit unit) throws InterruptedException {
-        return suite.awaitSuiteFinished(timeout, unit);
-    }
-
     public void addToClassPath(File file) {
         classPath.add(file);
         // TODO: support for main and test class paths
@@ -173,9 +165,5 @@ public class JumiLauncher {
 
     public void setJvmOptions(String... jvmOptions) {
         this.jvmOptions = jvmOptions;
-    }
-
-    public SuiteResults getSuiteResults() {
-        return suite.getState();
     }
 }
