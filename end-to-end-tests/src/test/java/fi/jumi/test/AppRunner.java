@@ -4,11 +4,11 @@
 
 package fi.jumi.test;
 
-import fi.jumi.actors.dynamicevents.EventToDynamicListener;
+import fi.jumi.actors.Event;
+import fi.jumi.actors.MessageQueue;
 import fi.jumi.core.SuiteListener;
-import fi.jumi.core.SuiteStateCollector;
 import fi.jumi.launcher.JumiLauncher;
-import fi.jumi.launcher.ui.TextUI;
+import fi.jumi.launcher.ui.TextUI2;
 import org.apache.commons.io.FileUtils;
 import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
@@ -29,8 +29,9 @@ public class AppRunner implements MethodRule {
     // TODO: use a proper sandbox utility
     private final File sandboxDir = new File(TestEnvironment.getSandboxDir(), UUID.randomUUID().toString());
 
-    private final SuiteStateCollector suiteStateCollector = new SuiteStateCollector();
-    private final JumiLauncher launcher = new JumiLauncher(new EventToDynamicListener<SuiteListener>(suiteStateCollector));
+    private final MessageQueue<Event<SuiteListener>> eventStream = new MessageQueue<Event<SuiteListener>>();
+
+    private final JumiLauncher launcher = new JumiLauncher(eventStream);
     private final ByteArrayOutputStream out = new ByteArrayOutputStream();
     private final ByteArrayOutputStream err = new ByteArrayOutputStream();
 
@@ -43,9 +44,8 @@ public class AppRunner implements MethodRule {
         launcher.setTestsToInclude(testsToInclude);
         launcher.start();
 
-        suiteStateCollector.awaitSuiteFinished(); // XXX: remove this line after TextUI handles concurrency itself
-        TextUI ui = new TextUI(new PrintStream(out), new PrintStream(out), suiteStateCollector.getState());
-        ui.runToCompletion();
+        TextUI2 ui2 = new TextUI2(new PrintStream(out), new PrintStream(out), eventStream);
+        ui2.updateUntilFinished();
 
         synchronized (System.out) {
             System.out.println("--- TEXT UI OUTPUT ----");
