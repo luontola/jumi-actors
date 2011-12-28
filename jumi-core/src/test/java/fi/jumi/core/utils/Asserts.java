@@ -8,33 +8,37 @@ import org.junit.ComparisonFailure;
 
 public class Asserts {
 
-    public static void assertContainsSubStrings(String actual, String[] expectedStrings) {
-        assertContainsSubStrings("", actual, expectedStrings);
+    public static void assertContainsSubStrings(String actual, String[] expectedSubStrings) {
+        assertContainsSubStrings("", actual, expectedSubStrings);
     }
 
-    public static void assertContainsSubStrings(String message, String actual, String[] expectedStrings) {
-        int pos = 0;
-        for (String expected : expectedStrings) {
-            pos = actual.indexOf(expected, pos);
-            if (pos < 0) {
-                throw new ComparisonFailure(message, asLines(expectedStrings), actual);
-            }
+    public static void assertContainsSubStrings(String message, String actual, String[] expectedSubStrings) {
+        if (!containsSubStrings(actual, expectedSubStrings)) {
+            throw new ComparisonFailure(message, asLines(expectedSubStrings), actual);
         }
     }
 
-    public static void assertNotContainsSubStrings(String actual, String[] expectedStrings) {
-        assertNotContainsSubStrings("", actual, expectedStrings);
+    public static void assertNotContainsSubStrings(String actual, String[] expectedSubStrings) {
+        assertNotContainsSubStrings("", actual, expectedSubStrings);
     }
 
-    public static void assertNotContainsSubStrings(String message, String actual, String[] expectedStrings) {
+
+    public static void assertNotContainsSubStrings(String message, String actual, String[] expectedSubStrings) {
+        if (containsSubStrings(actual, expectedSubStrings)) {
+            throw new ComparisonFailure(message, asLines(expectedSubStrings), actual);
+        }
+    }
+
+    private static boolean containsSubStrings(String actual, String[] expectedSubStrings) {
         int pos = 0;
-        for (String expected : expectedStrings) {
+        for (String expected : expectedSubStrings) {
             pos = actual.indexOf(expected, pos);
             if (pos < 0) {
-                return; // not found, assertion passes
+                return false;
             }
+            pos += expected.length();
         }
-        throw new ComparisonFailure(message, asLines(expectedStrings), actual);
+        return true;
     }
 
     private static String asLines(String[] ss) {
