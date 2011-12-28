@@ -9,7 +9,7 @@ TODO NEXT:
 		OK - stack traces
 		OK - showing test names, run IDs and class names in output
 	SKIP - Stream class for receiving events from UI thread
-	!! - start using the new TextUI, remove the old one
+	OK - start using the new TextUI, remove the old one
 	- TextUI: option for showing all test runs or only failing
 - misc refactoring
 	- put end-to-end tests in their own package (test.fi.jumi?), separate them from unit tests

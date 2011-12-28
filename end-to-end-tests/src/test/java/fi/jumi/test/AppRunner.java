@@ -8,7 +8,7 @@ import fi.jumi.actors.Event;
 import fi.jumi.actors.MessageQueue;
 import fi.jumi.core.SuiteListener;
 import fi.jumi.launcher.JumiLauncher;
-import fi.jumi.launcher.ui.TextUI2;
+import fi.jumi.launcher.ui.TextUI;
 import org.apache.commons.io.FileUtils;
 import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
@@ -44,7 +44,7 @@ public class AppRunner implements MethodRule {
         launcher.setTestsToInclude(testsToInclude);
         launcher.start();
 
-        TextUI2 ui2 = new TextUI2(new PrintStream(out), new PrintStream(out), eventStream);
+        TextUI ui2 = new TextUI(new PrintStream(out), new PrintStream(out), eventStream);
         ui2.updateUntilFinished();
 
         synchronized (System.out) {

@@ -17,7 +17,7 @@ import java.io.PrintStream;
 import static fi.jumi.core.utils.Asserts.assertContainsSubStrings;
 import static fi.jumi.core.utils.Asserts.assertNotContainsSubStrings;
 
-public class TextUI2Test {
+public class TextUITest {
 
     private static final String TEST_CLASS = "com.example.DummyTest";
     private static final String TEST_CLASS_NAME = "DummyTest";
@@ -30,7 +30,7 @@ public class TextUI2Test {
     private final SuiteListener listener = new SuiteListenerToEvent(stream);
 
     private final ByteArrayOutputStream out = new ByteArrayOutputStream();
-    private final TextUI2 ui = new TextUI2(new PrintStream(out), new PrintStream(out), stream);
+    private final TextUI ui = new TextUI(new PrintStream(out), new PrintStream(out), stream);
 
     private String runAndGetOutput() {
         ui.update();

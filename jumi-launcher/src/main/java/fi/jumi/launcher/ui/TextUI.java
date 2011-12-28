@@ -15,7 +15,7 @@ import fi.jumi.core.events.suite.OnTestStartedEvent;
 import java.io.PrintStream;
 import java.util.*;
 
-public class TextUI2 implements SuiteListener {
+public class TextUI implements SuiteListener {
 
     private final PrintStream out;
     private final PrintStream err;
@@ -31,7 +31,7 @@ public class TextUI2 implements SuiteListener {
     private final Set<GlobalTestId> failCount = new HashSet<GlobalTestId>();
     private final Set<GlobalTestId> totalCount = new HashSet<GlobalTestId>();
 
-    public TextUI2(PrintStream out, PrintStream err, MessageReceiver<Event<SuiteListener>> eventStream) {
+    public TextUI(PrintStream out, PrintStream err, MessageReceiver<Event<SuiteListener>> eventStream) {
         this.out = out;
         this.err = err;
         this.eventStream = eventStream;
