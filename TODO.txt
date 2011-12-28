@@ -1,16 +1,18 @@
 
 TODO NEXT:
-- end-to-end tests: text ui & reporting exception stack traces
-	OK - walking skeleton of the text ui
-	OK - show stack traces
-	OK - spike what the future code should look like
-	OK - stream-based TextUI using a fake stream (at first maximally fine-grained?)
-		OK - summary
-		OK - stack traces
-		OK - showing test names, run IDs and class names in output
-	SKIP - Stream class for receiving events from UI thread
-	OK - start using the new TextUI, remove the old one
-	- TextUI: option for showing all test runs or only failing
+- end-to-end tests: multiple tests
+	- identify concurrent test runs with a unique ID
+	- run on more than one thread; performance must improve (write a performance test with sleeps?)
+		- testable with a static CountDownLatch used from two test methods
+
+- end-to-end tests: reporting test output
+	- capture System.out/err
+	- send out/err events
+	- test: printing from the same thread to out & err should be synchronous, unlike in probably every IDE
+
+- end-to-end tests: failures outside tests (in drivers and core)
+	- actor tests print dummy exceptions; solve by having a custom pluggable exception handler which doesn't print stack traces of a DummyException class
+
 - misc refactoring
 	- put end-to-end tests in their own package (test.fi.jumi?), separate them from unit tests
 		- or use JUnit categories, maybe with a custom runner?
@@ -24,13 +26,12 @@ TODO NEXT:
 	- evaluate JarJar or ProGuard, maybe it could minimize the jars better than the shade plugin by removing also unused methods
 		http://sonatype.github.com/jarjar-maven-plugin/
 		http://pyx4me.com/pyx4me-maven-plugins/proguard-maven-plugin/
-- end-to-end tests: failures outside tests (in drivers and core)
-	- actor tests print dummy exceptions; solve by having a custom pluggable exception handler which doesn't print stack traces of a DummyException class
-- end-to-end tests: reporting test output
-	- capture System.out/err
-	- send out/err events
-	- test: printing from the same thread to out & err should be synchronous, unlike in probably every IDE
-	- TextUI: different colors for out (default), err (red), binary output (yellow)?
+
+- improving TextUI
+	- spacing between test runs (empty line or horizontal bar?)
+	- option for showing all test runs or only failing
+	(- if multiple readers are needed: Streamer class for receiving events from UI thread)
+	- different colors for out (default), err (red), metadata e.g. test names (blue), binary output (yellow BG)?
 		- JCons (uses JNI on Windows, so maybe support only Unix)
 			http://jcons.sourceforge.net/
 			http://sourceforge.net/projects/jcons/
@@ -47,14 +48,14 @@ TODO NEXT:
 			http://stackoverflow.com/questions/7445658/how-to-detect-if-the-console-does-support-ansi-escape-codes-in-python
 		- ANSI escape codes work in IDEA?
 			http://youtrack.jetbrains.net/issue/IDEA-68679
-- end-to-end tests: multiple tests
-	- identify concurrent test runs with a unique ID
-	- run on more than one thread; performance must improve (write a performance test with sleeps?)
+
 - end-to-end tests: persistent daemon process
 	- should drive better design on launcher side
 	- connect to existing process
 	- if daemon dies unexpectedly (System.exit/halt, JVM crash etc.), report it and restart next time
+		http://vanillajava.blogspot.com/2011/12/test-complete-failure-of-jvm.html
 	- make it reliable
+
 - refactor jumi-actors-maven-plugin
 	- DummyListenerToEvent: rename sender to target
 	- EventToDummyListener: rename listener to target
