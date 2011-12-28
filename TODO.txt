@@ -5,6 +5,10 @@ TODO NEXT:
 	OK - show stack traces
 	OK - spike what the future code should look like
 	!! - stream-based TextUI using a fake stream (at first maximally fine-grained?)
+		OK - summary
+		OK - stack traces
+		OK - showing test names, run IDs and class names in output
+		!! - option for showing all test runs or only failing
 	- Stream class for receiving events from UI thread
 	- start using the new TextUI, remove the old one
 - misc refactoring
@@ -23,6 +27,26 @@ TODO NEXT:
 - end-to-end tests: failures outside tests (in drivers and core)
 	- actor tests print dummy exceptions; solve by having a custom pluggable exception handler which doesn't print stack traces of a DummyException class
 - end-to-end tests: reporting test output
+	- capture System.out/err
+	- send out/err events
+	- test: printing from the same thread to out & err should be synchronous, unlike in probably every IDE
+	- TextUI: different colors for out (default), err (red), binary output (yellow)?
+		- JCons (uses JNI on Windows, so maybe support only Unix)
+			http://jcons.sourceforge.net/
+			http://sourceforge.net/projects/jcons/
+		- could also JLine do it? (uses a native binary)
+			http://jline.sourceforge.net/
+			https://github.com/jline
+		- misc links
+			http://www.codeguru.com/forum/showthread.php?t=504096
+			http://blogs.atlassian.com/2009/10/colour_your_console_ansicolor/
+			http://en.wikipedia.org/wiki/ANSI_escape_code
+			http://www.velocityreviews.com/forums/t143949-text-color-in-windows-console.html
+			http://academic.evergreen.edu/projects/biophysics/technotes/program/ansi_esc.htm
+			http://www.tldp.org/LDP/abs/html/colorizing.html
+			http://stackoverflow.com/questions/7445658/how-to-detect-if-the-console-does-support-ansi-escape-codes-in-python
+		- ANSI escape codes work in IDEA?
+			http://youtrack.jetbrains.net/issue/IDEA-68679
 - end-to-end tests: multiple tests
 	- identify concurrent test runs with a unique ID
 	- run on more than one thread; performance must improve (write a performance test with sleeps?)

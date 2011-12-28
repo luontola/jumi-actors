@@ -20,7 +20,8 @@ public class TextUI2 implements SuiteListener {
     private final PrintStream err;
     private final FakeStream eventStream;
 
-    private Map<Integer, List<Event<SuiteListener>>> eventsByRunId = new HashMap<Integer, List<Event<SuiteListener>>>();
+    private final Map<GlobalTestId, String> testNamesById = new HashMap<GlobalTestId, String>();
+    private final Map<Integer, List<Event<SuiteListener>>> eventsByRunId = new HashMap<Integer, List<Event<SuiteListener>>>();
 
     // TODO: extract counting to its own class
     private final Set<GlobalTestId> failCount = new HashSet<GlobalTestId>();
@@ -32,6 +33,16 @@ public class TextUI2 implements SuiteListener {
         this.eventStream = eventStream;
     }
 
+    private void addTestName(String testClass, TestId id, String name) {
+        testNamesById.put(new GlobalTestId(testClass, id), name);
+    }
+
+    private String getTestName(String testClass, TestId id) {
+        String name = testNamesById.get(new GlobalTestId(testClass, id));
+        assert name != null : "name not found for " + testClass + " and " + id;
+        return name;
+    }
+
     private void addRunEvent(int runId, Event<SuiteListener> event) {
         List<Event<SuiteListener>> events = eventsByRunId.get(runId);
         if (events == null) {
@@ -40,7 +51,6 @@ public class TextUI2 implements SuiteListener {
         }
         events.add(event);
     }
-
 
     private boolean isRunFinished(int runId) {
         RunStatusEvaluator runStatus = new RunStatusEvaluator();
@@ -83,11 +93,14 @@ public class TextUI2 implements SuiteListener {
         int totalCount = this.totalCount.size();
         int failCount = this.failCount.size();
         int passCount = totalCount - failCount;
+
+        out.println();
         out.println(String.format("Pass: %d, Fail: %d, Total: %d", passCount, failCount, totalCount));
     }
 
     @Override
     public void onTestFound(String testClass, TestId id, String name) {
+        addTestName(testClass, id, name);
     }
 
     @Override
@@ -104,6 +117,8 @@ public class TextUI2 implements SuiteListener {
         int runId = 42; // TODO: get Run IDs from the test runner
 
         addRunEvent(runId, new OnTestFinishedEvent(testClass, id));
+
+        // TODO: option for printing only failing or all runs
         if (isRunFinished(runId)) {
             printRun(runId);
         }
@@ -119,15 +134,43 @@ public class TextUI2 implements SuiteListener {
     }
 
     private class RunPrinter extends TestRunListener {
+        private int runningTests = 0;
 
         public void onTestStarted(String testClass, TestId id) {
+            int runId = 42; // TODO: get Run IDs from the test runner
+
+            if (runningTests == 0) {
+                printRunHeader(testClass, runId);
+            }
+            printTestName("+", testClass, id);
+            runningTests++;
         }
 
         public void onTestFinished(String testClass, TestId id) {
+            runningTests--;
+            printTestName("-", testClass, id);
         }
 
         public void onFailure(String testClass, TestId id, Throwable cause) {
             cause.printStackTrace(err);
+        }
+
+        // visual style
+
+        private void printRunHeader(String testClass, int runId) {
+            out.println(" > Run #" + runId + " in " + testClass);
+        }
+
+        private void printTestName(String bullet, String testClass, TestId id) {
+            out.println(" > " + testNameIndent() + bullet + " " + getTestName(testClass, id));
+        }
+
+        private String testNameIndent() {
+            StringBuilder indent = new StringBuilder();
+            for (int i = 0; i < runningTests; i++) {
+                indent.append("  ");
+            }
+            return indent.toString();
         }
     }
 

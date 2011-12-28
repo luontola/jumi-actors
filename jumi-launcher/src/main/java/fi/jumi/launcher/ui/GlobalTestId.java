@@ -8,26 +8,26 @@ import fi.jumi.api.drivers.TestId;
 
 public class GlobalTestId {
 
-    private final String className;
-    private final TestId testId;
+    private final String testClass;
+    private final TestId id;
 
-    public GlobalTestId(String className, TestId testId) {
-        this.className = className;
-        this.testId = testId;
+    public GlobalTestId(String testClass, TestId id) {
+        this.testClass = testClass;
+        this.id = id;
     }
 
     @Override
     public boolean equals(Object other) {
         GlobalTestId that = (GlobalTestId) other;
-        return this.className.equals(that.className) &&
-                this.testId.equals(that.testId);
+        return this.testClass.equals(that.testClass) &&
+                this.id.equals(that.id);
 
     }
 
     @Override
     public int hashCode() {
-        int result = className.hashCode();
-        result = 31 * result + testId.hashCode();
+        int result = testClass.hashCode();
+        result = 31 * result + id.hashCode();
         return result;
     }
 }

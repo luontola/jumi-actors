@@ -56,14 +56,12 @@ public class TextUI2Test {
     }
 
     private void assertInOutput(String... expectedLines) {
-        String actual = runAndGetOutput();
-        Asserts.assertContainsSubStrings(actual, expectedLines);
+        Asserts.assertContainsSubStrings(runAndGetOutput(), expectedLines);
     }
 
 
     private void assertNotInOutput(String... expectedLines) {
-        String actual = runAndGetOutput();
-        assertNotContainsSubStrings(actual, expectedLines);
+        assertNotContainsSubStrings(runAndGetOutput(), expectedLines);
     }
 
     // summary line
@@ -136,6 +134,69 @@ public class TextUI2Test {
         assertInOutput("Pass: 4, Fail: 0, Total: 4");
     }
 
+    // test names
+
+    @Test
+    public void prints_test_run_header() {
+        listener.onSuiteStarted();
+        firePassingTest("com.example.DummyTest", TestId.ROOT, "Dummy test");
+        listener.onSuiteFinished();
+
+        assertInOutput(
+                "Run #42 in com.example.DummyTest",
+                "Dummy test"
+        );
+    }
+
+    @Test
+    public void test_run_header_is_printed_only_once_per_test_run() {
+        listener.onSuiteStarted();
+        firePassingTest(TEST_CLASS, TestId.ROOT, "Dummy test",
+                TestId.of(0), "test one");
+        listener.onSuiteFinished();
+
+        assertInOutput(TEST_CLASS);
+        assertNotInOutput(TEST_CLASS, TEST_CLASS);
+    }
+
+    @Test
+    public void prints_when_a_test_starts_and_ends() {
+        listener.onSuiteStarted();
+        firePassingTest("com.example.DummyTest", TestId.ROOT, "Dummy test");
+        listener.onSuiteFinished();
+
+        assertInOutput(
+                "+ Dummy test",
+                "- Dummy test"
+        );
+    }
+
+    @Test
+    public void prints_with_indentation_when_a_nested_test_starts_and_ends() {
+        listener.onSuiteStarted();
+        {
+            listener.onTestFound(TEST_CLASS, TestId.ROOT, "Dummy test");
+            listener.onTestStarted(TEST_CLASS, TestId.ROOT);
+            // TODO: extract closure?
+            firePassingTest(TEST_CLASS, TestId.of(0), "test one");
+            firePassingTest(TEST_CLASS, TestId.of(1), "test two",
+                    TestId.of(1, 0), "deeply nested test");
+            listener.onTestFinished(TEST_CLASS, TestId.ROOT);
+        }
+        listener.onSuiteFinished();
+
+        assertInOutput(
+                " + Dummy test",
+                "   + test one",
+                "   - test one",
+                "   + test two",
+                "     + deeply nested test",
+                "     - deeply nested test",
+                "   - test two",
+                " - Dummy test"
+        );
+    }
+
     // stack traces
 
     @Test
@@ -167,7 +228,7 @@ public class TextUI2Test {
     }
 
     @Test
-    public void printes_failure_stack_traces_only_after_the_surrounding_test_is_finished() { // i.e. the test run is finished
+    public void prints_failure_stack_traces_only_after_the_surrounding_test_is_finished() { // i.e. the test run is finished
         listener.onSuiteStarted();
         {
             {
@@ -183,6 +244,4 @@ public class TextUI2Test {
         }
         listener.onSuiteFinished();
     }
-
-    // TODO: printing test names
 }
