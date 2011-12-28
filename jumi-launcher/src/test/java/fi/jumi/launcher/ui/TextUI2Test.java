@@ -7,12 +7,12 @@ package fi.jumi.launcher.ui;
 import fi.jumi.api.drivers.TestId;
 import fi.jumi.core.SuiteListener;
 import fi.jumi.core.events.suite.SuiteListenerToEvent;
-import fi.jumi.core.utils.Asserts;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
+import static fi.jumi.core.utils.Asserts.assertContainsSubStrings;
 import static fi.jumi.core.utils.Asserts.assertNotContainsSubStrings;
 
 public class TextUI2Test {
@@ -33,32 +33,31 @@ public class TextUI2Test {
         return out.toString();
     }
 
-    private void firePassingTest(String testClass, TestId rootId, String rootName,
-                                 TestId nestedId, String nestedName) {
-        // TODO: make this a recursive method? would require and "Object..." parameter
-        listener.onTestFound(testClass, rootId, rootName);
-        listener.onTestStarted(testClass, rootId);
-        firePassingTest(testClass, nestedId, nestedName);
-        listener.onTestFinished(testClass, rootId);
-    }
-
-    private void firePassingTest(String testClass, TestId id, String name) {
+    private void test(String testClass, TestId id, String name, Runnable testBody) {
         listener.onTestFound(testClass, id, name);
         listener.onTestStarted(testClass, id);
+        testBody.run();
         listener.onTestFinished(testClass, id);
     }
 
-    private void fireFailingTest(String testClass, TestId id, String name, Throwable cause) {
-        listener.onTestFound(testClass, id, name);
-        listener.onTestStarted(testClass, id);
-        listener.onFailure(testClass, id, cause);
-        listener.onTestFinished(testClass, id);
+    private void test(String testClass, TestId id, String name) {
+        test(testClass, id, name, new Runnable() {
+            public void run() {
+            }
+        });
+    }
+
+    private void failingTest(final String testClass, final TestId id, String name, final Throwable failure) {
+        test(testClass, id, name, new Runnable() {
+            public void run() {
+                listener.onFailure(testClass, id, failure);
+            }
+        });
     }
 
     private void assertInOutput(String... expectedLines) {
-        Asserts.assertContainsSubStrings(runAndGetOutput(), expectedLines);
+        assertContainsSubStrings(runAndGetOutput(), expectedLines);
     }
-
 
     private void assertNotInOutput(String... expectedLines) {
         assertNotContainsSubStrings(runAndGetOutput(), expectedLines);
@@ -77,7 +76,7 @@ public class TextUI2Test {
     @Test
     public void summary_line_for_one_passing_test() {
         listener.onSuiteStarted();
-        firePassingTest(TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME);
+        test(TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME);
         listener.onSuiteFinished();
 
         assertInOutput("Pass: 1, Fail: 0, Total: 1");
@@ -86,7 +85,9 @@ public class TextUI2Test {
     @Test
     public void summary_line_for_one_failing_test() {
         listener.onSuiteStarted();
-        fireFailingTest(TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME, new Throwable("dummy exception"));
+        failingTest(TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME,
+                new Throwable("dummy exception")
+        );
         listener.onSuiteFinished();
 
         assertInOutput("Pass: 0, Fail: 1, Total: 1");
@@ -95,14 +96,14 @@ public class TextUI2Test {
     @Test
     public void summary_line_for_multiple_nested_tests() {
         listener.onSuiteStarted();
-        {
-            listener.onTestFound(TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME);
-            listener.onTestStarted(TEST_CLASS, TestId.ROOT);
-            // TODO: extract closure?
-            firePassingTest(TEST_CLASS, TestId.of(0), "testOne");
-            fireFailingTest(TEST_CLASS, TestId.of(1), "testTwo", new Throwable("dummy exception"));
-            listener.onTestFinished(TEST_CLASS, TestId.ROOT);
-        }
+        test(TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME, new Runnable() {
+            public void run() {
+                test(TEST_CLASS, TestId.of(0), "testOne");
+                failingTest(TEST_CLASS, TestId.of(1), "testTwo",
+                        new Throwable("dummy exception")
+                );
+            }
+        });
         listener.onSuiteFinished();
 
         assertInOutput("Pass: 2, Fail: 1, Total: 3");
@@ -120,15 +121,19 @@ public class TextUI2Test {
     @Test
     public void each_TestClass_TestId_pair_is_counted_only_once_in_the_summary() {
         listener.onSuiteStarted();
-        firePassingTest(TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME,
-                TestId.of(0), "test one"
-        );
+        test(TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME, new Runnable() {
+            public void run() {
+                test(TEST_CLASS, TestId.of(0), "test one");
+            }
+        });
         // same root test is executed twice, but should be counted only once in the total
-        firePassingTest(TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME,
-                TestId.of(1), "test two"
-        );
+        test(TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME, new Runnable() {
+            public void run() {
+                test(TEST_CLASS, TestId.of(1), "test two");
+            }
+        });
         // a different test class, same TestId, should be counted separately
-        firePassingTest(ANOTHER_TEST_CLASS, TestId.ROOT, ANOTHER_TEST_CLASS_NAME);
+        test(ANOTHER_TEST_CLASS, TestId.ROOT, ANOTHER_TEST_CLASS_NAME);
         listener.onSuiteFinished();
 
         assertInOutput("Pass: 4, Fail: 0, Total: 4");
@@ -139,7 +144,7 @@ public class TextUI2Test {
     @Test
     public void prints_test_run_header() {
         listener.onSuiteStarted();
-        firePassingTest("com.example.DummyTest", TestId.ROOT, "Dummy test");
+        test("com.example.DummyTest", TestId.ROOT, "Dummy test");
         listener.onSuiteFinished();
 
         assertInOutput(
@@ -151,8 +156,11 @@ public class TextUI2Test {
     @Test
     public void test_run_header_is_printed_only_once_per_test_run() {
         listener.onSuiteStarted();
-        firePassingTest(TEST_CLASS, TestId.ROOT, "Dummy test",
-                TestId.of(0), "test one");
+        test(TEST_CLASS, TestId.ROOT, "Dummy test", new Runnable() {
+            public void run() {
+                test(TEST_CLASS, TestId.of(0), "test one");
+            }
+        });
         listener.onSuiteFinished();
 
         assertInOutput(TEST_CLASS);
@@ -162,7 +170,7 @@ public class TextUI2Test {
     @Test
     public void prints_when_a_test_starts_and_ends() {
         listener.onSuiteStarted();
-        firePassingTest("com.example.DummyTest", TestId.ROOT, "Dummy test");
+        test("com.example.DummyTest", TestId.ROOT, "Dummy test");
         listener.onSuiteFinished();
 
         assertInOutput(
@@ -174,15 +182,16 @@ public class TextUI2Test {
     @Test
     public void prints_with_indentation_when_a_nested_test_starts_and_ends() {
         listener.onSuiteStarted();
-        {
-            listener.onTestFound(TEST_CLASS, TestId.ROOT, "Dummy test");
-            listener.onTestStarted(TEST_CLASS, TestId.ROOT);
-            // TODO: extract closure?
-            firePassingTest(TEST_CLASS, TestId.of(0), "test one");
-            firePassingTest(TEST_CLASS, TestId.of(1), "test two",
-                    TestId.of(1, 0), "deeply nested test");
-            listener.onTestFinished(TEST_CLASS, TestId.ROOT);
-        }
+        test(TEST_CLASS, TestId.ROOT, "Dummy test", new Runnable() {
+            public void run() {
+                test(TEST_CLASS, TestId.of(0), "test one");
+                test(TEST_CLASS, TestId.of(1), "test two", new Runnable() {
+                    public void run() {
+                        test(TEST_CLASS, TestId.of(1, 0), "deeply nested test");
+                    }
+                });
+            }
+        });
         listener.onSuiteFinished();
 
         assertInOutput(
@@ -202,7 +211,9 @@ public class TextUI2Test {
     @Test
     public void prints_failure_stack_traces() {
         listener.onSuiteStarted();
-        fireFailingTest(TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME, new Throwable("dummy exception"));
+        failingTest(TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME,
+                new Throwable("dummy exception")
+        );
         listener.onSuiteFinished();
 
         assertInOutput("java.lang.Throwable: dummy exception");
@@ -234,7 +245,9 @@ public class TextUI2Test {
             {
                 listener.onTestFound(TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME);
                 listener.onTestStarted(TEST_CLASS, TestId.ROOT);
-                fireFailingTest(TEST_CLASS, TestId.of(0), "testOne", new Throwable("dummy exception"));
+                failingTest(TEST_CLASS, TestId.of(0), "testOne",
+                        new Throwable("dummy exception")
+                );
 
                 assertNotInOutput("java.lang.Throwable: dummy exception");
 
