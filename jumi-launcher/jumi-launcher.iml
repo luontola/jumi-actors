@@ -23,6 +23,7 @@
     <orderEntry type="module" module-name="jumi-api" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.functionaljava:functionaljava:3.0" level="project" />
+    <orderEntry type="module" module-name="jumi-core" scope="TEST" />
     <orderEntry type="library" name="Maven: org.jboss.netty:netty:3.2.5.Final" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.google.code.findbugs:jsr305:1.3.9" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.hamcrest:hamcrest-library:1.2" level="project" />

@@ -7,7 +7,6 @@ package fi.jumi.test;
 import fi.jumi.launcher.JumiLauncher;
 import fi.jumi.launcher.ui.TextUI;
 import org.apache.commons.io.FileUtils;
-import org.junit.ComparisonFailure;
 import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
@@ -15,6 +14,7 @@ import org.junit.runners.model.Statement;
 import java.io.*;
 import java.util.UUID;
 
+import static fi.jumi.core.utils.Asserts.assertContainsSubStrings;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertTrue;
@@ -64,24 +64,7 @@ public class AppRunner implements MethodRule {
 
     public void checkHasStackTrace(String... elements) {
         String actual = out.toString();
-        int pos = 0;
-        for (String element : elements) {
-            pos = actual.indexOf(element, pos);
-            if (pos < 0) {
-                throw new ComparisonFailure("stack trace not found", asLines(elements), actual);
-            }
-        }
-    }
-
-    private static String asLines(String[] ss) {
-        StringBuilder sb = new StringBuilder();
-        for (String s : ss) {
-            if (sb.length() > 0) {
-                sb.append('\n');
-            }
-            sb.append(s);
-        }
-        return sb.toString();
+        assertContainsSubStrings("stack trace not found", actual, elements);
     }
 
     // JUnit integration

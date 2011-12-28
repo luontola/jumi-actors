@@ -7,14 +7,13 @@ package fi.jumi.launcher.ui;
 import fi.jumi.api.drivers.TestId;
 import fi.jumi.core.SuiteListener;
 import fi.jumi.core.events.suite.SuiteListenerToEvent;
+import fi.jumi.core.utils.Asserts;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
+import static fi.jumi.core.utils.Asserts.assertNotContainsSubStrings;
 
 public class TextUI2Test {
 
@@ -56,13 +55,15 @@ public class TextUI2Test {
         listener.onTestFinished(testClass, id);
     }
 
-    private void assertInOutput(String expected) {
-        assertThat(runAndGetOutput(), containsString(expected));
+    private void assertInOutput(String... expectedLines) {
+        String actual = runAndGetOutput();
+        Asserts.assertContainsSubStrings(actual, expectedLines);
     }
 
 
-    private void assertNotInOutput(String expected) {
-        assertThat(runAndGetOutput(), not(containsString(expected)));
+    private void assertNotInOutput(String... expectedLines) {
+        String actual = runAndGetOutput();
+        assertNotContainsSubStrings(actual, expectedLines);
     }
 
     // summary line

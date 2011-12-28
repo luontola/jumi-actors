@@ -27,6 +27,12 @@
             <groupId>fi.jumi</groupId>
             <artifactId>jumi-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>fi.jumi</groupId>
+            <artifactId>jumi-core</artifactId>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.jboss.netty</groupId>
