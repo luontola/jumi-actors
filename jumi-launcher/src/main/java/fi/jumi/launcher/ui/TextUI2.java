@@ -22,6 +22,7 @@ public class TextUI2 implements SuiteListener {
 
     // TODO: if multiple readers are needed, create a Streamer class per the original designs
     private final MessageReceiver<Event<SuiteListener>> eventStream;
+    private boolean suiteFinished = false;
 
     private final Map<GlobalTestId, String> testNamesById = new HashMap<GlobalTestId, String>();
     private final Map<Integer, List<Event<SuiteListener>>> eventsByRunId = new HashMap<Integer, List<Event<SuiteListener>>>();
@@ -76,11 +77,18 @@ public class TextUI2 implements SuiteListener {
     }
 
     public void update() {
-        while (true) {
+        while (!suiteFinished) {
             Event<SuiteListener> message = eventStream.poll();
             if (message == null) {
                 break;
             }
+            message.fireOn(this);
+        }
+    }
+
+    public void updateUntilFinished() throws InterruptedException {
+        while (!suiteFinished) {
+            Event<SuiteListener> message = eventStream.take();
             message.fireOn(this);
         }
     }
@@ -99,6 +107,8 @@ public class TextUI2 implements SuiteListener {
 
         out.println();
         out.println(String.format("Pass: %d, Fail: %d, Total: %d", passCount, failCount, totalCount));
+
+        suiteFinished = true;
     }
 
     @Override

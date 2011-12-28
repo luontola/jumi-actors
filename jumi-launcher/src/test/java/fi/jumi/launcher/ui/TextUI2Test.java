@@ -19,10 +19,12 @@ import static fi.jumi.core.utils.Asserts.assertNotContainsSubStrings;
 
 public class TextUI2Test {
 
-    public static final String TEST_CLASS = "com.example.DummyTest";
-    public static final String TEST_CLASS_NAME = "DummyTest";
-    public static final String ANOTHER_TEST_CLASS = "com.example.AnotherDummyTest";
-    public static final String ANOTHER_TEST_CLASS_NAME = "AnotherDummyTest";
+    private static final String TEST_CLASS = "com.example.DummyTest";
+    private static final String TEST_CLASS_NAME = "DummyTest";
+    private static final String ANOTHER_TEST_CLASS = "com.example.AnotherDummyTest";
+    private static final String ANOTHER_TEST_CLASS_NAME = "AnotherDummyTest";
+
+    private static final String SUMMARY_LINE = "Pass";
 
     private final MessageQueue<Event<SuiteListener>> stream = new MessageQueue<Event<SuiteListener>>();
     private final SuiteListener listener = new SuiteListenerToEvent(stream);
@@ -63,6 +65,30 @@ public class TextUI2Test {
 
     private void assertNotInOutput(String... expectedLines) {
         assertNotContainsSubStrings(runAndGetOutput(), expectedLines);
+    }
+
+    // updating
+
+    @Test(timeout = 1000L)
+    public void can_update_non_blockingly() {
+        ui.update(); // given no events in stream, should exit quickly
+
+        assertNotInOutput(SUMMARY_LINE);
+    }
+
+    @Test(timeout = 1000L)
+    public void can_update_blockingly() throws InterruptedException {
+        Thread t = new Thread(new Runnable() {
+            public void run() {
+                listener.onSuiteStarted();
+                listener.onSuiteFinished();
+            }
+        });
+        t.start();
+
+        ui.updateUntilFinished(); // should exit only after all events have arrived
+
+        assertInOutput(SUMMARY_LINE);
     }
 
     // summary line
@@ -114,10 +140,10 @@ public class TextUI2Test {
     @Test
     public void summary_line_is_not_printed_until_all_events_have_arrived() {
         listener.onSuiteStarted();
-        assertNotInOutput("Pass");
+        assertNotInOutput(SUMMARY_LINE);
 
         listener.onSuiteFinished();
-        assertInOutput("Pass");
+        assertInOutput(SUMMARY_LINE);
     }
 
     @Test
