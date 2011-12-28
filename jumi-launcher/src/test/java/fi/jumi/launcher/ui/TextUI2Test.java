@@ -4,6 +4,8 @@
 
 package fi.jumi.launcher.ui;
 
+import fi.jumi.actors.Event;
+import fi.jumi.actors.MessageQueue;
 import fi.jumi.api.drivers.TestId;
 import fi.jumi.core.SuiteListener;
 import fi.jumi.core.events.suite.SuiteListenerToEvent;
@@ -22,7 +24,7 @@ public class TextUI2Test {
     public static final String ANOTHER_TEST_CLASS = "com.example.AnotherDummyTest";
     public static final String ANOTHER_TEST_CLASS_NAME = "AnotherDummyTest";
 
-    private final FakeStream stream = new FakeStream();
+    private final MessageQueue<Event<SuiteListener>> stream = new MessageQueue<Event<SuiteListener>>();
     private final SuiteListener listener = new SuiteListenerToEvent(stream);
 
     private final ByteArrayOutputStream out = new ByteArrayOutputStream();

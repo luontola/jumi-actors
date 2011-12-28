@@ -5,6 +5,7 @@
 package fi.jumi.launcher.ui;
 
 import fi.jumi.actors.Event;
+import fi.jumi.actors.MessageReceiver;
 import fi.jumi.api.drivers.TestId;
 import fi.jumi.core.SuiteListener;
 import fi.jumi.core.events.suite.OnFailureEvent;
@@ -18,7 +19,9 @@ public class TextUI2 implements SuiteListener {
 
     private final PrintStream out;
     private final PrintStream err;
-    private final FakeStream eventStream;
+
+    // TODO: if multiple readers are needed, create a Streamer class per the original designs
+    private final MessageReceiver<Event<SuiteListener>> eventStream;
 
     private final Map<GlobalTestId, String> testNamesById = new HashMap<GlobalTestId, String>();
     private final Map<Integer, List<Event<SuiteListener>>> eventsByRunId = new HashMap<Integer, List<Event<SuiteListener>>>();
@@ -27,7 +30,7 @@ public class TextUI2 implements SuiteListener {
     private final Set<GlobalTestId> failCount = new HashSet<GlobalTestId>();
     private final Set<GlobalTestId> totalCount = new HashSet<GlobalTestId>();
 
-    public TextUI2(PrintStream out, PrintStream err, FakeStream eventStream) {
+    public TextUI2(PrintStream out, PrintStream err, MessageReceiver<Event<SuiteListener>> eventStream) {
         this.out = out;
         this.err = err;
         this.eventStream = eventStream;
