@@ -4,12 +4,14 @@
 
 package fi.jumi.daemon;
 
-import fi.jumi.actors.*;
-import fi.jumi.core.*;
+import fi.jumi.actors.Event;
+import fi.jumi.actors.MessageSender;
+import fi.jumi.core.CommandListener;
+import fi.jumi.core.SuiteListener;
 import fi.jumi.core.events.suite.SuiteListenerFactory;
 import org.jboss.netty.channel.*;
 
-import javax.annotation.concurrent.*;
+import javax.annotation.concurrent.ThreadSafe;
 
 @ThreadSafe
 public class JumiDaemonHandler extends SimpleChannelHandler {
@@ -36,6 +38,7 @@ public class JumiDaemonHandler extends SimpleChannelHandler {
         e.getChannel().close();
     }
 
+    @ThreadSafe
     private static class ChannelMessageSender implements MessageSender<Event<SuiteListener>> {
         private final Channel channel;
 

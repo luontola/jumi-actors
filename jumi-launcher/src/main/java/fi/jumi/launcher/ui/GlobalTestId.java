@@ -6,6 +6,9 @@ package fi.jumi.launcher.ui;
 
 import fi.jumi.api.drivers.TestId;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public class GlobalTestId {
 
     private final String testClass;

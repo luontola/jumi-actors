@@ -5,7 +5,9 @@
 package fi.jumi.actors;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import java.util.*;
+import javax.annotation.concurrent.ThreadSafe;
+import java.util.ArrayList;
+import java.util.List;
 
 @NotThreadSafe
 public class SingleThreadedActors extends Actors {
@@ -62,6 +64,7 @@ public class SingleThreadedActors extends Actors {
     }
 
 
+    @ThreadSafe
     private class EventPoller<T> {
 
         private final MessageQueue<Event<T>> source;

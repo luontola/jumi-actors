@@ -24,7 +24,9 @@
     </option>
     <envs />
     <patterns />
+    <RunnerSettings RunnerId="Cover" />
     <RunnerSettings RunnerId="Run" />
+    <ConfigurationWrapper RunnerId="Cover" />
     <ConfigurationWrapper RunnerId="Run" />
     <method>
       <option name="Maven.BeforeRunTask" enabled="true" file="$PROJECT_DIR$/pom.xml" goal="pre-integration-test" />

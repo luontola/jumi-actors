@@ -5,12 +5,16 @@
 package fi.jumi.core.runners;
 
 import fi.jumi.actors.OnDemandActors;
-import fi.jumi.api.drivers.*;
-import fi.jumi.core.*;
+import fi.jumi.api.drivers.Driver;
+import fi.jumi.api.drivers.TestId;
+import fi.jumi.core.Startable;
+import fi.jumi.core.SuiteListener;
 import fi.jumi.core.drivers.DriverFinder;
-import fi.jumi.core.files.*;
+import fi.jumi.core.files.TestClassFinder;
+import fi.jumi.core.files.TestClassFinderListener;
 
 import javax.annotation.concurrent.NotThreadSafe;
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.concurrent.Executor;
 
 @NotThreadSafe
@@ -40,20 +44,19 @@ public class SuiteRunner implements Startable, TestClassFinderListener {
         listener.onSuiteStarted();
 
         final TestClassFinderListener finderListener = actors.createSecondaryActor(TestClassFinderListener.class, this);
-        startUnattendedWorker(new Runnable() {
-            public void run() {
-                testClassFinder.findTestClasses(finderListener);
-            }
-        });
+        startUnattendedWorker(new TestClassFinderRunner(testClassFinder, finderListener));
     }
 
     private void startUnattendedWorker(Runnable worker) {
         fireWorkerStarted();
-        actors.startUnattendedWorker(worker, new Runnable() {
+
+        @NotThreadSafe
+        class FireWorkerFinished implements Runnable {
             public void run() {
                 fireWorkerFinished();
             }
-        });
+        }
+        actors.startUnattendedWorker(worker, new FireWorkerFinished());
     }
 
     private void fireWorkerStarted() {
@@ -77,6 +80,7 @@ public class SuiteRunner implements Startable, TestClassFinderListener {
         ).start();
     }
 
+    @NotThreadSafe
     private class TestClassRunnerListenerToSuiteListener implements TestClassRunnerListener {
         private final Class<?> testClass;
 
@@ -102,6 +106,21 @@ public class SuiteRunner implements Startable, TestClassFinderListener {
 
         public void onTestClassFinished() {
             fireWorkerFinished();
+        }
+    }
+
+    @ThreadSafe
+    private static class TestClassFinderRunner implements Runnable {
+        private final TestClassFinderListener finderListener;
+        private TestClassFinder testClassFinder;
+
+        public TestClassFinderRunner(TestClassFinder testClassFinder, TestClassFinderListener finderListener) {
+            this.finderListener = finderListener;
+            this.testClassFinder = testClassFinder;
+        }
+
+        public void run() {
+            testClassFinder.findTestClasses(finderListener);
         }
     }
 }

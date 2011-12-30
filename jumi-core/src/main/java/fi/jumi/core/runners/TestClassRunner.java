@@ -5,11 +5,14 @@
 package fi.jumi.core.runners;
 
 import fi.jumi.actors.OnDemandActors;
-import fi.jumi.api.drivers.*;
+import fi.jumi.api.drivers.Driver;
+import fi.jumi.api.drivers.SuiteNotifier;
+import fi.jumi.api.drivers.TestId;
 import fi.jumi.core.Startable;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executor;
 
 @NotThreadSafe
@@ -38,12 +41,14 @@ public class TestClassRunner implements Startable, TestClassListener {
         SuiteNotifier notifier = new DefaultSuiteNotifier(actors.createSecondaryActor(TestClassListener.class, this));
         DriverRunner worker = new DriverRunner(testClass, driverClass, notifier, executor);
 
-        actors.startUnattendedWorker(worker, new Runnable() {
+        @NotThreadSafe
+        class FireOnTestClassFinished implements Runnable {
             public void run() {
                 // TODO: count workers, fire "onTestClassFinished" only after all workers are finished
                 listener.onTestClassFinished();
             }
-        });
+        }
+        actors.startUnattendedWorker(worker, new FireOnTestClassFinished());
     }
 
     public void onTestFound(TestId id, String name) {

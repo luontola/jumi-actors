@@ -4,10 +4,8 @@
 
 package fi.jumi.test;
 
-import org.junit.Rule;
-import org.junit.Test;
-import sample.OneFailingTest;
-import sample.OnePassingTest;
+import org.junit.*;
+import sample.*;
 
 public class RunningTestsTest {
 

@@ -1,12 +1,5 @@
 
 TODO NEXT:
-!! - SuiteStateCollector & SuiteResults should now be dead code, also dependency to Functional Java could probably be removed
-- SuiteRunner has a cyclic dependency with TestRunCoordinator
-- new build test: all (named) production classes must be annotated with javax.annotation.concurrent.Immutable/ThreadSafe/NotThreadSafe
-	- the annotations have RetentionPolicy.CLASS so reflection is not an option, must use ASM
-	- exclude by pattern, for example shaded libraries
-	- forgot to annotate TextUI
-
 - end-to-end tests: multiple tests
 	- identify concurrent test runs with a unique ID
 	- run on more than one thread; performance must improve (write a performance test with sleeps?)
@@ -24,6 +17,7 @@ TODO NEXT:
 	- actor tests print dummy exceptions; solve by having a custom pluggable exception handler which doesn't print stack traces of a DummyException class
 
 - misc refactoring
+	- SuiteRunner has a cyclic dependency with TestRunCoordinator
 	- put end-to-end tests in their own package (test.fi.jumi?), separate them from unit tests
 		- or use JUnit categories, maybe with a custom runner?
 	- test execution might be best implemented using regular thread pools instead of actors

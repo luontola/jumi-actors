@@ -4,15 +4,13 @@
 
 package fi.jumi.test;
 
-import fi.jumi.actors.Event;
-import fi.jumi.actors.MessageQueue;
+import fi.jumi.actors.*;
 import fi.jumi.core.SuiteListener;
 import fi.jumi.launcher.JumiLauncher;
 import fi.jumi.launcher.ui.TextUI;
 import org.apache.commons.io.FileUtils;
 import org.junit.rules.MethodRule;
-import org.junit.runners.model.FrameworkMethod;
-import org.junit.runners.model.Statement;
+import org.junit.runners.model.*;
 
 import java.io.*;
 import java.util.UUID;

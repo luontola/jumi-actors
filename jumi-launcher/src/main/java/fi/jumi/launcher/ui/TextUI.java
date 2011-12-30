@@ -12,9 +12,11 @@ import fi.jumi.core.events.suite.OnFailureEvent;
 import fi.jumi.core.events.suite.OnTestFinishedEvent;
 import fi.jumi.core.events.suite.OnTestStartedEvent;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import java.io.PrintStream;
 import java.util.*;
 
+@NotThreadSafe
 public class TextUI implements SuiteListener {
 
     private final PrintStream out;
@@ -146,6 +148,8 @@ public class TextUI implements SuiteListener {
         failCount.add(new GlobalTestId(testClass, id));
     }
 
+
+    @NotThreadSafe
     private class RunPrinter extends TestRunListener {
         private int runningTests = 0;
 
@@ -187,6 +191,7 @@ public class TextUI implements SuiteListener {
         }
     }
 
+    @NotThreadSafe
     private class RunStatusEvaluator extends TestRunListener {
         private int runningTests = 0;
 

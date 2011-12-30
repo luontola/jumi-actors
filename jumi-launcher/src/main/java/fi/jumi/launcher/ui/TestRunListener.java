@@ -7,6 +7,9 @@ package fi.jumi.launcher.ui;
 import fi.jumi.api.drivers.TestId;
 import fi.jumi.core.SuiteListener;
 
+import javax.annotation.concurrent.ThreadSafe;
+
+@ThreadSafe
 public abstract class TestRunListener implements SuiteListener {
 
     private static void assertShouldNotBeCalled() {

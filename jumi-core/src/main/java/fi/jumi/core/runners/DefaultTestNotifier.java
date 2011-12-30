@@ -4,8 +4,12 @@
 
 package fi.jumi.core.runners;
 
-import fi.jumi.api.drivers.*;
+import fi.jumi.api.drivers.TestId;
+import fi.jumi.api.drivers.TestNotifier;
 
+import javax.annotation.concurrent.ThreadSafe;
+
+@ThreadSafe
 public class DefaultTestNotifier implements TestNotifier {
 
     private final TestId id;

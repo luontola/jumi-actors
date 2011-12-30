@@ -4,7 +4,8 @@
 
 package fi.jumi.actors;
 
-import javax.annotation.concurrent.*;
+import javax.annotation.concurrent.NotThreadSafe;
+import javax.annotation.concurrent.ThreadSafe;
 
 @ThreadSafe
 public abstract class Actors implements LongLivedActors, OnDemandActors {
@@ -47,11 +48,7 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
         ListenerFactory<T> factory = getFactoryForType(type);
         final MessageQueue<Event<?>> queue = getQueueOfCurrentActor();
 
-        T handle = factory.newFrontend(new MessageSender<Event<T>>() {
-            public void send(Event<T> message) {
-                queue.send(new CustomTargetEvent<T>(message, target));
-            }
-        });
+        T handle = factory.newFrontend(new DelegateToCustomTarget<T>(queue, target));
         return type.cast(handle);
     }
 
@@ -119,6 +116,21 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
             } finally {
                 onFinished.run();
             }
+        }
+    }
+
+    @ThreadSafe
+    private static class DelegateToCustomTarget<T> implements MessageSender<Event<T>> {
+        private final MessageQueue<Event<?>> queue;
+        private final T target;
+
+        public DelegateToCustomTarget(MessageQueue<Event<?>> queue, T target) {
+            this.queue = queue;
+            this.target = target;
+        }
+
+        public void send(Event<T> message) {
+            queue.send(new CustomTargetEvent<T>(message, target));
         }
     }
 

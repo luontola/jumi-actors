@@ -123,6 +123,7 @@ public abstract class TestId implements Comparable<TestId>, Serializable {
     }
 
 
+    @Immutable
     private static class Root extends TestId {
 
         public boolean isRoot() {
@@ -146,6 +147,7 @@ public abstract class TestId implements Comparable<TestId>, Serializable {
         }
     }
 
+    @Immutable
     private static class Child extends TestId {
 
         private final TestId parent;

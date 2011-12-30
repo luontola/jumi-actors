@@ -5,8 +5,12 @@
 package fi.jumi.actors;
 
 import javax.annotation.concurrent.ThreadSafe;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @ThreadSafe
 public class MultiThreadedActors extends Actors {
@@ -45,6 +49,7 @@ public class MultiThreadedActors extends Actors {
     }
 
 
+    @ThreadSafe
     private static class EventPoller<T> implements Runnable {
         private final MessageReceiver<Event<T>> events;
         private final MessageSender<Event<T>> target;

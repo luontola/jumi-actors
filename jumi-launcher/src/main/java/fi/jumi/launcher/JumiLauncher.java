@@ -19,6 +19,7 @@ import org.jboss.netty.channel.socket.oio.OioServerSocketChannelFactory;
 import org.jboss.netty.handler.codec.serialization.ObjectDecoder;
 import org.jboss.netty.handler.codec.serialization.ObjectEncoder;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.*;
 import java.net.InetSocketAddress;
@@ -81,14 +82,16 @@ public class JumiLauncher {
 
         ServerBootstrap bootstrap = new ServerBootstrap(factory);
 
-        bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
+        @ThreadSafe
+        class MyChannelPipelineFactory implements ChannelPipelineFactory {
             public ChannelPipeline getPipeline() {
                 return Channels.pipeline(
                         new ObjectEncoder(),
                         new ObjectDecoder(),
                         handler);
             }
-        });
+        }
+        bootstrap.setPipelineFactory(new MyChannelPipelineFactory());
 
         bootstrap.setOption("child.tcpNoDelay", true);
         bootstrap.setOption("child.keepAlive", true);
@@ -120,7 +123,8 @@ public class JumiLauncher {
     }
 
     private void copyInBackground(final InputStream src, final Writer dest) {
-        Thread t = new Thread(new Runnable() {
+        @NotThreadSafe
+        class Copier implements Runnable {
             public void run() {
                 try {
                     IOUtils.copy(src, dest);
@@ -128,7 +132,8 @@ public class JumiLauncher {
                     throw new RuntimeException(e);
                 }
             }
-        });
+        }
+        Thread t = new Thread(new Copier());
         t.setDaemon(true);
         t.start();
     }

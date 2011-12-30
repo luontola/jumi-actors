@@ -6,21 +6,22 @@ package fi.jumi.test;
 
 import fi.jumi.launcher.daemon.Daemon;
 import fi.jumi.test.PartiallyParameterized.NonParameterized;
+import fi.jumi.test.util.XmlUtils;
 import org.hamcrest.Matcher;
 import org.hamcrest.core.CombinableMatcher;
-import org.intellij.lang.annotations.Language;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
+import org.objectweb.asm.tree.ClassNode;
 import org.w3c.dom.*;
 
-import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilderFactory;
+import javax.annotation.concurrent.*;
 import javax.xml.xpath.*;
 import java.io.*;
 import java.util.*;
 import java.util.jar.*;
 
+import static fi.jumi.test.util.AsmUtils.*;
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -31,6 +32,16 @@ public class BuildTest {
 
     private static final String POM_FILES = "META-INF/maven/fi.jumi/";
     private static final String BASE_PACKAGE = "fi/jumi/";
+
+    private static final String[] DOES_NOT_NEED_JSR305_ANNOTATIONS = {
+            // shaded classes
+            "fi/jumi/daemon/INTERNAL/",
+            "fi/jumi/launcher/INTERNAL/",
+            // generated classes
+            "fi/jumi/core/events/",
+            // ignore, because the ThreadSafetyAgent anyways won't checked itself
+            "fi/jumi/threadsafetyagent/",
+    };
 
     private final String artifactId;
     private final List<String> expectedDependencies;
@@ -94,7 +105,7 @@ public class BuildTest {
     @Test
     public void pom_contains_only_allowed_dependencies() throws Exception {
         File pomFile = TestEnvironment.getProjectPom(artifactId);
-        Document pom = parseXml(pomFile);
+        Document pom = XmlUtils.parseXml(pomFile);
         List<String> dependencies = getRuntimeDependencies(pom);
         assertThat("dependencies of " + artifactId, dependencies, is(expectedDependencies));
     }
@@ -133,6 +144,50 @@ public class BuildTest {
         }
     }
 
+    @Test
+    public void all_classes_must_be_annotated_with_JSR305_concurrent_annotations() throws Exception {
+        File jarFile = TestEnvironment.getProjectJar(artifactId);
+        JarInputStream in = new JarInputStream(new FileInputStream(jarFile));
+        JarEntry entry;
+        AssertionError errors = null;
+        while ((entry = in.getNextJarEntry()) != null) {
+            if (!shouldHaveJsr305ConcurrencyAnnotation(entry)) {
+                continue;
+            }
+            ClassNode cn = readClass(in);
+            if (isInterface(cn)) {
+                continue;
+            }
+            if (isSynthetic(cn)) {
+                continue;
+            }
+            try {
+                assertThat(cn, is(annotatedWithOneOf(Immutable.class, NotThreadSafe.class, ThreadSafe.class)));
+            } catch (AssertionError e) {
+                errors = (AssertionError) e.initCause(errors);
+            }
+        }
+        if (errors != null) {
+            throw errors;
+        }
+        in.close();
+    }
+
+    private static boolean shouldHaveJsr305ConcurrencyAnnotation(JarEntry entry) {
+        if (entry.isDirectory()) {
+            return false;
+        }
+        if (!entry.getName().endsWith(".class")) {
+            return false;
+        }
+        for (String prefix : DOES_NOT_NEED_JSR305_ANNOTATIONS) {
+            if (entry.getName().startsWith(prefix)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     // helper methods
 
@@ -162,7 +217,7 @@ public class BuildTest {
     }
 
     private static List<String> getRuntimeDependencies(Document doc) throws XPathExpressionException {
-        NodeList nodes = (NodeList) xpath(
+        NodeList nodes = (NodeList) XmlUtils.xpath(
                 "/project/dependencies/dependency[not(scope) or scope='compile' or scope='runtime']",
                 doc, XPathConstants.NODESET);
 
@@ -170,27 +225,10 @@ public class BuildTest {
         for (int i = 0; i < nodes.getLength(); i++) {
             Node dependency = nodes.item(i);
 
-            String groupId = xpath("groupId", dependency);
-            String artifactId = xpath("artifactId", dependency);
+            String groupId = XmlUtils.xpath("groupId", dependency);
+            String artifactId = XmlUtils.xpath("artifactId", dependency);
             results.add(groupId + ":" + artifactId);
         }
         return results;
-    }
-
-    // xml parsing
-
-    private static Document parseXml(File file) throws Exception {
-        DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
-        domFactory.setNamespaceAware(false);
-        return domFactory.newDocumentBuilder().parse(file);
-    }
-
-    private static String xpath(@Language("XPath") String expression, Node node) throws XPathExpressionException {
-        return (String) xpath(expression, node, XPathConstants.STRING);
-    }
-
-    private static Object xpath(@Language("XPath") String expression, Node item, QName returnType) throws XPathExpressionException {
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        return xpath.evaluate(expression, item, returnType);
     }
 }
