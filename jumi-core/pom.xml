@@ -36,11 +36,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.functionaljava</groupId>
-            <artifactId>functionaljava</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
             <scope>provided</scope>
@@ -109,10 +104,6 @@
                                 <relocation>
                                     <pattern>org.apache</pattern>
                                     <shadedPattern>${shadedPrefix}.org.apache</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>fj</pattern>
-                                    <shadedPattern>${shadedPrefix}.fj</shadedPattern>
                                 </relocation>
                             </relocations>
                             <filters>
