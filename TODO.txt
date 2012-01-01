@@ -1,7 +1,7 @@
 
 TODO NEXT:
 - end-to-end tests: multiple tests
-	- identify concurrent test runs with a unique ID
+	- identify concurrent test runs with a unique ID (necessary yet?)
 	- run on more than one thread; performance must improve (write a performance test with sleeps?)
 		- testable with a static CountDownLatch used from two test methods
 	- remove redundant parameters for SuiteListener
@@ -12,6 +12,16 @@ TODO NEXT:
 	- capture System.out/err
 	- send out/err events
 	- test: printing from the same thread to out & err should be synchronous, unlike in probably every IDE
+	- hacking System.out/err
+		- tests should restore the original out/err defensively in @After
+		- concurrency test: out.println("O") and err.println("E") from different threads, output must not contain "OE"/"EO" but only "O\nE\n"
+		- unit test: the PrintStreams for our & err must sync on the same object, testable by checking holdsLock in a mock OutputStream
+			- Thread.holdsLock(java.lang.Object)
+			- ReentrantLock.isHeldByCurrentThread()
+		- generic test: all methods on our custom PrintStream must delegate to the PrintStream given as parameter, testable with reflection and CGLIB-proxy as target mock
+			- note: can't override just selected methods, because the print's delegate to a private method, and anyways it would couple to PrintStream's implementation details
+			- might break in future Java versions, if more methods are added to PrintStream, so beware of it
+			! - or just use a CGLIB proxy (net.sf.cglib.proxy.MethodInterceptor which synchronizes and delegates to real PrintStream, except net.sf.cglib.proxy.NoOp for Object's methods)
 
 - end-to-end tests: failures outside tests (in drivers and core)
 	- actor tests print dummy exceptions; solve by having a custom pluggable exception handler which doesn't print stack traces of a DummyException class
