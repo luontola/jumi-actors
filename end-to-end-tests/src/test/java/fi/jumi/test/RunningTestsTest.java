@@ -29,6 +29,7 @@ public class RunningTestsTest {
         app.checkTotalTests(2);
         app.checkPassingTests(2);
         app.checkFailingTests(0);
+        // TODO: check that there was one test run
     }
 
     @Test(timeout = TIMEOUT)
@@ -38,6 +39,7 @@ public class RunningTestsTest {
         app.checkTotalTests(2);
         app.checkPassingTests(1);
         app.checkFailingTests(1);
+        // TODO: check that there was one test run
     }
 
     @Test(timeout = TIMEOUT)
@@ -45,6 +47,18 @@ public class RunningTestsTest {
         app.runTests(OneFailingTest.class);
 
         app.checkHasStackTrace("java.lang.AssertionError: dummy failure", "at sample.OneFailingTest.testFailing");
+    }
+
+    @Ignore("not implemented")
+    @Test(timeout = TIMEOUT)
+    public void tests_are_run_in_parallel() throws Exception {
+        app.runTests(ParallelismTest.class);
+
+        app.checkTotalTests(3);
+        app.checkPassingTests(3);
+        app.checkFailingTests(0);
+        // TODO: check that there were two test runs
+        // TODO: check the test start/end events of each test run, if the test doesn't otherwise fail for lack of RunID
     }
 
     // TODO: reporting test names
