@@ -49,7 +49,6 @@ public class RunningTestsTest {
         app.checkHasStackTrace("java.lang.AssertionError: dummy failure", "at sample.OneFailingTest.testFailing");
     }
 
-    @Ignore("not implemented")
     @Test(timeout = TIMEOUT)
     public void tests_are_run_in_parallel() throws Exception {
         app.runTests(ParallelismTest.class);

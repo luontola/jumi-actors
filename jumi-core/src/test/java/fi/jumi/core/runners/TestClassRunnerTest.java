@@ -7,6 +7,7 @@ package fi.jumi.core.runners;
 import fi.jumi.actors.SingleThreadedActors;
 import fi.jumi.api.drivers.*;
 import fi.jumi.core.Startable;
+import fi.jumi.core.events.executor.ExecutorFactory;
 import fi.jumi.core.events.runnable.RunnableFactory;
 import fi.jumi.core.events.startable.StartableFactory;
 import fi.jumi.core.events.testclass.TestClassListenerFactory;
@@ -21,26 +22,27 @@ public class TestClassRunnerTest {
     private final SingleThreadedActors actors = new SingleThreadedActors(
             new StartableFactory(),
             new RunnableFactory(),
+            new ExecutorFactory(),
             new TestClassListenerFactory()
     );
-    private final Executor executor = new SynchronousExecutor();
+    private final AsynchronousExecutor executor = new AsynchronousExecutor();
 
     @Test
     public void test_class_with_zero_tests() {
         // TODO: is this an allowed situation? in practice it means that the class is not reported anywhere
         listener.onTestClassFinished();
 
-        runAndAwaitCompletion(new TestClassRunner(DummyTest.class, ZeroTestsDriver.class, listener, actors, executor));
+        runAndAwaitCompletion(ZeroTestsDriver.class);
     }
 
     @Test
-    public void test_class_with_only_root_test() {
+    public void test_class_with_one_passing_tests() {
         listener.onTestFound(TestId.ROOT, "root test");
         listener.onTestStarted(TestId.ROOT);
         listener.onTestFinished(TestId.ROOT);
         listener.onTestClassFinished();
 
-        runAndAwaitCompletion(new TestClassRunner(DummyTest.class, OneTestDriver.class, listener, actors, executor));
+        runAndAwaitCompletion(OnePassingTestDriver.class);
     }
 
     @Test
@@ -51,7 +53,21 @@ public class TestClassRunnerTest {
         listener.onTestFinished(TestId.ROOT);
         listener.onTestClassFinished();
 
-        runAndAwaitCompletion(new TestClassRunner(DummyTest.class, OneFailingTestDriver.class, listener, actors, executor));
+        runAndAwaitCompletion(OneFailingTestDriver.class);
+    }
+
+    @Test
+    public void test_class_with_multiple_tests_which_are_run_in_parallel() {
+        listener.onTestFound(TestId.ROOT, "root test");
+        listener.onTestFound(TestId.of(0), "test one");
+        listener.onTestFound(TestId.of(1), "test two");
+        listener.onTestStarted(TestId.of(0));
+        listener.onTestStarted(TestId.of(1));
+        listener.onTestFinished(TestId.of(0));
+        listener.onTestFinished(TestId.of(1));
+        listener.onTestClassFinished();
+
+        runAndAwaitCompletion(ManyTestsInParallelDriver.class);
     }
 
     @Test
@@ -61,18 +77,29 @@ public class TestClassRunnerTest {
         listener.onTestFinished(TestId.ROOT);
         listener.onTestClassFinished();
 
-        runAndAwaitCompletion(new TestClassRunner(DummyTest.class, UseExecutorDriver.class, listener, actors, executor));
+        runAndAwaitCompletion(UseExecutorDriver.class);
     }
 
-    // TODO: how to distinguish between events from concurrent executions of the same test?
+
+    // helpers
+
+    private void runAndAwaitCompletion(Class<? extends Driver> driverClass) {
+        runAndAwaitCompletion(new TestClassRunner(DummyTest.class, driverClass, listener, actors, executor));
+    }
 
     private void runAndAwaitCompletion(TestClassRunner runner) {
         spy.replay();
         actors.createPrimaryActor(Startable.class, runner, "TestClassRunner").start();
-        actors.processEventsUntilIdle();
+        for (int i = 0; i < 10; i++) {
+            // XXX: embed Executor into SingleThreadedActors
+            executor.runUntilIdle();
+            actors.processEventsUntilIdle();
+        }
         spy.verify();
     }
 
+
+    // guinea pigs
 
     private static class DummyTest {
     }
@@ -82,7 +109,7 @@ public class TestClassRunnerTest {
         }
     }
 
-    static class OneTestDriver implements Driver {
+    static class OnePassingTestDriver implements Driver {
         public void findTests(Class<?> testClass, SuiteNotifier notifier, Executor executor) {
             notifier.fireTestFound(TestId.ROOT, "root test");
             TestNotifier tn = notifier.fireTestStarted(TestId.ROOT);
@@ -96,6 +123,19 @@ public class TestClassRunnerTest {
             TestNotifier tn = notifier.fireTestStarted(TestId.ROOT);
             tn.fireFailure(new Exception("dummy failure"));
             tn.fireTestFinished();
+        }
+    }
+
+    static class ManyTestsInParallelDriver implements Driver {
+        public void findTests(Class<?> testClass, final SuiteNotifier notifier, Executor executor) {
+            notifier.fireTestFound(TestId.ROOT, "root test");
+            notifier.fireTestFound(TestId.of(0), "test one");
+            notifier.fireTestFound(TestId.of(1), "test two");
+
+            TestNotifier tn1 = notifier.fireTestStarted(TestId.of(0));
+            TestNotifier tn2 = notifier.fireTestStarted(TestId.of(1));
+            tn1.fireTestFinished();
+            tn2.fireTestFinished();
         }
     }
 

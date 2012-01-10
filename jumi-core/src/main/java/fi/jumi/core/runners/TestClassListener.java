@@ -17,4 +17,8 @@ public interface TestClassListener {
     void onFailure(TestId id, Throwable cause);
 
     void onTestFinished(TestId id);
+
+    void onExecutorCommandQueued(Runnable runnable);
+
+    void onExecutorCommandFinished();
 }

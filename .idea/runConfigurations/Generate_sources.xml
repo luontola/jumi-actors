@@ -23,7 +23,7 @@
             <map />
           </option>
           <option name="runMavenInBackground" value="true" />
-          <option name="skipTests" value="false" />
+          <option name="skipTests" value="true" />
           <option name="vmOptions" value="" />
         </MavenRunnerSettings>
       </option>
@@ -31,7 +31,7 @@
         <MavenRunnerParameters>
           <option name="goals">
             <list>
-              <option value="compile" />
+              <option value="package" />
             </list>
           </option>
           <option name="profiles">

@@ -5,8 +5,7 @@
 package fi.jumi.daemon;
 
 import fi.jumi.actors.MultiThreadedActors;
-import fi.jumi.core.CommandListener;
-import fi.jumi.core.TestRunCoordinator;
+import fi.jumi.core.*;
 import fi.jumi.core.events.command.CommandListenerFactory;
 import fi.jumi.core.events.runnable.RunnableFactory;
 import fi.jumi.core.events.startable.StartableFactory;
@@ -14,21 +13,15 @@ import fi.jumi.core.events.suite.SuiteListenerFactory;
 import fi.jumi.core.events.testclass.TestClassListenerFactory;
 import fi.jumi.core.events.testclassfinder.TestClassFinderListenerFactory;
 import org.jboss.netty.bootstrap.ClientBootstrap;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.Channels;
+import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.socket.oio.OioClientSocketChannelFactory;
-import org.jboss.netty.handler.codec.serialization.ObjectDecoder;
-import org.jboss.netty.handler.codec.serialization.ObjectEncoder;
+import org.jboss.netty.handler.codec.serialization.*;
 import org.jboss.netty.handler.logging.LoggingHandler;
 import org.jboss.netty.logging.InternalLogLevel;
 
-import javax.annotation.concurrent.Immutable;
-import javax.annotation.concurrent.ThreadSafe;
+import javax.annotation.concurrent.*;
 import java.net.InetSocketAddress;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 @ThreadSafe
 public class Main {
@@ -47,14 +40,8 @@ public class Main {
                 new TestClassListenerFactory()
         );
 
-        // TODO: support an asynchronous thread pool - the SuiteRunner must wait until the pool is idle
-        @Immutable
-        class SynchronousExecutor implements Executor {
-            public void execute(Runnable command) {
-                command.run();
-            }
-        }
-        Executor executor = new SynchronousExecutor();
+        // TODO: do not create unlimited numbers of threads; make it by default CPUs+1 or something
+        Executor executor = Executors.newCachedThreadPool();
         CommandListener toCoordinator = actors.createPrimaryActor(CommandListener.class, new TestRunCoordinator(actors, executor), "Coordinator");
 
         connectToLauncher(launcherPort, toCoordinator);

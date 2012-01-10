@@ -8,6 +8,7 @@ import fi.jumi.actors.SingleThreadedActors;
 import fi.jumi.api.drivers.*;
 import fi.jumi.core.*;
 import fi.jumi.core.drivers.DriverFinder;
+import fi.jumi.core.events.executor.ExecutorFactory;
 import fi.jumi.core.events.runnable.RunnableFactory;
 import fi.jumi.core.events.startable.StartableFactory;
 import fi.jumi.core.events.testclass.TestClassListenerFactory;
@@ -25,6 +26,7 @@ public class SuiteRunnerTest {
     private final SingleThreadedActors actors = new SingleThreadedActors(
             new StartableFactory(),
             new RunnableFactory(),
+            new ExecutorFactory(),
             new TestClassFinderListenerFactory(),
             new TestClassListenerFactory()
     );

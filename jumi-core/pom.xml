@@ -71,6 +71,7 @@
                             <createSubPackages>true</createSubPackages>
                             <eventInterfaces>
                                 <interface>java.lang.Runnable</interface>
+                                <interface>java.util.concurrent.Executor</interface>
                                 <interface>fi.jumi.core.CommandListener</interface>
                                 <interface>fi.jumi.core.Startable</interface>
                                 <interface>fi.jumi.core.SuiteListener</interface>
