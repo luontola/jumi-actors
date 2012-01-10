@@ -1,4 +1,4 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -7,6 +7,7 @@ package fi.jumi.daemon;
 import fi.jumi.actors.MultiThreadedActors;
 import fi.jumi.core.*;
 import fi.jumi.core.events.command.CommandListenerFactory;
+import fi.jumi.core.events.executor.ExecutorListenerFactory;
 import fi.jumi.core.events.runnable.RunnableFactory;
 import fi.jumi.core.events.startable.StartableFactory;
 import fi.jumi.core.events.suite.SuiteListenerFactory;
@@ -34,6 +35,7 @@ public class Main {
         MultiThreadedActors actors = new MultiThreadedActors(
                 new StartableFactory(),
                 new RunnableFactory(),
+                new ExecutorListenerFactory(),
                 new TestClassFinderListenerFactory(),
                 new SuiteListenerFactory(),
                 new CommandListenerFactory(),

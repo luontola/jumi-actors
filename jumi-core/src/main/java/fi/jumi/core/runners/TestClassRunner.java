@@ -1,4 +1,4 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -13,15 +13,14 @@ import java.util.*;
 import java.util.concurrent.Executor;
 
 @NotThreadSafe
-public class TestClassRunner implements Startable, TestClassListener {
+public class TestClassRunner implements Startable, TestClassListener, WorkerCounterListener {
 
     private final Class<?> testClass;
     private final Class<? extends Driver> driverClass;
     private final TestClassRunnerListener listener;
-    private final OnDemandActors actors;
     private final Map<TestId, String> tests = new HashMap<TestId, String>();
-    private final Executor realExecutor;
-    private int workers = 0;
+
+    private DriverRunnerSpawner driverRunnerSpawner;
 
     public TestClassRunner(Class<?> testClass,
                            Class<? extends Driver> driverClass,
@@ -31,25 +30,13 @@ public class TestClassRunner implements Startable, TestClassListener {
         this.testClass = testClass;
         this.driverClass = driverClass;
         this.listener = listener;
-        this.actors = actors;
-        this.realExecutor = executor;
+
+        WorkerCounter workerCounter = new WorkerCounter(this);
+        this.driverRunnerSpawner = new DriverRunnerSpawner(actors, executor, workerCounter, this);
     }
 
     public void start() {
-        TestClassListener self = actors.createSecondaryActor(TestClassListener.class, this);
-
-        Executor myExecutor = new QueuingExecutor(self);
-        SuiteNotifier notifier = new DefaultSuiteNotifier(self);
-        DriverRunner worker = new DriverRunner(testClass, driverClass, notifier, myExecutor);
-
-        @NotThreadSafe
-        class OnDriverFinished implements Runnable {
-            public void run() {
-                fireWorkerFinished();
-            }
-        }
-        fireWorkerStarted();
-        actors.startUnattendedWorker(worker, new OnDriverFinished());
+        driverRunnerSpawner.spawnDriverRunner(testClass, driverClass);
     }
 
     public void onTestFound(TestId id, String name) {
@@ -75,37 +62,8 @@ public class TestClassRunner implements Startable, TestClassListener {
         listener.onTestFinished(id);
     }
 
-    public void onExecutorCommandQueued(final Runnable runnable) {
-        fireWorkerStarted();
-        final TestClassListener self = actors.createSecondaryActor(TestClassListener.class, this);
-
-        @NotThreadSafe
-        class OnFinishedNotifier implements Runnable {
-            public void run() {
-                try {
-                    runnable.run();
-                } finally {
-                    self.onExecutorCommandFinished();
-                }
-            }
-        }
-        realExecutor.execute(new OnFinishedNotifier());
-    }
-
-    public void onExecutorCommandFinished() {
-        fireWorkerFinished();
-    }
-
-    private void fireWorkerStarted() {
-        workers++;
-    }
-
-    private void fireWorkerFinished() {
-        workers--;
-        assert workers >= 0;
-        if (workers == 0) {
-            listener.onTestClassFinished();
-        }
+    public void onAllWorkersFinished() {
+        listener.onTestClassFinished();
     }
 
     private boolean hasNotBeenFoundBefore(TestId id) {
@@ -125,17 +83,4 @@ public class TestClassRunner implements Startable, TestClassListener {
         }
     }
 
-    @ThreadSafe
-    private static class QueuingExecutor implements Executor { // TODO: make TestClassRunner implement Executor directly?
-
-        private final TestClassListener target;
-
-        private QueuingExecutor(TestClassListener target) {
-            this.target = target;
-        }
-
-        public void execute(Runnable command) {
-            target.onExecutorCommandQueued(command);
-        }
-    }
 }

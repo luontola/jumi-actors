@@ -1,4 +1,4 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -7,7 +7,7 @@ package fi.jumi.core.runners;
 import fi.jumi.actors.SingleThreadedActors;
 import fi.jumi.api.drivers.*;
 import fi.jumi.core.Startable;
-import fi.jumi.core.events.executor.ExecutorFactory;
+import fi.jumi.core.events.executor.*;
 import fi.jumi.core.events.runnable.RunnableFactory;
 import fi.jumi.core.events.startable.StartableFactory;
 import fi.jumi.core.events.testclass.TestClassListenerFactory;
@@ -23,6 +23,7 @@ public class TestClassRunnerTest {
             new StartableFactory(),
             new RunnableFactory(),
             new ExecutorFactory(),
+            new ExecutorListenerFactory(),
             new TestClassListenerFactory()
     );
     private final AsynchronousExecutor executor = new AsynchronousExecutor();

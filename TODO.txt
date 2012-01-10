@@ -1,17 +1,21 @@
 
 TODO NEXT:
 - end-to-end tests: multiple tests
-	- make it pass
-		- SuiteRunner fires onSuiteFinished to early, because fi.jumi.core.runners.SuiteRunner.TestClassRunnerListenerToSuiteListener#onTestClassFinished is called too early (right after the tests are found and test runs started *asynchronously*)
-			!! - fix TestClassRunner
+	OK - run on more than one thread; performance must improve (write a performance test with sleeps?)
+		OK - testable with a static CountDownLatch used from two test methods
+	OK - make it pass
+		OK - SuiteRunner fires onSuiteFinished to early, because fi.jumi.core.runners.SuiteRunner.TestClassRunnerListenerToSuiteListener#onTestClassFinished is called too early (right after the tests are found and test runs started *asynchronously*)
+			OK - fix TestClassRunner
 				OK - wrap Executor, count workers
 				OK - add assertions to fi.jumi.core.runners.TestClassRunnerTest#test_class_with_multiple_tests_which_are_run_in_parallel
 				OK - see if SuiteRunner works now correctly
-				!! - clean up TestClassRunner
-				- merge AsynchronousExecutor with SingleThreadedActors?
+	!! - clean up TestClassRunner
+		OK - extract WorkerCounter 
+		OK - extract DriverRunnerSpawner
+		!! - extract TestRunSpawner
+	- merge AsynchronousExecutor with SingleThreadedActors?
 	- identify concurrent test runs with a unique ID (necessary yet?)
-	- run on more than one thread; performance must improve (write a performance test with sleeps?)
-		- testable with a static CountDownLatch used from two test methods
+		- improve e2e test to check test start/end events, or test runs
 	- remove redundant parameters for SuiteListener
 		- testClass can be deduced from onRunStarted's RunId
 		- TestId of onTestFinished & onFailure can be deduced from last call to onTestStarted (also prevents faulty input)
