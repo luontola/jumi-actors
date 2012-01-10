@@ -27,33 +27,29 @@ public class SingleThreadedActors extends Actors {
     }
 
     public void processEventsUntilIdle() {
-        // TODO: clean this messy method; maybe unify processing pollers and workers, removing the duplication in error handling
         boolean idle;
         do {
             idle = true;
-            for (EventPoller<?> poller : pollers) {
+            for (Processable processable : getProcessableEvents()) {
                 try {
-                    if (poller.processMessage()) {
+                    if (processable.processedSomething()) {
                         idle = false;
                     }
                 } catch (Throwable t) {
                     idle = false;
-                    handleUncaughtException(poller, t);
-                }
-            }
-            for (Runnable worker : takeAll(workers)) {
-                idle = false;
-                try {
-                    worker.run();
-                } catch (Throwable t) {
-                    handleUncaughtException(worker, t);
+                    handleUncaughtException(processable, t);
                 }
             }
         } while (!idle);
     }
 
-    protected void handleUncaughtException(Object source, Throwable uncaughtException) {
-        throw new Error("uncaught exception from " + source, uncaughtException);
+    private List<Processable> getProcessableEvents() {
+        List<Processable> results = new ArrayList<Processable>();
+        results.addAll(pollers);
+        for (Runnable runnable : takeAll(workers)) {
+            results.add(new ProcessableRunnable(runnable));
+        }
+        return results;
     }
 
     private static ArrayList<Runnable> takeAll(List<Runnable> list) {
@@ -62,13 +58,36 @@ public class SingleThreadedActors extends Actors {
         return copy;
     }
 
+    protected void handleUncaughtException(Object source, Throwable uncaughtException) {
+        throw new Error("uncaught exception from " + source, uncaughtException);
+    }
+
     public Executor getExecutor() {
         return new AsynchronousExecutor();
     }
 
 
+    private interface Processable {
+
+        boolean processedSomething();
+    }
+
+    @NotThreadSafe
+    private static class ProcessableRunnable implements Processable {
+        private final Runnable runnable;
+
+        public ProcessableRunnable(Runnable runnable) {
+            this.runnable = runnable;
+        }
+
+        public boolean processedSomething() {
+            runnable.run();
+            return true;
+        }
+    }
+
     @ThreadSafe
-    private class EventPoller<T> {
+    private class EventPoller<T> implements Processable {
 
         private final MessageQueue<Event<T>> source;
         private final MessageSender<Event<T>> target;
@@ -78,7 +97,7 @@ public class SingleThreadedActors extends Actors {
             this.target = target;
         }
 
-        public boolean processMessage() {
+        public boolean processedSomething() {
             Event<T> event = source.poll();
             if (event != null) {
                 initActorContext(source);

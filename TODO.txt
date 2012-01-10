@@ -14,7 +14,7 @@ TODO NEXT:
 		OK - extract DriverRunnerSpawner
 		OK - extract TestRunSpawner from DriverRunnerSpawner
 	OK - merge AsynchronousExecutor with SingleThreadedActors?
-	- clean up fi.jumi.actors.SingleThreadedActors#processEventsUntilIdle
+	OK - clean up fi.jumi.actors.SingleThreadedActors#processEventsUntilIdle
 	- identify concurrent test runs with a unique ID (necessary yet?)
 		- improve e2e test to check test start/end events, or test runs
 	- remove redundant parameters for SuiteListener
