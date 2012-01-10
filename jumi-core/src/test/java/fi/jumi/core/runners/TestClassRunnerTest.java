@@ -26,7 +26,6 @@ public class TestClassRunnerTest {
             new ExecutorListenerFactory(),
             new TestClassListenerFactory()
     );
-    private final AsynchronousExecutor executor = new AsynchronousExecutor();
 
     @Test
     public void test_class_with_zero_tests() {
@@ -85,17 +84,13 @@ public class TestClassRunnerTest {
     // helpers
 
     private void runAndAwaitCompletion(Class<? extends Driver> driverClass) {
-        runAndAwaitCompletion(new TestClassRunner(DummyTest.class, driverClass, listener, actors, executor));
+        runAndAwaitCompletion(new TestClassRunner(DummyTest.class, driverClass, listener, actors, actors.getExecutor()));
     }
 
     private void runAndAwaitCompletion(TestClassRunner runner) {
         spy.replay();
         actors.createPrimaryActor(Startable.class, runner, "TestClassRunner").start();
-        for (int i = 0; i < 10; i++) {
-            // XXX: embed Executor into SingleThreadedActors
-            executor.runUntilIdle();
-            actors.processEventsUntilIdle();
-        }
+        actors.processEventsUntilIdle();
         spy.verify();
     }
 

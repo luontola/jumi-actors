@@ -1,4 +1,4 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -7,6 +7,7 @@ package fi.jumi.actors;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.concurrent.Executor;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -109,5 +110,27 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
         actors.processEventsUntilIdle();
 
         assertThat("uncaught exceptions count", uncaughtExceptions.size(), is(2));
+    }
+
+    @Test
+    public void provides_an_asynchronous_executor() {
+        final StringBuilder spy = new StringBuilder();
+        SingleThreadedActors actors = new SingleThreadedActors(new DummyListenerFactory());
+
+        Executor executor = actors.getExecutor();
+        executor.execute(new Runnable() {
+            public void run() {
+                spy.append("a");
+            }
+        });
+        executor.execute(new Runnable() {
+            public void run() {
+                spy.append("b");
+            }
+        });
+
+        assertThat("should not have executed synchronously", spy.toString(), is(""));
+        actors.processEventsUntilIdle();
+        assertThat("should have executed all Runnables", spy.toString(), is("ab"));
     }
 }

@@ -1,19 +1,18 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
 package fi.jumi.actors;
 
-import javax.annotation.concurrent.NotThreadSafe;
-import javax.annotation.concurrent.ThreadSafe;
-import java.util.ArrayList;
-import java.util.List;
+import javax.annotation.concurrent.*;
+import java.util.*;
+import java.util.concurrent.Executor;
 
 @NotThreadSafe
 public class SingleThreadedActors extends Actors {
 
-    private List<EventPoller<?>> pollers = new ArrayList<EventPoller<?>>();
-    private List<Runnable> workers = new ArrayList<Runnable>();
+    private final List<EventPoller<?>> pollers = new ArrayList<EventPoller<?>>();
+    private final List<Runnable> workers = new ArrayList<Runnable>();
 
     public SingleThreadedActors(ListenerFactory<?>... factories) {
         super(factories);
@@ -28,7 +27,7 @@ public class SingleThreadedActors extends Actors {
     }
 
     public void processEventsUntilIdle() {
-        // TODO: messy method
+        // TODO: clean this messy method; maybe unify processing pollers and workers, removing the duplication in error handling
         boolean idle;
         do {
             idle = true;
@@ -63,6 +62,10 @@ public class SingleThreadedActors extends Actors {
         return copy;
     }
 
+    public Executor getExecutor() {
+        return new AsynchronousExecutor();
+    }
+
 
     @ThreadSafe
     private class EventPoller<T> {
@@ -88,6 +91,13 @@ public class SingleThreadedActors extends Actors {
             } else {
                 return false;
             }
+        }
+    }
+
+    @NotThreadSafe
+    private class AsynchronousExecutor implements Executor {
+        public void execute(Runnable command) {
+            workers.add(command);
         }
     }
 }
