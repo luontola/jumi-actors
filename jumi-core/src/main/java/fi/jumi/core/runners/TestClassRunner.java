@@ -8,7 +8,7 @@ import fi.jumi.actors.OnDemandActors;
 import fi.jumi.api.drivers.*;
 import fi.jumi.core.Startable;
 
-import javax.annotation.concurrent.*;
+import javax.annotation.concurrent.NotThreadSafe;
 import java.util.*;
 import java.util.concurrent.Executor;
 
@@ -20,7 +20,7 @@ public class TestClassRunner implements Startable, TestClassListener, WorkerCoun
     private final TestClassRunnerListener listener;
     private final Map<TestId, String> tests = new HashMap<TestId, String>();
 
-    private DriverRunnerSpawner driverRunnerSpawner;
+    private final DriverRunnerSpawner driverRunnerSpawner;
 
     public TestClassRunner(Class<?> testClass,
                            Class<? extends Driver> driverClass,
@@ -32,7 +32,8 @@ public class TestClassRunner implements Startable, TestClassListener, WorkerCoun
         this.listener = listener;
 
         WorkerCounter workerCounter = new WorkerCounter(this);
-        this.driverRunnerSpawner = new DriverRunnerSpawner(actors, executor, workerCounter, this);
+        TestRunSpawner testRunSpawner = new TestRunSpawner(workerCounter, actors, executor);
+        this.driverRunnerSpawner = new DriverRunnerSpawner(workerCounter, actors, testRunSpawner, this);
     }
 
     public void start() {
@@ -82,5 +83,4 @@ public class TestClassRunner implements Startable, TestClassListener, WorkerCoun
             throw new IllegalStateException("test " + id + " was already found with another name: " + oldName);
         }
     }
-
 }

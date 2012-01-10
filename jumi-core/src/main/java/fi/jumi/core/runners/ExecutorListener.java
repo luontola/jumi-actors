@@ -6,7 +6,7 @@ package fi.jumi.core.runners;
 
 public interface ExecutorListener {
 
-    void onExecutorCommandQueued(Runnable runnable);
+    void onCommandQueued(Runnable runnable);
 
-    void onExecutorCommandFinished();
+    void onCommandFinished();
 }

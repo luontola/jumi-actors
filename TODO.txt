@@ -9,10 +9,10 @@ TODO NEXT:
 				OK - wrap Executor, count workers
 				OK - add assertions to fi.jumi.core.runners.TestClassRunnerTest#test_class_with_multiple_tests_which_are_run_in_parallel
 				OK - see if SuiteRunner works now correctly
-	!! - clean up TestClassRunner
+	OK - clean up TestClassRunner
 		OK - extract WorkerCounter 
 		OK - extract DriverRunnerSpawner
-		!! - extract TestRunSpawner
+		OK - extract TestRunSpawner from DriverRunnerSpawner
 	- merge AsynchronousExecutor with SingleThreadedActors?
 	- identify concurrent test runs with a unique ID (necessary yet?)
 		- improve e2e test to check test start/end events, or test runs
