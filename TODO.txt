@@ -15,6 +15,11 @@ TODO NEXT:
 		OK - extract TestRunSpawner from DriverRunnerSpawner
 	OK - merge AsynchronousExecutor with SingleThreadedActors?
 	OK - clean up fi.jumi.actors.SingleThreadedActors#processEventsUntilIdle
+	SKIP - give AppRunner a copy of all events, so that it can assert directly instead of parsing the output?
+	!! - or then parse the text output; some regexp for getting the list of started/ended tests?
+		- extract TextUIParser from AppRunner
+		- tests for TextUIParser (write against TextUI, don't mock its output)
+		- add parsing of test start/end events
 	- identify concurrent test runs with a unique ID (necessary yet?)
 		- improve e2e test to check test start/end events, or test runs
 	- remove redundant parameters for SuiteListener
