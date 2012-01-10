@@ -4,8 +4,7 @@
 
 package fi.jumi.actors;
 
-import javax.annotation.concurrent.NotThreadSafe;
-import javax.annotation.concurrent.ThreadSafe;
+import javax.annotation.concurrent.*;
 
 @ThreadSafe
 public abstract class Actors implements LongLivedActors, OnDemandActors {
@@ -147,6 +146,11 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
         public void fireOn(Object ignored) {
             // TODO: double-check that we are on the right thread?
             message.fireOn(target);
+        }
+
+        @Override
+        public String toString() {
+            return "CustomTargetEvent(" + target + ", " + message + ")";
         }
     }
 }
