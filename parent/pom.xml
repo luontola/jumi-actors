@@ -51,20 +51,6 @@
         <minimumMavenVersion>3.0.3</minimumMavenVersion>
     </properties>
 
-    <pluginRepositories>
-        <!-- TODO: remove after upgrading to pitest-maven's production release -->
-        <pluginRepository>
-            <id>sonatype-snapshots</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
-
     <dependencies>
 
         <!-- Testing -->
@@ -305,7 +291,7 @@
                     <plugin>
                         <groupId>org.pitest</groupId>
                         <artifactId>pitest-maven</artifactId>
-                        <version>0.25-SNAPSHOT</version>
+                        <version>0.25</version>
                         <executions>
                             <execution>
                                 <goals>
