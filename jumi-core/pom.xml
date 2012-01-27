@@ -116,12 +116,6 @@
                                         <exclude>META-INF/**</exclude>
                                     </excludes>
                                 </filter>
-                                <filter>
-                                    <artifact>org.functionaljava:functionaljava</artifact>
-                                    <excludes>
-                                        <exclude>META-INF/**</exclude>
-                                    </excludes>
-                                </filter>
                             </filters>
                         </configuration>
                     </execution>
