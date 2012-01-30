@@ -5,11 +5,10 @@
 package fi.jumi.core;
 
 import fi.jumi.api.drivers.TestId;
-import fi.jumi.core.SuiteListener;
 
 public class EventBuilder {
 
-    public final SuiteListener listener;
+    private final SuiteListener listener;
 
     public EventBuilder(SuiteListener listener) {
         this.listener = listener;
