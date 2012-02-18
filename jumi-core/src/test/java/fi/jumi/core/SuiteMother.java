@@ -46,4 +46,20 @@ public class SuiteMother {
         });
         suite.end();
     }
+
+    public static void twoPassingRuns(SuiteListener listener) {
+        final EventBuilder suite = new EventBuilder(listener);
+        suite.begin();
+        suite.test(TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME, new Runnable() {
+            public void run() {
+                suite.test(TEST_CLASS, TestId.of(0), "testOne");
+            }
+        });
+        suite.test(TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME, new Runnable() {
+            public void run() {
+                suite.test(TEST_CLASS, TestId.of(1), "testTwo");
+            }
+        });
+        suite.end();
+    }
 }

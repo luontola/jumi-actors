@@ -27,7 +27,7 @@ public class TextUIParser {
         return findFirstInt(output, "Total: (\\d+)", 1);
     }
 
-    public List<String> getTestStartAndEndEvents() {
+    public List<String> getTestStartAndEndEvents(int runId) {
         ArrayList<String> events = new ArrayList<String>();
         Matcher m = Pattern.compile(" > \\s*([+|-] .*)").matcher(output);
         while (m.find()) {
