@@ -1,4 +1,4 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -73,7 +73,7 @@ public class EventStubGenerator {
 
         for (Method method : listenerMethods) {
             ArgumentList arguments = new ArgumentList(method);
-            cb.addImport(arguments);
+            cb.addImports(arguments);
             cb.addMethod("" +
                     "    public void " + method.getName() + "(" + arguments.toFormalArguments() + ") {\n" +
                     "        " + sender.name + ".send(new " + myEventWrapperName(method) + "(" + arguments.toActualArguments() + "));\n" +
@@ -109,7 +109,7 @@ public class EventStubGenerator {
             cb.fieldsAndConstructorParameters(arguments);
 
             String listenerName = cb.getImportedName(listenerInterface);
-            cb.addImport(arguments);
+            cb.addImports(arguments);
 
             cb.addMethod("" +
                     "    public void fireOn(" + listenerName + " target) {\n" +
