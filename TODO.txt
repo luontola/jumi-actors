@@ -26,6 +26,9 @@ TODO NEXT:
 		- change AppRunner to delegate to TextUIParser
 	- identify concurrent test runs with a unique ID (necessary yet?)
 		- improve e2e test to check test start/end events, or test runs
+		- update EventBuilder to generate runIds
+		- update fi.jumi.core.runners.SuiteRunner.TestClassRunnerListenerToSuiteListener to use real runId
+		- add onRunStarted, onRunFinished to SuiteListener
 	- remove redundant parameters for SuiteListener
 		- testClass can be deduced from onRunStarted's RunId
 		- TestId of onTestFinished & onFailure can be deduced from last call to onTestStarted (also prevents faulty input)

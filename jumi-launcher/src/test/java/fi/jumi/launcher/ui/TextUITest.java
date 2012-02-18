@@ -205,12 +205,12 @@ public class TextUITest {
         {
             {
                 listener.onTestFound(SuiteMother.TEST_CLASS, TestId.ROOT, SuiteMother.TEST_CLASS_NAME);
-                listener.onTestStarted(SuiteMother.TEST_CLASS, TestId.ROOT);
-                listener.onFailure(SuiteMother.TEST_CLASS, TestId.ROOT, new Throwable("dummy exception"));
+                listener.onTestStarted(42, SuiteMother.TEST_CLASS, TestId.ROOT);
+                listener.onFailure(42, SuiteMother.TEST_CLASS, TestId.ROOT, new Throwable("dummy exception"));
 
                 assertNotInOutput("java.lang.Throwable: dummy exception");
 
-                listener.onTestFinished(SuiteMother.TEST_CLASS, TestId.ROOT);
+                listener.onTestFinished(42, SuiteMother.TEST_CLASS, TestId.ROOT);
             }
 
             assertInOutput("java.lang.Throwable: dummy exception");
@@ -224,14 +224,14 @@ public class TextUITest {
         {
             {
                 listener.onTestFound(SuiteMother.TEST_CLASS, TestId.ROOT, SuiteMother.TEST_CLASS_NAME);
-                listener.onTestStarted(SuiteMother.TEST_CLASS, TestId.ROOT);
+                listener.onTestStarted(42, SuiteMother.TEST_CLASS, TestId.ROOT);
                 suite.failingTest(SuiteMother.TEST_CLASS, TestId.of(0), "testOne",
                         new Throwable("dummy exception")
                 );
 
                 assertNotInOutput("java.lang.Throwable: dummy exception");
 
-                listener.onTestFinished(SuiteMother.TEST_CLASS, TestId.ROOT);
+                listener.onTestFinished(42, SuiteMother.TEST_CLASS, TestId.ROOT);
             }
             assertInOutput("java.lang.Throwable: dummy exception");
         }

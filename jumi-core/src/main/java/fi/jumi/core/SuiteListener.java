@@ -1,4 +1,4 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -14,9 +14,12 @@ public interface SuiteListener {
 
     void onTestFound(String testClass, TestId id, String name);
 
-    void onTestStarted(String testClass, TestId id);
+    // TODO: add onRunStarted, onRunFinished
+    // TODO: remove testClass when it can be deduced from runId
 
-    void onTestFinished(String testClass, TestId id);
+    void onTestStarted(int runId, String testClass, TestId id);
 
-    void onFailure(String testClass, TestId id, Throwable cause);
+    void onTestFinished(int runId, String testClass, TestId id);
+
+    void onFailure(int runId, String testClass, TestId id, Throwable cause);
 }

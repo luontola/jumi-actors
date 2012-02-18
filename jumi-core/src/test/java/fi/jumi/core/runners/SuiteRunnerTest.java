@@ -61,8 +61,8 @@ public class SuiteRunnerTest {
     public void suite_with_one_test_class_with_tests() {
         listener.onSuiteStarted();
         listener.onTestFound(DummyTest.class.getName(), TestId.ROOT, "DummyTest");
-        listener.onTestStarted(DummyTest.class.getName(), TestId.ROOT);
-        listener.onTestFinished(DummyTest.class.getName(), TestId.ROOT);
+        listener.onTestStarted(42, DummyTest.class.getName(), TestId.ROOT);
+        listener.onTestFinished(42, DummyTest.class.getName(), TestId.ROOT);
         listener.onSuiteFinished();
 
         runAndCheckExpectations(OneTestDriver.class, new TestClassFinder() {
@@ -76,9 +76,9 @@ public class SuiteRunnerTest {
     public void suite_with_failing_tests() {
         listener.onSuiteStarted();
         listener.onTestFound(DummyTest.class.getName(), TestId.ROOT, "DummyTest");
-        listener.onTestStarted(DummyTest.class.getName(), TestId.ROOT);
-        listener.onFailure(DummyTest.class.getName(), TestId.ROOT, new Exception("dummy failure"));
-        listener.onTestFinished(DummyTest.class.getName(), TestId.ROOT);
+        listener.onTestStarted(42, DummyTest.class.getName(), TestId.ROOT);
+        listener.onFailure(42, DummyTest.class.getName(), TestId.ROOT, new Exception("dummy failure"));
+        listener.onTestFinished(42, DummyTest.class.getName(), TestId.ROOT);
         listener.onSuiteFinished();
 
         runAndCheckExpectations(OneFailingTestDriver.class, new TestClassFinder() {

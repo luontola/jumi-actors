@@ -1,4 +1,4 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -119,19 +119,15 @@ public class TextUI implements SuiteListener {
     }
 
     @Override
-    public void onTestStarted(String testClass, TestId id) {
-        int runId = 42; // TODO: get Run IDs from the test runner
-
-        addRunEvent(runId, new OnTestStartedEvent(testClass, id));
+    public void onTestStarted(int runId, String testClass, TestId id) {
+        addRunEvent(runId, new OnTestStartedEvent(runId, testClass, id));
 
         totalCount.add(new GlobalTestId(testClass, id));
     }
 
     @Override
-    public void onTestFinished(String testClass, TestId id) {
-        int runId = 42; // TODO: get Run IDs from the test runner
-
-        addRunEvent(runId, new OnTestFinishedEvent(testClass, id));
+    public void onTestFinished(int runId, String testClass, TestId id) {
+        addRunEvent(runId, new OnTestFinishedEvent(runId, testClass, id));
 
         // TODO: option for printing only failing or all runs
         if (isRunFinished(runId)) {
@@ -140,10 +136,8 @@ public class TextUI implements SuiteListener {
     }
 
     @Override
-    public void onFailure(String testClass, TestId id, Throwable cause) {
-        int runId = 42; // TODO: get Run IDs from the test runner
-
-        addRunEvent(runId, new OnFailureEvent(testClass, id, cause));
+    public void onFailure(int runId, String testClass, TestId id, Throwable cause) {
+        addRunEvent(runId, new OnFailureEvent(runId, testClass, id, cause));
 
         failCount.add(new GlobalTestId(testClass, id));
     }
@@ -153,9 +147,7 @@ public class TextUI implements SuiteListener {
     private class RunPrinter extends TestRunListener {
         private int runningTests = 0;
 
-        public void onTestStarted(String testClass, TestId id) {
-            int runId = 42; // TODO: get Run IDs from the test runner
-
+        public void onTestStarted(int runId, String testClass, TestId id) {
             if (runningTests == 0) {
                 printRunHeader(testClass, runId);
             }
@@ -163,12 +155,12 @@ public class TextUI implements SuiteListener {
             runningTests++;
         }
 
-        public void onTestFinished(String testClass, TestId id) {
+        public void onTestFinished(int runId, String testClass, TestId id) {
             runningTests--;
             printTestName("-", testClass, id);
         }
 
-        public void onFailure(String testClass, TestId id, Throwable cause) {
+        public void onFailure(int runId, String testClass, TestId id, Throwable cause) {
             cause.printStackTrace(err);
         }
 
@@ -200,15 +192,15 @@ public class TextUI implements SuiteListener {
             return runningTests == 0;
         }
 
-        public void onTestStarted(String testClass, TestId id) {
+        public void onTestStarted(int runId, String testClass, TestId id) {
             runningTests++;
         }
 
-        public void onTestFinished(String testClass, TestId id) {
+        public void onTestFinished(int runId, String testClass, TestId id) {
             runningTests--;
         }
 
-        public void onFailure(String testClass, TestId id, Throwable cause) {
+        public void onFailure(int runId, String testClass, TestId id, Throwable cause) {
         }
     }
 }

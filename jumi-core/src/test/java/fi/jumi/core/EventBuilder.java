@@ -24,9 +24,9 @@ public class EventBuilder {
 
     public void test(String testClass, TestId id, String name, Runnable testBody) {
         listener.onTestFound(testClass, id, name);
-        listener.onTestStarted(testClass, id);
+        listener.onTestStarted(42, testClass, id);
         testBody.run();
-        listener.onTestFinished(testClass, id);
+        listener.onTestFinished(42, testClass, id);
     }
 
     public void test(String testClass, TestId id, String name) {
@@ -39,7 +39,7 @@ public class EventBuilder {
     public void failingTest(final String testClass, final TestId id, String name, final Throwable failure) {
         test(testClass, id, name, new Runnable() {
             public void run() {
-                listener.onFailure(testClass, id, failure);
+                listener.onFailure(42, testClass, id, failure);
             }
         });
     }

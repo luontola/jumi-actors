@@ -1,20 +1,16 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
 package fi.jumi.core.runners;
 
 import fi.jumi.actors.OnDemandActors;
-import fi.jumi.api.drivers.Driver;
-import fi.jumi.api.drivers.TestId;
-import fi.jumi.core.Startable;
-import fi.jumi.core.SuiteListener;
+import fi.jumi.api.drivers.*;
+import fi.jumi.core.*;
 import fi.jumi.core.drivers.DriverFinder;
-import fi.jumi.core.files.TestClassFinder;
-import fi.jumi.core.files.TestClassFinderListener;
+import fi.jumi.core.files.*;
 
-import javax.annotation.concurrent.NotThreadSafe;
-import javax.annotation.concurrent.ThreadSafe;
+import javax.annotation.concurrent.*;
 import java.util.concurrent.Executor;
 
 @NotThreadSafe
@@ -93,15 +89,15 @@ public class SuiteRunner implements Startable, TestClassFinderListener {
         }
 
         public void onTestStarted(TestId id) {
-            listener.onTestStarted(testClass.getName(), id);
+            listener.onTestStarted(42, testClass.getName(), id); // TODO: get real runId
         }
 
         public void onFailure(TestId id, Throwable cause) {
-            listener.onFailure(testClass.getName(), id, cause);
+            listener.onFailure(42, testClass.getName(), id, cause); // TODO: get real runId
         }
 
         public void onTestFinished(TestId id) {
-            listener.onTestFinished(testClass.getName(), id);
+            listener.onTestFinished(42, testClass.getName(), id); // TODO: get real runId
         }
 
         public void onTestClassFinished() {
