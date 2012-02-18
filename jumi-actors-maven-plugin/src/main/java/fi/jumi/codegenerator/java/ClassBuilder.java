@@ -55,7 +55,7 @@ public class ClassBuilder {
     public GeneratedClass build() {
         StringBuilder source = new StringBuilder();
         source.append(packageStatement());
-        source.append(imports.importStatements());
+        source.append(imports);
         source.append(classBody());
         return new GeneratedClass(fileForClass(className), source.toString());
     }

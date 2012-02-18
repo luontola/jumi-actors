@@ -22,15 +22,14 @@ public class Imports {
         }
     }
 
-    public StringBuilder importStatements() {
+    @Override
+    public String toString() {
         SortedSet<String> imports = new TreeSet<String>();
         for (Class<?> type : classesToImport) {
-            // FIXME: primitive types
-            String packageName = type.getPackage().getName();
-            // TODO: do not import classes from target package
-            if (packageName.equals("java.lang")) {
+            if (type.isPrimitive() || isAlreadyInScope(type)) {
                 continue;
             }
+            // TODO: do not import classes from target package
             imports.add(type.getName());
         }
 
@@ -39,6 +38,10 @@ public class Imports {
             sb.append("import " + anImport + ";\n");
         }
         sb.append("\n");
-        return sb;
+        return sb.toString();
+    }
+
+    private static boolean isAlreadyInScope(Class<?> type) {
+        return type.getPackage().getName().equals("java.lang");
     }
 }
