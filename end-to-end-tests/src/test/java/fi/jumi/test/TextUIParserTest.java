@@ -11,7 +11,6 @@ import fi.jumi.launcher.ui.TextUI;
 import org.junit.Test;
 
 import java.io.*;
-import java.util.regex.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -24,62 +23,37 @@ public class TextUIParserTest {
     @Test
     public void get_number_of_passing_tests() {
         SuiteMother.emptySuite(listener);
-        assertThat(parsePassingCount(textUI()), is(0));
+        assertThat(textUI().getPassingCount(), is(0));
 
         SuiteMother.onePassingTest(listener);
-        assertThat(parsePassingCount(textUI()), is(1));
+        assertThat(textUI().getPassingCount(), is(1));
     }
 
     @Test
     public void get_number_of_failing_tests() {
         SuiteMother.emptySuite(listener);
-        assertThat(parseFailingCount(textUI()), is(0));
+        assertThat(textUI().getFailingCount(), is(0));
 
         SuiteMother.oneFailingTest(listener);
-        assertThat(parseFailingCount(textUI()), is(1));
+        assertThat(textUI().getFailingCount(), is(1));
     }
 
     @Test
     public void get_total_number_of_tests() {
         SuiteMother.emptySuite(listener);
-        assertThat(parseTotalCount(textUI()), is(0));
+        assertThat(textUI().getTotalCount(), is(0));
 
         SuiteMother.onePassingTest(listener);
-        assertThat(parseTotalCount(textUI()), is(1));
+        assertThat(textUI().getTotalCount(), is(1));
 
         SuiteMother.oneFailingTest(listener);
-        assertThat(parseTotalCount(textUI()), is(1));
+        assertThat(textUI().getTotalCount(), is(1));
     }
 
-    private int parseTotalCount(String output) {
-        return findFirstInt(output, "Total: (\\d+)", 1);
-    }
-
-    private int parsePassingCount(String output) {
-        return findFirstInt(output, "Pass: (\\d+)", 1);
-    }
-
-    private int parseFailingCount(String output) {
-        return findFirstInt(output, "Fail: (\\d+)", 1);
-    }
-
-    private static int findFirstInt(String haystack, String regex, int group) {
-        return Integer.parseInt(findFirst(haystack, regex, group));
-    }
-
-    private static String findFirst(String haystack, String regex, int group) {
-        Pattern p = Pattern.compile(regex);
-        Matcher m = p.matcher(haystack);
-        if (!m.find()) {
-            throw new IllegalArgumentException("did not find " + regex + " from " + haystack);
-        }
-        return m.group(group);
-    }
-
-    private String textUI() {
+    private TextUIParser textUI() {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         TextUI ui = new TextUI(new PrintStream(out), new PrintStream(out), stream);
         ui.update();
-        return out.toString();
+        return new TextUIParser(out.toString());
     }
 }
