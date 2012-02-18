@@ -20,8 +20,8 @@ TODO NEXT:
 		OK - extract SuiteBuilder, SuiteMother
 		!! - tests for TextUIParser (write against TextUI, don't mock its output)
 			OK - test counts
-			- test names (start and end events)
-			- nested test names
+			OK - test names (start and end events)
+			OK - nested test names
 			- many runs
 		- change AppRunner to delegate to TextUIParser
 	- identify concurrent test runs with a unique ID (necessary yet?)

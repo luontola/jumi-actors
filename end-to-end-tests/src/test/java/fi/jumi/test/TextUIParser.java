@@ -4,18 +4,15 @@
 
 package fi.jumi.test;
 
+import java.util.*;
 import java.util.regex.*;
 
 public class TextUIParser {
 
-    public final String output;
+    private final String output;
 
     public TextUIParser(String output) {
         this.output = output;
-    }
-
-    public int getTotalCount() {
-        return findFirstInt(output, "Total: (\\d+)", 1);
     }
 
     public int getPassingCount() {
@@ -26,16 +23,42 @@ public class TextUIParser {
         return findFirstInt(output, "Fail: (\\d+)", 1);
     }
 
+    public int getTotalCount() {
+        return findFirstInt(output, "Total: (\\d+)", 1);
+    }
+
+    public List<String> getTestStartAndEndEvents() {
+        ArrayList<String> events = new ArrayList<String>();
+        Matcher m = Pattern.compile(" > \\s*([+|-] .*)").matcher(output);
+        while (m.find()) {
+            String testNamePrefixed = m.group(1);
+            events.add(shortenTestEndEvents(testNamePrefixed));
+        }
+        return events;
+    }
+
+    private String shortenTestEndEvents(String testNamePrefixed) {
+        if (testNamePrefixed.startsWith("+ ")) {
+            return testNamePrefixed.substring(2);
+        } else {
+            return "/";
+        }
+    }
+
     private static int findFirstInt(String haystack, String regex, int group) {
         return Integer.parseInt(findFirst(haystack, regex, group));
     }
 
     private static String findFirst(String haystack, String regex, int group) {
-        Pattern p = Pattern.compile(regex);
-        Matcher m = p.matcher(haystack);
+        Matcher m = Pattern.compile(regex).matcher(haystack);
         if (!m.find()) {
             throw new IllegalArgumentException("did not find " + regex + " from " + haystack);
         }
         return m.group(group);
+    }
+
+    @Override
+    public String toString() {
+        return output;
     }
 }

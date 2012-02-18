@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import java.io.*;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -49,6 +50,17 @@ public class TextUIParserTest {
         SuiteMother.oneFailingTest(listener);
         assertThat(textUI().getTotalCount(), is(1));
     }
+
+    @Test
+    public void get_test_start_and_end_events() {
+        SuiteMother.onePassingTest(listener);
+        assertThat(textUI().getTestStartAndEndEvents(), is(asList("DummyTest", "/")));
+
+        SuiteMother.nestedFailingAndPassingTests(listener);
+        assertThat(textUI().getTestStartAndEndEvents(), is(asList("DummyTest", "testOne", "/", "testTwo", "/", "/")));
+    }
+
+    // TODO: start and end events for multiple runs
 
     private TextUIParser textUI() {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
