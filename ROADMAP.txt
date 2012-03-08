@@ -1,13 +1,20 @@
 
 ROADMAP:
-- Initial relase(s), technology preview
+- Initial relase, technology preview
 	- Runs tests on many cores
 	- Custom JVM options
-	- Caches library JARs
-	- Make sure that test code cannot access the classes used by Jumi, except Jumi API; avoid library version conflicts using custom class loaders
 	- Minimal console UI, shows only failing tests, configured using Java code
-	- Debug tray GUI, shows only individual test runs (list of run IDs on left, run log on right; maybe also the test names in a tree, leftmost; print all test run data in log, but no colors or styles)
 	- New runner for Specsy (Specsy 2: rewrite in Java, support more languages)
+
+- Integration test project
+	- Infrastructure for running tests against specified Jumi version
+	- Tests for Specsy
+	- Document and advertise it to framework developers
+
+- Beta release(s)
+	- Caches library JARs (implies a reused daemon process)
+	- Make sure that test code cannot access the classes used by Jumi, except Jumi API; avoid library version conflicts using custom class loaders
+	- Debug tray GUI, shows only individual test runs (list of run IDs on left, run log on right; maybe also the test names in a tree, leftmost; print all test run data in log, but no colors or styles)
 	- Publish a video demonstrating the speed. Use Dimdwarf as a sample project. Compare test run times:
 		- Maven (only the test stage of the build)
 		- IDEA
@@ -19,16 +26,12 @@ ROADMAP:
 		- Jumi (4-thread, cold-start)
 		- Jumi (4-thread, warm-start)
 
-- Integration test project
-	- Infrastructure for running tests against specified Jumi version
-	- Tests for Specsy
-	- Document and advertise it to framework developers
-
 - Gather feedback and figure out what to build next (a proper UI perhaps; delay interaction design until here)
 
 - Planned features:
 	- Build tool, IDE and CI integration (Maven has the highest priority)
 	- Well designed UI
+	[release 1.0 around here?]
 	- Statistics (required by many other features)
 	- Test priorization, run first those which will most probably fail, run fast tests first etc.
 	- Per-module working directory (requires a separate JVM for each module)
