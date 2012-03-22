@@ -21,7 +21,7 @@ public class SuiteMother {
         EventBuilder suite = new EventBuilder(listener);
         suite.begin();
 
-        int run1 = suite.nextRunId();
+        RunId run1 = suite.nextRunId();
         suite.test(run1, TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME);
 
         suite.end();
@@ -31,7 +31,7 @@ public class SuiteMother {
         EventBuilder suite = new EventBuilder(listener);
         suite.begin();
 
-        int run1 = suite.nextRunId();
+        RunId run1 = suite.nextRunId();
         suite.failingTest(run1, TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME,
                 new Throwable("dummy exception")
         );
@@ -43,7 +43,7 @@ public class SuiteMother {
         final EventBuilder suite = new EventBuilder(listener);
         suite.begin();
 
-        final int run1 = suite.nextRunId();
+        final RunId run1 = suite.nextRunId();
         suite.test(run1, TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME, new Runnable() {
             public void run() {
                 suite.test(run1, TEST_CLASS, TestId.of(0), "testOne");
@@ -60,14 +60,14 @@ public class SuiteMother {
         final EventBuilder suite = new EventBuilder(listener);
         suite.begin();
 
-        final int run1 = suite.nextRunId();
+        final RunId run1 = suite.nextRunId();
         suite.test(run1, TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME, new Runnable() {
             public void run() {
                 suite.test(run1, TEST_CLASS, TestId.of(0), "testOne");
             }
         });
 
-        final int run2 = suite.nextRunId();
+        final RunId run2 = suite.nextRunId();
         suite.test(run2, TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME, new Runnable() {
             public void run() {
                 suite.test(run2, TEST_CLASS, TestId.of(1), "testTwo");

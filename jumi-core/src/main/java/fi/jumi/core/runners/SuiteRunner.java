@@ -89,15 +89,15 @@ public class SuiteRunner implements Startable, TestClassFinderListener {
         }
 
         public void onTestStarted(TestId id) {
-            listener.onTestStarted(42, testClass.getName(), id); // TODO: get real runId
+            listener.onTestStarted(new RunId(42), testClass.getName(), id); // TODO: get real runId
         }
 
         public void onFailure(TestId id, Throwable cause) {
-            listener.onFailure(42, testClass.getName(), id, cause); // TODO: get real runId
+            listener.onFailure(new RunId(42), testClass.getName(), id, cause); // TODO: get real runId
         }
 
         public void onTestFinished(TestId id) {
-            listener.onTestFinished(42, testClass.getName(), id); // TODO: get real runId
+            listener.onTestFinished(new RunId(42), testClass.getName(), id); // TODO: get real runId
         }
 
         public void onTestClassFinished() {

@@ -18,9 +18,9 @@ public class EventBuilder {
         this.listener = listener;
     }
 
-    public int nextRunId() {
+    public RunId nextRunId() {
         try {
-            return nextRunId;
+            return new RunId(nextRunId);
         } finally {
             nextRunId++;
         }
@@ -34,21 +34,21 @@ public class EventBuilder {
         listener.onSuiteFinished();
     }
 
-    public void test(int runId, String testClass, TestId id, String name, Runnable testBody) {
+    public void test(RunId runId, String testClass, TestId id, String name, Runnable testBody) {
         listener.onTestFound(testClass, id, name);
         listener.onTestStarted(runId, testClass, id);
         testBody.run();
         listener.onTestFinished(runId, testClass, id);
     }
 
-    public void test(int runId, String testClass, TestId id, String name) {
+    public void test(RunId runId, String testClass, TestId id, String name) {
         test(runId, testClass, id, name, new Runnable() {
             public void run() {
             }
         });
     }
 
-    public void failingTest(final int runId, final String testClass, final TestId id, String name, final Throwable failure) {
+    public void failingTest(final RunId runId, final String testClass, final TestId id, String name, final Throwable failure) {
         test(runId, testClass, id, name, new Runnable() {
             public void run() {
                 listener.onFailure(runId, testClass, id, failure);

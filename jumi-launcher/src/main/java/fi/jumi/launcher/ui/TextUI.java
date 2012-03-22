@@ -4,13 +4,10 @@
 
 package fi.jumi.launcher.ui;
 
-import fi.jumi.actors.Event;
-import fi.jumi.actors.MessageReceiver;
+import fi.jumi.actors.*;
 import fi.jumi.api.drivers.TestId;
-import fi.jumi.core.SuiteListener;
-import fi.jumi.core.events.suite.OnFailureEvent;
-import fi.jumi.core.events.suite.OnTestFinishedEvent;
-import fi.jumi.core.events.suite.OnTestStartedEvent;
+import fi.jumi.core.*;
+import fi.jumi.core.events.suite.*;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.io.PrintStream;
@@ -27,7 +24,7 @@ public class TextUI implements SuiteListener {
     private boolean suiteFinished = false;
 
     private final Map<GlobalTestId, String> testNamesById = new HashMap<GlobalTestId, String>();
-    private final Map<Integer, List<Event<SuiteListener>>> eventsByRunId = new HashMap<Integer, List<Event<SuiteListener>>>();
+    private final Map<RunId, List<Event<SuiteListener>>> eventsByRunId = new HashMap<RunId, List<Event<SuiteListener>>>();
 
     // TODO: extract counting to its own class
     private final Set<GlobalTestId> failCount = new HashSet<GlobalTestId>();
@@ -49,7 +46,7 @@ public class TextUI implements SuiteListener {
         return name;
     }
 
-    private void addRunEvent(int runId, Event<SuiteListener> event) {
+    private void addRunEvent(RunId runId, Event<SuiteListener> event) {
         List<Event<SuiteListener>> events = eventsByRunId.get(runId);
         if (events == null) {
             events = new ArrayList<Event<SuiteListener>>();
@@ -58,7 +55,7 @@ public class TextUI implements SuiteListener {
         events.add(event);
     }
 
-    private boolean isRunFinished(int runId) {
+    private boolean isRunFinished(RunId runId) {
         RunStatusEvaluator runStatus = new RunStatusEvaluator();
 
         List<Event<SuiteListener>> events = eventsByRunId.get(runId);
@@ -69,7 +66,7 @@ public class TextUI implements SuiteListener {
         return runStatus.isRunFinished();
     }
 
-    private void printRun(int runId) {
+    private void printRun(RunId runId) {
         RunPrinter printer = new RunPrinter();
 
         List<Event<SuiteListener>> events = eventsByRunId.get(runId);
@@ -114,20 +111,20 @@ public class TextUI implements SuiteListener {
     }
 
     @Override
-    public void onTestFound(String testClass, TestId id, String name) {
-        addTestName(testClass, id, name);
+    public void onTestFound(String testClass, TestId testId, String name) {
+        addTestName(testClass, testId, name);
     }
 
     @Override
-    public void onTestStarted(int runId, String testClass, TestId id) {
-        addRunEvent(runId, new OnTestStartedEvent(runId, testClass, id));
+    public void onTestStarted(RunId runId, String testClass, TestId testId) {
+        addRunEvent(runId, new OnTestStartedEvent(runId, testClass, testId));
 
-        totalCount.add(new GlobalTestId(testClass, id));
+        totalCount.add(new GlobalTestId(testClass, testId));
     }
 
     @Override
-    public void onTestFinished(int runId, String testClass, TestId id) {
-        addRunEvent(runId, new OnTestFinishedEvent(runId, testClass, id));
+    public void onTestFinished(RunId runId, String testClass, TestId testId) {
+        addRunEvent(runId, new OnTestFinishedEvent(runId, testClass, testId));
 
         // TODO: option for printing only failing or all runs
         if (isRunFinished(runId)) {
@@ -136,10 +133,10 @@ public class TextUI implements SuiteListener {
     }
 
     @Override
-    public void onFailure(int runId, String testClass, TestId id, Throwable cause) {
-        addRunEvent(runId, new OnFailureEvent(runId, testClass, id, cause));
+    public void onFailure(RunId runId, String testClass, TestId testId, Throwable cause) {
+        addRunEvent(runId, new OnFailureEvent(runId, testClass, testId, cause));
 
-        failCount.add(new GlobalTestId(testClass, id));
+        failCount.add(new GlobalTestId(testClass, testId));
     }
 
 
@@ -147,27 +144,27 @@ public class TextUI implements SuiteListener {
     private class RunPrinter extends TestRunListener {
         private int runningTests = 0;
 
-        public void onTestStarted(int runId, String testClass, TestId id) {
+        public void onTestStarted(RunId runId, String testClass, TestId testId) {
             if (runningTests == 0) {
                 printRunHeader(testClass, runId);
             }
-            printTestName("+", testClass, id);
+            printTestName("+", testClass, testId);
             runningTests++;
         }
 
-        public void onTestFinished(int runId, String testClass, TestId id) {
+        public void onTestFinished(RunId runId, String testClass, TestId testId) {
             runningTests--;
-            printTestName("-", testClass, id);
+            printTestName("-", testClass, testId);
         }
 
-        public void onFailure(int runId, String testClass, TestId id, Throwable cause) {
+        public void onFailure(RunId runId, String testClass, TestId testId, Throwable cause) {
             cause.printStackTrace(err);
         }
 
         // visual style
 
-        private void printRunHeader(String testClass, int runId) {
-            out.println(" > Run #" + runId + " in " + testClass);
+        private void printRunHeader(String testClass, RunId runId) {
+            out.println(" > Run #" + runId.toInt() + " in " + testClass);
         }
 
         private void printTestName(String bullet, String testClass, TestId id) {
@@ -192,15 +189,15 @@ public class TextUI implements SuiteListener {
             return runningTests == 0;
         }
 
-        public void onTestStarted(int runId, String testClass, TestId id) {
+        public void onTestStarted(RunId runId, String testClass, TestId testId) {
             runningTests++;
         }
 
-        public void onTestFinished(int runId, String testClass, TestId id) {
+        public void onTestFinished(RunId runId, String testClass, TestId testId) {
             runningTests--;
         }
 
-        public void onFailure(int runId, String testClass, TestId id, Throwable cause) {
+        public void onFailure(RunId runId, String testClass, TestId testId, Throwable cause) {
         }
     }
 }

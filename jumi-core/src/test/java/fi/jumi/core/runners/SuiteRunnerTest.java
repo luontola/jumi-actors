@@ -20,7 +20,7 @@ import java.util.concurrent.Executor;
 
 public class SuiteRunnerTest {
 
-    private static final int RUN_1 = 42;
+    private static final RunId RUN_1 = new RunId(42);
 
     private final SpyListener<SuiteListener> spy = new SpyListener<SuiteListener>(SuiteListener.class);
     private final SuiteListener listener = spy.getListener();
