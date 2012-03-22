@@ -197,6 +197,7 @@
                 <artifactId>maven-enforcer-plugin</artifactId>
                 <version>1.0.1</version>
                 <executions>
+
                     <execution>
                         <!-- XXX: Using a different ID than in oss-parent to avoid overriding its checks by accident -->
                         <id>enforce-maven-3</id>
@@ -211,6 +212,24 @@
                             </rules>
                         </configuration>
                     </execution>
+
+                    <execution>
+                        <id>enforce-banned-dependencies</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <bannedDependencies>
+                                    <excludes>
+                                        <!-- We use junit-dep instead of junit -->
+                                        <exclude>junit:junit</exclude>
+                                    </excludes>
+                                </bannedDependencies>
+                            </rules>
+                        </configuration>
+                    </execution>
+
                 </executions>
             </plugin>
 

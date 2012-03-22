@@ -23,7 +23,7 @@ TODO NEXT:
 			OK - test names (start and end events)
 			OK - nested test names
 			- many runs
-				!! - ban junit:junit
+				OK - ban junit:junit
 					http://maven.apache.org/enforcer/enforcer-rules/bannedDependencies.html
 				!! - update EventBuilder to generate runIds
 				- RunId class to eliminate primitive obsession
