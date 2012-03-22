@@ -4,7 +4,11 @@
 
 package fi.jumi.core;
 
-public class RunId {
+import javax.annotation.concurrent.Immutable;
+import java.io.Serializable;
+
+@Immutable
+public class RunId implements Serializable {
 
     private static final int FIRST_ID = 1;
 
@@ -33,5 +37,10 @@ public class RunId {
     @Override
     public int hashCode() {
         return id;
+    }
+
+    @Override
+    public String toString() {
+        return "RunId(" + id + ")";
     }
 }

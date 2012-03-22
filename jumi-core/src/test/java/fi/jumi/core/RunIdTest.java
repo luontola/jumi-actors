@@ -30,6 +30,12 @@ public class RunIdTest {
     }
 
     @Test
+    public void has_toString() {
+        assertThat(new RunId(1).toString(), is("RunId(1)"));
+        assertThat(new RunId(2).toString(), is("RunId(2)"));
+    }
+
+    @Test
     public void the_id_must_be_1_or_greater() {
         thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage("id must be 1 or greater, but was: 0");
