@@ -25,7 +25,7 @@ TODO NEXT:
 			- many runs
 				OK - ban junit:junit
 					http://maven.apache.org/enforcer/enforcer-rules/bannedDependencies.html
-				!! - update EventBuilder to generate runIds
+				OK - update EventBuilder to generate runIds
 				- RunId class to eliminate primitive obsession
 				- make TextUI support multiple runs
 				- make TextUIParser support multiple runs

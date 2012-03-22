@@ -20,46 +20,60 @@ public class SuiteMother {
     public static void onePassingTest(SuiteListener listener) {
         EventBuilder suite = new EventBuilder(listener);
         suite.begin();
-        suite.test(TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME);
+
+        int run1 = suite.nextRunId();
+        suite.test(run1, TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME);
+
         suite.end();
     }
 
     public static void oneFailingTest(SuiteListener listener) {
         EventBuilder suite = new EventBuilder(listener);
         suite.begin();
-        suite.failingTest(TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME,
+
+        int run1 = suite.nextRunId();
+        suite.failingTest(run1, TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME,
                 new Throwable("dummy exception")
         );
+
         suite.end();
     }
 
     public static void nestedFailingAndPassingTests(SuiteListener listener) {
         final EventBuilder suite = new EventBuilder(listener);
         suite.begin();
-        suite.test(TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME, new Runnable() {
+
+        final int run1 = suite.nextRunId();
+        suite.test(run1, TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME, new Runnable() {
             public void run() {
-                suite.test(TEST_CLASS, TestId.of(0), "testOne");
-                suite.failingTest(TEST_CLASS, TestId.of(1), "testTwo",
+                suite.test(run1, TEST_CLASS, TestId.of(0), "testOne");
+                suite.failingTest(run1, TEST_CLASS, TestId.of(1), "testTwo",
                         new Throwable("dummy exception")
                 );
             }
         });
+
         suite.end();
     }
 
     public static void twoPassingRuns(SuiteListener listener) {
         final EventBuilder suite = new EventBuilder(listener);
         suite.begin();
-        suite.test(TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME, new Runnable() {
+
+        final int run1 = suite.nextRunId();
+        suite.test(run1, TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME, new Runnable() {
             public void run() {
-                suite.test(TEST_CLASS, TestId.of(0), "testOne");
+                suite.test(run1, TEST_CLASS, TestId.of(0), "testOne");
             }
         });
-        suite.test(TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME, new Runnable() {
+
+        final int run2 = suite.nextRunId();
+        suite.test(run2, TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME, new Runnable() {
             public void run() {
-                suite.test(TEST_CLASS, TestId.of(1), "testTwo");
+                suite.test(run2, TEST_CLASS, TestId.of(1), "testTwo");
             }
         });
+
         suite.end();
     }
 }

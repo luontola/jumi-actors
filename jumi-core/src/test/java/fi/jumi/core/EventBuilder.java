@@ -8,10 +8,22 @@ import fi.jumi.api.drivers.TestId;
 
 public class EventBuilder {
 
+    public static final int FIRST_RUN_ID = 1;
+
     private final SuiteListener listener;
+
+    private int nextRunId = FIRST_RUN_ID;
 
     public EventBuilder(SuiteListener listener) {
         this.listener = listener;
+    }
+
+    public int nextRunId() {
+        try {
+            return nextRunId;
+        } finally {
+            nextRunId++;
+        }
     }
 
     public void begin() {
@@ -22,24 +34,24 @@ public class EventBuilder {
         listener.onSuiteFinished();
     }
 
-    public void test(String testClass, TestId id, String name, Runnable testBody) {
+    public void test(int runId, String testClass, TestId id, String name, Runnable testBody) {
         listener.onTestFound(testClass, id, name);
-        listener.onTestStarted(42, testClass, id);
+        listener.onTestStarted(runId, testClass, id);
         testBody.run();
-        listener.onTestFinished(42, testClass, id);
+        listener.onTestFinished(runId, testClass, id);
     }
 
-    public void test(String testClass, TestId id, String name) {
-        test(testClass, id, name, new Runnable() {
+    public void test(int runId, String testClass, TestId id, String name) {
+        test(runId, testClass, id, name, new Runnable() {
             public void run() {
             }
         });
     }
 
-    public void failingTest(final String testClass, final TestId id, String name, final Throwable failure) {
-        test(testClass, id, name, new Runnable() {
+    public void failingTest(final int runId, final String testClass, final TestId id, String name, final Throwable failure) {
+        test(runId, testClass, id, name, new Runnable() {
             public void run() {
-                listener.onFailure(42, testClass, id, failure);
+                listener.onFailure(runId, testClass, id, failure);
             }
         });
     }

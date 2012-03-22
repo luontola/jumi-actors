@@ -20,6 +20,8 @@ import java.util.concurrent.Executor;
 
 public class SuiteRunnerTest {
 
+    private static final int RUN_1 = 42;
+
     private final SpyListener<SuiteListener> spy = new SpyListener<SuiteListener>(SuiteListener.class);
     private final SuiteListener listener = spy.getListener();
 
@@ -61,8 +63,8 @@ public class SuiteRunnerTest {
     public void suite_with_one_test_class_with_tests() {
         listener.onSuiteStarted();
         listener.onTestFound(DummyTest.class.getName(), TestId.ROOT, "DummyTest");
-        listener.onTestStarted(42, DummyTest.class.getName(), TestId.ROOT);
-        listener.onTestFinished(42, DummyTest.class.getName(), TestId.ROOT);
+        listener.onTestStarted(RUN_1, DummyTest.class.getName(), TestId.ROOT);
+        listener.onTestFinished(RUN_1, DummyTest.class.getName(), TestId.ROOT);
         listener.onSuiteFinished();
 
         runAndCheckExpectations(OneTestDriver.class, new TestClassFinder() {
@@ -76,9 +78,9 @@ public class SuiteRunnerTest {
     public void suite_with_failing_tests() {
         listener.onSuiteStarted();
         listener.onTestFound(DummyTest.class.getName(), TestId.ROOT, "DummyTest");
-        listener.onTestStarted(42, DummyTest.class.getName(), TestId.ROOT);
-        listener.onFailure(42, DummyTest.class.getName(), TestId.ROOT, new Exception("dummy failure"));
-        listener.onTestFinished(42, DummyTest.class.getName(), TestId.ROOT);
+        listener.onTestStarted(RUN_1, DummyTest.class.getName(), TestId.ROOT);
+        listener.onFailure(RUN_1, DummyTest.class.getName(), TestId.ROOT, new Exception("dummy failure"));
+        listener.onTestFinished(RUN_1, DummyTest.class.getName(), TestId.ROOT);
         listener.onSuiteFinished();
 
         runAndCheckExpectations(OneFailingTestDriver.class, new TestClassFinder() {
