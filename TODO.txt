@@ -23,10 +23,15 @@ TODO NEXT:
 			OK - test names (start and end events)
 			OK - nested test names
 			- many runs
+				!! - ban junit:junit
+					http://maven.apache.org/enforcer/enforcer-rules/bannedDependencies.html
+				!! - update EventBuilder to generate runIds
+				- RunId class to eliminate primitive obsession
+				- make TextUI support multiple runs
+				- make TextUIParser support multiple runs
 		- change AppRunner to delegate to TextUIParser
 	- identify concurrent test runs with a unique ID (necessary yet?)
 		- improve e2e test to check test start/end events, or test runs
-		- update EventBuilder to generate runIds
 		- update fi.jumi.core.runners.SuiteRunner.TestClassRunnerListenerToSuiteListener to use real runId
 		- add onRunStarted, onRunFinished to SuiteListener
 	- remove redundant parameters for SuiteListener
@@ -55,6 +60,33 @@ TODO NEXT:
 	- actor tests print dummy exceptions; solve by having a custom pluggable exception handler which doesn't print stack traces of a DummyException class
 
 - misc refactoring
+	- make it impossible to use actors wrong
+		- wrap all NonThreadSafe collaborators of a worker automatically into a secondary actor.
+			Usage:
+			        Spawner<DriverRunnerFactory> driverRunnerSpawner = new Spawner<DriverRunnerFactory>(DriverRunnerFactory.class, new BareDriverRunnerFactory());
+			        // ...
+			        driverRunnerSpawner
+			                .whenFinished(new OnWorkerFinished())
+			                .create(testClass, driverClass, listener /*NOT thread-safe*/, executor /*thread-safe*/);
+			Boilerplate:
+				interface DriverRunnerFactory {
+				    DriverRunner create(Class<?> testClass, Class<? extends Driver> driverClass, TestClassListener listener, Executor executor);
+				}
+				class BareDriverRunnerFactory implements DriverRunnerFactory {
+				    @Override
+				    public DriverRunner create(Class<?> testClass, Class<? extends Driver> driverClass, TestClassListener listener, Executor executor) {
+				        return new DriverRunner(testClass, driverClass, new DefaultSuiteNotifier(listener), executor);
+				    }
+				}
+		- use OnDemandActors only in classes whose responsibility is to start actors; current users:
+			- fi.jumi.core.runners.DriverRunnerSpawner
+				- now too complex
+			- fi.jumi.core.runners.TestRunSpawner
+				- now too complex
+			- fi.jumi.core.runners.SuiteRunner & fi.jumi.core.TestRunCoordinator
+				- extract TestClassFinderSpawner
+			- fi.jumi.core.runners.TestClassRunner
+				- push dependencies out of constructor (pass WorkerCounter and `this` as method parameters to DriverRunnerSpawner)
 	- SuiteRunner has a cyclic dependency with TestRunCoordinator
 	- put end-to-end tests in their own package (test.fi.jumi?), separate them from unit tests
 		- or use JUnit categories, maybe with a custom runner?
@@ -116,7 +148,7 @@ TODO NEXT:
 	http://mail-archives.apache.org/mod_mbox/maven-dev/200808.mbox/%3C835d522e0808281121g47eedd04u3c056998569be860@mail.gmail.com%3E
 
 - investigate warnings on build:
-	- happens when jumi-core-0.1.0-SNAPSHOT.jar (or daemon JAR) exits from the previous build
+	- happens when jumi-core-0.1.0-SNAPSHOT.jar (or daemon JAR) exists from the previous build
 [WARNING] We have a duplicate net/orfjackal/jumi/core/INTERNAL/org/apache/commons/io/input/TailerListener.class in C:\DEVEL\Jumi\jumi\jumi-core\target\jumi-core-0.1.0-SNAPSHOT.jar
 [WARNING] We have a duplicate net/orfjackal/jumi/core/INTERNAL/org/apache/commons/io/input/TailerListenerAdapter.class in C:\DEVEL\Jumi\jumi\jumi-core\target\jumi-core-0.1.0-SNAPSHOT.jar
 [WARNING] We have a duplicate net/orfjackal/jumi/core/INTERNAL/org/apache/commons/io/input/TeeInputStream.class in C:\DEVEL\Jumi\jumi\jumi-core\target\jumi-core-0.1.0-SNAPSHOT.jar
