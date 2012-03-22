@@ -76,4 +76,20 @@ public class SuiteMother {
 
         suite.end();
     }
+
+    public static void twoInterleavedRuns(final SuiteListener listener) {
+        final EventBuilder suite = new EventBuilder(listener);
+        suite.begin();
+
+        final RunId run1 = suite.nextRunId();
+        final RunId run2 = suite.nextRunId();
+        listener.onTestFound(TEST_CLASS, TestId.of(0), "testOne");
+        listener.onTestFound(TEST_CLASS, TestId.of(1), "testTwo");
+        listener.onTestStarted(run1, TEST_CLASS, TestId.of(0));
+        listener.onTestStarted(run2, TEST_CLASS, TestId.of(1));
+        listener.onTestFinished(run1, TEST_CLASS, TestId.of(0));
+        listener.onTestFinished(run2, TEST_CLASS, TestId.of(1));
+
+        suite.end();
+    }
 }

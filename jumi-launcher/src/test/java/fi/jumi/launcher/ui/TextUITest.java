@@ -40,6 +40,7 @@ public class TextUITest {
         assertNotContainsSubStrings(runAndGetOutput(), expectedLines);
     }
 
+
     // updating
 
     @Test(timeout = 1000L)
@@ -62,6 +63,7 @@ public class TextUITest {
 
         assertInOutput(SUMMARY_LINE);
     }
+
 
     // summary line
 
@@ -129,18 +131,33 @@ public class TextUITest {
         assertInOutput("Pass: 4, Fail: 0, Total: 4");
     }
 
-    // test names
+
+    // test runs
 
     @Test
     public void prints_test_run_header() {
         suite.begin();
         RunId run1 = suite.nextRunId();
-        suite.test(run1, "com.example.DummyTest", TestId.ROOT, "Dummy test");
+        suite.test(run1, "com.example.DummyTest", TestId.ROOT, "Human-readable name");
         suite.end();
+
+        // expected content:
+        // - run ID
+        // - full name of the test class
+        // - human-readable name of the test class (it MAY be different from class name)
+        assertInOutput(
+                "Run #1 in com.example.DummyTest",
+                "Human-readable name"
+        );
+    }
+
+    @Test
+    public void test_run_header_is_printed_for_each_test_run() {
+        SuiteMother.twoPassingRuns(listener);
 
         assertInOutput(
                 "Run #1 in com.example.DummyTest",
-                "Dummy test"
+                "Run #2 in com.example.DummyTest"
         );
     }
 
@@ -148,19 +165,41 @@ public class TextUITest {
     public void test_run_header_is_printed_only_once_per_test_run() {
         suite.begin();
         final RunId run1 = suite.nextRunId();
+
+        // First test of the test run - should print the class name
         suite.test(run1, SuiteMother.TEST_CLASS, TestId.ROOT, "Dummy test", new Runnable() {
             public void run() {
+
+                // Second test of the test run - should NOT print the class name a second time,
+                // because a test run cannot span many classes
                 suite.test(run1, SuiteMother.TEST_CLASS, TestId.of(0), "test one");
             }
         });
         suite.end();
 
-        assertInOutput(SuiteMother.TEST_CLASS);
-        assertNotInOutput(SuiteMother.TEST_CLASS, SuiteMother.TEST_CLASS);
+        assertInOutput(SuiteMother.TEST_CLASS); // should show once
+        assertNotInOutput(SuiteMother.TEST_CLASS, SuiteMother.TEST_CLASS); // should not show twice
     }
 
     @Test
-    public void prints_when_a_test_starts_and_ends() {
+    public void interleaved_test_runs_are_reported_without_interleaving() {
+        SuiteMother.twoInterleavedRuns(listener);
+
+        assertInOutput(
+                "Run #1",
+                "+ testOne",
+                "- testOne",
+                "Run #2",
+                "+ testTwo",
+                "- testTwo"
+        );
+    }
+
+
+    // test names
+
+    @Test
+    public void prints_that_when_a_test_starts_and_ends() {
         suite.begin();
         RunId run1 = suite.nextRunId();
         suite.test(run1, "com.example.DummyTest", TestId.ROOT, "Dummy test");
@@ -173,7 +212,7 @@ public class TextUITest {
     }
 
     @Test
-    public void prints_with_indentation_when_a_nested_test_starts_and_ends() {
+    public void prints_with_indentation_that_when_a_nested_test_starts_and_ends() {
         suite.begin();
         final RunId run1 = suite.nextRunId();
         suite.test(run1, SuiteMother.TEST_CLASS, TestId.ROOT, "Dummy test", new Runnable() {
@@ -199,6 +238,7 @@ public class TextUITest {
                 " - Dummy test"
         );
     }
+
 
     // stack traces
 

@@ -27,7 +27,7 @@ TODO NEXT:
 					http://maven.apache.org/enforcer/enforcer-rules/bannedDependencies.html
 				OK - update EventBuilder to generate runIds
 				OK - RunId class to eliminate primitive obsession
-				- make TextUI support multiple runs
+				OK - make TextUI support multiple runs
 				- make TextUIParser support multiple runs
 		- change AppRunner to delegate to TextUIParser
 	- identify concurrent test runs with a unique ID (necessary yet?)
