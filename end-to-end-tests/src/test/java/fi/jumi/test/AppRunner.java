@@ -1,4 +1,4 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -9,8 +9,9 @@ import fi.jumi.core.SuiteListener;
 import fi.jumi.launcher.JumiLauncher;
 import fi.jumi.launcher.ui.TextUI;
 import org.apache.commons.io.FileUtils;
-import org.junit.rules.MethodRule;
-import org.junit.runners.model.*;
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 
 import java.io.*;
 import java.util.UUID;
@@ -20,7 +21,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertTrue;
 
-public class AppRunner implements MethodRule {
+public class AppRunner implements TestRule {
 
     private static final String NEWLINE = System.getProperty("line.separator");
 
@@ -71,7 +72,8 @@ public class AppRunner implements MethodRule {
 
     // JUnit integration
 
-    public Statement apply(final Statement base, FrameworkMethod method, Object target) {
+    @Override
+    public Statement apply(final Statement base, Description description) {
         return new Statement() {
             public void evaluate() throws Throwable {
                 setUp();
