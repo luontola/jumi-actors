@@ -58,7 +58,7 @@ public class Main {
             public ChannelPipeline getPipeline() {
                 return Channels.pipeline(
                         new ObjectEncoder(),
-                        new ObjectDecoder(),
+                        new ObjectDecoder(ClassResolvers.softCachingResolver(Main.class.getClassLoader())),
                         new LoggingHandler(InternalLogLevel.INFO), // TODO: remove this debug code
                         new JumiDaemonHandler(toCoordinator));
             }

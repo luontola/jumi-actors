@@ -1,14 +1,11 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
 package fi.jumi.launcher;
 
-import fi.jumi.actors.Event;
-import fi.jumi.actors.MessageQueue;
-import fi.jumi.actors.MessageSender;
-import fi.jumi.core.CommandListener;
-import fi.jumi.core.SuiteListener;
+import fi.jumi.actors.*;
+import fi.jumi.core.*;
 import fi.jumi.core.events.command.CommandListenerFactory;
 import fi.jumi.launcher.daemon.Daemon;
 import org.apache.commons.io.IOUtils;
@@ -16,16 +13,12 @@ import org.apache.commons.io.output.NullWriter;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.socket.oio.OioServerSocketChannelFactory;
-import org.jboss.netty.handler.codec.serialization.ObjectDecoder;
-import org.jboss.netty.handler.codec.serialization.ObjectEncoder;
+import org.jboss.netty.handler.codec.serialization.*;
 
-import javax.annotation.concurrent.NotThreadSafe;
-import javax.annotation.concurrent.ThreadSafe;
+import javax.annotation.concurrent.*;
 import java.io.*;
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Executors;
 
 // TODO: annotate all classes
@@ -87,7 +80,7 @@ public class JumiLauncher {
             public ChannelPipeline getPipeline() {
                 return Channels.pipeline(
                         new ObjectEncoder(),
-                        new ObjectDecoder(),
+                        new ObjectDecoder(ClassResolvers.softCachingResolver(JumiLauncher.class.getClassLoader())),
                         handler);
             }
         }
