@@ -96,8 +96,7 @@
                             <value>true</value>
                         </property>
                     </systemProperties>
-                    <argLine>"-javaagent:${test.projectArtifactsDir}\thread-safety-agent-${project.version}.jar"
-                    </argLine>
+                    <argLine>"-javaagent:${test.projectArtifactsDir}/thread-safety-agent-${project.version}.jar"</argLine>
                 </configuration>
                 <executions>
                     <execution>
