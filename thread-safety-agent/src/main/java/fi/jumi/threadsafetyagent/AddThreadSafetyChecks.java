@@ -1,4 +1,4 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -10,7 +10,7 @@ import org.objectweb.asm.*;
 import static java.lang.Math.max;
 import static org.objectweb.asm.Opcodes.*;
 
-public class AddThreadSafetyChecks extends ClassAdapter {
+public class AddThreadSafetyChecks extends ClassVisitor {
 
     private static final String CHECKER_CLASS = "fi/jumi/threadsafetyagent/ThreadSafetyChecker";
     private static final String CHECKER_CLASS_DESC = "L" + CHECKER_CLASS + ";";
@@ -20,7 +20,7 @@ public class AddThreadSafetyChecks extends ClassAdapter {
     private Label lastGeneratedCode;
 
     public AddThreadSafetyChecks(ClassVisitor cv) {
-        super(cv);
+        super(Opcodes.ASM4, cv);
     }
 
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
@@ -34,9 +34,9 @@ public class AddThreadSafetyChecks extends ClassAdapter {
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
         if (isConstructor(name)) {
-            mv = new InstantiateChecker(mv);
+            mv = new InstantiateChecker(api, mv);
         } else if (isInstanceMethod(access)) {
-            mv = new CallChecker(mv);
+            mv = new CallChecker(api, mv);
         }
         return mv;
     }
@@ -63,9 +63,9 @@ public class AddThreadSafetyChecks extends ClassAdapter {
 
     // method transformers
 
-    private class InstantiateChecker extends MethodAdapter {
-        public InstantiateChecker(MethodVisitor mv) {
-            super(mv);
+    private class InstantiateChecker extends MethodVisitor {
+        public InstantiateChecker(int api, MethodVisitor mv) {
+            super(api, mv);
         }
 
         public void visitInsn(int opcode) {
@@ -86,9 +86,9 @@ public class AddThreadSafetyChecks extends ClassAdapter {
         }
     }
 
-    private class CallChecker extends MethodAdapter {
-        public CallChecker(MethodVisitor mv) {
-            super(mv);
+    private class CallChecker extends MethodVisitor {
+        public CallChecker(int api, MethodVisitor mv) {
+            super(api, mv);
         }
 
         public void visitCode() {

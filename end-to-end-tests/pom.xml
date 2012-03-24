@@ -48,8 +48,8 @@
         </dependency>
 
         <dependency>
-            <groupId>asm</groupId>
-            <artifactId>asm-all</artifactId>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-debug-all</artifactId>
             <scope>test</scope>
         </dependency>
 

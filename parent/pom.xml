@@ -167,16 +167,10 @@
 
             <!-- Bytecode Manipulation -->
 
-            <!-- TODO: consider upgrading to ASM 4.0 (requires code changes), it adds Java 7 support -->
             <dependency>
-                <groupId>asm</groupId>
-                <artifactId>asm</artifactId>
-                <version>3.3.1</version>
-            </dependency>
-            <dependency>
-                <groupId>asm</groupId>
-                <artifactId>asm-all</artifactId>
-                <version>3.3.1</version>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm-debug-all</artifactId>
+                <version>4.0</version>
             </dependency>
 
             <!-- Testing -->

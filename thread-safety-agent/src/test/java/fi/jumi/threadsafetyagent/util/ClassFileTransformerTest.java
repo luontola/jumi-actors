@@ -1,14 +1,11 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
 package fi.jumi.threadsafetyagent.util;
 
 import org.junit.Test;
-import org.objectweb.asm.ClassAdapter;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.*;
 
 import java.lang.instrument.ClassFileTransformer;
 
@@ -46,10 +43,10 @@ public class ClassFileTransformerTest {
     }
 
 
-    private static class AddEqualsMethodWhichReturnsTrue extends ClassAdapter {
+    private static class AddEqualsMethodWhichReturnsTrue extends ClassVisitor {
 
         public AddEqualsMethodWhichReturnsTrue(ClassVisitor cv) {
-            super(cv);
+            super(Opcodes.ASM4, cv);
         }
 
         public void visitEnd() {
