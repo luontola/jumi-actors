@@ -60,7 +60,6 @@
         <dependency>
             <groupId>com.intellij</groupId>
             <artifactId>annotations</artifactId>
-            <version>9.0.4</version>
             <scope>test</scope>
         </dependency>
 
