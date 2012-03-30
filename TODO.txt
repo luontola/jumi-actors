@@ -18,17 +18,17 @@ TODO NEXT:
 	SKIP - give AppRunner a copy of all events, so that it can assert directly instead of parsing the output?
 	!! - or then parse the text output; some regexp for getting the list of started/ended tests?
 		OK - extract SuiteBuilder, SuiteMother
-		!! - tests for TextUIParser (write against TextUI, don't mock its output)
+		OK - tests for TextUIParser (write against TextUI, don't mock its output)
 			OK - test counts
 			OK - test names (start and end events)
 			OK - nested test names
-			- many runs
+			OK - many runs
 				OK - ban junit:junit
 					http://maven.apache.org/enforcer/enforcer-rules/bannedDependencies.html
 				OK - update EventBuilder to generate runIds
 				OK - RunId class to eliminate primitive obsession
 				OK - make TextUI support multiple runs
-				!! - make TextUIParser support multiple runs (see "regexp for parsing multiple runs 2.png")
+				OK - make TextUIParser support multiple runs (see "regexp for parsing multiple runs 2.png")
 		- change AppRunner to delegate to TextUIParser
 	- identify concurrent test runs with a unique ID (necessary yet?)
 		- improve e2e test to check test start/end events, or test runs

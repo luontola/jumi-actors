@@ -8,7 +8,7 @@ import fi.jumi.actors.*;
 import fi.jumi.core.*;
 import fi.jumi.core.events.suite.SuiteListenerToEvent;
 import fi.jumi.launcher.ui.TextUI;
-import org.junit.*;
+import org.junit.Test;
 
 import java.io.*;
 
@@ -18,8 +18,8 @@ import static org.hamcrest.Matchers.is;
 
 public class TextUIParserTest {
 
-    private static final int RUN_1 = 1;
-    private static final int RUN_2 = 2;
+    private static final RunId RUN_1 = new RunId(1);
+    private static final RunId RUN_2 = new RunId(2);
 
     private final MessageQueue<Event<SuiteListener>> stream = new MessageQueue<Event<SuiteListener>>();
     private final SuiteListener listener = new SuiteListenerToEvent(stream);
@@ -64,7 +64,6 @@ public class TextUIParserTest {
     }
 
     @Test
-    @Ignore // TODO
     public void distinguishes_between_multiple_runs() {
         SuiteMother.twoPassingRuns(listener);
         assertThat(textUI().getTestStartAndEndEvents(RUN_1), is(asList("DummyTest", "testOne", "/", "/")));
@@ -72,8 +71,6 @@ public class TextUIParserTest {
         SuiteMother.twoPassingRuns(listener);
         assertThat(textUI().getTestStartAndEndEvents(RUN_2), is(asList("DummyTest", "testTwo", "/", "/")));
     }
-
-    // TODO: start and end events for multiple runs
 
     private TextUIParser textUI() {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
