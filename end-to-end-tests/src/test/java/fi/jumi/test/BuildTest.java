@@ -1,4 +1,4 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -136,6 +136,7 @@ public class BuildTest {
     @SuppressWarnings({"unchecked"})
     public void none_of_the_artifacts_may_contain_classes_from_external_libraries_without_shading_them() {
         for (String content : expectedContents) {
+            // TODO: try FEST asserts
             // XXX: doesn't work inlined, Java's/Hamcrest's generics are broken
             Matcher m1 = startsWith(POM_FILES);
             Matcher m2 = startsWith(BASE_PACKAGE);

@@ -28,7 +28,7 @@ TODO NEXT:
 				OK - update EventBuilder to generate runIds
 				OK - RunId class to eliminate primitive obsession
 				OK - make TextUI support multiple runs
-				- make TextUIParser support multiple runs
+				!! - make TextUIParser support multiple runs (see "regexp for parsing multiple runs 2.png")
 		- change AppRunner to delegate to TextUIParser
 	- identify concurrent test runs with a unique ID (necessary yet?)
 		- improve e2e test to check test start/end events, or test runs
@@ -39,7 +39,7 @@ TODO NEXT:
 		- TestId of onTestFinished & onFailure can be deduced from last call to onTestStarted (also prevents faulty input)
 
 - end-to-end tests: running multiple test classes
-	- it's not sure whether SuiteRunner works correctly whene there are many test classes
+	- it's not sure whether SuiteRunner works correctly when there are many test classes
 
 - end-to-end tests: reporting test output
 	- capture System.out/err
@@ -60,6 +60,7 @@ TODO NEXT:
 	- actor tests print dummy exceptions; solve by having a custom pluggable exception handler which doesn't print stack traces of a DummyException class
 
 - misc refactoring
+	- try using FEST asserts in BuildTest, it should help with generics
 	- make it impossible to use actors wrong
 		- wrap all NonThreadSafe collaborators of a worker automatically into a secondary actor.
 			Usage:
