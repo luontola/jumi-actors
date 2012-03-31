@@ -66,6 +66,10 @@ public class AppRunner implements TestRule {
         assertThat("passing tests", ui.getPassingCount(), is(expected));
     }
 
+    public void checkTotalRuns(int expected) {
+        assertThat("total runs", ui.getRunCount(), is(expected));
+    }
+
     public void checkHasStackTrace(RunId runId, String... expectedElements) {
         String actual = ui.getRunOutput(runId);
         assertContainsSubStrings("stack trace not found", actual, expectedElements);

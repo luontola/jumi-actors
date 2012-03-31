@@ -30,7 +30,7 @@ public class RunningTestsTest {
         app.checkTotalTests(2);
         app.checkPassingTests(2);
         app.checkFailingTests(0);
-        // TODO: check that there was one test run
+        app.checkTotalRuns(1);
     }
 
     @Test(timeout = TIMEOUT)
@@ -40,7 +40,7 @@ public class RunningTestsTest {
         app.checkTotalTests(2);
         app.checkPassingTests(1);
         app.checkFailingTests(1);
-        // TODO: check that there was one test run
+        app.checkTotalRuns(1);
     }
 
     @Test(timeout = TIMEOUT)
@@ -57,7 +57,8 @@ public class RunningTestsTest {
         app.checkTotalTests(3);
         app.checkPassingTests(3);
         app.checkFailingTests(0);
-        // TODO: check that there were two test runs
+        // TODO: not implemented
+        //app.checkTotalRuns(2);
         // TODO: check the test start/end events of each test run, if the test doesn't otherwise fail for lack of RunID
     }
 

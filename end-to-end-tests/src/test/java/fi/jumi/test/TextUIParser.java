@@ -72,6 +72,14 @@ public class TextUIParser {
         return totalCount;
     }
 
+    public int getRunCount() {
+        return runsById.size();
+    }
+
+    public Set<RunId> getRunIds() {
+        return new HashSet<RunId>(runsById.keySet());
+    }
+
     public String getRunOutput(RunId runId) {
         return getRun(runId).output;
     }
