@@ -33,10 +33,11 @@ TODO NEXT:
 			OK - update test count checks
 			OK - expose run output form parser
 			OK - update checkHasStackTrace
-	- identify concurrent test runs with a unique ID (necessary yet?)
-		- improve e2e test to check test start/end events, or test runs
-		- update fi.jumi.core.runners.SuiteRunner.TestClassRunnerListenerToSuiteListener to use real runId
+	!! - identify concurrent test runs with a unique ID (necessary yet?)
+		OK - improve e2e test to check number of test runs
+		!! - update fi.jumi.core.runners.SuiteRunner.TestClassRunnerListenerToSuiteListener to use real runId
 		- add onRunStarted, onRunFinished to SuiteListener
+		- improve e2e test to check test start/end events
 	- remove redundant parameters for SuiteListener
 		- testClass can be deduced from onRunStarted's RunId
 		- TestId of onTestFinished & onFailure can be deduced from last call to onTestStarted (also prevents faulty input)

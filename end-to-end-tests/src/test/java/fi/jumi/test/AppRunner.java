@@ -6,6 +6,7 @@ package fi.jumi.test;
 
 import fi.jumi.actors.*;
 import fi.jumi.core.*;
+import fi.jumi.core.utils.Strings;
 import fi.jumi.launcher.JumiLauncher;
 import fi.jumi.launcher.ui.TextUI;
 import org.apache.commons.io.FileUtils;
@@ -16,7 +17,6 @@ import org.junit.runners.model.Statement;
 import java.io.*;
 import java.util.UUID;
 
-import static fi.jumi.core.utils.Asserts.assertContainsSubStrings;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertTrue;
@@ -45,34 +45,39 @@ public class AppRunner implements TestRule {
         TextUI ui = new TextUI(new PrintStream(out), new PrintStream(out), eventStream);
         ui.updateUntilFinished();
 
+        String output = out.toString();
+        printTextUIOutput(output);
+        this.ui = new TextUIParser(output);
+    }
+
+    private static void printTextUIOutput(String output) {
         synchronized (System.out) {
-            String output = out.toString();
             System.out.println("--- TEXT UI OUTPUT ----");
             System.out.println(output);
             System.out.println("--- / TEXT UI OUTPUT ----");
-            this.ui = new TextUIParser(output);
         }
     }
 
-    public void checkTotalTests(int expected) {
-        assertThat("total tests", ui.getTotalCount(), is(expected));
+    // assertions
+
+    public void checkPassingAndFailingTests(int expectedPassing, int expectedFailing) {
+        assertThat("total tests", ui.getTotalCount(), is(expectedPassing + expectedFailing));
+        assertThat("passing tests", ui.getPassingCount(), is(expectedPassing));
+        assertThat("failing tests", ui.getFailingCount(), is(expectedFailing));
     }
 
-    public void checkFailingTests(int expected) {
-        assertThat("failing tests", ui.getFailingCount(), is(expected));
+    public void checkTotalTestRuns(int expectedRunCount) {
+        assertThat("total test runs", ui.getRunCount(), is(expectedRunCount));
     }
 
-    public void checkPassingTests(int expected) {
-        assertThat("passing tests", ui.getPassingCount(), is(expected));
-    }
-
-    public void checkTotalRuns(int expected) {
-        assertThat("total runs", ui.getRunCount(), is(expected));
-    }
-
-    public void checkHasStackTrace(RunId runId, String... expectedElements) {
-        String actual = ui.getRunOutput(runId);
-        assertContainsSubStrings("stack trace not found", actual, expectedElements);
+    public void checkHasStackTrace(String... expectedElements) {
+        for (RunId id : ui.getRunIds()) {
+            String output = ui.getRunOutput(id);
+            if (Strings.containsSubStrings(output, expectedElements)) {
+                return;
+            }
+        }
+        throw new AssertionError("stack trace not found");
     }
 
     // JUnit integration
