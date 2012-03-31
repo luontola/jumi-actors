@@ -40,10 +40,7 @@ public class SuiteRunnerTest {
         listener.onSuiteStarted();
         listener.onSuiteFinished();
 
-        runAndCheckExpectations(null, new TestClassFinder() {
-            public void findTestClasses(TestClassFinderListener listener) {
-            }
-        });
+        runAndCheckExpectations(null);
     }
 
     @Test
@@ -52,11 +49,7 @@ public class SuiteRunnerTest {
         listener.onTestFound(DummyTest.class.getName(), TestId.ROOT, "DummyTest");
         listener.onSuiteFinished();
 
-        runAndCheckExpectations(ZeroTestsDriver.class, new TestClassFinder() {
-            public void findTestClasses(TestClassFinderListener listener) {
-                listener.onTestClassFound(DummyTest.class);
-            }
-        });
+        runAndCheckExpectations(ZeroTestsDriver.class, DummyTest.class);
     }
 
     @Test
@@ -67,11 +60,7 @@ public class SuiteRunnerTest {
         listener.onTestFinished(RUN_1, DummyTest.class.getName(), TestId.ROOT);
         listener.onSuiteFinished();
 
-        runAndCheckExpectations(OneTestDriver.class, new TestClassFinder() {
-            public void findTestClasses(TestClassFinderListener listener) {
-                listener.onTestClassFound(DummyTest.class);
-            }
-        });
+        runAndCheckExpectations(OneTestDriver.class, DummyTest.class);
     }
 
     @Test
@@ -83,22 +72,7 @@ public class SuiteRunnerTest {
         listener.onTestFinished(RUN_1, DummyTest.class.getName(), TestId.ROOT);
         listener.onSuiteFinished();
 
-        runAndCheckExpectations(OneFailingTestDriver.class, new TestClassFinder() {
-            public void findTestClasses(TestClassFinderListener listener) {
-                listener.onTestClassFound(DummyTest.class);
-            }
-        });
-    }
-
-
-    // helpers
-
-    private void runAndCheckExpectations(Class<? extends Driver> driverClass, TestClassFinder testClassFinder) {
-        spy.replay();
-        SuiteRunner runner = new SuiteRunner(listener, testClassFinder, new StubDriverFinder(driverClass), actors, executor);
-        actors.createPrimaryActor(Startable.class, runner, "SuiteRunner").start();
-        actors.processEventsUntilIdle();
-        spy.verify();
+        runAndCheckExpectations(OneFailingTestDriver.class, DummyTest.class);
     }
 
 
@@ -138,6 +112,19 @@ public class SuiteRunnerTest {
         }
     }
 
+
+    // helpers
+
+    private void runAndCheckExpectations(Class<? extends Driver> driverClass, Class<?>... testClasses) {
+        spy.replay();
+        TestClassFinder testClassFinder = new StubTestClassFinder(testClasses);
+        DriverFinder driverFinder = new StubDriverFinder(driverClass);
+        SuiteRunner runner = new SuiteRunner(listener, testClassFinder, driverFinder, actors, executor);
+        actors.createPrimaryActor(Startable.class, runner, "SuiteRunner").start();
+        actors.processEventsUntilIdle();
+        spy.verify();
+    }
+
     private static class StubDriverFinder implements DriverFinder {
         private final Class<? extends Driver> driverClass;
 
@@ -147,6 +134,20 @@ public class SuiteRunnerTest {
 
         public Class<? extends Driver> findTestClassDriver(Class<?> testClass) {
             return driverClass;
+        }
+    }
+
+    private static class StubTestClassFinder implements TestClassFinder {
+        private final Class<?>[] testClasses;
+
+        public StubTestClassFinder(Class<?>... testClasses) {
+            this.testClasses = testClasses;
+        }
+
+        public void findTestClasses(TestClassFinderListener listener) {
+            for (Class<?> testClass : testClasses) {
+                listener.onTestClassFound(testClass);
+            }
         }
     }
 }
