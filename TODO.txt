@@ -29,7 +29,10 @@ TODO NEXT:
 				OK - RunId class to eliminate primitive obsession
 				OK - make TextUI support multiple runs
 				OK - make TextUIParser support multiple runs (see "regexp for parsing multiple runs 2.png")
-		- change AppRunner to delegate to TextUIParser
+		OK - change AppRunner to delegate to TextUIParser
+			OK - update test count checks
+			OK - expose run output form parser
+			OK - update checkHasStackTrace
 	- identify concurrent test runs with a unique ID (necessary yet?)
 		- improve e2e test to check test start/end events, or test runs
 		- update fi.jumi.core.runners.SuiteRunner.TestClassRunnerListenerToSuiteListener to use real runId
@@ -40,6 +43,7 @@ TODO NEXT:
 
 - end-to-end tests: running multiple test classes
 	- it's not sure whether SuiteRunner works correctly when there are many test classes
+	- test class inclusion patterns (*Test, Test*, some.package.*, some.package.** etc.)
 
 - end-to-end tests: reporting test output
 	- capture System.out/err
@@ -58,6 +62,13 @@ TODO NEXT:
 
 - end-to-end tests: failures outside tests (in drivers and core)
 	- actor tests print dummy exceptions; solve by having a custom pluggable exception handler which doesn't print stack traces of a DummyException class
+
+- deployment pipeline
+	- install Go
+	- configure CI build
+	- generate unique version number for each build
+	- automatic deployment to staging
+	- approved deployment to Maven Central
 
 - misc refactoring
 	- try using FEST asserts in BuildTest, it should help with generics
@@ -88,6 +99,7 @@ TODO NEXT:
 				- extract TestClassFinderSpawner
 			- fi.jumi.core.runners.TestClassRunner
 				- push dependencies out of constructor (pass WorkerCounter and `this` as method parameters to DriverRunnerSpawner)
+	- kill daemon before removing temp files: fi.jumi.test.AppRunner#tearDown
 	- SuiteRunner has a cyclic dependency with TestRunCoordinator
 	- put end-to-end tests in their own package (test.fi.jumi?), separate them from unit tests
 		- or use JUnit categories, maybe with a custom runner?

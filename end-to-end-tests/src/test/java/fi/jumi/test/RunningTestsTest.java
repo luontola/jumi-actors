@@ -1,9 +1,10 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
 package fi.jumi.test;
 
+import fi.jumi.core.RunId;
 import org.junit.*;
 import sample.*;
 
@@ -46,7 +47,7 @@ public class RunningTestsTest {
     public void reports_failure_stack_traces() throws Exception {
         app.runTests(OneFailingTest.class);
 
-        app.checkHasStackTrace("java.lang.AssertionError: dummy failure", "at sample.OneFailingTest.testFailing");
+        app.checkHasStackTrace(new RunId(42), "java.lang.AssertionError: dummy failure", "at sample.OneFailingTest.testFailing");
     }
 
     @Test(timeout = TIMEOUT)

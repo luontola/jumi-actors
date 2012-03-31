@@ -14,6 +14,7 @@ import java.io.*;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
 public class TextUIParserTest {
@@ -70,6 +71,12 @@ public class TextUIParserTest {
 
         SuiteMother.twoPassingRuns(listener);
         assertThat(textUI().getTestStartAndEndEvents(RUN_2), is(asList("DummyTest", "testTwo", "/", "/")));
+    }
+
+    @Test
+    public void get_run_output() {
+        SuiteMother.oneFailingTest(listener);
+        assertThat(textUI().getRunOutput(RUN_1), containsString("java.lang.Throwable: dummy exception"));
     }
 
     private TextUIParser textUI() {

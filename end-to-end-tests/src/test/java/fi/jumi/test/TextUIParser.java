@@ -72,6 +72,10 @@ public class TextUIParser {
         return totalCount;
     }
 
+    public String getRunOutput(RunId runId) {
+        return getRun(runId).output;
+    }
+
     public List<String> getTestStartAndEndEvents(RunId runId) {
         return getRun(runId).getTestStartAndEndEvents();
     }

@@ -5,7 +5,7 @@
 package fi.jumi.test;
 
 import fi.jumi.actors.*;
-import fi.jumi.core.SuiteListener;
+import fi.jumi.core.*;
 import fi.jumi.launcher.JumiLauncher;
 import fi.jumi.launcher.ui.TextUI;
 import org.apache.commons.io.FileUtils;
@@ -18,12 +18,10 @@ import java.util.UUID;
 
 import static fi.jumi.core.utils.Asserts.assertContainsSubStrings;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertTrue;
 
 public class AppRunner implements TestRule {
-
-    private static final String NEWLINE = System.getProperty("line.separator");
 
     // TODO: use a proper sandbox utility
     private final File sandboxDir = new File(TestEnvironment.getSandboxDir(), UUID.randomUUID().toString());
@@ -32,7 +30,8 @@ public class AppRunner implements TestRule {
 
     private final JumiLauncher launcher = new JumiLauncher(eventStream);
     private final ByteArrayOutputStream out = new ByteArrayOutputStream();
-    private final ByteArrayOutputStream err = new ByteArrayOutputStream();
+
+    private TextUIParser ui;
 
     public void runTests(Class<?> clazz) throws IOException, InterruptedException {
         runTests(clazz.getName());
@@ -43,31 +42,33 @@ public class AppRunner implements TestRule {
         launcher.setTestsToInclude(testsToInclude);
         launcher.start();
 
-        TextUI ui2 = new TextUI(new PrintStream(out), new PrintStream(out), eventStream);
-        ui2.updateUntilFinished();
+        TextUI ui = new TextUI(new PrintStream(out), new PrintStream(out), eventStream);
+        ui.updateUntilFinished();
 
         synchronized (System.out) {
+            String output = out.toString();
             System.out.println("--- TEXT UI OUTPUT ----");
-            System.out.println(out.toString());
+            System.out.println(output);
             System.out.println("--- / TEXT UI OUTPUT ----");
+            this.ui = new TextUIParser(output);
         }
     }
 
     public void checkTotalTests(int expected) {
-        assertThat("total tests", out.toString(), containsString("Total: " + expected + NEWLINE));
+        assertThat("total tests", ui.getTotalCount(), is(expected));
     }
 
     public void checkFailingTests(int expected) {
-        assertThat("failing tests", out.toString(), containsString("Fail: " + expected + ","));
+        assertThat("failing tests", ui.getFailingCount(), is(expected));
     }
 
     public void checkPassingTests(int expected) {
-        assertThat("passing tests", out.toString(), containsString("Pass: " + expected + ","));
+        assertThat("passing tests", ui.getPassingCount(), is(expected));
     }
 
-    public void checkHasStackTrace(String... elements) {
-        String actual = out.toString();
-        assertContainsSubStrings("stack trace not found", actual, elements);
+    public void checkHasStackTrace(RunId runId, String... expectedElements) {
+        String actual = ui.getRunOutput(runId);
+        assertContainsSubStrings("stack trace not found", actual, expectedElements);
     }
 
     // JUnit integration
