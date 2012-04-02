@@ -75,6 +75,7 @@ public class SuiteRunnerTest {
         runAndCheckExpectations(OneFailingTestDriver.class, DummyTest.class);
     }
 
+    // TODO: many runs
 
     // guinea pigs
 

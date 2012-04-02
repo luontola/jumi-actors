@@ -35,7 +35,24 @@ TODO NEXT:
 			OK - update checkHasStackTrace
 	!! - identify concurrent test runs with a unique ID (necessary yet?)
 		OK - improve e2e test to check number of test runs
-		!! - update fi.jumi.core.runners.SuiteRunner.TestClassRunnerListenerToSuiteListener to use real runId
+		!! - refactor the code to be changed
+			- move duplicate removal from TestClassRunner to its own proxy class, to be composed inside SuiteRunner
+			- rewrite TestClassRunnerTest in spec style
+				- notifies when class is finished
+				- forwards all other events
+			- use WorkerCounter in SuiteRunner
+			- rename SuiteRunnerTest to SuiteProtocolTest
+			- create a new SuiteRunnerTest in spec style
+				- notifies when all testclasses are finished
+				- launches every testclass found, using its driver
+			- refactor TestRunSpawner
+				- replace ExecutorListener.onCommandQueued with Executor.execute
+				- ExecutorListener extends Executor
+				- remove TestRunExecutor
+				- rename MyPrivateExecutorListener to WorkerCountingExecutor
+				- make te above public classes, rename TestRunSpawner to WorkerCountingExecutorSpawner
+		- update fi.jumi.core.runners.SuiteRunner.TestClassRunnerListenerToSuiteListener to use real runId
+			- generating RunIds probably must be done in DefaultSuiteNotifier/DefaultTestNotifier
 		- add onRunStarted, onRunFinished to SuiteListener
 		- improve e2e test to check test start/end events
 	- remove redundant parameters for SuiteListener
@@ -72,6 +89,15 @@ TODO NEXT:
 	- approved deployment to Maven Central
 
 - misc refactoring
+	- packages by functionality
+		core
+			discovery
+			drivers
+			suite
+			classes
+			runs
+		actors
+			mq
 	- try using FEST asserts in BuildTest, it should help with generics
 	- make it impossible to use actors wrong
 		- wrap all NonThreadSafe collaborators of a worker automatically into a secondary actor.
@@ -100,6 +126,13 @@ TODO NEXT:
 				- extract TestClassFinderSpawner
 			- fi.jumi.core.runners.TestClassRunner
 				- push dependencies out of constructor (pass WorkerCounter and `this` as method parameters to DriverRunnerSpawner)
+	- decouple unattended workers from Actors
+		- hide WorkerCounter, create a wrapper: new MonitoredExecutor(realExecutor, onAllFinishedCallback)
+			- thred safe, counts commands with AtomicInteger
+			- executes the callback using realExecutor, as its own command
+		- create a MonitoredExecutorSpawner which executes the callback in the current actor thread
+		- use MonitoredExecutor instead of Actors.startUnattendedWorker (keep SingleThreadedActors.getExecutor)
+		- remove Actors.startUnattendedWorker
 	- kill daemon before removing temp files: fi.jumi.test.AppRunner#tearDown
 	- SuiteRunner has a cyclic dependency with TestRunCoordinator
 	- put end-to-end tests in their own package (test.fi.jumi?), separate them from unit tests
