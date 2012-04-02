@@ -18,7 +18,7 @@ import java.util.concurrent.Executor;
 public class TestClassRunnerTest {
 
     private final SpyListener<TestClassRunnerListener> spy = new SpyListener<TestClassRunnerListener>(TestClassRunnerListener.class);
-    private final TestClassRunnerListener listener = spy.getListener();
+    private final TestClassRunnerListener expect = spy.getListener();
     private final SingleThreadedActors actors = new SingleThreadedActors(
             new StartableFactory(),
             new RunnableFactory(),
@@ -28,66 +28,30 @@ public class TestClassRunnerTest {
     );
 
     @Test
-    public void test_class_with_zero_tests() {
-        // TODO: is this an allowed situation? in practice it means that the class is not reported anywhere
-        listener.onTestClassFinished();
+    public void notifies_when_the_test_class_is_finished() {
+        // TODO: these expectations are not interesting for this test - find a way to write this test without mentioning them
+        expect.onTestFound(TestId.ROOT, "root test");
+        expect.onTestFound(TestId.of(0), "test one");
+        expect.onTestStarted(TestId.of(0));
+        expect.onTestFinished(TestId.of(0));
+        expect.onTestFound(TestId.of(1), "test two");
+        expect.onTestStarted(TestId.of(1));
+        expect.onTestFinished(TestId.of(1));
 
-        runAndAwaitCompletion(ZeroTestsDriver.class);
+        // this must happen last, once
+        expect.onTestClassFinished();
+
+        runAndCheckExpectations(TwoTestsDriver.class);
     }
 
-    @Test
-    public void test_class_with_one_passing_tests() {
-        listener.onTestFound(TestId.ROOT, "root test");
-        listener.onTestStarted(TestId.ROOT);
-        listener.onTestFinished(TestId.ROOT);
-        listener.onTestClassFinished();
-
-        runAndAwaitCompletion(OnePassingTestDriver.class);
-    }
-
-    @Test
-    public void test_class_with_one_failing_test() {
-        listener.onTestFound(TestId.ROOT, "root test");
-        listener.onTestStarted(TestId.ROOT);
-        listener.onFailure(TestId.ROOT, new Exception("dummy failure"));
-        listener.onTestFinished(TestId.ROOT);
-        listener.onTestClassFinished();
-
-        runAndAwaitCompletion(OneFailingTestDriver.class);
-    }
-
-    @Test
-    public void test_class_with_multiple_tests_which_are_run_in_parallel() {
-        listener.onTestFound(TestId.ROOT, "root test");
-        listener.onTestFound(TestId.of(0), "test one");
-        listener.onTestFound(TestId.of(1), "test two");
-        listener.onTestStarted(TestId.of(0));
-        listener.onTestStarted(TestId.of(1));
-        listener.onTestFinished(TestId.of(0));
-        listener.onTestFinished(TestId.of(1));
-        listener.onTestClassFinished();
-
-        runAndAwaitCompletion(ManyTestsInParallelDriver.class);
-    }
-
-    @Test
-    public void the_executor_can_be_used_to_run_tests() {
-        listener.onTestFound(TestId.ROOT, "root test");
-        listener.onTestStarted(TestId.ROOT);
-        listener.onTestFinished(TestId.ROOT);
-        listener.onTestClassFinished();
-
-        runAndAwaitCompletion(UseExecutorDriver.class);
-    }
+    // TODO: forwards_all_other_events - find a way to write this as unit test
 
 
     // helpers
 
-    private void runAndAwaitCompletion(Class<? extends Driver> driverClass) {
-        runAndAwaitCompletion(new TestClassRunner(DummyTest.class, driverClass, listener, actors, actors.getExecutor()));
-    }
+    private void runAndCheckExpectations(Class<? extends Driver> driverClass) {
+        TestClassRunner runner = new TestClassRunner(DummyTest.class, driverClass, expect, actors, actors.getExecutor());
 
-    private void runAndAwaitCompletion(TestClassRunner runner) {
         spy.replay();
         actors.createPrimaryActor(Startable.class, runner, "TestClassRunner").start();
         actors.processEventsUntilIdle();
@@ -100,48 +64,23 @@ public class TestClassRunnerTest {
     private static class DummyTest {
     }
 
-    static class ZeroTestsDriver implements Driver {
-        public void findTests(Class<?> testClass, SuiteNotifier notifier, Executor executor) {
-        }
-    }
-
-    static class OnePassingTestDriver implements Driver {
-        public void findTests(Class<?> testClass, SuiteNotifier notifier, Executor executor) {
-            notifier.fireTestFound(TestId.ROOT, "root test");
-            TestNotifier tn = notifier.fireTestStarted(TestId.ROOT);
-            tn.fireTestFinished();
-        }
-    }
-
-    static class OneFailingTestDriver implements Driver {
-        public void findTests(Class<?> testClass, SuiteNotifier notifier, Executor executor) {
-            notifier.fireTestFound(TestId.ROOT, "root test");
-            TestNotifier tn = notifier.fireTestStarted(TestId.ROOT);
-            tn.fireFailure(new Exception("dummy failure"));
-            tn.fireTestFinished();
-        }
-    }
-
-    static class ManyTestsInParallelDriver implements Driver {
-        public void findTests(Class<?> testClass, final SuiteNotifier notifier, Executor executor) {
-            notifier.fireTestFound(TestId.ROOT, "root test");
-            notifier.fireTestFound(TestId.of(0), "test one");
-            notifier.fireTestFound(TestId.of(1), "test two");
-
-            TestNotifier tn1 = notifier.fireTestStarted(TestId.of(0));
-            TestNotifier tn2 = notifier.fireTestStarted(TestId.of(1));
-            tn1.fireTestFinished();
-            tn2.fireTestFinished();
-        }
-    }
-
-    static class UseExecutorDriver implements Driver {
+    public static class TwoTestsDriver implements Driver {
         public void findTests(Class<?> testClass, final SuiteNotifier notifier, Executor executor) {
             notifier.fireTestFound(TestId.ROOT, "root test");
             executor.execute(new Runnable() {
+                @Override
                 public void run() {
-                    TestNotifier tn = notifier.fireTestStarted(TestId.ROOT);
-                    tn.fireTestFinished();
+                    notifier.fireTestFound(TestId.of(0), "test one");
+                    notifier.fireTestStarted(TestId.of(0))
+                            .fireTestFinished();
+                }
+            });
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    notifier.fireTestFound(TestId.of(1), "test two");
+                    notifier.fireTestStarted(TestId.of(1))
+                            .fireTestFinished();
                 }
             });
         }
