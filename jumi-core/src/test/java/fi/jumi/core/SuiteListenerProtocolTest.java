@@ -2,11 +2,10 @@
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
-package fi.jumi.core.runners;
+package fi.jumi.core;
 
 import fi.jumi.actors.SingleThreadedActors;
 import fi.jumi.api.drivers.*;
-import fi.jumi.core.*;
 import fi.jumi.core.drivers.DriverFinder;
 import fi.jumi.core.events.executor.*;
 import fi.jumi.core.events.runnable.RunnableFactory;
@@ -14,11 +13,12 @@ import fi.jumi.core.events.startable.StartableFactory;
 import fi.jumi.core.events.testclass.TestClassListenerFactory;
 import fi.jumi.core.events.testclassfinder.TestClassFinderListenerFactory;
 import fi.jumi.core.files.*;
+import fi.jumi.core.runners.*;
 import org.junit.Test;
 
 import java.util.concurrent.Executor;
 
-public class SuiteRunnerTest {
+public class SuiteListenerProtocolTest {
 
     private static final RunId RUN_1 = new RunId(42);
 

@@ -41,10 +41,11 @@ TODO NEXT:
 				- notifies when class is finished
 				- forwards all other events
 			- use WorkerCounter in SuiteRunner
-			- rename SuiteRunnerTest to SuiteProtocolTest
+			OK - rename SuiteRunnerTest to SuiteProtocolTest
 			- create a new SuiteRunnerTest in spec style
 				- notifies when all testclasses are finished
 				- launches every testclass found, using its driver
+				- removes duplicate onTestFound events (wiring test)
 			- refactor TestRunSpawner
 				- replace ExecutorListener.onCommandQueued with Executor.execute
 				- ExecutorListener extends Executor
