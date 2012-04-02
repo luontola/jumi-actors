@@ -18,9 +18,9 @@ public class SuiteRunnerTest extends SuiteRunnerIntegrationHelper {
      */
     @Test
     public void filters_duplicate_onTestFound_events() {
-        listener.onSuiteStarted();
-        listener.onTestFound(DummyTest.class.getName(), TestId.ROOT, "fireTestFound called twice");
-        listener.onSuiteFinished();
+        expect.onSuiteStarted();
+        expect.onTestFound(DummyTest.class.getName(), TestId.ROOT, "fireTestFound called twice");
+        expect.onSuiteFinished();
 
         runAndCheckExpectations(DuplicateFireTestFoundDriver.class, DummyTest.class);
     }

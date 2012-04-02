@@ -20,7 +20,7 @@ import java.util.concurrent.Executor;
 public abstract class SuiteRunnerIntegrationHelper {
 
     private final SpyListener<SuiteListener> spy = new SpyListener<SuiteListener>(SuiteListener.class);
-    protected final SuiteListener listener = spy.getListener();
+    protected final SuiteListener expect = spy.getListener();
 
     private final SingleThreadedActors actors = new SingleThreadedActors(
             new StartableFactory(),
@@ -36,7 +36,7 @@ public abstract class SuiteRunnerIntegrationHelper {
         spy.replay();
         TestClassFinder testClassFinder = new StubTestClassFinder(testClasses);
         DriverFinder driverFinder = new StubDriverFinder(driverClass);
-        SuiteRunner runner = new SuiteRunner(listener, testClassFinder, driverFinder, actors, executor);
+        SuiteRunner runner = new SuiteRunner(expect, testClassFinder, driverFinder, actors, executor);
         actors.createPrimaryActor(Startable.class, runner, "SuiteRunner").start();
         actors.processEventsUntilIdle();
         spy.verify();

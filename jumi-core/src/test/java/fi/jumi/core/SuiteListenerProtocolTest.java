@@ -16,40 +16,40 @@ public class SuiteListenerProtocolTest extends SuiteRunnerIntegrationHelper {
 
     @Test
     public void suite_with_zero_test_classes() {
-        listener.onSuiteStarted();
-        listener.onSuiteFinished();
+        expect.onSuiteStarted();
+        expect.onSuiteFinished();
 
         runAndCheckExpectations(null);
     }
 
     @Test
     public void suite_with_one_test_class_with_zero_tests() {
-        listener.onSuiteStarted();
-        listener.onTestFound(DummyTest.class.getName(), TestId.ROOT, "DummyTest");
-        listener.onSuiteFinished();
+        expect.onSuiteStarted();
+        expect.onTestFound(DummyTest.class.getName(), TestId.ROOT, "DummyTest");
+        expect.onSuiteFinished();
 
         runAndCheckExpectations(ZeroTestsDriver.class, DummyTest.class);
     }
 
     @Test
     public void suite_with_one_test_class_with_tests() {
-        listener.onSuiteStarted();
-        listener.onTestFound(DummyTest.class.getName(), TestId.ROOT, "DummyTest");
-        listener.onTestStarted(RUN_1, DummyTest.class.getName(), TestId.ROOT);
-        listener.onTestFinished(RUN_1, DummyTest.class.getName(), TestId.ROOT);
-        listener.onSuiteFinished();
+        expect.onSuiteStarted();
+        expect.onTestFound(DummyTest.class.getName(), TestId.ROOT, "DummyTest");
+        expect.onTestStarted(RUN_1, DummyTest.class.getName(), TestId.ROOT);
+        expect.onTestFinished(RUN_1, DummyTest.class.getName(), TestId.ROOT);
+        expect.onSuiteFinished();
 
         runAndCheckExpectations(OneTestDriver.class, DummyTest.class);
     }
 
     @Test
     public void suite_with_failing_tests() {
-        listener.onSuiteStarted();
-        listener.onTestFound(DummyTest.class.getName(), TestId.ROOT, "DummyTest");
-        listener.onTestStarted(RUN_1, DummyTest.class.getName(), TestId.ROOT);
-        listener.onFailure(RUN_1, DummyTest.class.getName(), TestId.ROOT, new Exception("dummy failure"));
-        listener.onTestFinished(RUN_1, DummyTest.class.getName(), TestId.ROOT);
-        listener.onSuiteFinished();
+        expect.onSuiteStarted();
+        expect.onTestFound(DummyTest.class.getName(), TestId.ROOT, "DummyTest");
+        expect.onTestStarted(RUN_1, DummyTest.class.getName(), TestId.ROOT);
+        expect.onFailure(RUN_1, DummyTest.class.getName(), TestId.ROOT, new Exception("dummy failure"));
+        expect.onTestFinished(RUN_1, DummyTest.class.getName(), TestId.ROOT);
+        expect.onSuiteFinished();
 
         runAndCheckExpectations(OneFailingTestDriver.class, DummyTest.class);
     }
