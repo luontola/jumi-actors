@@ -36,7 +36,7 @@ TODO NEXT:
 	!! - identify concurrent test runs with a unique ID (necessary yet?)
 		OK - improve e2e test to check number of test runs
 		!! - refactor the code to be changed
-			- move duplicate removal from TestClassRunner to its own proxy class, to be composed inside SuiteRunner
+			OK - move duplicate removal from TestClassRunner to its own proxy class, to be composed inside SuiteRunner
 			- rewrite TestClassRunnerTest in spec style
 				- notifies when class is finished
 				- forwards all other events
@@ -45,7 +45,7 @@ TODO NEXT:
 			- create a new SuiteRunnerTest in spec style
 				- notifies when all testclasses are finished
 				- launches every testclass found, using its driver
-				- removes duplicate onTestFound events (wiring test)
+				OK - removes duplicate onTestFound events (wiring test)
 			- refactor TestRunSpawner
 				- replace ExecutorListener.onCommandQueued with Executor.execute
 				- ExecutorListener extends Executor

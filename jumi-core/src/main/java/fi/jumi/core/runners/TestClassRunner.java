@@ -9,7 +9,6 @@ import fi.jumi.api.drivers.*;
 import fi.jumi.core.Startable;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import java.util.*;
 import java.util.concurrent.Executor;
 
 @NotThreadSafe
@@ -17,70 +16,54 @@ public class TestClassRunner implements Startable, TestClassListener, WorkerCoun
 
     private final Class<?> testClass;
     private final Class<? extends Driver> driverClass;
-    private final TestClassRunnerListener listener;
-    private final Map<TestId, String> tests = new HashMap<TestId, String>();
+    private final TestClassRunnerListener target;
 
     private final DriverRunnerSpawner driverRunnerSpawner;
 
     public TestClassRunner(Class<?> testClass,
                            Class<? extends Driver> driverClass,
-                           TestClassRunnerListener listener,
+                           TestClassRunnerListener target,
                            OnDemandActors actors,
                            Executor executor) {
         this.testClass = testClass;
         this.driverClass = driverClass;
-        this.listener = listener;
+        this.target = target;
 
         WorkerCounter workerCounter = new WorkerCounter(this);
         TestRunSpawner testRunSpawner = new TestRunSpawner(workerCounter, actors, executor);
-        this.driverRunnerSpawner = new DriverRunnerSpawner(workerCounter, actors, testRunSpawner, this);
+        this.driverRunnerSpawner = new DriverRunnerSpawner(workerCounter, actors, testRunSpawner,
+                new DuplicateOnTestFoundEventFilter(this));
     }
 
+    @Override
     public void start() {
         driverRunnerSpawner.spawnDriverRunner(testClass, driverClass);
     }
 
-    public void onTestFound(TestId id, String name) {
-        // TODO: is this worthwhile? move to SuiteRunner.TestClassRunnerListenerToSuiteListener?
-        if (hasNotBeenFoundBefore(id)) {
-            checkParentWasFoundFirst(id);
-            tests.put(id, name);
-            listener.onTestFound(id, name);
-        } else {
-            checkNameIsSameAsBefore(id, name);
-        }
-    }
-
-    public void onTestStarted(TestId id) {
-        listener.onTestStarted(id);
-    }
-
-    public void onFailure(TestId id, Throwable cause) {
-        listener.onFailure(id, cause);
-    }
-
-    public void onTestFinished(TestId id) {
-        listener.onTestFinished(id);
-    }
-
+    @Override
     public void onAllWorkersFinished() {
-        listener.onTestClassFinished();
+        target.onTestClassFinished();
     }
 
-    private boolean hasNotBeenFoundBefore(TestId id) {
-        return !tests.containsKey(id);
+    // convert TestClassListener events to TestClassRunnerListener
+
+    @Override
+    public void onTestFinished(TestId id) {
+        target.onTestFinished(id);
     }
 
-    private void checkParentWasFoundFirst(TestId id) {
-        if (!id.isRoot() && hasNotBeenFoundBefore(id.getParent())) {
-            throw new IllegalStateException("parent of " + id + " must be found first");
-        }
+    @Override
+    public void onFailure(TestId id, Throwable cause) {
+        target.onFailure(id, cause);
     }
 
-    private void checkNameIsSameAsBefore(TestId id, String newName) {
-        String oldName = tests.get(id);
-        if (oldName != null && !oldName.equals(newName)) {
-            throw new IllegalStateException("test " + id + " was already found with another name: " + oldName);
-        }
+    @Override
+    public void onTestStarted(TestId id) {
+        target.onTestStarted(id);
+    }
+
+    @Override
+    public void onTestFound(TestId id, String name) {
+        target.onTestFound(id, name);
     }
 }
