@@ -24,6 +24,8 @@ public class RunIdTest {
         assertTrue("equals: itself", id1a.equals(id1a));
         assertTrue("equals: same value", id1a.equals(id1b));
         assertFalse("equals: different value", id1a.equals(id2));
+        assertFalse("equals: null", id1a.equals(null));
+        assertFalse("equals: other class", id1a.equals(new Object()));
 
         assertTrue("hashCode: same value", id1a.hashCode() == id1b.hashCode());
         assertFalse("hashCode: different value", id1a.hashCode() == id2.hashCode());
