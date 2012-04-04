@@ -16,7 +16,7 @@ TODO NEXT:
 	OK - merge AsynchronousExecutor with SingleThreadedActors?
 	OK - clean up fi.jumi.actors.SingleThreadedActors#processEventsUntilIdle
 	SKIP - give AppRunner a copy of all events, so that it can assert directly instead of parsing the output?
-	!! - or then parse the text output; some regexp for getting the list of started/ended tests?
+	OK - or then parse the text output; some regexp for getting the list of started/ended tests?
 		OK - extract SuiteBuilder, SuiteMother
 		OK - tests for TextUIParser (write against TextUI, don't mock its output)
 			OK - test counts
@@ -90,6 +90,7 @@ TODO NEXT:
 	- approved deployment to Maven Central
 
 - misc refactoring
+	- add @Override annotations to all interface implementations
 	- packages by functionality
 		core
 			discovery
@@ -134,6 +135,21 @@ TODO NEXT:
 		- create a MonitoredExecutorSpawner which executes the callback in the current actor thread
 		- use MonitoredExecutor instead of Actors.startUnattendedWorker (keep SingleThreadedActors.getExecutor)
 		- remove Actors.startUnattendedWorker
+	- refactor Actors
+		- make DynamicListenerFactory support all types without having to declare them
+			- move the type comparison in Actors.getFactoryForType to ListenerFactory.supportsType
+			- need to give type as parameter to DynamicListenerFactory.newFrontend/newBackend?
+			- refactor tests to use just one DynamicListenerFactory, use generated factories only in Main
+		- create a class (Actor?) to represent Actors.queueOfCurrentActor
+			- wrap the MessageQueue in it
+			- move processing the next message in it
+			- move wiring the MessageQueue in it
+				- from createPrimaryActor
+				- from createSecondaryActor
+		- make all events of type CustomTargetEvent (or would it complicate custom prosessing the messages? do we need to use MessageQueue<MessageToActor> for direct messages, and MessageQueue<Event<T>> for networking and stuff?)
+			- make primary actors use CustomTargetEvent
+			- remove duplication: unify the message processing/sending of primary and secondary actors
+		- should createPrimaryActor/createSecondaryActor return a wrapper for the actor, instead of the actor's handle, to make it easier to see when we are using a handle? or would that unnecessarily couple the code which uses actors into the actors framework?
 	- figure out a way to rewrite TestClassRunnerTest as a unit test
 	- kill daemon before removing temp files: fi.jumi.test.AppRunner#tearDown
 	- SuiteRunner has a cyclic dependency with TestRunCoordinator
