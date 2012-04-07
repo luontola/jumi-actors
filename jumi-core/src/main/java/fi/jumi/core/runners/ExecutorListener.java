@@ -4,9 +4,9 @@
 
 package fi.jumi.core.runners;
 
-public interface ExecutorListener {
+import java.util.concurrent.Executor;
 
-    void onCommandQueued(Runnable runnable);
+public interface ExecutorListener extends Executor {
 
     void onCommandFinished();
 }

@@ -6,7 +6,7 @@ package fi.jumi.core.runners;
 
 import fi.jumi.actors.OnDemandActors;
 
-import javax.annotation.concurrent.*;
+import javax.annotation.concurrent.NotThreadSafe;
 import java.util.concurrent.Executor;
 
 @NotThreadSafe
@@ -23,11 +23,11 @@ public class TestRunSpawner {
     }
 
     public Executor getExecutor() {
-        return new TestRunExecutor(getProxyToSelf());
+        return getProxyToSelf();
     }
 
     private ExecutorListener getProxyToSelf() {
-        return actors.createSecondaryActor(ExecutorListener.class, new MyPrivateExecutorListener());
+        return actors.createSecondaryActor(ExecutorListener.class, new WorkerCountingExecutor(workerCounter, realExecutor));
     }
 
 
@@ -35,13 +35,23 @@ public class TestRunSpawner {
      * Keeps the methods of {@link ExecutorListener} private to this {@link TestRunSpawner}.
      */
     @NotThreadSafe
-    private class MyPrivateExecutorListener implements ExecutorListener {
+    private class WorkerCountingExecutor implements ExecutorListener {
 
-        public void onCommandQueued(final Runnable runnable) {
+        private final WorkerCounter workerCounter;
+        private final Executor realExecutor;
+
+        public WorkerCountingExecutor(WorkerCounter workerCounter, Executor realExecutor) {
+            this.workerCounter = workerCounter;
+            this.realExecutor = realExecutor;
+        }
+
+        @Override
+        public void execute(final Runnable runnable) {
             final ExecutorListener self = getProxyToSelf();
 
             @NotThreadSafe
-            class OnCommandFinished implements Runnable {
+            class RunWorkerAndNotifyWhenFinished implements Runnable {
+                @Override
                 public void run() {
                     try {
                         runnable.run();
@@ -51,24 +61,12 @@ public class TestRunSpawner {
                 }
             }
             workerCounter.fireWorkerStarted();
-            realExecutor.execute(new OnCommandFinished());
+            realExecutor.execute(new RunWorkerAndNotifyWhenFinished());
         }
 
+        @Override
         public void onCommandFinished() {
             workerCounter.fireWorkerFinished();
-        }
-    }
-
-    @ThreadSafe
-    private static class TestRunExecutor implements Executor {
-        private final ExecutorListener listener;
-
-        private TestRunExecutor(ExecutorListener listener) {
-            this.listener = listener;
-        }
-
-        public void execute(Runnable command) {
-            listener.onCommandQueued(command);
         }
     }
 }

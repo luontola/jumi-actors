@@ -35,7 +35,7 @@ TODO NEXT:
 			OK - update checkHasStackTrace
 	!! - identify concurrent test runs with a unique ID (necessary yet?)
 		OK - improve e2e test to check number of test runs
-		!! - refactor the code to be changed
+		OK - refactor the code to be changed
 			OK - move duplicate removal from TestClassRunner to its own proxy class, to be composed inside SuiteRunner
 			OK - rewrite TestClassRunnerTest in spec style
 				OK - notifies when class is finished
@@ -46,12 +46,12 @@ TODO NEXT:
 				OK - notifies when all testclasses are finished
 				OK - launches every testclass found, using its driver
 				OK - removes duplicate onTestFound events (wiring test)
-			- refactor TestRunSpawner
-				- replace ExecutorListener.onCommandQueued with Executor.execute
-				- ExecutorListener extends Executor
-				- remove TestRunExecutor
-				- rename MyPrivateExecutorListener to WorkerCountingExecutor
-				- make te above public classes, rename TestRunSpawner to WorkerCountingExecutorSpawner
+			OK - refactor TestRunSpawner
+				OK - replace ExecutorListener.onCommandQueued with Executor.execute
+				OK - ExecutorListener extends Executor
+				OK - remove TestRunExecutor
+				OK - rename MyPrivateExecutorListener to WorkerCountingExecutor
+				OK - make the above public classes, rename TestRunSpawner to WorkerCountingExecutorSpawner
 		OK - in jumi-core, event stubs for Executor and ExecutorListener go to the same package and conflict: ExecuteEvent gets overwritten, ExecutorListenerToEvent doesn't implement all methods
 			OK? - fix bug: stubs for interfaces which extend interfaces should implement all inherited methods
 			OK - fix bug: stubs for interfaces Foo and FooListener should go to separate packages
@@ -69,7 +69,7 @@ TODO NEXT:
 				OK - create sub-package names using Class.getSimpleName, without changing case or dropping "Listener"
 					* still assumes that SimpleNames are unique, but that should be OK
 				OK - update integration tests
-		- update fi.jumi.core.runners.SuiteRunner.TestClassRunnerListenerToSuiteListener to use real runId
+		!!- update fi.jumi.core.runners.SuiteRunner.TestClassRunnerListenerToSuiteListener to use real runId
 			- generating RunIds probably must be done in DefaultSuiteNotifier/DefaultTestNotifier
 		- add onRunStarted, onRunFinished to SuiteListener
 		- improve e2e test to check test start/end events
