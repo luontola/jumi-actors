@@ -40,9 +40,9 @@ TODO NEXT:
 			OK - rewrite TestClassRunnerTest in spec style
 				OK - notifies when class is finished
 				SKIP - forwards all other events
-			- use WorkerCounter in SuiteRunner
+			OK - use WorkerCounter in SuiteRunner
 			OK - rename SuiteRunnerTest to SuiteProtocolTest
-			- create a new SuiteRunnerTest in spec style
+			!! - create a new SuiteRunnerTest in spec style
 				- notifies when all testclasses are finished
 				- launches every testclass found, using its driver
 				OK - removes duplicate onTestFound events (wiring test)

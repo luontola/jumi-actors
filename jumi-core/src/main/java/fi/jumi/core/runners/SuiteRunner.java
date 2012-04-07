@@ -14,14 +14,14 @@ import javax.annotation.concurrent.*;
 import java.util.concurrent.Executor;
 
 @NotThreadSafe
-public class SuiteRunner implements Startable, TestClassFinderListener {
+public class SuiteRunner implements Startable, TestClassFinderListener, WorkerCounterListener {
 
     private final SuiteListener listener;
     private final TestClassFinder testClassFinder;
     private final DriverFinder driverFinder;
     private final OnDemandActors actors;
     private final Executor executor;
-    private int workers = 0;
+    private final WorkerCounter workers;
 
     public SuiteRunner(SuiteListener listener,
                        TestClassFinder testClassFinder,
@@ -33,6 +33,7 @@ public class SuiteRunner implements Startable, TestClassFinderListener {
         this.driverFinder = driverFinder;
         this.actors = actors;
         this.executor = executor;
+        this.workers = new WorkerCounter(this);
     }
 
     public void start() {
@@ -44,33 +45,26 @@ public class SuiteRunner implements Startable, TestClassFinderListener {
     }
 
     private void startUnattendedWorker(Runnable worker) {
-        fireWorkerStarted();
+        workers.fireWorkerStarted();
 
         @NotThreadSafe
         class FireWorkerFinished implements Runnable {
             public void run() {
-                fireWorkerFinished();
+                workers.fireWorkerFinished();
             }
         }
         actors.startUnattendedWorker(worker, new FireWorkerFinished());
     }
 
-    private void fireWorkerStarted() {
-        workers++;
-    }
-
-    private void fireWorkerFinished() {
-        workers--;
-        assert workers >= 0;
-        if (workers == 0) {
-            listener.onSuiteFinished();
-        }
+    @Override
+    public void onAllWorkersFinished() {
+        listener.onSuiteFinished();
     }
 
     public void onTestClassFound(final Class<?> testClass) {
         Class<? extends Driver> driverClass = driverFinder.findTestClassDriver(testClass);
 
-        fireWorkerStarted();
+        workers.fireWorkerStarted();
         new TestClassRunner(
                 testClass, driverClass, new TestClassRunnerListenerToSuiteListener(testClass), actors, executor
         ).start();
@@ -101,7 +95,7 @@ public class SuiteRunner implements Startable, TestClassFinderListener {
         }
 
         public void onTestClassFinished() {
-            fireWorkerFinished();
+            workers.fireWorkerFinished();
         }
     }
 
