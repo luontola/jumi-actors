@@ -16,7 +16,6 @@
           </value>
         </option>
         <option name="LINE_SEPARATOR" value="&#10;" />
-        <option name="INSERT_OVERRIDE_ANNOTATION" value="false" />
         <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="2" />
         <option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="2" />
         <option name="HTML_ATTRIBUTE_WRAP" value="0" />
