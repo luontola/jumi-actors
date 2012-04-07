@@ -43,7 +43,7 @@ TODO NEXT:
 			OK - use WorkerCounter in SuiteRunner
 			OK - rename SuiteRunnerTest to SuiteProtocolTest
 			!! - create a new SuiteRunnerTest in spec style
-				- notifies when all testclasses are finished
+				OK - notifies when all testclasses are finished
 				- launches every testclass found, using its driver
 				OK - removes duplicate onTestFound events (wiring test)
 			- refactor TestRunSpawner
@@ -152,6 +152,9 @@ TODO NEXT:
 		actors
 			mq
 	- try using FEST asserts in BuildTest, it should help with generics
+	- improve SpyListener to allow asserting only some events
+		- refactor TestClassRunnerTest's test to mention only onTestClassFinished
+		- refactor SuiteRunnerTest's test to mention only onSuiteFinished
 	- figure out a way to rewrite TestClassRunnerTest as a unit test
 	- kill daemon before removing temp files: fi.jumi.test.AppRunner#tearDown
 	- SuiteRunner has a cyclic dependency with TestRunCoordinator

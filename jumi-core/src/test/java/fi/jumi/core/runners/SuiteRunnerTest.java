@@ -5,12 +5,17 @@
 package fi.jumi.core.runners;
 
 import fi.jumi.api.drivers.*;
+import fi.jumi.core.RunId;
+import fi.jumi.core.drivers.DriverFinder;
+import fi.jumi.core.files.*;
 import org.junit.Test;
 
 import java.util.concurrent.Executor;
 
 public class SuiteRunnerTest extends SuiteRunnerIntegrationHelper {
 
+    public static final String TEST_CLASS_1 = DummyTest.class.getName();
+    public static final String TEST_CLASS_2 = SecondDummyTest.class.getName();
     // TODO: launches every testclass found, using its driver
 
     /**
@@ -25,7 +30,22 @@ public class SuiteRunnerTest extends SuiteRunnerIntegrationHelper {
         runAndCheckExpectations(DuplicateFireTestFoundDriver.class, DummyTest.class);
     }
 
-    // TODO: notifies when all testclasses are finished
+    @Test
+    public void notifies_when_all_test_classes_are_finished() {
+        // TODO: these expectations are not interesting for this test - find a way to write this test without mentioning them
+        expect.onSuiteStarted();
+        expect.onTestFound(TEST_CLASS_1, TestId.ROOT, "DummyTest");
+        expect.onTestStarted(new RunId(42), TEST_CLASS_1, TestId.ROOT);
+        expect.onTestFinished(new RunId(42), TEST_CLASS_1, TestId.ROOT);
+        expect.onTestFound(TEST_CLASS_2, TestId.ROOT, "SecondDummyTest");
+        expect.onTestStarted(new RunId(42), TEST_CLASS_2, TestId.ROOT);
+        expect.onTestFinished(new RunId(42), TEST_CLASS_2, TestId.ROOT);
+
+        // this must happen last, once
+        expect.onSuiteFinished();
+
+        runAndCheckExpectations(TestClassWithZeroTestsDriver.class, DummyTest.class, SecondDummyTest.class);
+    }
 
 
     // guinea pigs
@@ -33,10 +53,23 @@ public class SuiteRunnerTest extends SuiteRunnerIntegrationHelper {
     private static class DummyTest {
     }
 
+    private static class SecondDummyTest {
+    }
+
     public static class DuplicateFireTestFoundDriver implements Driver {
+        @Override
         public void findTests(Class<?> testClass, SuiteNotifier notifier, Executor executor) {
             notifier.fireTestFound(TestId.ROOT, "fireTestFound called twice");
             notifier.fireTestFound(TestId.ROOT, "fireTestFound called twice");
+        }
+    }
+
+    public static class TestClassWithZeroTestsDriver implements Driver {
+        @Override
+        public void findTests(Class<?> testClass, SuiteNotifier notifier, Executor executor) {
+            notifier.fireTestFound(TestId.ROOT, testClass.getSimpleName());
+            notifier.fireTestStarted(TestId.ROOT)
+                    .fireTestFinished();
         }
     }
 }
