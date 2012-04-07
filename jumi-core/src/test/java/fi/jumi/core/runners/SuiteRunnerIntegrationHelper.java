@@ -33,20 +33,20 @@ public abstract class SuiteRunnerIntegrationHelper {
     private final Executor executor = new SynchronousExecutor();
 
     protected void runAndCheckExpectations(Driver driver, Class<?>... testClasses) {
-        TestClassFinder testClassFinder = new StubTestClassFinder(testClasses);
-        DriverFinder driverFinder = new StubDriverFinder(driver);
         spy.replay();
-        run(testClassFinder, driverFinder);
+        run(driver, testClasses);
         spy.verify();
     }
 
-    protected void run(TestClassFinder testClassFinder, DriverFinder driverFinder) {
+    protected void run(Driver driver, Class<?>... testClasses) {
+        DriverFinder driverFinder = new StubDriverFinder(driver);
+        TestClassFinder testClassFinder = new StubTestClassFinder(testClasses);
         SuiteRunner runner = new SuiteRunner(expect, testClassFinder, driverFinder, actors, executor);
         actors.createPrimaryActor(Startable.class, runner, "SuiteRunner").start();
         actors.processEventsUntilIdle();
     }
 
-    protected static class StubDriverFinder implements DriverFinder {
+    private static class StubDriverFinder implements DriverFinder {
         private final Driver driver;
 
         public StubDriverFinder(Driver driver) {
@@ -58,7 +58,7 @@ public abstract class SuiteRunnerIntegrationHelper {
         }
     }
 
-    protected static class StubTestClassFinder implements TestClassFinder {
+    private static class StubTestClassFinder implements TestClassFinder {
         private final Class<?>[] testClasses;
 
         public StubTestClassFinder(Class<?>... testClasses) {

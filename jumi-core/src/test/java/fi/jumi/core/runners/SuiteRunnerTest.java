@@ -10,11 +10,27 @@ import org.junit.Test;
 
 import java.util.concurrent.Executor;
 
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
+
 public class SuiteRunnerTest extends SuiteRunnerIntegrationHelper {
 
     public static final String TEST_CLASS_1 = DummyTest.class.getName();
     public static final String TEST_CLASS_2 = SecondDummyTest.class.getName();
-    // TODO: launches every testclass found, using its driver
+
+    @Test
+    public void runs_all_test_classes_which_are_found() {
+        Driver driverForAllClasses = mock(Driver.class);
+
+        run(driverForAllClasses, DummyTest.class, SecondDummyTest.class);
+
+        assertRunsTestClass(DummyTest.class, driverForAllClasses);
+        assertRunsTestClass(SecondDummyTest.class, driverForAllClasses);
+    }
+
+    private static void assertRunsTestClass(Class<?> testClass, Driver driverForAllClasses) {
+        verify(driverForAllClasses).findTests(eq(testClass), any(SuiteNotifier.class), any(Executor.class));
+    }
 
     /**
      * Responsibility delegated to {@link fi.jumi.core.runners.DuplicateOnTestFoundEventFilter}
