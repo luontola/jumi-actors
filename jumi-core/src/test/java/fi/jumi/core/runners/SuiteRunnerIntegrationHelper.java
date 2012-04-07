@@ -39,7 +39,10 @@ public abstract class SuiteRunnerIntegrationHelper {
     }
 
     protected void run(Driver driver, Class<?>... testClasses) {
-        DriverFinder driverFinder = new StubDriverFinder(driver);
+        run(new StubDriverFinder(driver), testClasses);
+    }
+
+    protected void run(DriverFinder driverFinder, Class<?>... testClasses) {
         TestClassFinder testClassFinder = new StubTestClassFinder(testClasses);
         SuiteRunner runner = new SuiteRunner(expect, testClassFinder, driverFinder, actors, executor);
         actors.createPrimaryActor(Startable.class, runner, "SuiteRunner").start();

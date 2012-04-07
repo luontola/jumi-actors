@@ -42,9 +42,9 @@ TODO NEXT:
 				SKIP - forwards all other events
 			OK - use WorkerCounter in SuiteRunner
 			OK - rename SuiteRunnerTest to SuiteProtocolTest
-			!! - create a new SuiteRunnerTest in spec style
+			OK - create a new SuiteRunnerTest in spec style
 				OK - notifies when all testclasses are finished
-				- launches every testclass found, using its driver
+				OK - launches every testclass found, using its driver
 				OK - removes duplicate onTestFound events (wiring test)
 			- refactor TestRunSpawner
 				- replace ExecutorListener.onCommandQueued with Executor.execute
