@@ -60,47 +60,7 @@ TODO NEXT:
 		- testClass can be deduced from onRunStarted's RunId
 		- TestId of onTestFinished & onFailure can be deduced from last call to onTestStarted (also prevents faulty input)
 
-- end-to-end tests: running multiple test classes
-	- it's not sure whether SuiteRunner works correctly when there are many test classes
-	- test class inclusion patterns (*Test, Test*, some.package.*, some.package.** etc.)
-
-- end-to-end tests: reporting test output
-	- capture System.out/err
-	- send out/err events
-	- test: printing from the same thread to out & err should be synchronous, unlike in probably every IDE
-	- hacking System.out/err
-		- tests should restore the original out/err defensively in @After
-		- concurrency test: out.println("O") and err.println("E") from different threads, output must not contain "OE"/"EO" but only "O\nE\n"
-		- unit test: the PrintStreams for our & err must sync on the same object, testable by checking holdsLock in a mock OutputStream
-			- Thread.holdsLock(java.lang.Object)
-			- ReentrantLock.isHeldByCurrentThread()
-		- generic test: all methods on our custom PrintStream must delegate to the PrintStream given as parameter, testable with reflection and CGLIB-proxy as target mock
-			- note: can't override just selected methods, because the print's delegate to a private method, and anyways it would couple to PrintStream's implementation details
-			- might break in future Java versions, if more methods are added to PrintStream, so beware of it
-			! - or just use a CGLIB proxy (net.sf.cglib.proxy.MethodInterceptor which synchronizes and delegates to real PrintStream, except net.sf.cglib.proxy.NoOp for Object's methods)
-
-- end-to-end tests: failures outside tests (in drivers and core)
-	- actor tests print dummy exceptions; solve by having a custom pluggable exception handler which doesn't print stack traces of a DummyException class
-
-- deployment pipeline
-	- install Go
-	- configure CI build
-	- generate unique version number for each build
-	- automatic deployment to staging
-	- approved deployment to Maven Central
-
-- misc refactoring
-	- add @Override annotations to all interface implementations
-	- packages by functionality
-		core
-			discovery
-			drivers
-			suite
-			classes
-			runs
-		actors
-			mq
-	- try using FEST asserts in BuildTest, it should help with generics
+- refactor jumi-actors
 	- make it impossible to use actors wrong
 		- wrap all NonThreadSafe collaborators of a worker automatically into a secondary actor.
 			Usage:
@@ -150,6 +110,48 @@ TODO NEXT:
 			- make primary actors use CustomTargetEvent
 			- remove duplication: unify the message processing/sending of primary and secondary actors
 		- should createPrimaryActor/createSecondaryActor return a wrapper for the actor, instead of the actor's handle, to make it easier to see when we are using a handle? or would that unnecessarily couple the code which uses actors into the actors framework?
+
+- end-to-end tests: running multiple test classes
+	- it's not sure whether SuiteRunner works correctly when there are many test classes
+	- test class inclusion patterns (*Test, Test*, some.package.*, some.package.** etc.)
+
+- end-to-end tests: reporting test output
+	- capture System.out/err
+	- send out/err events
+	- test: printing from the same thread to out & err should be synchronous, unlike in probably every IDE
+	- hacking System.out/err
+		- tests should restore the original out/err defensively in @After
+		- concurrency test: out.println("O") and err.println("E") from different threads, output must not contain "OE"/"EO" but only "O\nE\n"
+		- unit test: the PrintStreams for our & err must sync on the same object, testable by checking holdsLock in a mock OutputStream
+			- Thread.holdsLock(java.lang.Object)
+			- ReentrantLock.isHeldByCurrentThread()
+		- generic test: all methods on our custom PrintStream must delegate to the PrintStream given as parameter, testable with reflection and CGLIB-proxy as target mock
+			- note: can't override just selected methods, because the print's delegate to a private method, and anyways it would couple to PrintStream's implementation details
+			- might break in future Java versions, if more methods are added to PrintStream, so beware of it
+			! - or just use a CGLIB proxy (net.sf.cglib.proxy.MethodInterceptor which synchronizes and delegates to real PrintStream, except net.sf.cglib.proxy.NoOp for Object's methods)
+
+- end-to-end tests: failures outside tests (in drivers and core)
+	- actor tests print dummy exceptions; solve by having a custom pluggable exception handler which doesn't print stack traces of a DummyException class
+
+- deployment pipeline
+	- install Go
+	- configure CI build
+	- generate unique version number for each build
+	- automatic deployment to staging
+	- approved deployment to Maven Central
+
+- misc refactoring
+	- add @Override annotations to all interface implementations
+	- packages by functionality
+		core
+			discovery
+			drivers
+			suite
+			classes
+			runs
+		actors
+			mq
+	- try using FEST asserts in BuildTest, it should help with generics
 	- figure out a way to rewrite TestClassRunnerTest as a unit test
 	- kill daemon before removing temp files: fi.jumi.test.AppRunner#tearDown
 	- SuiteRunner has a cyclic dependency with TestRunCoordinator
