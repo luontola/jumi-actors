@@ -28,7 +28,7 @@ public class SuiteListenerProtocolTest extends SuiteRunnerIntegrationHelper {
         expect.onTestFound(DummyTest.class.getName(), TestId.ROOT, "DummyTest");
         expect.onSuiteFinished();
 
-        runAndCheckExpectations(ZeroTestsDriver.class, DummyTest.class);
+        runAndCheckExpectations(new ZeroTestsDriver(), DummyTest.class);
     }
 
     @Test
@@ -39,7 +39,7 @@ public class SuiteListenerProtocolTest extends SuiteRunnerIntegrationHelper {
         expect.onTestFinished(RUN_1, DummyTest.class.getName(), TestId.ROOT);
         expect.onSuiteFinished();
 
-        runAndCheckExpectations(OneTestDriver.class, DummyTest.class);
+        runAndCheckExpectations(new OneTestDriver(), DummyTest.class);
     }
 
     @Test
@@ -51,7 +51,7 @@ public class SuiteListenerProtocolTest extends SuiteRunnerIntegrationHelper {
         expect.onTestFinished(RUN_1, DummyTest.class.getName(), TestId.ROOT);
         expect.onSuiteFinished();
 
-        runAndCheckExpectations(OneFailingTestDriver.class, DummyTest.class);
+        runAndCheckExpectations(new OneFailingTestDriver(), DummyTest.class);
     }
 
     // TODO: many runs

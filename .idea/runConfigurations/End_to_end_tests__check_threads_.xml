@@ -14,7 +14,7 @@
     <option name="MAIN_CLASS_NAME" value="" />
     <option name="METHOD_NAME" value="" />
     <option name="TEST_OBJECT" value="package" />
-    <option name="VM_PARAMETERS" value="-ea -javaagent:end-to-end-tests/target/project-artifacts/thread-safety-agent-0.1.0-SNAPSHOT.jar -Djumi.useThreadSafetyAgent=true" />
+    <option name="VM_PARAMETERS" value="-ea -javaagent:end-to-end-tests/target/project-artifacts/thread-safety-agent-0.1-SNAPSHOT.jar -Djumi.useThreadSafetyAgent=true" />
     <option name="PARAMETERS" value="" />
     <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
     <option name="ENV_VARIABLES" />

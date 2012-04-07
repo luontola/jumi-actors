@@ -41,7 +41,7 @@ public class TestClassRunnerTest {
         // this must happen last, once
         expect.onTestClassFinished();
 
-        runAndCheckExpectations(TwoTestsDriver.class);
+        runAndCheckExpectations(new TwoTestsDriver());
     }
 
     // TODO: forwards_all_other_events - find a way to write this as unit test
@@ -49,8 +49,8 @@ public class TestClassRunnerTest {
 
     // helpers
 
-    private void runAndCheckExpectations(Class<? extends Driver> driverClass) {
-        TestClassRunner runner = new TestClassRunner(DummyTest.class, driverClass, expect, actors, actors.getExecutor());
+    private void runAndCheckExpectations(Driver driver) {
+        TestClassRunner runner = new TestClassRunner(DummyTest.class, driver, expect, actors, actors.getExecutor());
 
         spy.replay();
         actors.createPrimaryActor(Startable.class, runner, "TestClassRunner").start();

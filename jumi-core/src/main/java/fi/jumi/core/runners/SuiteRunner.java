@@ -62,11 +62,11 @@ public class SuiteRunner implements Startable, TestClassFinderListener, WorkerCo
     }
 
     public void onTestClassFound(final Class<?> testClass) {
-        Class<? extends Driver> driverClass = driverFinder.findTestClassDriver(testClass);
+        Driver driver = driverFinder.findTestClassDriver(testClass);
 
         workers.fireWorkerStarted();
         new TestClassRunner(
-                testClass, driverClass, new TestClassRunnerListenerToSuiteListener(testClass), actors, executor
+                testClass, driver, new TestClassRunnerListenerToSuiteListener(testClass), actors, executor
         ).start();
     }
 

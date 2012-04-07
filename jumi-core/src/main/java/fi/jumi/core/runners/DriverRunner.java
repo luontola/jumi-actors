@@ -13,28 +13,18 @@ import java.util.concurrent.Executor;
 public class DriverRunner implements Runnable {
 
     private final Class<?> testClass;
-    private final Class<? extends Driver> driverClass;
+    private final Driver driver;
     private final SuiteNotifier suiteNotifier;
     private final Executor executor;
 
-    public DriverRunner(Class<?> testClass, Class<? extends Driver> driverClass, SuiteNotifier suiteNotifier, Executor executor) {
+    public DriverRunner(Driver driver, Class<?> testClass, SuiteNotifier suiteNotifier, Executor executor) {
         this.testClass = testClass;
-        this.driverClass = driverClass;
+        this.driver = driver;
         this.suiteNotifier = suiteNotifier;
         this.executor = executor;
     }
 
     public void run() {
-        newDriverInstance().findTests(testClass, suiteNotifier, executor);
-    }
-
-    private Driver newDriverInstance() {
-        try {
-            return driverClass.newInstance();
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+        driver.findTests(testClass, suiteNotifier, executor);
     }
 }

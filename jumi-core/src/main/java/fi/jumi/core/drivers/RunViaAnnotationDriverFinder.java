@@ -12,8 +12,13 @@ import javax.annotation.concurrent.NotThreadSafe;
 @NotThreadSafe
 public class RunViaAnnotationDriverFinder implements DriverFinder {
 
-    public Class<? extends Driver> findTestClassDriver(Class<?> testClass) {
+    public Driver findTestClassDriver(Class<?> testClass) {
         RunVia runVia = testClass.getAnnotation(RunVia.class);
-        return runVia.value();
+        Class<? extends Driver> driverClass = runVia.value();
+        try {
+            return driverClass.newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException("unable to instantiate " + driverClass, e);
+        }
     }
 }

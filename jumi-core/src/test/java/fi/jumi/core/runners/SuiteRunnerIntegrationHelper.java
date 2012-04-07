@@ -32,29 +32,33 @@ public abstract class SuiteRunnerIntegrationHelper {
     );
     private final Executor executor = new SynchronousExecutor();
 
-    protected void runAndCheckExpectations(Class<? extends Driver> driverClass, Class<?>... testClasses) {
-        spy.replay();
+    protected void runAndCheckExpectations(Driver driver, Class<?>... testClasses) {
         TestClassFinder testClassFinder = new StubTestClassFinder(testClasses);
-        DriverFinder driverFinder = new StubDriverFinder(driverClass);
-        SuiteRunner runner = new SuiteRunner(expect, testClassFinder, driverFinder, actors, executor);
-        actors.createPrimaryActor(Startable.class, runner, "SuiteRunner").start();
-        actors.processEventsUntilIdle();
+        DriverFinder driverFinder = new StubDriverFinder(driver);
+        spy.replay();
+        run(testClassFinder, driverFinder);
         spy.verify();
     }
 
-    private static class StubDriverFinder implements DriverFinder {
-        private final Class<? extends Driver> driverClass;
+    protected void run(TestClassFinder testClassFinder, DriverFinder driverFinder) {
+        SuiteRunner runner = new SuiteRunner(expect, testClassFinder, driverFinder, actors, executor);
+        actors.createPrimaryActor(Startable.class, runner, "SuiteRunner").start();
+        actors.processEventsUntilIdle();
+    }
 
-        public StubDriverFinder(Class<? extends Driver> driverClass) {
-            this.driverClass = driverClass;
+    protected static class StubDriverFinder implements DriverFinder {
+        private final Driver driver;
+
+        public StubDriverFinder(Driver driver) {
+            this.driver = driver;
         }
 
-        public Class<? extends Driver> findTestClassDriver(Class<?> testClass) {
-            return driverClass;
+        public Driver findTestClassDriver(Class<?> testClass) {
+            return driver;
         }
     }
 
-    private static class StubTestClassFinder implements TestClassFinder {
+    protected static class StubTestClassFinder implements TestClassFinder {
         private final Class<?>[] testClasses;
 
         public StubTestClassFinder(Class<?>... testClasses) {

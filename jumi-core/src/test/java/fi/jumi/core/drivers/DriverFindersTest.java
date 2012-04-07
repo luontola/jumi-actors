@@ -10,26 +10,27 @@ import org.junit.Test;
 
 import java.util.concurrent.Executor;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
 public class DriverFindersTest {
 
     @Test
     public void finds_driver_from_RunVia_annotation() {
-        assertEquals(DummyDriver.class, findDriverFor(RunViaAnnotatedClass.class));
+        @RunVia(DummyDriver.class)
+        class RunViaAnnotatedClass {
+        }
+
+        assertThat(driverFor(RunViaAnnotatedClass.class), is(instanceOf(DummyDriver.class)));
     }
 
-    private Class<? extends Driver> findDriverFor(Class<RunViaAnnotatedClass> viaAnnotatedClassClass) {
+    private Driver driverFor(Class<?> viaAnnotatedClassClass) {
         // TODO: support more driver finders: @RunWith, JUnit 4 (@Test), JUnit 3 (TestCase)
         DriverFinder finder = new RunViaAnnotationDriverFinder();
         return finder.findTestClassDriver(viaAnnotatedClassClass);
     }
 
-    @RunVia(DummyDriver.class)
-    private class RunViaAnnotatedClass {
-    }
-
-    private class DummyDriver implements Driver {
+    static class DummyDriver implements Driver {
         public void findTests(Class<?> testClass, SuiteNotifier notifier, Executor executor) {
         }
     }

@@ -26,12 +26,12 @@ public class DriverRunnerSpawner {
         this.rawTarget = rawTarget;
     }
 
-    public void spawnDriverRunner(Class<?> testClass, Class<? extends Driver> driverClass) {
+    public void spawnDriverRunner(Driver driver, Class<?> testClass) {
         TestClassListener target = actors.createSecondaryActor(TestClassListener.class, rawTarget);
 
         SuiteNotifier notifier = new DefaultSuiteNotifier(target);
         Executor executor = testRunSpawner.getExecutor();
-        spawnWorker(new DriverRunner(testClass, driverClass, notifier, executor));
+        spawnWorker(new DriverRunner(driver, testClass, notifier, executor));
     }
 
     private void spawnWorker(DriverRunner worker) {

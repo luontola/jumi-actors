@@ -15,18 +15,18 @@ import java.util.concurrent.Executor;
 public class TestClassRunner implements Startable, TestClassListener, WorkerCounterListener {
 
     private final Class<?> testClass;
-    private final Class<? extends Driver> driverClass;
+    private final Driver driver;
     private final TestClassRunnerListener target;
 
     private final DriverRunnerSpawner driverRunnerSpawner;
 
     public TestClassRunner(Class<?> testClass,
-                           Class<? extends Driver> driverClass,
+                           Driver driver,
                            TestClassRunnerListener target,
                            OnDemandActors actors,
                            Executor executor) {
         this.testClass = testClass;
-        this.driverClass = driverClass;
+        this.driver = driver;
         this.target = target;
 
         WorkerCounter workerCounter = new WorkerCounter(this);
@@ -37,7 +37,7 @@ public class TestClassRunner implements Startable, TestClassListener, WorkerCoun
 
     @Override
     public void start() {
-        driverRunnerSpawner.spawnDriverRunner(testClass, driverClass);
+        driverRunnerSpawner.spawnDriverRunner(driver, testClass);
     }
 
     @Override

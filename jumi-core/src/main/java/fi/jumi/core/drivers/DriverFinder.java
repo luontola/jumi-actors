@@ -8,5 +8,5 @@ import fi.jumi.api.drivers.Driver;
 
 public interface DriverFinder {
 
-    Class<? extends Driver> findTestClassDriver(Class<?> testClass);
+    Driver findTestClassDriver(Class<?> testClass);
 }

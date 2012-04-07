@@ -6,8 +6,6 @@ package fi.jumi.core.runners;
 
 import fi.jumi.api.drivers.*;
 import fi.jumi.core.RunId;
-import fi.jumi.core.drivers.DriverFinder;
-import fi.jumi.core.files.*;
 import org.junit.Test;
 
 import java.util.concurrent.Executor;
@@ -27,7 +25,7 @@ public class SuiteRunnerTest extends SuiteRunnerIntegrationHelper {
         expect.onTestFound(DummyTest.class.getName(), TestId.ROOT, "fireTestFound called twice");
         expect.onSuiteFinished();
 
-        runAndCheckExpectations(DuplicateFireTestFoundDriver.class, DummyTest.class);
+        runAndCheckExpectations(new DuplicateFireTestFoundDriver(), DummyTest.class);
     }
 
     @Test
@@ -44,7 +42,7 @@ public class SuiteRunnerTest extends SuiteRunnerIntegrationHelper {
         // this must happen last, once
         expect.onSuiteFinished();
 
-        runAndCheckExpectations(TestClassWithZeroTestsDriver.class, DummyTest.class, SecondDummyTest.class);
+        runAndCheckExpectations(new TestClassWithZeroTestsDriver(), DummyTest.class, SecondDummyTest.class);
     }
 
 
