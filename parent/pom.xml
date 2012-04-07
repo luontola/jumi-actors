@@ -228,7 +228,7 @@
                 <executions>
 
                     <execution>
-                        <!-- XXX: Using a different ID than in oss-parent to avoid overriding its checks by accident -->
+                        <!-- XXX: Using a different ID than in oss-parent to avoid overriding its checks by accident. See https://issues.sonatype.org/browse/OSSRH-2004 -->
                         <id>enforce-maven-3</id>
                         <goals>
                             <goal>enforce</goal>
