@@ -4,6 +4,8 @@
 
 package fi.jumi.codegenerator;
 
+import fi.jumi.codegenerator.java.JavaType;
+
 import java.util.Locale;
 
 public class TargetPackageResolver {
@@ -14,6 +16,15 @@ public class TargetPackageResolver {
     public TargetPackageResolver(boolean createSubPackages, String targetPackage) {
         this.createSubPackages = createSubPackages;
         this.targetPackage = targetPackage;
+    }
+
+    public String getFactoryPackage() {
+        return targetPackage;
+    }
+
+    public String getStubsPackage(JavaType eventInterface) {
+        // TODO: should we support type-parameterized interfaces?
+        return targetPackage + "." + eventInterface.getSimpleName();
     }
 
     public String getTargetPackage(String eventInterface) {
