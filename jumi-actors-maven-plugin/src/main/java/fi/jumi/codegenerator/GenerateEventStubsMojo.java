@@ -1,4 +1,4 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -83,8 +83,9 @@ public class GenerateEventStubsMojo extends AbstractMojo {
 
 
     public void execute() throws MojoExecutionException {
+        TargetPackageResolver targetPackageResolver = new TargetPackageResolver(createSubPackages, targetPackage);
         for (String eventInterface : eventInterfaces) {
-            EventStubGenerator generator = new EventStubGenerator(loadClass(eventInterface), getTargetPackage(eventInterface));
+            EventStubGenerator generator = new EventStubGenerator(loadClass(eventInterface), targetPackageResolver.getTargetPackage(eventInterface));
 
             List<GeneratedClass> generated = new ArrayList<GeneratedClass>();
             generated.add(generator.getFactory());
@@ -101,20 +102,6 @@ public class GenerateEventStubsMojo extends AbstractMojo {
             }
             project.addCompileSourceRoot(outputDirectory.getAbsolutePath());
         }
-    }
-
-    private String getTargetPackage(String eventInterface) {
-        // TODO: write a unit test for this
-        if (createSubPackages) {
-            String subpackage = getSimpleName(eventInterface).replaceAll("Listener$", "").toLowerCase(Locale.ENGLISH);
-            return targetPackage + "." + subpackage;
-        } else {
-            return targetPackage;
-        }
-    }
-
-    private static String getSimpleName(String name) {
-        return name.substring(name.lastIndexOf('.') + 1);
     }
 
     private Class<?> loadClass(String eventInterface) throws MojoExecutionException {
