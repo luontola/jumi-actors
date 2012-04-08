@@ -6,7 +6,7 @@ package fi.jumi.launcher;
 
 import fi.jumi.actors.*;
 import fi.jumi.core.*;
-import fi.jumi.core.events.command.CommandListenerFactory;
+import fi.jumi.core.events.CommandListenerFactory;
 import fi.jumi.launcher.daemon.Daemon;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.NullWriter;
@@ -55,13 +55,13 @@ public class JumiLauncher {
 
     public void start() throws IOException {
         // XXX: send startup command properly, using a message queue
-        handler.setStartupCommand(genereteStartupCommand());
+        handler.setStartupCommand(generateStartupCommand());
 
         int port = listenForDaemonConnection();
         startProcess(port);
     }
 
-    private Event<CommandListener> genereteStartupCommand() {
+    private Event<CommandListener> generateStartupCommand() {
         MessageQueue<Event<CommandListener>> spy = new MessageQueue<Event<CommandListener>>();
         new CommandListenerFactory().newFrontend(spy).runTests(classPath, testsToIncludePattern);
         return spy.poll();

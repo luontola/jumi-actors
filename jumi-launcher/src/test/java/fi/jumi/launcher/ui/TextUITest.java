@@ -7,13 +7,12 @@ package fi.jumi.launcher.ui;
 import fi.jumi.actors.*;
 import fi.jumi.api.drivers.TestId;
 import fi.jumi.core.*;
-import fi.jumi.core.events.suite.SuiteListenerToEvent;
+import fi.jumi.core.events.SuiteListener.SuiteListenerToEvent;
 import org.junit.Test;
 
 import java.io.*;
 
-import static fi.jumi.core.utils.Asserts.assertContainsSubStrings;
-import static fi.jumi.core.utils.Asserts.assertNotContainsSubStrings;
+import static fi.jumi.core.utils.Asserts.*;
 
 public class TextUITest {
 

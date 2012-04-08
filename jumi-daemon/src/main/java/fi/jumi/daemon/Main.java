@@ -6,13 +6,7 @@ package fi.jumi.daemon;
 
 import fi.jumi.actors.MultiThreadedActors;
 import fi.jumi.core.*;
-import fi.jumi.core.events.command.CommandListenerFactory;
-import fi.jumi.core.events.executor.ExecutorListenerFactory;
-import fi.jumi.core.events.runnable.RunnableFactory;
-import fi.jumi.core.events.startable.StartableFactory;
-import fi.jumi.core.events.suite.SuiteListenerFactory;
-import fi.jumi.core.events.testclass.TestClassListenerFactory;
-import fi.jumi.core.events.testclassfinder.TestClassFinderListenerFactory;
+import fi.jumi.core.events.*;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.socket.oio.OioClientSocketChannelFactory;

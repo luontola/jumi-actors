@@ -8,11 +8,7 @@ import fi.jumi.actors.SingleThreadedActors;
 import fi.jumi.api.drivers.Driver;
 import fi.jumi.core.*;
 import fi.jumi.core.drivers.DriverFinder;
-import fi.jumi.core.events.executor.*;
-import fi.jumi.core.events.runnable.RunnableFactory;
-import fi.jumi.core.events.startable.StartableFactory;
-import fi.jumi.core.events.testclass.TestClassListenerFactory;
-import fi.jumi.core.events.testclassfinder.TestClassFinderListenerFactory;
+import fi.jumi.core.events.*;
 import fi.jumi.core.files.*;
 
 import java.util.concurrent.Executor;

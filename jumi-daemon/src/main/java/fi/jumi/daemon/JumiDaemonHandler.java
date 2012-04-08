@@ -8,7 +8,7 @@ import fi.jumi.actors.Event;
 import fi.jumi.actors.MessageSender;
 import fi.jumi.core.CommandListener;
 import fi.jumi.core.SuiteListener;
-import fi.jumi.core.events.suite.SuiteListenerFactory;
+import fi.jumi.core.events.SuiteListenerFactory;
 import org.jboss.netty.channel.*;
 
 import javax.annotation.concurrent.ThreadSafe;

@@ -7,10 +7,7 @@ package fi.jumi.core.runners;
 import fi.jumi.actors.SingleThreadedActors;
 import fi.jumi.api.drivers.*;
 import fi.jumi.core.Startable;
-import fi.jumi.core.events.executor.*;
-import fi.jumi.core.events.runnable.RunnableFactory;
-import fi.jumi.core.events.startable.StartableFactory;
-import fi.jumi.core.events.testclass.TestClassListenerFactory;
+import fi.jumi.core.events.*;
 import org.junit.Test;
 
 import java.util.concurrent.Executor;
