@@ -1,4 +1,4 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -146,6 +146,15 @@ public class EventStubGeneratorTest {
         assertThat(frontend.source, not(containsString("List ")));
     }
 
+    @Test
+    public void supports_methods_inherited_from_parent_interfaces() {
+        generator = new EventStubGenerator(ChildInterface.class, TARGET_PACKAGE);
+
+        GeneratedClass frontend = generator.getFrontend();
+        assertThat(frontend.source, containsString("void methodInChild()"));
+        assertThat(frontend.source, containsString("void methodInParent()"));
+    }
+
 
     private static void assertClassEquals(String expectedPath, GeneratedClass actual) throws IOException {
         assertEquals(expectedPath, actual.path);
@@ -175,5 +184,15 @@ public class EventStubGeneratorTest {
     private interface GenericParametersListener {
 
         void onSomething(List<File> list);
+    }
+
+    @SuppressWarnings({"UnusedDeclaration"})
+    private interface ParentInterface {
+        void methodInParent();
+    }
+
+    @SuppressWarnings({"UnusedDeclaration"})
+    private interface ChildInterface extends ParentInterface {
+        void methodInChild();
     }
 }

@@ -52,6 +52,17 @@ TODO NEXT:
 				- remove TestRunExecutor
 				- rename MyPrivateExecutorListener to WorkerCountingExecutor
 				- make te above public classes, rename TestRunSpawner to WorkerCountingExecutorSpawner
+		!! - in jumi-core, event stubs for Executor and ExecutorListener go to the same package and conflict: ExecuteEvent gets overwritten, ExecutorListenerToEvent doesn't implement all methods
+			OK? - fix bug: stubs for interfaces which extend interfaces should implement all inherited methods
+			- fix bug: stubs for interfaces Foo and FooListener should go to separate packages
+				- extract TargetPackageResolver from GenerateEventStubsMojo.getTargetPackage
+					- methods: getFactoryPackage(), getStubsPackage(eventInterface) [during transition use the latter one]
+					- one resolver for all EventStubGenerator instances, to resolve naming conflicts
+				- always create sub-packages, so remove GenerateEventStubsMojo.createSubPackages
+				- make EventStubGenerator responsible for creating sub-packages
+				- put factories in the top-level package (the targetPackage specified in POM)
+				- create sub-package names using Class.getSimpleName, without changing case or dropping "Listener"
+					* still assumes that SimpleNames are unique, but that should be OK
 		- update fi.jumi.core.runners.SuiteRunner.TestClassRunnerListenerToSuiteListener to use real runId
 			- generating RunIds probably must be done in DefaultSuiteNotifier/DefaultTestNotifier
 		- add onRunStarted, onRunFinished to SuiteListener
