@@ -16,14 +16,14 @@ public class TargetPackageResolverTest {
 
     @Test
     public void factories_go_to_the_top_level_package() {
-        TargetPackageResolver resolver = new TargetPackageResolver(false, TOP_LEVEL_PACKAGE);
+        TargetPackageResolver resolver = new TargetPackageResolver(TOP_LEVEL_PACKAGE);
 
         assertThat(resolver.getFactoryPackage(), is(TOP_LEVEL_PACKAGE));
     }
 
     @Test
     public void stubs_go_to_a_sub_package_which_is_named_after_the_event_interface() {
-        TargetPackageResolver resolver = new TargetPackageResolver(false, TOP_LEVEL_PACKAGE);
+        TargetPackageResolver resolver = new TargetPackageResolver(TOP_LEVEL_PACKAGE);
         JavaType eventInterface = JavaType.of(DummyListener.class);
 
         assertThat(resolver.getStubsPackage(eventInterface), is(TOP_LEVEL_PACKAGE + ".DummyListener"));

@@ -58,11 +58,11 @@ TODO NEXT:
 				OK - extract TargetPackageResolver from GenerateEventStubsMojo.getTargetPackage
 					- methods: getFactoryPackage(), getStubsPackage(eventInterface) [during transition use the latter one]
 					- one resolver for all EventStubGenerator instances, to resolve naming conflicts
-				!! - there is no easy way to import a package
+				OK - there is no easy way to import a package
 					OK - update Imports class to support importing package.*
 					OK - update ClassBuilder to expose package import
-					- update EventStubGenerator#getFactory to import stubsPackage
-				- move reference stubs to DummyListener sub-package
+					OK - update EventStubGenerator#getFactory to import stubsPackage
+				OK - move reference stubs to DummyListener sub-package
 				- always create sub-packages, so remove GenerateEventStubsMojo.createSubPackages
 				OK - make EventStubGenerator responsible for creating sub-packages
 				- put factories in the top-level package (the targetPackage specified in POM)

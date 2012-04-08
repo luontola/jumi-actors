@@ -5,7 +5,7 @@
 package fi.jumi.codegenerator;
 
 import fi.jumi.actors.*;
-import fi.jumi.codegenerator.dummy.DummyListenerFactory;
+import fi.jumi.codegenerator.reference.DummyListenerFactory;
 import fi.jumi.codegenerator.java.GeneratedClass;
 import org.apache.commons.io.IOUtils;
 import org.junit.*;
@@ -21,14 +21,14 @@ import static org.mockito.Mockito.*;
 
 public class EventStubGeneratorTest {
 
-    private static final String TARGET_PACKAGE = "fi.jumi.codegenerator.dummy";
+    private static final String TARGET_PACKAGE = "fi.jumi.codegenerator.reference";
 
     private TargetPackageResolver targetPackageResolver;
     private EventStubGenerator generator;
 
     @Before
     public void setUp() {
-        targetPackageResolver = new TargetPackageResolver(false, TARGET_PACKAGE);
+        targetPackageResolver = new TargetPackageResolver(TARGET_PACKAGE);
         generator = new EventStubGenerator(DummyListener.class, targetPackageResolver);
     }
 
@@ -81,24 +81,24 @@ public class EventStubGeneratorTest {
 
     @Test
     public void generates_factory_class() throws IOException {
-        assertClassEquals("fi/jumi/codegenerator/dummy/DummyListenerFactory.java", generator.getFactory());
+        assertClassEquals("fi/jumi/codegenerator/reference/DummyListenerFactory.java", generator.getFactory());
     }
 
     @Test
     public void generates_frontend_class() throws IOException {
-        assertClassEquals("fi/jumi/codegenerator/dummy/DummyListenerToEvent.java", generator.getFrontend());
+        assertClassEquals("fi/jumi/codegenerator/reference/DummyListener/DummyListenerToEvent.java", generator.getFrontend());
     }
 
     @Test
     public void generates_backend_class() throws IOException {
-        assertClassEquals("fi/jumi/codegenerator/dummy/EventToDummyListener.java", generator.getBackend());
+        assertClassEquals("fi/jumi/codegenerator/reference/DummyListener/EventToDummyListener.java", generator.getBackend());
     }
 
     @Test
     public void generates_event_classes() throws IOException {
         List<GeneratedClass> events = generator.getEvents();
-        assertClassEquals("fi/jumi/codegenerator/dummy/OnOtherEvent.java", events.get(0));
-        assertClassEquals("fi/jumi/codegenerator/dummy/OnSomethingEvent.java", events.get(1));
+        assertClassEquals("fi/jumi/codegenerator/reference/DummyListener/OnOtherEvent.java", events.get(0));
+        assertClassEquals("fi/jumi/codegenerator/reference/DummyListener/OnSomethingEvent.java", events.get(1));
     }
 
     @Test
@@ -159,8 +159,8 @@ public class EventStubGeneratorTest {
 
 
     private static void assertClassEquals(String expectedPath, GeneratedClass actual) throws IOException {
-        assertEquals(expectedPath, actual.path);
-        assertEquals(readFile(expectedPath), actual.source);
+        assertEquals("file path", expectedPath, actual.path);
+        assertEquals("file content", readFile(expectedPath), actual.source);
     }
 
     private static String readFile(String resource) throws IOException {

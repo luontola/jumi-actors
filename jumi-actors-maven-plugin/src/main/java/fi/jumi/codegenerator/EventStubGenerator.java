@@ -14,8 +14,6 @@ import java.util.*;
 
 public class EventStubGenerator {
 
-    private final String targetPackage;
-
     private final JavaType listenerInterface;
     private final Method[] listenerMethods;
 
@@ -23,9 +21,10 @@ public class EventStubGenerator {
     private final JavaType eventInterface;
     private final JavaType senderInterface;
 
-    public EventStubGenerator(Class<?> listenerType, TargetPackageResolver targetPackageResolver) {
-        this.targetPackage = targetPackageResolver.getTargetPackage(listenerType.getName());
+    private final String factoryPackage;
+    private final String stubsPackage;
 
+    public EventStubGenerator(Class<?> listenerType, TargetPackageResolver targetPackageResolver) {
         listenerInterface = JavaType.of(listenerType);
         listenerMethods = listenerType.getMethods();
         Arrays.sort(listenerMethods, new Comparator<Method>() {
@@ -37,11 +36,15 @@ public class EventStubGenerator {
         factoryInterface = JavaType.of(ListenerFactory.class, listenerInterface);
         eventInterface = JavaType.of(Event.class, listenerInterface);
         senderInterface = JavaType.of(MessageSender.class, eventInterface);
+
+        factoryPackage = targetPackageResolver.getFactoryPackage();
+        stubsPackage = targetPackageResolver.getStubsPackage(listenerInterface);
     }
 
     public GeneratedClass getFactory() {
-        ClassBuilder cb = new ClassBuilder(myFactoryName(), targetPackage);
+        ClassBuilder cb = new ClassBuilder(myFactoryName(), factoryPackage);
         cb.implement(factoryInterface);
+        cb.addPackageImport(stubsPackage);
 
         String listenerName = cb.getImportedName(listenerInterface);
         String senderName = cb.getImportedName(senderInterface);
@@ -67,7 +70,7 @@ public class EventStubGenerator {
     public GeneratedClass getFrontend() {
         Argument sender = new Argument(senderInterface, "sender");
 
-        ClassBuilder cb = new ClassBuilder(myFrontendName(), targetPackage);
+        ClassBuilder cb = new ClassBuilder(myFrontendName(), stubsPackage);
         cb.implement(listenerInterface);
         cb.fieldsAndConstructorParameters(new ArgumentList(sender));
 
@@ -85,7 +88,7 @@ public class EventStubGenerator {
     public GeneratedClass getBackend() {
         Argument listener = new Argument(listenerInterface, "listener");
 
-        ClassBuilder cb = new ClassBuilder(myBackendName(), targetPackage);
+        ClassBuilder cb = new ClassBuilder(myBackendName(), stubsPackage);
         cb.implement(senderInterface);
         cb.fieldsAndConstructorParameters(new ArgumentList(listener));
 
@@ -103,7 +106,7 @@ public class EventStubGenerator {
         for (Method method : listenerMethods) {
             ArgumentList arguments = new ArgumentList(method);
 
-            ClassBuilder cb = new ClassBuilder(myEventWrapperName(method), targetPackage);
+            ClassBuilder cb = new ClassBuilder(myEventWrapperName(method), stubsPackage);
             cb.implement(eventInterface);
             cb.implement(JavaType.of(Serializable.class));
             cb.fieldsAndConstructorParameters(arguments);

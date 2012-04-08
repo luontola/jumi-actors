@@ -6,15 +6,11 @@ package fi.jumi.codegenerator;
 
 import fi.jumi.codegenerator.java.JavaType;
 
-import java.util.Locale;
-
 public class TargetPackageResolver {
 
-    private final boolean createSubPackages;
     private final String targetPackage;
 
-    public TargetPackageResolver(boolean createSubPackages, String targetPackage) {
-        this.createSubPackages = createSubPackages;
+    public TargetPackageResolver(String targetPackage) {
         this.targetPackage = targetPackage;
     }
 
@@ -22,22 +18,8 @@ public class TargetPackageResolver {
         return targetPackage;
     }
 
-    public String getStubsPackage(JavaType eventInterface) {
+    public String getStubsPackage(JavaType listenerInterface) {
         // TODO: should we support type-parameterized interfaces?
-        return targetPackage + "." + eventInterface.getSimpleName();
-    }
-
-    public String getTargetPackage(String eventInterface) {
-        // TODO: write a unit test for this
-        if (createSubPackages) {
-            String subpackage = getSimpleName(eventInterface).replaceAll("Listener$", "").toLowerCase(Locale.ENGLISH);
-            return targetPackage + "." + subpackage;
-        } else {
-            return targetPackage;
-        }
-    }
-
-    private static String getSimpleName(String name) {
-        return name.substring(name.lastIndexOf('.') + 1);
+        return targetPackage + "." + listenerInterface.getSimpleName();
     }
 }

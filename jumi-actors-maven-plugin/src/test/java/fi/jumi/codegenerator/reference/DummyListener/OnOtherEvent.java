@@ -1,4 +1,4 @@
-package fi.jumi.codegenerator.dummy;
+package fi.jumi.codegenerator.reference.DummyListener;
 
 import fi.jumi.actors.Event;
 import fi.jumi.codegenerator.DummyListener;

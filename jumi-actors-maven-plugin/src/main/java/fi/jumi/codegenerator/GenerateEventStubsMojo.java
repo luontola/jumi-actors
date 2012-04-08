@@ -83,7 +83,7 @@ public class GenerateEventStubsMojo extends AbstractMojo {
 
 
     public void execute() throws MojoExecutionException {
-        TargetPackageResolver targetPackageResolver = new TargetPackageResolver(createSubPackages, targetPackage);
+        TargetPackageResolver targetPackageResolver = new TargetPackageResolver(targetPackage);
         for (String eventInterface : eventInterfaces) {
             EventStubGenerator generator = new EventStubGenerator(loadClass(eventInterface), targetPackageResolver);
 
