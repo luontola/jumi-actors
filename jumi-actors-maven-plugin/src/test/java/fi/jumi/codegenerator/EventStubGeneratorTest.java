@@ -86,19 +86,19 @@ public class EventStubGeneratorTest {
 
     @Test
     public void generates_frontend_class() throws IOException {
-        assertClassEquals("fi/jumi/codegenerator/reference/DummyListener/DummyListenerToEvent.java", generator.getFrontend());
+        assertClassEquals("fi/jumi/codegenerator/reference/dummyListener/DummyListenerToEvent.java", generator.getFrontend());
     }
 
     @Test
     public void generates_backend_class() throws IOException {
-        assertClassEquals("fi/jumi/codegenerator/reference/DummyListener/EventToDummyListener.java", generator.getBackend());
+        assertClassEquals("fi/jumi/codegenerator/reference/dummyListener/EventToDummyListener.java", generator.getBackend());
     }
 
     @Test
     public void generates_event_classes() throws IOException {
         List<GeneratedClass> events = generator.getEvents();
-        assertClassEquals("fi/jumi/codegenerator/reference/DummyListener/OnOtherEvent.java", events.get(0));
-        assertClassEquals("fi/jumi/codegenerator/reference/DummyListener/OnSomethingEvent.java", events.get(1));
+        assertClassEquals("fi/jumi/codegenerator/reference/dummyListener/OnOtherEvent.java", events.get(0));
+        assertClassEquals("fi/jumi/codegenerator/reference/dummyListener/OnSomethingEvent.java", events.get(1));
     }
 
     @Test

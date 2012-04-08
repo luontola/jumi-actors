@@ -20,6 +20,12 @@ public class TargetPackageResolver {
 
     public String getStubsPackage(JavaType listenerInterface) {
         // TODO: should we support type-parameterized interfaces?
-        return targetPackage + "." + listenerInterface.getSimpleName();
+        return targetPackage + "." + toLowerCamelCase(listenerInterface.getSimpleName());
+    }
+
+    private static String toLowerCamelCase(String s) {
+        String head = s.substring(0, 1);
+        String tail = s.substring(1);
+        return head.toLowerCase() + tail;
     }
 }

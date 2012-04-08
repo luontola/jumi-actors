@@ -4,7 +4,7 @@ import fi.jumi.actors.Event;
 import fi.jumi.actors.ListenerFactory;
 import fi.jumi.actors.MessageSender;
 import fi.jumi.codegenerator.DummyListener;
-import fi.jumi.codegenerator.reference.DummyListener.*;
+import fi.jumi.codegenerator.reference.dummyListener.*;
 
 public class DummyListenerFactory implements ListenerFactory<DummyListener> {
 

@@ -26,6 +26,6 @@ public class TargetPackageResolverTest {
         TargetPackageResolver resolver = new TargetPackageResolver(TOP_LEVEL_PACKAGE);
         JavaType eventInterface = JavaType.of(DummyListener.class);
 
-        assertThat(resolver.getStubsPackage(eventInterface), is(TOP_LEVEL_PACKAGE + ".DummyListener"));
+        assertThat(resolver.getStubsPackage(eventInterface), is(TOP_LEVEL_PACKAGE + ".dummyListener"));
     }
 }
