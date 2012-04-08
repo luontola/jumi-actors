@@ -23,6 +23,13 @@ public class ImportsTest {
     }
 
     @Test
+    public void imports_packages() {
+        imports.addPackageImport("com.example");
+
+        assertThat(imports.toString().trim(), is("import com.example.*;"));
+    }
+
+    @Test
     public void each_class_is_imported_only_once() {
         imports.addImports(JavaType.of(ArrayList.class));
         imports.addImports(JavaType.of(ArrayList.class));

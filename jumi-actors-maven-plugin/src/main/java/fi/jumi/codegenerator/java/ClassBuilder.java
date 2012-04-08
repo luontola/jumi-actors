@@ -44,6 +44,11 @@ public class ClassBuilder {
         return this;
     }
 
+    public ClassBuilder addPackageImport(String packageName) {
+        imports.addPackageImport(packageName);
+        return this;
+    }
+
     public ClassBuilder addMethod(CharSequence methodSource) {
         if (methods.length() > 0) {
             methods.append("\n");

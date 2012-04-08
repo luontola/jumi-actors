@@ -9,6 +9,7 @@ import java.util.*;
 public class Imports {
 
     private final List<Class<?>> classesToImport = new ArrayList<Class<?>>();
+    private final List<String> packagesToImport = new ArrayList<String>();
 
     public void addImports(ArgumentList arguments) {
         for (Argument argument : arguments) {
@@ -22,6 +23,10 @@ public class Imports {
         }
     }
 
+    public void addPackageImport(String packageName) {
+        packagesToImport.add(packageName);
+    }
+
     @Override
     public String toString() {
         SortedSet<String> imports = new TreeSet<String>();
@@ -31,6 +36,9 @@ public class Imports {
             }
             // TODO: do not import classes from target package
             imports.add(type.getName());
+        }
+        for (String packageName : packagesToImport) {
+            imports.add(packageName + ".*");
         }
 
         StringBuilder sb = new StringBuilder();
