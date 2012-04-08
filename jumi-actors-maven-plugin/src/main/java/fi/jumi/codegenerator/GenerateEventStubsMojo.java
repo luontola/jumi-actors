@@ -61,12 +61,6 @@ public class GenerateEventStubsMojo extends AbstractMojo {
     public String targetPackage;
 
     /**
-     * @parameter default-value="false"
-     * @required
-     */
-    public boolean createSubPackages;
-
-    /**
      * @parameter
      * @required
      */

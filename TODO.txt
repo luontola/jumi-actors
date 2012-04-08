@@ -52,9 +52,9 @@ TODO NEXT:
 				- remove TestRunExecutor
 				- rename MyPrivateExecutorListener to WorkerCountingExecutor
 				- make te above public classes, rename TestRunSpawner to WorkerCountingExecutorSpawner
-		!! - in jumi-core, event stubs for Executor and ExecutorListener go to the same package and conflict: ExecuteEvent gets overwritten, ExecutorListenerToEvent doesn't implement all methods
+		OK - in jumi-core, event stubs for Executor and ExecutorListener go to the same package and conflict: ExecuteEvent gets overwritten, ExecutorListenerToEvent doesn't implement all methods
 			OK? - fix bug: stubs for interfaces which extend interfaces should implement all inherited methods
-			!! - fix bug: stubs for interfaces Foo and FooListener should go to separate packages
+			OK - fix bug: stubs for interfaces Foo and FooListener should go to separate packages
 				OK - extract TargetPackageResolver from GenerateEventStubsMojo.getTargetPackage
 					- methods: getFactoryPackage(), getStubsPackage(eventInterface) [during transition use the latter one]
 					- one resolver for all EventStubGenerator instances, to resolve naming conflicts
@@ -63,11 +63,12 @@ TODO NEXT:
 					OK - update ClassBuilder to expose package import
 					OK - update EventStubGenerator#getFactory to import stubsPackage
 				OK - move reference stubs to DummyListener sub-package
-				- always create sub-packages, so remove GenerateEventStubsMojo.createSubPackages
+				OK - always create sub-packages, so remove GenerateEventStubsMojo.createSubPackages
 				OK - make EventStubGenerator responsible for creating sub-packages
-				- put factories in the top-level package (the targetPackage specified in POM)
-				- create sub-package names using Class.getSimpleName, without changing case or dropping "Listener"
+				OK - put factories in the top-level package (the targetPackage specified in POM)
+				OK - create sub-package names using Class.getSimpleName, without changing case or dropping "Listener"
 					* still assumes that SimpleNames are unique, but that should be OK
+				OK - update integration tests
 		- update fi.jumi.core.runners.SuiteRunner.TestClassRunnerListenerToSuiteListener to use real runId
 			- generating RunIds probably must be done in DefaultSuiteNotifier/DefaultTestNotifier
 		- add onRunStarted, onRunFinished to SuiteListener
