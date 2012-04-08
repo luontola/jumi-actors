@@ -23,11 +23,13 @@ public class EventStubGeneratorTest {
 
     private static final String TARGET_PACKAGE = "fi.jumi.codegenerator.dummy";
 
+    private TargetPackageResolver targetPackageResolver;
     private EventStubGenerator generator;
 
     @Before
     public void setUp() {
-        generator = new EventStubGenerator(DummyListener.class, TARGET_PACKAGE);
+        targetPackageResolver = new TargetPackageResolver(false, TARGET_PACKAGE);
+        generator = new EventStubGenerator(DummyListener.class, targetPackageResolver);
     }
 
     @Test
@@ -101,7 +103,7 @@ public class EventStubGeneratorTest {
 
     @Test
     public void generates_event_classes_for_every_listener_method() {
-        generator = new EventStubGenerator(TwoMethodInterface.class, TARGET_PACKAGE);
+        generator = new EventStubGenerator(TwoMethodInterface.class, targetPackageResolver);
 
         List<GeneratedClass> events = generator.getEvents();
         assertThat(events.size(), is(2));
@@ -111,7 +113,7 @@ public class EventStubGeneratorTest {
 
     @Test
     public void adds_imports_for_all_method_parameter_types() {
-        generator = new EventStubGenerator(ExternalLibraryReferencingListener.class, TARGET_PACKAGE);
+        generator = new EventStubGenerator(ExternalLibraryReferencingListener.class, targetPackageResolver);
 
         GeneratedClass event = generator.getEvents().get(0);
         assertThat(event.source, containsString("import java.util.Random;"));
@@ -122,7 +124,7 @@ public class EventStubGeneratorTest {
 
     @Test
     public void adds_imports_for_type_parameters_of_method_parameter_types() {
-        generator = new EventStubGenerator(GenericParametersListener.class, TARGET_PACKAGE);
+        generator = new EventStubGenerator(GenericParametersListener.class, targetPackageResolver);
 
         GeneratedClass event = generator.getEvents().get(0);
         assertThat(event.source, containsString("import java.util.List;"));
@@ -135,7 +137,7 @@ public class EventStubGeneratorTest {
 
     @Test
     public void raw_types_are_not_used() {
-        generator = new EventStubGenerator(GenericParametersListener.class, TARGET_PACKAGE);
+        generator = new EventStubGenerator(GenericParametersListener.class, targetPackageResolver);
 
         GeneratedClass event = generator.getEvents().get(0);
         assertThat(event.source, containsString("List<File>"));
@@ -148,7 +150,7 @@ public class EventStubGeneratorTest {
 
     @Test
     public void supports_methods_inherited_from_parent_interfaces() {
-        generator = new EventStubGenerator(ChildInterface.class, TARGET_PACKAGE);
+        generator = new EventStubGenerator(ChildInterface.class, targetPackageResolver);
 
         GeneratedClass frontend = generator.getFrontend();
         assertThat(frontend.source, containsString("void methodInChild()"));

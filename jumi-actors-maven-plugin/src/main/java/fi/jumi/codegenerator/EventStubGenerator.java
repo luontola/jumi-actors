@@ -23,8 +23,8 @@ public class EventStubGenerator {
     private final JavaType eventInterface;
     private final JavaType senderInterface;
 
-    public EventStubGenerator(Class<?> listenerType, String targetPackage) {
-        this.targetPackage = targetPackage;
+    public EventStubGenerator(Class<?> listenerType, TargetPackageResolver targetPackageResolver) {
+        this.targetPackage = targetPackageResolver.getTargetPackage(listenerType.getName());
 
         listenerInterface = JavaType.of(listenerType);
         listenerMethods = listenerType.getMethods();
