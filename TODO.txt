@@ -70,7 +70,14 @@ TODO NEXT:
 					* still assumes that SimpleNames are unique, but that should be OK
 				OK - update integration tests
 		!!- update fi.jumi.core.runners.SuiteRunner.TestClassRunnerListenerToSuiteListener to use real runId
-			- generating RunIds probably must be done in DefaultSuiteNotifier/DefaultTestNotifier
+			OK - create RunIdSequence
+			!! - write AssigningRunIdsTest against DefaultSuiteNotifier/DefaultTestNotifier
+				- RunId is assigned when a test is started
+				- nested tests in the same thread get the same RunId
+				- nested tests in child threads get the same RunId
+				- new runs in the same thread get a different RunId
+				- concurrent runs in other threads get a different RunId
+			- propagate the RunIds to upper levels, until connected in SuiteRunner.TestClassRunnerListenerToSuiteListener
 		- add onRunStarted, onRunFinished to SuiteListener
 		- improve e2e test to check test start/end events
 	- remove redundant parameters for SuiteListener
@@ -158,6 +165,7 @@ TODO NEXT:
 	- approved deployment to Maven Central
 
 - misc refactoring
+	- find files which have DOS newlines and convert them to UNIX newlines
 	- add @Override annotations to all interface implementations
 	- packages by functionality
 		core

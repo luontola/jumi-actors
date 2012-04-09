@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Immutable
 public class RunId implements Serializable {
 
-    private static final int FIRST_ID = 1;
+    public static final int FIRST_ID = 1;
 
     private final int id;
 
