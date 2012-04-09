@@ -165,7 +165,7 @@ TODO NEXT:
 	- approved deployment to Maven Central
 
 - misc refactoring
-	- find files which have DOS newlines and convert them to UNIX newlines
+	OK - find files which have DOS newlines and convert them to UNIX newlines
 	- add @Override annotations to all interface implementations
 	- packages by functionality
 		core
