@@ -6,7 +6,7 @@ package fi.jumi.core.runners;
 
 import fi.jumi.actors.SingleThreadedActors;
 import fi.jumi.api.drivers.*;
-import fi.jumi.core.Startable;
+import fi.jumi.core.*;
 import fi.jumi.core.events.*;
 import org.junit.Test;
 
@@ -47,7 +47,8 @@ public class TestClassRunnerTest {
     // helpers
 
     private void runAndCheckExpectations(Driver driver) {
-        TestClassRunner runner = new TestClassRunner(DummyTest.class, driver, expect, actors, actors.getExecutor());
+        RunIdSequence runIdSequence = new RunIdSequence();
+        TestClassRunner runner = new TestClassRunner(DummyTest.class, driver, expect, actors, actors.getExecutor(), runIdSequence);
 
         spy.replay();
         actors.createPrimaryActor(Startable.class, runner, "TestClassRunner").start();

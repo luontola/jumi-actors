@@ -5,6 +5,7 @@
 package fi.jumi.core.runners;
 
 import fi.jumi.api.drivers.TestId;
+import fi.jumi.core.RunId;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.*;
@@ -54,8 +55,8 @@ public class DuplicateOnTestFoundEventFilter implements TestClassListener {
     // events which are delegated as-is
 
     @Override
-    public void onTestStarted(TestId id) {
-        target.onTestStarted(id);
+    public void onTestStarted(RunId runId, TestId id) {
+        target.onTestStarted(runId, id);
     }
 
     @Override

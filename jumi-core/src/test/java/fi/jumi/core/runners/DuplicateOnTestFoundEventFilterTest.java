@@ -5,12 +5,13 @@
 package fi.jumi.core.runners;
 
 import fi.jumi.api.drivers.TestId;
+import fi.jumi.core.RunId;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 
 import static org.mockito.Mockito.*;
 
-public class DuplicateOnTestFoundEventsTest {
+public class DuplicateOnTestFoundEventFilterTest {
 
     private final TestClassListener target = mock(TestClassListener.class);
     private final DuplicateOnTestFoundEventFilter filter = new DuplicateOnTestFoundEventFilter(target);
@@ -32,11 +33,11 @@ public class DuplicateOnTestFoundEventsTest {
     public void forwards_all_other_events() {
         // TODO: create a generic test which calls all methods except onTestFound
         filter.onFailure(TestId.of(1), new Exception("dummy exception"));
-        filter.onTestStarted(TestId.of(1));
+        filter.onTestStarted(new RunId(10), TestId.of(1));
         filter.onTestFinished(TestId.of(1));
 
         verify(target).onFailure(eq(TestId.of(1)), notNull(Throwable.class));
-        verify(target).onTestStarted(TestId.of(1));
+        verify(target).onTestStarted(new RunId(10), TestId.of(1));
         verify(target).onTestFinished(TestId.of(1));
         verifyNoMoreInteractions(target);
     }

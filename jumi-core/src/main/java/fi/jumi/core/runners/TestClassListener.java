@@ -5,6 +5,7 @@
 package fi.jumi.core.runners;
 
 import fi.jumi.api.drivers.TestId;
+import fi.jumi.core.RunId;
 
 public interface TestClassListener {
 
@@ -12,7 +13,7 @@ public interface TestClassListener {
 
     void onTestFound(TestId id, String name);
 
-    void onTestStarted(TestId id);
+    void onTestStarted(RunId runId, TestId id);
 
     void onFailure(TestId id, Throwable cause);
 

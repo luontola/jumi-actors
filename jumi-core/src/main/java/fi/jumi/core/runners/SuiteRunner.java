@@ -65,8 +65,9 @@ public class SuiteRunner implements Startable, TestClassFinderListener, WorkerCo
         Driver driver = driverFinder.findTestClassDriver(testClass);
 
         workers.fireWorkerStarted();
+        RunIdSequence runIdSequence = new RunIdSequence(); // FIXME: reuse the same sequence for all test classes
         new TestClassRunner(
-                testClass, driver, new TestClassRunnerListenerToSuiteListener(testClass), actors, executor
+                testClass, driver, new TestClassRunnerListenerToSuiteListener(testClass), actors, executor, runIdSequence
         ).start();
     }
 

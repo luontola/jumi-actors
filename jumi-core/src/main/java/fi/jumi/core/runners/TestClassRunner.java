@@ -6,7 +6,7 @@ package fi.jumi.core.runners;
 
 import fi.jumi.actors.OnDemandActors;
 import fi.jumi.api.drivers.*;
-import fi.jumi.core.Startable;
+import fi.jumi.core.*;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.concurrent.Executor;
@@ -24,14 +24,15 @@ public class TestClassRunner implements Startable, TestClassListener, WorkerCoun
                            Driver driver,
                            TestClassRunnerListener target,
                            OnDemandActors actors,
-                           Executor executor) {
+                           Executor executor,
+                           RunIdSequence runIdSequence) {
         this.testClass = testClass;
         this.driver = driver;
         this.target = target;
 
         WorkerCounter workerCounter = new WorkerCounter(this);
         TestRunSpawner testRunSpawner = new TestRunSpawner(workerCounter, actors, executor);
-        this.driverRunnerSpawner = new DriverRunnerSpawner(workerCounter, actors, testRunSpawner,
+        this.driverRunnerSpawner = new DriverRunnerSpawner(workerCounter, actors, testRunSpawner, runIdSequence,
                 new DuplicateOnTestFoundEventFilter(this));
     }
 
@@ -58,7 +59,7 @@ public class TestClassRunner implements Startable, TestClassListener, WorkerCoun
     }
 
     @Override
-    public void onTestStarted(TestId id) {
+    public void onTestStarted(RunId runId, TestId id) {
         target.onTestStarted(id);
     }
 
