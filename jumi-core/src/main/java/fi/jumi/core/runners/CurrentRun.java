@@ -11,37 +11,48 @@ import javax.annotation.concurrent.ThreadSafe;
 @ThreadSafe
 public class CurrentRun {
 
-    // FIXME: not yet thread-safe
-
     private final RunIdSequence runIdSequence;
-    private RunId currentRun = null;
-    private int testNestingLevel = 0;
+
+    private final InheritableThreadLocal<RunContext> currentRunContext = new InheritableThreadLocal<RunContext>() {
+        @Override
+        protected RunContext initialValue() {
+            return new RunContext();
+        }
+    };
 
     public CurrentRun(RunIdSequence runIdSequence) {
         this.runIdSequence = runIdSequence;
     }
 
     public void enterTest() {
-        assert testNestingLevel >= 0;
+        RunContext context = this.currentRunContext.get();
+        assert context.testNestingLevel >= 0;
 
-        if (testNestingLevel == 0) {
-            currentRun = runIdSequence.nextRunId();
+        if (context.testNestingLevel == 0) {
+            context.currentRun = runIdSequence.nextRunId();
         }
-        testNestingLevel++;
+        context.testNestingLevel++;
     }
 
     public RunId getRunId() {
-        assert currentRun != null;
+        RunContext context = this.currentRunContext.get();
+        assert context.currentRun != null;
 
-        return currentRun;
+        return context.currentRun;
     }
 
     public void exitTest() {
-        assert testNestingLevel >= 0;
+        RunContext context = this.currentRunContext.get();
+        assert context.testNestingLevel >= 0;
 
-        testNestingLevel--;
-        if (testNestingLevel == 0) {
-            currentRun = null;
+        context.testNestingLevel--;
+        if (context.testNestingLevel == 0) {
+            context.currentRun = null;
         }
+    }
+
+    private static class RunContext {
+        private RunId currentRun = null;
+        private int testNestingLevel = 0;
     }
 }
