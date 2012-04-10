@@ -6,6 +6,7 @@ package fi.jumi.core;
 
 import fi.jumi.api.drivers.*;
 import fi.jumi.core.runners.SuiteRunnerIntegrationHelper;
+import fi.jumi.core.runs.RunId;
 import org.junit.Test;
 
 import java.util.concurrent.Executor;

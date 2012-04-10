@@ -6,7 +6,8 @@ package fi.jumi.core.runners;
 
 import fi.jumi.actors.OnDemandActors;
 import fi.jumi.api.drivers.*;
-import fi.jumi.core.RunIdSequence;
+import fi.jumi.core.runs.RunIdSequence;
+import fi.jumi.core.runs.DefaultSuiteNotifier;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.concurrent.Executor;

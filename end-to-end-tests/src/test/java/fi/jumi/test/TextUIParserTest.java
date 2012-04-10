@@ -7,6 +7,7 @@ package fi.jumi.test;
 import fi.jumi.actors.*;
 import fi.jumi.core.*;
 import fi.jumi.core.events.suiteListener.SuiteListenerToEvent;
+import fi.jumi.core.runs.RunId;
 import fi.jumi.launcher.ui.TextUI;
 import org.junit.Test;
 

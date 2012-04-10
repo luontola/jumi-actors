@@ -5,6 +5,7 @@
 package fi.jumi.core;
 
 import fi.jumi.api.drivers.TestId;
+import fi.jumi.core.runs.RunId;
 
 public class SuiteMother {
 

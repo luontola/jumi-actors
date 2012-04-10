@@ -2,11 +2,11 @@
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
-package fi.jumi.core.runners;
+package fi.jumi.core.runs;
 
 
 import fi.jumi.api.drivers.*;
-import fi.jumi.core.*;
+import fi.jumi.core.runners.TestClassListener;
 import org.junit.Test;
 
 import java.util.*;

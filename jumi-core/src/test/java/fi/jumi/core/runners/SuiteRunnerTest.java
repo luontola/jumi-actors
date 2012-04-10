@@ -5,7 +5,7 @@
 package fi.jumi.core.runners;
 
 import fi.jumi.api.drivers.*;
-import fi.jumi.core.RunId;
+import fi.jumi.core.runs.RunId;
 import fi.jumi.core.drivers.DriverFinder;
 import org.junit.Test;
 

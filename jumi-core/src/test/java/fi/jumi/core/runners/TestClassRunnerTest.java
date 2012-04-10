@@ -8,6 +8,7 @@ import fi.jumi.actors.SingleThreadedActors;
 import fi.jumi.api.drivers.*;
 import fi.jumi.core.*;
 import fi.jumi.core.events.*;
+import fi.jumi.core.runs.RunIdSequence;
 import org.junit.Test;
 
 import java.util.concurrent.Executor;

@@ -5,7 +5,7 @@
 package fi.jumi.test.simpleunit;
 
 import fi.jumi.api.drivers.TestId;
-import fi.jumi.core.*;
+import fi.jumi.core.runs.*;
 import fi.jumi.core.runners.*;
 import org.junit.Test;
 import sample.*;

@@ -5,7 +5,7 @@
 package fi.jumi.core.runners;
 
 import fi.jumi.api.drivers.TestId;
-import fi.jumi.core.RunId;
+import fi.jumi.core.runs.RunId;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.*;

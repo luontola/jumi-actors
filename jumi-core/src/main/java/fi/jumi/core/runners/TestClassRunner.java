@@ -7,6 +7,7 @@ package fi.jumi.core.runners;
 import fi.jumi.actors.OnDemandActors;
 import fi.jumi.api.drivers.*;
 import fi.jumi.core.*;
+import fi.jumi.core.runs.*;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.concurrent.Executor;

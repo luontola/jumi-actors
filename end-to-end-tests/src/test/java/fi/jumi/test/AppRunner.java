@@ -6,6 +6,7 @@ package fi.jumi.test;
 
 import fi.jumi.actors.*;
 import fi.jumi.core.*;
+import fi.jumi.core.runs.RunId;
 import fi.jumi.core.utils.Strings;
 import fi.jumi.launcher.JumiLauncher;
 import fi.jumi.launcher.ui.TextUI;

@@ -2,8 +2,9 @@
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
-package fi.jumi.core;
+package fi.jumi.core.runs;
 
+import fi.jumi.core.runs.RunId;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 
