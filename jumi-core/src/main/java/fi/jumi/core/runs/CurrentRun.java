@@ -5,6 +5,7 @@
 package fi.jumi.core.runs;
 
 import javax.annotation.concurrent.ThreadSafe;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @ThreadSafe
 public class CurrentRun {
@@ -44,25 +45,26 @@ public class CurrentRun {
     }
 
 
+    @ThreadSafe
     private static class RunContext {
         public final RunId runId;
-        private int testNestingLevel = 0;
+        private final AtomicInteger testNestingLevel = new AtomicInteger(0);
 
         public RunContext(RunId runId) {
             this.runId = runId;
         }
 
         public void enterTest() {
-            testNestingLevel++;
+            testNestingLevel.incrementAndGet();
         }
 
         public void exitTest() {
-            assert testNestingLevel >= 1;
-            testNestingLevel--;
+            int level = testNestingLevel.decrementAndGet();
+            assert level >= 0;
         }
 
         public boolean exitedAllTests() {
-            return testNestingLevel == 0;
+            return testNestingLevel.get() == 0;
         }
     }
 }
