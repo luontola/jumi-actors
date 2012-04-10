@@ -12,47 +12,54 @@ import javax.annotation.concurrent.ThreadSafe;
 public class CurrentRun {
 
     private final RunIdSequence runIdSequence;
-
-    private final InheritableThreadLocal<RunContext> currentRunContext = new InheritableThreadLocal<RunContext>() {
-        @Override
-        protected RunContext initialValue() {
-            return new RunContext();
-        }
-    };
+    private final InheritableThreadLocal<RunContext> currentRun = new InheritableThreadLocal<RunContext>();
 
     public CurrentRun(RunIdSequence runIdSequence) {
         this.runIdSequence = runIdSequence;
     }
 
     public void enterTest() {
-        RunContext context = this.currentRunContext.get();
-        assert context.testNestingLevel >= 0;
-
-        if (context.testNestingLevel == 0) {
-            context.currentRun = runIdSequence.nextRunId();
+        RunContext context = currentRun.get();
+        if (context == null) {
+            context = new RunContext(runIdSequence.nextRunId());
+            currentRun.set(context);
         }
-        context.testNestingLevel++;
+        context.enterTest();
     }
 
     public RunId getRunId() {
-        RunContext context = this.currentRunContext.get();
-        assert context.currentRun != null;
-
-        return context.currentRun;
+        RunContext context = currentRun.get();
+        return context.runId;
     }
 
     public void exitTest() {
-        RunContext context = this.currentRunContext.get();
-        assert context.testNestingLevel >= 0;
-
-        context.testNestingLevel--;
-        if (context.testNestingLevel == 0) {
-            context.currentRun = null;
+        RunContext context = currentRun.get();
+        context.exitTest();
+        if (context.exitedAllTests()) {
+            currentRun.remove();
         }
     }
 
+
     private static class RunContext {
-        private RunId currentRun = null;
+        public final RunId runId;
         private int testNestingLevel = 0;
+
+        public RunContext(RunId runId) {
+            this.runId = runId;
+        }
+
+        public void enterTest() {
+            testNestingLevel++;
+        }
+
+        public void exitTest() {
+            assert testNestingLevel >= 1;
+            testNestingLevel--;
+        }
+
+        public boolean exitedAllTests() {
+            return testNestingLevel == 0;
+        }
     }
 }
