@@ -18,13 +18,16 @@ public class CurrentRun {
         this.runIdSequence = runIdSequence;
     }
 
-    public void enterTest() {
+    public boolean enterTest() {
+        boolean newRun = false;
         RunContext context = currentRun.get();
         if (context == null) {
             context = new RunContext(runIdSequence.nextRunId());
             currentRun.set(context);
+            newRun = true;
         }
         context.enterTest();
+        return newRun;
     }
 
     public RunId getRunId() {
@@ -32,12 +35,14 @@ public class CurrentRun {
         return context.runId;
     }
 
-    public void exitTest() {
+    public boolean exitTest() {
         RunContext context = currentRun.get();
         context.exitTest();
         if (context.exitedAllTests()) {
             currentRun.remove();
+            return true;
         }
+        return false;
     }
 
 

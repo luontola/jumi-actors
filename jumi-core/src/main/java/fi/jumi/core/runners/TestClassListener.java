@@ -13,9 +13,13 @@ public interface TestClassListener {
 
     void onTestFound(TestId id, String name);
 
+    void onRunStarted(RunId runId);
+
     void onTestStarted(RunId runId, TestId id);
 
     void onFailure(TestId id, Throwable cause);
 
     void onTestFinished(TestId id);
+
+    void onRunFinished(RunId runId);
 }

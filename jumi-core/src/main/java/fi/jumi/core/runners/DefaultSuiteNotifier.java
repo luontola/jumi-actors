@@ -5,7 +5,7 @@
 package fi.jumi.core.runners;
 
 import fi.jumi.api.drivers.*;
-import fi.jumi.core.RunIdSequence;
+import fi.jumi.core.*;
 
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -25,8 +25,12 @@ public class DefaultSuiteNotifier implements SuiteNotifier {
     }
 
     public TestNotifier fireTestStarted(TestId id) {
-        currentRun.enterTest();
-        listener.onTestStarted(currentRun.getRunId(), id);
+        boolean newRun = currentRun.enterTest();
+        RunId runId = currentRun.getRunId();
+        if (newRun) {
+            listener.onRunStarted(runId);
+        }
+        listener.onTestStarted(runId, id);
         return new DefaultTestNotifier(currentRun, id, listener);
     }
 }

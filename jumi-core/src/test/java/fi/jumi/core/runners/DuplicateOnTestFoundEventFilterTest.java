@@ -33,12 +33,16 @@ public class DuplicateOnTestFoundEventFilterTest {
     public void forwards_all_other_events() {
         // TODO: create a generic test which calls all methods except onTestFound
         filter.onFailure(TestId.of(1), new Exception("dummy exception"));
-        filter.onTestStarted(new RunId(10), TestId.of(1));
-        filter.onTestFinished(TestId.of(1));
+        filter.onTestStarted(new RunId(10), TestId.of(2));
+        filter.onTestFinished(TestId.of(3));
+        filter.onRunStarted(new RunId(20));
+        filter.onRunFinished(new RunId(21));
 
         verify(target).onFailure(eq(TestId.of(1)), notNull(Throwable.class));
-        verify(target).onTestStarted(new RunId(10), TestId.of(1));
-        verify(target).onTestFinished(TestId.of(1));
+        verify(target).onTestStarted(new RunId(10), TestId.of(2));
+        verify(target).onTestFinished(TestId.of(3));
+        verify(target).onRunStarted(new RunId(20));
+        verify(target).onRunFinished(new RunId(21));
         verifyNoMoreInteractions(target);
     }
 

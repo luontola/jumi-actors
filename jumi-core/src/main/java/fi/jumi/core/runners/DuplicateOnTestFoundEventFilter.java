@@ -55,6 +55,11 @@ public class DuplicateOnTestFoundEventFilter implements TestClassListener {
     // events which are delegated as-is
 
     @Override
+    public void onRunStarted(RunId runId) {
+        target.onRunStarted(runId);
+    }
+
+    @Override
     public void onTestStarted(RunId runId, TestId id) {
         target.onTestStarted(runId, id);
     }
@@ -67,5 +72,10 @@ public class DuplicateOnTestFoundEventFilter implements TestClassListener {
     @Override
     public void onTestFinished(TestId id) {
         target.onTestFinished(id);
+    }
+
+    @Override
+    public void onRunFinished(RunId runId) {
+        target.onRunFinished(runId);
     }
 }

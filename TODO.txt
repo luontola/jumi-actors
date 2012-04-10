@@ -71,15 +71,18 @@ TODO NEXT:
 				OK - update integration tests
 		!!- update fi.jumi.core.runners.SuiteRunner.TestClassRunnerListenerToSuiteListener to use real runId
 			OK - create RunIdSequence
-			!! - write AssigningRunIdsTest against DefaultSuiteNotifier/DefaultTestNotifier
+			OK - write AssigningRunIdsTest against DefaultSuiteNotifier/DefaultTestNotifier
 				OK - RunId is assigned when a test is started
 				OK - nested tests in the same thread get the same RunId
 				OK - new runs in the same thread get a different RunId
 				OK - concurrent runs in other threads get a different RunId
 					OK - extract mutable fields (RunContext) from CurrentRun into a ThreadLocal
 				OK - nested tests in child threads get the same RunId
-				- onRunStarted, onRunFinished events
-			- propagate the RunIds to upper levels, until connected in SuiteRunner.TestClassRunnerListenerToSuiteListener
+				OK - onRunStarted, onRunFinished events
+			!! - propagate the RunIds to upper levels, until connected in SuiteRunner.TestClassRunnerListenerToSuiteListener
+				- SuiteListenerProtocolTest: add tests for onRunStarted, onRunFinished
+				- implement onRunStarted, onRunFinished in fi.jumi.core.runners.TestClassRunner
+				- refactor CurrentRun, maybe move some event firing from the notifiers inside it
 		- add onRunStarted, onRunFinished to SuiteListener
 		- improve e2e test to check test start/end events
 	- remove redundant parameters for SuiteListener

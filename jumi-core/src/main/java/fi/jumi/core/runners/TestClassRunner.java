@@ -49,13 +49,13 @@ public class TestClassRunner implements Startable, TestClassListener, WorkerCoun
     // convert TestClassListener events to TestClassRunnerListener
 
     @Override
-    public void onTestFinished(TestId id) {
-        target.onTestFinished(id);
+    public void onTestFound(TestId id, String name) {
+        target.onTestFound(id, name);
     }
 
     @Override
-    public void onFailure(TestId id, Throwable cause) {
-        target.onFailure(id, cause);
+    public void onRunStarted(RunId runId) {
+        // TODO
     }
 
     @Override
@@ -64,7 +64,17 @@ public class TestClassRunner implements Startable, TestClassListener, WorkerCoun
     }
 
     @Override
-    public void onTestFound(TestId id, String name) {
-        target.onTestFound(id, name);
+    public void onFailure(TestId id, Throwable cause) {
+        target.onFailure(id, cause);
+    }
+
+    @Override
+    public void onTestFinished(TestId id) {
+        target.onTestFinished(id);
+    }
+
+    @Override
+    public void onRunFinished(RunId runId) {
+        // TODO
     }
 }

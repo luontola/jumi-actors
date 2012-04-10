@@ -5,6 +5,7 @@
 package fi.jumi.core.runners;
 
 import fi.jumi.api.drivers.*;
+import fi.jumi.core.RunId;
 
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -26,7 +27,11 @@ public class DefaultTestNotifier implements TestNotifier {
     }
 
     public void fireTestFinished() {
-        currentRun.exitTest(); // TODO: onRunFinished should be after onTestFinished
+        RunId runId = currentRun.getRunId();
+        boolean runFinished = currentRun.exitTest();
         listener.onTestFinished(id);
+        if (runFinished) {
+            listener.onRunFinished(runId);
+        }
     }
 }
