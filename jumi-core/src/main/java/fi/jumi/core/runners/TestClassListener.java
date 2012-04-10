@@ -17,9 +17,9 @@ public interface TestClassListener {
 
     void onTestStarted(RunId runId, TestId id);
 
-    void onFailure(TestId id, Throwable cause);
+    void onFailure(RunId runId, TestId id, Throwable cause);
 
-    void onTestFinished(TestId id);
+    void onTestFinished(RunId runId, TestId id);
 
     void onRunFinished(RunId runId);
 }

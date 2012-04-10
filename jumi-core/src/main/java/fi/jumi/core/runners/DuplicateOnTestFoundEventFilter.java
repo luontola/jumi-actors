@@ -65,13 +65,13 @@ public class DuplicateOnTestFoundEventFilter implements TestClassListener {
     }
 
     @Override
-    public void onFailure(TestId id, Throwable cause) {
-        target.onFailure(id, cause);
+    public void onFailure(RunId runId, TestId id, Throwable cause) {
+        target.onFailure(runId, id, cause);
     }
 
     @Override
-    public void onTestFinished(TestId id) {
-        target.onTestFinished(id);
+    public void onTestFinished(RunId runId, TestId id) {
+        target.onTestFinished(runId, id);
     }
 
     @Override

@@ -6,7 +6,7 @@ package fi.jumi.core.runners;
 
 import fi.jumi.actors.OnDemandActors;
 import fi.jumi.api.drivers.*;
-import fi.jumi.core.*;
+import fi.jumi.core.Startable;
 import fi.jumi.core.runs.*;
 
 import javax.annotation.concurrent.NotThreadSafe;
@@ -56,26 +56,26 @@ public class TestClassRunner implements Startable, TestClassListener, WorkerCoun
 
     @Override
     public void onRunStarted(RunId runId) {
-        // TODO
+        target.onRunStarted(runId);
     }
 
     @Override
     public void onTestStarted(RunId runId, TestId id) {
-        target.onTestStarted(id);
+        target.onTestStarted(runId, id);
     }
 
     @Override
-    public void onFailure(TestId id, Throwable cause) {
-        target.onFailure(id, cause);
+    public void onFailure(RunId runId, TestId id, Throwable cause) {
+        target.onFailure(runId, id, cause);
     }
 
     @Override
-    public void onTestFinished(TestId id) {
-        target.onTestFinished(id);
+    public void onTestFinished(RunId runId, TestId id) {
+        target.onTestFinished(runId, id);
     }
 
     @Override
     public void onRunFinished(RunId runId) {
-        // TODO
+        target.onRunFinished(runId);
     }
 }

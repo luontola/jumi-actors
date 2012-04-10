@@ -6,9 +6,9 @@ package fi.jumi.core.runners;
 
 import fi.jumi.actors.SingleThreadedActors;
 import fi.jumi.api.drivers.*;
-import fi.jumi.core.*;
+import fi.jumi.core.Startable;
 import fi.jumi.core.events.*;
-import fi.jumi.core.runs.RunIdSequence;
+import fi.jumi.core.runs.*;
 import org.junit.Test;
 
 import java.util.concurrent.Executor;
@@ -29,12 +29,18 @@ public class TestClassRunnerTest {
     public void notifies_when_the_test_class_is_finished() {
         // TODO: these expectations are not interesting for this test - find a way to write this test without mentioning them
         expect.onTestFound(TestId.ROOT, "root test");
+
         expect.onTestFound(TestId.of(0), "test one");
-        expect.onTestStarted(TestId.of(0));
-        expect.onTestFinished(TestId.of(0));
+        expect.onRunStarted(new RunId(1));
+        expect.onTestStarted(new RunId(1), TestId.of(0));
+        expect.onTestFinished(new RunId(1), TestId.of(0));
+        expect.onRunFinished(new RunId(1));
+
         expect.onTestFound(TestId.of(1), "test two");
-        expect.onTestStarted(TestId.of(1));
-        expect.onTestFinished(TestId.of(1));
+        expect.onRunStarted(new RunId(2));
+        expect.onTestStarted(new RunId(2), TestId.of(1));
+        expect.onTestFinished(new RunId(2), TestId.of(1));
+        expect.onRunFinished(new RunId(2));
 
         // this must happen last, once
         expect.onTestClassFinished();

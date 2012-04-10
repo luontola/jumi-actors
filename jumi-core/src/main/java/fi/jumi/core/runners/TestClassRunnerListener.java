@@ -1,10 +1,11 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
 package fi.jumi.core.runners;
 
 import fi.jumi.api.drivers.TestId;
+import fi.jumi.core.runs.RunId;
 
 public interface TestClassRunnerListener {
 
@@ -12,11 +13,15 @@ public interface TestClassRunnerListener {
 
     void onTestFound(TestId id, String name);
 
-    void onTestStarted(TestId id);
+    void onRunStarted(RunId runId);
 
-    void onFailure(TestId id, Throwable cause);
+    void onTestStarted(RunId runId, TestId id);
 
-    void onTestFinished(TestId id);
+    void onFailure(RunId runId, TestId id, Throwable cause);
+
+    void onTestFinished(RunId runId, TestId id);
+
+    void onRunFinished(RunId runId);
 
     void onTestClassFinished();
 }

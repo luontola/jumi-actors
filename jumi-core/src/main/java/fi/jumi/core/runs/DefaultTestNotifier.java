@@ -23,13 +23,14 @@ public class DefaultTestNotifier implements TestNotifier {
     }
 
     public void fireFailure(Throwable cause) {
-        listener.onFailure(id, cause);
+        RunId runId = currentRun.getRunId();
+        listener.onFailure(runId, id, cause);
     }
 
     public void fireTestFinished() {
         RunId runId = currentRun.getRunId();
         boolean runFinished = currentRun.exitTest();
-        listener.onTestFinished(id);
+        listener.onTestFinished(runId, id);
         if (runFinished) {
             listener.onRunFinished(runId);
         }

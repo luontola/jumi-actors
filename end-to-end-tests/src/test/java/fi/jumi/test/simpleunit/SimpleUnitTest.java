@@ -5,8 +5,8 @@
 package fi.jumi.test.simpleunit;
 
 import fi.jumi.api.drivers.TestId;
-import fi.jumi.core.runs.*;
 import fi.jumi.core.runners.*;
+import fi.jumi.core.runs.*;
 import org.junit.Test;
 import sample.*;
 
@@ -49,10 +49,12 @@ public class SimpleUnitTest {
         listener.onTestFound(TestId.ROOT, "OnePassingTest");
         listener.onTestFound(TestId.of(0), "testPassing");
 
+        listener.onRunStarted(RUN_1);
         listener.onTestStarted(RUN_1, TestId.ROOT);
         listener.onTestStarted(RUN_1, TestId.of(0));
-        listener.onTestFinished(TestId.of(0));
-        listener.onTestFinished(TestId.ROOT);
+        listener.onTestFinished(RUN_1, TestId.of(0));
+        listener.onTestFinished(RUN_1, TestId.ROOT);
+        listener.onRunFinished(RUN_1);
 
         spy.replay();
         executeTestClass(OnePassingTest.class, listener);
@@ -67,11 +69,13 @@ public class SimpleUnitTest {
         listener.onTestFound(TestId.ROOT, "OneFailingTest");
         listener.onTestFound(TestId.of(0), "testFailing");
 
+        listener.onRunStarted(RUN_1);
         listener.onTestStarted(RUN_1, TestId.ROOT);
         listener.onTestStarted(RUN_1, TestId.of(0));
-        listener.onFailure(TestId.of(0), new AssertionError("dummy failure"));
-        listener.onTestFinished(TestId.of(0));
-        listener.onTestFinished(TestId.ROOT);
+        listener.onFailure(RUN_1, TestId.of(0), new AssertionError("dummy failure"));
+        listener.onTestFinished(RUN_1, TestId.of(0));
+        listener.onTestFinished(RUN_1, TestId.ROOT);
+        listener.onRunFinished(RUN_1);
 
         spy.replay();
         executeTestClass(OneFailingTest.class, listener);
@@ -86,9 +90,11 @@ public class SimpleUnitTest {
         listener.onTestFound(TestId.ROOT, "FailureInConstructorTest");
         listener.onTestFound(TestId.of(0), "testNotExecuted");
 
+        listener.onRunStarted(RUN_1);
         listener.onTestStarted(RUN_1, TestId.ROOT);
-        listener.onFailure(TestId.ROOT, new RuntimeException("dummy exception"));
-        listener.onTestFinished(TestId.ROOT);
+        listener.onFailure(RUN_1, TestId.ROOT, new RuntimeException("dummy exception"));
+        listener.onTestFinished(RUN_1, TestId.ROOT);
+        listener.onRunFinished(RUN_1);
 
         spy.replay();
         executeTestClass(FailureInConstructorTest.class, listener);
@@ -103,11 +109,13 @@ public class SimpleUnitTest {
         listener.onTestFound(TestId.ROOT, "IllegalTestMethodSignatureTest");
         listener.onTestFound(TestId.of(0), "testMethodWithParameters");
 
+        listener.onRunStarted(RUN_1);
         listener.onTestStarted(RUN_1, TestId.ROOT);
         listener.onTestStarted(RUN_1, TestId.of(0));
-        listener.onFailure(TestId.of(0), new IllegalArgumentException("wrong number of arguments"));
-        listener.onTestFinished(TestId.of(0));
-        listener.onTestFinished(TestId.ROOT);
+        listener.onFailure(RUN_1, TestId.of(0), new IllegalArgumentException("wrong number of arguments"));
+        listener.onTestFinished(RUN_1, TestId.of(0));
+        listener.onTestFinished(RUN_1, TestId.ROOT);
+        listener.onRunFinished(RUN_1);
 
         spy.replay();
         executeTestClass(IllegalTestMethodSignatureTest.class, listener);
@@ -120,9 +128,11 @@ public class SimpleUnitTest {
         TestClassListener listener = spy.getListener();
 
         listener.onTestFound(TestId.ROOT, "NoTestMethodsTest");
+        listener.onRunStarted(RUN_1);
         listener.onTestStarted(RUN_1, TestId.ROOT);
-        listener.onFailure(TestId.ROOT, new IllegalArgumentException("No test methods in class fi.jumi.test.simpleunit.NoTestMethodsTest"));
-        listener.onTestFinished(TestId.ROOT);
+        listener.onFailure(RUN_1, TestId.ROOT, new IllegalArgumentException("No test methods in class fi.jumi.test.simpleunit.NoTestMethodsTest"));
+        listener.onTestFinished(RUN_1, TestId.ROOT);
+        listener.onRunFinished(RUN_1);
 
         spy.replay();
         executeTestClass(NoTestMethodsTest.class, listener);

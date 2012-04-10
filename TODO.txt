@@ -80,14 +80,15 @@ TODO NEXT:
 				OK - nested tests in child threads get the same RunId
 				OK - onRunStarted, onRunFinished events
 			!! - propagate the RunIds to upper levels, until connected in SuiteRunner.TestClassRunnerListenerToSuiteListener
-				- SuiteListenerProtocolTest: add tests for onRunStarted, onRunFinished
-				- implement onRunStarted, onRunFinished in fi.jumi.core.runners.TestClassRunner
+				OK - SuiteListenerProtocolTest: add tests for onRunStarted, onRunFinished
+				OK - implement onRunStarted, onRunFinished in fi.jumi.core.runners.TestClassRunner
 				- refactor CurrentRun, maybe move some event firing from the notifiers inside it
-		- add onRunStarted, onRunFinished to SuiteListener
+				- update the TextUI to use onRunStarted & onRunFinished
 		- improve e2e test to check test start/end events
 	- remove redundant parameters for SuiteListener
 		- testClass can be deduced from onRunStarted's RunId
 		- TestId of onTestFinished & onFailure can be deduced from last call to onTestStarted (also prevents faulty input)
+	- eliminate duplicate method signatures in TestClassListener and TestClassRunnerListener
 
 - refactor jumi-actors
 	- make it impossible to use actors wrong

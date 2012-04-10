@@ -5,8 +5,8 @@
 package fi.jumi.core.runners;
 
 import fi.jumi.api.drivers.*;
-import fi.jumi.core.runs.RunId;
 import fi.jumi.core.drivers.DriverFinder;
+import fi.jumi.core.runs.RunId;
 import org.junit.Test;
 
 import java.util.*;
@@ -63,17 +63,23 @@ public class SuiteRunnerTest extends SuiteRunnerIntegrationHelper {
     public void notifies_when_all_test_classes_are_finished() {
         // TODO: these expectations are not interesting for this test - find a way to write this test without mentioning them
         expect.onSuiteStarted();
+
         expect.onTestFound(CLASS_1.getName(), TestId.ROOT, "DummyTest");
-        expect.onTestStarted(new RunId(42), CLASS_1.getName(), TestId.ROOT);
-        expect.onTestFinished(new RunId(42), CLASS_1.getName(), TestId.ROOT);
+        expect.onRunStarted(new RunId(1), CLASS_1.getName());
+        expect.onTestStarted(new RunId(1), CLASS_1.getName(), TestId.ROOT);
+        expect.onTestFinished(new RunId(1), CLASS_1.getName(), TestId.ROOT);
+        expect.onRunFinished(new RunId(1));
+
         expect.onTestFound(CLASS_2.getName(), TestId.ROOT, "SecondDummyTest");
-        expect.onTestStarted(new RunId(42), CLASS_2.getName(), TestId.ROOT);
-        expect.onTestFinished(new RunId(42), CLASS_2.getName(), TestId.ROOT);
+        expect.onRunStarted(new RunId(2), CLASS_2.getName());
+        expect.onTestStarted(new RunId(2), CLASS_2.getName(), TestId.ROOT);
+        expect.onTestFinished(new RunId(2), CLASS_2.getName(), TestId.ROOT);
+        expect.onRunFinished(new RunId(2));
 
         // this must happen last, once
         expect.onSuiteFinished();
 
-        runAndCheckExpectations(new TestClassWithZeroTestsDriver(), CLASS_1, CLASS_2);
+        runAndCheckExpectations(new FakeTestClassDriver(), CLASS_1, CLASS_2);
     }
 
 
@@ -93,7 +99,7 @@ public class SuiteRunnerTest extends SuiteRunnerIntegrationHelper {
         }
     }
 
-    public static class TestClassWithZeroTestsDriver implements Driver {
+    public static class FakeTestClassDriver implements Driver {
         @Override
         public void findTests(Class<?> testClass, SuiteNotifier notifier, Executor executor) {
             notifier.fireTestFound(TestId.ROOT, testClass.getSimpleName());

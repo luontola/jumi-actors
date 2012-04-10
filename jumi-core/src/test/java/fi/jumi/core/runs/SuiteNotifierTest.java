@@ -30,8 +30,8 @@ public class SuiteNotifierTest {
         inOrder.verify(listener).onRunStarted(FIRST_RUN_ID);
         inOrder.verify(listener).onTestStarted(FIRST_RUN_ID, TestId.ROOT);
         inOrder.verify(listener).onTestStarted(FIRST_RUN_ID, TestId.of(0));
-        inOrder.verify(listener).onTestFinished(TestId.of(0));
-        inOrder.verify(listener).onTestFinished(TestId.ROOT);
+        inOrder.verify(listener).onTestFinished(FIRST_RUN_ID, TestId.of(0));
+        inOrder.verify(listener).onTestFinished(FIRST_RUN_ID, TestId.ROOT);
         inOrder.verify(listener).onRunFinished(FIRST_RUN_ID);
     }
 }

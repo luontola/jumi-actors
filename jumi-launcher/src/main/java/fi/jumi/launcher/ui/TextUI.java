@@ -6,7 +6,7 @@ package fi.jumi.launcher.ui;
 
 import fi.jumi.actors.*;
 import fi.jumi.api.drivers.TestId;
-import fi.jumi.core.*;
+import fi.jumi.core.SuiteListener;
 import fi.jumi.core.events.suiteListener.*;
 import fi.jumi.core.runs.RunId;
 
@@ -117,10 +117,22 @@ public class TextUI implements SuiteListener {
     }
 
     @Override
+    public void onRunStarted(RunId runId, String testClass) {
+        // TODO
+    }
+
+    @Override
     public void onTestStarted(RunId runId, String testClass, TestId testId) {
         addRunEvent(runId, new OnTestStartedEvent(runId, testClass, testId));
 
         totalCount.add(new GlobalTestId(testClass, testId));
+    }
+
+    @Override
+    public void onFailure(RunId runId, String testClass, TestId testId, Throwable cause) {
+        addRunEvent(runId, new OnFailureEvent(runId, testClass, testId, cause));
+
+        failCount.add(new GlobalTestId(testClass, testId));
     }
 
     @Override
@@ -134,10 +146,8 @@ public class TextUI implements SuiteListener {
     }
 
     @Override
-    public void onFailure(RunId runId, String testClass, TestId testId, Throwable cause) {
-        addRunEvent(runId, new OnFailureEvent(runId, testClass, testId, cause));
-
-        failCount.add(new GlobalTestId(testClass, testId));
+    public void onRunFinished(RunId runId) {
+        // TODO
     }
 
 
@@ -145,6 +155,12 @@ public class TextUI implements SuiteListener {
     private class RunPrinter extends TestRunListener {
         private int runningTests = 0;
 
+        @Override
+        public void onRunStarted(RunId runId, String testClass) {
+            // TODO
+        }
+
+        @Override
         public void onTestStarted(RunId runId, String testClass, TestId testId) {
             if (runningTests == 0) {
                 printRunHeader(testClass, runId);
@@ -153,13 +169,20 @@ public class TextUI implements SuiteListener {
             runningTests++;
         }
 
+        @Override
+        public void onFailure(RunId runId, String testClass, TestId testId, Throwable cause) {
+            cause.printStackTrace(err);
+        }
+
+        @Override
         public void onTestFinished(RunId runId, String testClass, TestId testId) {
             runningTests--;
             printTestName("-", testClass, testId);
         }
 
-        public void onFailure(RunId runId, String testClass, TestId testId, Throwable cause) {
-            cause.printStackTrace(err);
+        @Override
+        public void onRunFinished(RunId runId) {
+            // TODO
         }
 
         // visual style
@@ -190,16 +213,29 @@ public class TextUI implements SuiteListener {
             return runningTests == 0;
         }
 
+        @Override
+        public void onRunStarted(RunId runId, String testClass) {
+            // TODO
+        }
+
+        @Override
         public void onTestStarted(RunId runId, String testClass, TestId testId) {
             runningTests++;
         }
 
+        @Override
+        public void onFailure(RunId runId, String testClass, TestId testId, Throwable cause) {
+            // ignore - doesn't affect run status
+        }
+
+        @Override
         public void onTestFinished(RunId runId, String testClass, TestId testId) {
             runningTests--;
         }
 
-        public void onFailure(RunId runId, String testClass, TestId testId, Throwable cause) {
+        @Override
+        public void onRunFinished(RunId runId) {
+            // TODO
         }
     }
 }
-

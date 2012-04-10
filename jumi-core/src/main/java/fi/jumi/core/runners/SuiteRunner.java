@@ -23,6 +23,7 @@ public class SuiteRunner implements Startable, TestClassFinderListener, WorkerCo
     private final OnDemandActors actors;
     private final Executor executor;
     private final WorkerCounter workers;
+    private final RunIdSequence runIdSequence = new RunIdSequence();
 
     public SuiteRunner(SuiteListener listener,
                        TestClassFinder testClassFinder,
@@ -66,7 +67,6 @@ public class SuiteRunner implements Startable, TestClassFinderListener, WorkerCo
         Driver driver = driverFinder.findTestClassDriver(testClass);
 
         workers.fireWorkerStarted();
-        RunIdSequence runIdSequence = new RunIdSequence(); // FIXME: reuse the same sequence for all test classes
         new TestClassRunner(
                 testClass, driver, new TestClassRunnerListenerToSuiteListener(testClass), actors, executor, runIdSequence
         ).start();
@@ -80,22 +80,37 @@ public class SuiteRunner implements Startable, TestClassFinderListener, WorkerCo
             this.testClass = testClass;
         }
 
+        @Override
         public void onTestFound(TestId id, String name) {
             listener.onTestFound(testClass.getName(), id, name);
         }
 
-        public void onTestStarted(TestId id) {
-            listener.onTestStarted(new RunId(42), testClass.getName(), id); // TODO: get real runId
+        @Override
+        public void onRunStarted(RunId runId) {
+            listener.onRunStarted(runId, testClass.getName());
         }
 
-        public void onFailure(TestId id, Throwable cause) {
-            listener.onFailure(new RunId(42), testClass.getName(), id, cause); // TODO: get real runId
+        @Override
+        public void onTestStarted(RunId runId, TestId id) {
+            listener.onTestStarted(runId, testClass.getName(), id);
         }
 
-        public void onTestFinished(TestId id) {
-            listener.onTestFinished(new RunId(42), testClass.getName(), id); // TODO: get real runId
+        @Override
+        public void onFailure(RunId runId, TestId id, Throwable cause) {
+            listener.onFailure(runId, testClass.getName(), id, cause);
         }
 
+        @Override
+        public void onTestFinished(RunId runId, TestId id) {
+            listener.onTestFinished(runId, testClass.getName(), id);
+        }
+
+        @Override
+        public void onRunFinished(RunId runId) {
+            listener.onRunFinished(runId);
+        }
+
+        @Override
         public void onTestClassFinished() {
             workers.fireWorkerFinished();
         }
