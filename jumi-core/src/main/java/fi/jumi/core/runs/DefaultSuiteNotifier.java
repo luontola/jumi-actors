@@ -12,25 +12,18 @@ import javax.annotation.concurrent.ThreadSafe;
 @ThreadSafe
 public class DefaultSuiteNotifier implements SuiteNotifier {
 
-    private final TestClassListener listener;
     private final CurrentRun currentRun;
 
     public DefaultSuiteNotifier(TestClassListener listener, RunIdSequence runIdSequence) {
-        this.listener = listener;
-        this.currentRun = new CurrentRun(runIdSequence);
+        this.currentRun = new CurrentRun(listener, runIdSequence);
     }
 
-    public void fireTestFound(TestId id, String name) {
-        listener.onTestFound(id, name);
+    public void fireTestFound(TestId testId, String name) {
+        currentRun.fireTestFound(testId, name);
     }
 
-    public TestNotifier fireTestStarted(TestId id) {
-        boolean newRun = currentRun.enterTest();
-        RunId runId = currentRun.getRunId();
-        if (newRun) {
-            listener.onRunStarted(runId);
-        }
-        listener.onTestStarted(runId, id);
-        return new DefaultTestNotifier(currentRun, id, listener);
+    public TestNotifier fireTestStarted(TestId testId) {
+        currentRun.fireTestStarted(testId);
+        return new DefaultTestNotifier(currentRun, testId);
     }
 }

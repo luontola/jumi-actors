@@ -1,4 +1,4 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -12,7 +12,7 @@ public interface SuiteNotifier {
      * Must be called before starting the test. Idempotent. IDEs can use the
      * Class or Method object to implement code navigation.
      */
-    void fireTestFound(TestId id, String name);
+    void fireTestFound(TestId testId, String name);
 
     /**
      * May be called multiple times, before a test is finished, to produce nested tests.
@@ -21,5 +21,5 @@ public interface SuiteNotifier {
      * recorded from the current thread and threads which are started by it (possibly together
      * with timestamps and name of the thread which printed it).
      */
-    TestNotifier fireTestStarted(TestId id);
+    TestNotifier fireTestStarted(TestId testId);
 }

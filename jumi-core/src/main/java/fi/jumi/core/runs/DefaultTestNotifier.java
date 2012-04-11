@@ -5,7 +5,6 @@
 package fi.jumi.core.runs;
 
 import fi.jumi.api.drivers.*;
-import fi.jumi.core.runners.TestClassListener;
 
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -13,26 +12,18 @@ import javax.annotation.concurrent.ThreadSafe;
 public class DefaultTestNotifier implements TestNotifier {
 
     private final CurrentRun currentRun;
-    private final TestId id;
-    private final TestClassListener listener;
+    private final TestId testId;
 
-    public DefaultTestNotifier(CurrentRun currentRun, TestId id, TestClassListener listener) {
+    public DefaultTestNotifier(CurrentRun currentRun, TestId testId) {
         this.currentRun = currentRun;
-        this.id = id;
-        this.listener = listener;
+        this.testId = testId;
     }
 
     public void fireFailure(Throwable cause) {
-        RunId runId = currentRun.getRunId();
-        listener.onFailure(runId, id, cause);
+        currentRun.fireFailure(testId, cause);
     }
 
     public void fireTestFinished() {
-        RunId runId = currentRun.getRunId();
-        boolean runFinished = currentRun.exitTest();
-        listener.onTestFinished(runId, id);
-        if (runFinished) {
-            listener.onRunFinished(runId);
-        }
+        currentRun.fireTestFinished(testId);
     }
 }

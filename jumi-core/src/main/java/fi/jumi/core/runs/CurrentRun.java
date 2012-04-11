@@ -4,44 +4,55 @@
 
 package fi.jumi.core.runs;
 
+import fi.jumi.api.drivers.TestId;
+import fi.jumi.core.runners.TestClassListener;
+
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @ThreadSafe
 public class CurrentRun {
 
+    private final TestClassListener listener;
     private final RunIdSequence runIdSequence;
     private final InheritableThreadLocal<RunContext> currentRun = new InheritableThreadLocal<RunContext>();
 
-    public CurrentRun(RunIdSequence runIdSequence) {
+    public CurrentRun(TestClassListener listener, RunIdSequence runIdSequence) {
+        this.listener = listener;
         this.runIdSequence = runIdSequence;
     }
 
-    public boolean enterTest() {
-        boolean newRun = false;
-        RunContext context = currentRun.get();
-        if (context == null) {
-            context = new RunContext(runIdSequence.nextRunId());
-            currentRun.set(context);
-            newRun = true;
-        }
-        context.enterTest();
-        return newRun;
+    public void fireTestFound(TestId testId, String name) {
+        listener.onTestFound(testId, name);
     }
 
-    public RunId getRunId() {
-        RunContext context = currentRun.get();
-        return context.runId;
+    public void fireTestStarted(TestId testId) {
+        RunContext currentRun = this.currentRun.get();
+        if (currentRun == null) {
+            currentRun = new RunContext(runIdSequence.nextRunId());
+            this.currentRun.set(currentRun);
+
+            listener.onRunStarted(currentRun.runId);
+        }
+        currentRun.countTestStarted();
+        listener.onTestStarted(currentRun.runId, testId);
     }
 
-    public boolean exitTest() {
-        RunContext context = currentRun.get();
-        context.exitTest();
-        if (context.exitedAllTests()) {
-            currentRun.remove();
-            return true;
+    public void fireFailure(TestId testId, Throwable cause) {
+        RunContext currentRun = this.currentRun.get();
+        listener.onFailure(currentRun.runId, testId, cause);
+    }
+
+    public void fireTestFinished(TestId testId) {
+        RunContext currentRun = this.currentRun.get();
+
+        listener.onTestFinished(currentRun.runId, testId);
+        currentRun.countTestFinished();
+
+        if (currentRun.isRunFinished()) {
+            this.currentRun.remove();
+            listener.onRunFinished(currentRun.runId);
         }
-        return false;
     }
 
 
@@ -54,16 +65,16 @@ public class CurrentRun {
             this.runId = runId;
         }
 
-        public void enterTest() {
+        public void countTestStarted() {
             testNestingLevel.incrementAndGet();
         }
 
-        public void exitTest() {
+        public void countTestFinished() {
             int level = testNestingLevel.decrementAndGet();
             assert level >= 0;
         }
 
-        public boolean exitedAllTests() {
+        public boolean isRunFinished() {
             return testNestingLevel.get() == 0;
         }
     }
