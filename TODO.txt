@@ -83,7 +83,7 @@ TODO NEXT:
 				OK - SuiteListenerProtocolTest: add tests for onRunStarted, onRunFinished
 				OK - implement onRunStarted, onRunFinished in fi.jumi.core.runners.TestClassRunner
 				OK - refactor CurrentRun, maybe move some event firing from the notifiers inside it
-				- enable the disabled e2e tests
+				OK - enable the disabled e2e tests
 				- update the TextUI to use onRunStarted & onRunFinished
 		- improve e2e test to check test start/end events
 	- remove redundant parameters for SuiteListener

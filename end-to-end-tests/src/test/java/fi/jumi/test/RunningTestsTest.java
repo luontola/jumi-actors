@@ -53,7 +53,7 @@ public class RunningTestsTest {
         app.runTests(ParallelismTest.class);
 
         app.checkPassingAndFailingTests(3, 0);
-        //app.checkTotalTestRuns(2);         // TODO: not implemented
+        app.checkTotalTestRuns(2);
         // TODO: check the test start/end events of each test run, if the test doesn't otherwise fail for lack of RunID
     }
 
