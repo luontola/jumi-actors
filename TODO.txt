@@ -85,6 +85,9 @@ TODO NEXT:
 				OK - refactor CurrentRun, maybe move some event firing from the notifiers inside it
 				OK - enable the disabled e2e tests
 				- update the TextUI to use onRunStarted & onRunFinished
+		- refactor tests; create hand-written spies
+			- refactor TestClassRunnerTest's test to mention only onTestClassFinished
+			- refactor SuiteRunnerTest's test to mention only onSuiteFinished
 		- improve e2e test to check test start/end events
 	- remove redundant parameters for SuiteListener
 		- testClass can be deduced from onRunStarted's RunId
@@ -174,6 +177,10 @@ TODO NEXT:
 - misc refactoring
 	OK - find files which have DOS newlines and convert them to UNIX newlines
 	- add @Override annotations to all interface implementations
+	- refactor SimpleUnit
+		- simplity the tests by creating helper which runs using SuiteRunner, collects the results and provides assert methods
+		- move to its own module, simpleunit
+	- migrate Specsy to use Jumi (need the above test helper first)
 	- packages by functionality
 		core
 			discovery
@@ -184,9 +191,6 @@ TODO NEXT:
 		actors
 			mq
 	- try using FEST asserts in BuildTest, it should help with generics
-	- improve SpyListener to allow asserting only some events
-		- refactor TestClassRunnerTest's test to mention only onTestClassFinished
-		- refactor SuiteRunnerTest's test to mention only onSuiteFinished
 	- figure out a way to rewrite TestClassRunnerTest as a unit test
 	- kill daemon before removing temp files: fi.jumi.test.AppRunner#tearDown
 	- SuiteRunner has a cyclic dependency with TestRunCoordinator
