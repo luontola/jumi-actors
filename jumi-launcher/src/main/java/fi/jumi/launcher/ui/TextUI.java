@@ -24,6 +24,7 @@ public class TextUI {
     private boolean suiteFinished = false;
 
     private final Map<GlobalTestId, String> testNamesById = new HashMap<GlobalTestId, String>();
+    private final Map<RunId, String> testClassesByRunId = new HashMap<RunId, String>();
     private final Map<RunId, List<Event<SuiteListener>>> eventsByRunId = new HashMap<RunId, List<Event<SuiteListener>>>();
 
     // TODO: extract counting to its own class
@@ -75,8 +76,9 @@ public class TextUI {
         return name;
     }
 
-    private void createRun(RunId runId) {
+    private void createRun(RunId runId, String testClass) {
         eventsByRunId.put(runId, new ArrayList<Event<SuiteListener>>());
+        testClassesByRunId.put(runId, testClass);
     }
 
     private void addRunEvent(RunId runId, Event<SuiteListener> event) {
@@ -88,6 +90,13 @@ public class TextUI {
         for (Event<SuiteListener> event : events) {
             event.fireOn(visitor);
         }
+    }
+
+    // visual style
+    // TODO: define all visual styles in one place (now parts is in RunPrinter)
+
+    private void printSuiteFooter(int passCount, int failCount) {
+        out.println(String.format("Pass: %d, Fail: %d, Total: %d", passCount, failCount, passCount + failCount));
     }
 
 
@@ -105,24 +114,26 @@ public class TextUI {
 
         @Override
         public void onRunStarted(RunId runId, String testClass) {
-            createRun(runId);
+            createRun(runId, testClass);
             addRunEvent(runId, currentMessage);
         }
 
         @Override
-        public void onTestStarted(RunId runId, String testClass, TestId testId) {
+        public void onTestStarted(RunId runId, TestId testId) {
             addRunEvent(runId, currentMessage);
+            String testClass = testClassesByRunId.get(runId);
             allTests.add(new GlobalTestId(testClass, testId));
         }
 
         @Override
-        public void onFailure(RunId runId, String testClass, TestId testId, Throwable cause) {
+        public void onFailure(RunId runId, TestId testId, Throwable cause) {
             addRunEvent(runId, currentMessage);
+            String testClass = testClassesByRunId.get(runId);
             failedTests.add(new GlobalTestId(testClass, testId));
         }
 
         @Override
-        public void onTestFinished(RunId runId, String testClass, TestId testId) {
+        public void onTestFinished(RunId runId, TestId testId) {
             addRunEvent(runId, currentMessage);
         }
 
@@ -139,8 +150,7 @@ public class TextUI {
             int failCount = failedTests.size();
             int passCount = totalCount - failCount;
 
-            out.println(String.format("Pass: %d, Fail: %d, Total: %d", passCount, failCount, totalCount));
-
+            printSuiteFooter(passCount, failCount);
             suiteFinished = true;
         }
     }
@@ -155,19 +165,21 @@ public class TextUI {
         }
 
         @Override
-        public void onTestStarted(RunId runId, String testClass, TestId testId) {
+        public void onTestStarted(RunId runId, TestId testId) {
+            String testClass = testClassesByRunId.get(runId);
             printTestName("+", testClass, testId);
             runningTests++;
         }
 
         @Override
-        public void onFailure(RunId runId, String testClass, TestId testId, Throwable cause) {
+        public void onFailure(RunId runId, TestId testId, Throwable cause) {
             cause.printStackTrace(err);
         }
 
         @Override
-        public void onTestFinished(RunId runId, String testClass, TestId testId) {
+        public void onTestFinished(RunId runId, TestId testId) {
             runningTests--;
+            String testClass = testClassesByRunId.get(runId);
             printTestName("-", testClass, testId);
         }
 

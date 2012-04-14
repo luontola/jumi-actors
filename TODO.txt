@@ -89,9 +89,9 @@ TODO NEXT:
 			OK - refactor TestClassRunnerTest's test to mention only onTestClassFinished
 			OK - refactor SuiteRunnerTest's test to mention only onSuiteFinished
 		OK - improve e2e test to check test start/end events
-	- remove redundant parameters for SuiteListener
-		- testClass can be deduced from onRunStarted's RunId
-		- TestId of onTestFinished & onFailure can be deduced from last call to onTestStarted (also prevents faulty input)
+	!! - remove redundant parameters for SuiteListener
+		OK - testClass can be deduced from onRunStarted's RunId
+		!! - TestId of onTestFinished & onFailure can be deduced from last call to onTestStarted (also prevents faulty input)
 	- eliminate duplicate method signatures in TestClassListener and TestClassRunnerListener
 
 - refactor jumi-actors

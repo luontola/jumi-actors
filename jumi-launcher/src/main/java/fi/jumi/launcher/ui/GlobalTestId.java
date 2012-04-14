@@ -1,4 +1,4 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -12,25 +12,26 @@ import javax.annotation.concurrent.Immutable;
 public class GlobalTestId {
 
     private final String testClass;
-    private final TestId id;
+    private final TestId testId;
 
-    public GlobalTestId(String testClass, TestId id) {
+    public GlobalTestId(String testClass, TestId testId) {
+        assert testClass != null;
+        assert testId != null;
         this.testClass = testClass;
-        this.id = id;
+        this.testId = testId;
     }
 
     @Override
     public boolean equals(Object other) {
         GlobalTestId that = (GlobalTestId) other;
         return this.testClass.equals(that.testClass) &&
-                this.id.equals(that.id);
-
+                this.testId.equals(that.testId);
     }
 
     @Override
     public int hashCode() {
         int result = testClass.hashCode();
-        result = 31 * result + id.hashCode();
+        result = 31 * result + testId.hashCode();
         return result;
     }
 }

@@ -115,9 +115,9 @@ public class TextUITest {
 
         final RunId run1 = suite.nextRunId();
         suite.runStarted(run1, SuiteMother.TEST_CLASS);
-        suite.test(run1, SuiteMother.TEST_CLASS, TestId.ROOT, SuiteMother.TEST_CLASS_NAME, new Runnable() {
+        suite.test(run1, TestId.ROOT, SuiteMother.TEST_CLASS_NAME, new Runnable() {
             public void run() {
-                suite.test(run1, SuiteMother.TEST_CLASS, TestId.of(0), "test one");
+                suite.test(run1, TestId.of(0), "test one");
             }
         });
         suite.runFinished(run1);
@@ -125,17 +125,17 @@ public class TextUITest {
         // same root test is executed twice, but should be counted only once in the total
         final RunId run2 = suite.nextRunId();
         suite.runStarted(run2, SuiteMother.TEST_CLASS);
-        suite.test(run2, SuiteMother.TEST_CLASS, TestId.ROOT, SuiteMother.TEST_CLASS_NAME, new Runnable() {
+        suite.test(run2, TestId.ROOT, SuiteMother.TEST_CLASS_NAME, new Runnable() {
             public void run() {
-                suite.test(run2, SuiteMother.TEST_CLASS, TestId.of(1), "test two");
+                suite.test(run2, TestId.of(1), "test two");
             }
         });
         suite.runFinished(run2);
 
         // a different test class, same TestId, should be counted separately
         final RunId run3 = suite.nextRunId();
-        suite.runStarted(run3, SuiteMother.TEST_CLASS);
-        suite.test(run3, "com.example.AnotherDummyTest", TestId.ROOT, "AnotherDummyTest");
+        suite.runStarted(run3, "com.example.AnotherDummyTest");
+        suite.test(run3, TestId.ROOT, "AnotherDummyTest");
         suite.runFinished(run3);
         suite.end();
 
@@ -150,7 +150,7 @@ public class TextUITest {
         suite.begin();
         RunId run1 = suite.nextRunId();
         suite.runStarted(run1, "com.example.DummyTest");
-        suite.test(run1, "com.example.DummyTest", TestId.ROOT, "Human-readable name");
+        suite.test(run1, TestId.ROOT, "Human-readable name");
         suite.runFinished(run1);
         suite.end();
 
@@ -181,12 +181,12 @@ public class TextUITest {
 
         // First test of the test run - should print the class name
         suite.runStarted(run1, SuiteMother.TEST_CLASS);
-        suite.test(run1, SuiteMother.TEST_CLASS, TestId.ROOT, "Human readable name of test class", new Runnable() {
+        suite.test(run1, TestId.ROOT, "Human readable name of test class", new Runnable() {
             public void run() {
 
                 // Second test of the test run - should NOT print the class name a second time,
                 // because a test run cannot span many classes
-                suite.test(run1, SuiteMother.TEST_CLASS, TestId.of(0), "test one");
+                suite.test(run1, TestId.of(0), "test one");
             }
         });
         suite.runFinished(run1);
@@ -228,7 +228,7 @@ public class TextUITest {
         suite.begin();
         RunId run1 = suite.nextRunId();
         suite.runStarted(run1, SuiteMother.TEST_CLASS);
-        suite.test(run1, "com.example.DummyTest", TestId.ROOT, "Dummy test");
+        suite.test(run1, TestId.ROOT, "Dummy test");
         suite.runFinished(run1);
         suite.end();
 
@@ -243,12 +243,12 @@ public class TextUITest {
         suite.begin();
         final RunId run1 = suite.nextRunId();
         suite.runStarted(run1, SuiteMother.TEST_CLASS);
-        suite.test(run1, SuiteMother.TEST_CLASS, TestId.ROOT, "Dummy test", new Runnable() {
+        suite.test(run1, TestId.ROOT, "Dummy test", new Runnable() {
             public void run() {
-                suite.test(run1, SuiteMother.TEST_CLASS, TestId.of(0), "test one");
-                suite.test(run1, SuiteMother.TEST_CLASS, TestId.of(1), "test two", new Runnable() {
+                suite.test(run1, TestId.of(0), "test one");
+                suite.test(run1, TestId.of(1), "test two", new Runnable() {
                     public void run() {
-                        suite.test(run1, SuiteMother.TEST_CLASS, TestId.of(1, 0), "deeply nested test");
+                        suite.test(run1, TestId.of(1, 0), "deeply nested test");
                     }
                 });
             }
@@ -286,12 +286,12 @@ public class TextUITest {
                 RunId run1 = suite.nextRunId();
                 listener.onTestFound(SuiteMother.TEST_CLASS, TestId.ROOT, SuiteMother.TEST_CLASS_NAME);
                 listener.onRunStarted(run1, SuiteMother.TEST_CLASS);
-                listener.onTestStarted(run1, SuiteMother.TEST_CLASS, TestId.ROOT);
-                listener.onFailure(run1, SuiteMother.TEST_CLASS, TestId.ROOT, new Throwable("dummy exception"));
+                listener.onTestStarted(run1, TestId.ROOT);
+                listener.onFailure(run1, TestId.ROOT, new Throwable("dummy exception"));
 
                 assertNotInOutput("java.lang.Throwable: dummy exception");
 
-                listener.onTestFinished(run1, SuiteMother.TEST_CLASS, TestId.ROOT);
+                listener.onTestFinished(run1, TestId.ROOT);
                 listener.onRunFinished(run1);
             }
 
@@ -306,16 +306,16 @@ public class TextUITest {
         {
             {
                 RunId run1 = suite.nextRunId();
+                suite.runStarted(run1, SuiteMother.TEST_CLASS);
                 listener.onTestFound(SuiteMother.TEST_CLASS, TestId.ROOT, SuiteMother.TEST_CLASS_NAME);
-                listener.onRunStarted(run1, SuiteMother.TEST_CLASS);
-                listener.onTestStarted(run1, SuiteMother.TEST_CLASS, TestId.ROOT);
-                suite.failingTest(run1, SuiteMother.TEST_CLASS, TestId.of(0), "testOne",
+                listener.onTestStarted(run1, TestId.ROOT);
+                suite.failingTest(run1, TestId.of(0), "testOne",
                         new Throwable("dummy exception")
                 );
 
                 assertNotInOutput("java.lang.Throwable: dummy exception");
 
-                listener.onTestFinished(run1, SuiteMother.TEST_CLASS, TestId.ROOT);
+                listener.onTestFinished(run1, TestId.ROOT);
                 listener.onRunFinished(run1);
             }
             assertInOutput("java.lang.Throwable: dummy exception");

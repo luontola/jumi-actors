@@ -40,8 +40,8 @@ public class SuiteListenerProtocolTest extends SuiteRunnerIntegrationHelper {
         expect.onSuiteStarted();
         expect.onTestFound(CLASS_1.getName(), TestId.ROOT, "DummyTest");
         expect.onRunStarted(RUN_1, CLASS_1.getName());
-        expect.onTestStarted(RUN_1, CLASS_1.getName(), TestId.ROOT);
-        expect.onTestFinished(RUN_1, CLASS_1.getName(), TestId.ROOT);
+        expect.onTestStarted(RUN_1, TestId.ROOT);
+        expect.onTestFinished(RUN_1, TestId.ROOT);
         expect.onRunFinished(RUN_1);
         expect.onSuiteFinished();
 
@@ -53,9 +53,9 @@ public class SuiteListenerProtocolTest extends SuiteRunnerIntegrationHelper {
         expect.onSuiteStarted();
         expect.onTestFound(CLASS_1.getName(), TestId.ROOT, "DummyTest");
         expect.onRunStarted(RUN_1, CLASS_1.getName());
-        expect.onTestStarted(RUN_1, CLASS_1.getName(), TestId.ROOT);
-        expect.onFailure(RUN_1, CLASS_1.getName(), TestId.ROOT, new Exception("dummy failure"));
-        expect.onTestFinished(RUN_1, CLASS_1.getName(), TestId.ROOT);
+        expect.onTestStarted(RUN_1, TestId.ROOT);
+        expect.onFailure(RUN_1, TestId.ROOT, new Exception("dummy failure"));
+        expect.onTestFinished(RUN_1, TestId.ROOT);
         expect.onRunFinished(RUN_1);
         expect.onSuiteFinished();
 
@@ -69,13 +69,13 @@ public class SuiteListenerProtocolTest extends SuiteRunnerIntegrationHelper {
 
         expect.onTestFound(CLASS_1.getName(), TestId.of(0), "parent test");
         expect.onRunStarted(RUN_1, CLASS_1.getName());
-        expect.onTestStarted(RUN_1, CLASS_1.getName(), TestId.of(0));
+        expect.onTestStarted(RUN_1, TestId.of(0));
         {
             expect.onTestFound(CLASS_1.getName(), TestId.of(0, 0), "child test");
-            expect.onTestStarted(RUN_1, CLASS_1.getName(), TestId.of(0, 0));
-            expect.onTestFinished(RUN_1, CLASS_1.getName(), TestId.of(0, 0));
+            expect.onTestStarted(RUN_1, TestId.of(0, 0));
+            expect.onTestFinished(RUN_1, TestId.of(0, 0));
         }
-        expect.onTestFinished(RUN_1, CLASS_1.getName(), TestId.of(0));
+        expect.onTestFinished(RUN_1, TestId.of(0));
         expect.onRunFinished(RUN_1);
 
         expect.onSuiteFinished();
@@ -90,14 +90,14 @@ public class SuiteListenerProtocolTest extends SuiteRunnerIntegrationHelper {
 
         expect.onTestFound(CLASS_1.getName(), TestId.of(0), "test one");
         expect.onRunStarted(RUN_1, CLASS_1.getName());
-        expect.onTestStarted(RUN_1, CLASS_1.getName(), TestId.of(0));
-        expect.onTestFinished(RUN_1, CLASS_1.getName(), TestId.of(0));
+        expect.onTestStarted(RUN_1, TestId.of(0));
+        expect.onTestFinished(RUN_1, TestId.of(0));
         expect.onRunFinished(RUN_1);
 
         expect.onTestFound(CLASS_1.getName(), TestId.of(1), "test two");
         expect.onRunStarted(RUN_2, CLASS_1.getName());
-        expect.onTestStarted(RUN_2, CLASS_1.getName(), TestId.of(1));
-        expect.onTestFinished(RUN_2, CLASS_1.getName(), TestId.of(1));
+        expect.onTestStarted(RUN_2, TestId.of(1));
+        expect.onTestFinished(RUN_2, TestId.of(1));
         expect.onRunFinished(RUN_2);
 
         expect.onSuiteFinished();
@@ -113,13 +113,13 @@ public class SuiteListenerProtocolTest extends SuiteRunnerIntegrationHelper {
         expect.onTestFound(CLASS_2.getName(), TestId.ROOT, "SecondDummyTest");
 
         expect.onRunStarted(new RunId(1), CLASS_1.getName());
-        expect.onTestStarted(new RunId(1), CLASS_1.getName(), TestId.ROOT);
-        expect.onTestFinished(new RunId(1), CLASS_1.getName(), TestId.ROOT);
+        expect.onTestStarted(new RunId(1), TestId.ROOT);
+        expect.onTestFinished(new RunId(1), TestId.ROOT);
         expect.onRunFinished(new RunId(1));
 
         expect.onRunStarted(new RunId(2), CLASS_2.getName());
-        expect.onTestStarted(new RunId(2), CLASS_2.getName(), TestId.ROOT);
-        expect.onTestFinished(new RunId(2), CLASS_2.getName(), TestId.ROOT);
+        expect.onTestStarted(new RunId(2), TestId.ROOT);
+        expect.onTestFinished(new RunId(2), TestId.ROOT);
         expect.onRunFinished(new RunId(2));
 
         expect.onSuiteFinished();

@@ -13,15 +13,13 @@ public interface SuiteListener {
 
     void onTestFound(String testClass, TestId testId, String name);
 
-    // TODO: remove testClass when it can be deduced from runId
-
     void onRunStarted(RunId runId, String testClass);
 
-    void onTestStarted(RunId runId, String testClass, TestId testId);
+    void onTestStarted(RunId runId, TestId testId);
 
-    void onFailure(RunId runId, String testClass, TestId testId, Throwable cause);
+    void onFailure(RunId runId, TestId testId, Throwable cause);
 
-    void onTestFinished(RunId runId, String testClass, TestId testId);
+    void onTestFinished(RunId runId, TestId testId);
 
     void onRunFinished(RunId runId);
 

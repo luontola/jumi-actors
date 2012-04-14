@@ -24,7 +24,7 @@ public class SuiteMother {
 
         RunId run1 = suite.nextRunId();
         suite.runStarted(run1, TEST_CLASS);
-        suite.test(run1, TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME);
+        suite.test(run1, TestId.ROOT, TEST_CLASS_NAME);
         suite.runFinished(run1);
 
         suite.end();
@@ -36,7 +36,7 @@ public class SuiteMother {
 
         RunId run1 = suite.nextRunId();
         suite.runStarted(run1, TEST_CLASS);
-        suite.failingTest(run1, TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME,
+        suite.failingTest(run1, TestId.ROOT, TEST_CLASS_NAME,
                 new Throwable("dummy exception")
         );
         suite.runFinished(run1);
@@ -50,10 +50,10 @@ public class SuiteMother {
 
         final RunId run1 = suite.nextRunId();
         suite.runStarted(run1, TEST_CLASS);
-        suite.test(run1, TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME, new Runnable() {
+        suite.test(run1, TestId.ROOT, TEST_CLASS_NAME, new Runnable() {
             public void run() {
-                suite.test(run1, TEST_CLASS, TestId.of(0), "testOne");
-                suite.failingTest(run1, TEST_CLASS, TestId.of(1), "testTwo",
+                suite.test(run1, TestId.of(0), "testOne");
+                suite.failingTest(run1, TestId.of(1), "testTwo",
                         new Throwable("dummy exception")
                 );
             }
@@ -69,18 +69,18 @@ public class SuiteMother {
 
         final RunId run1 = suite.nextRunId();
         suite.runStarted(run1, TEST_CLASS);
-        suite.test(run1, TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME, new Runnable() {
+        suite.test(run1, TestId.ROOT, TEST_CLASS_NAME, new Runnable() {
             public void run() {
-                suite.test(run1, TEST_CLASS, TestId.of(0), "testOne");
+                suite.test(run1, TestId.of(0), "testOne");
             }
         });
         suite.runFinished(run1);
 
         final RunId run2 = suite.nextRunId();
         suite.runStarted(run2, TEST_CLASS);
-        suite.test(run2, TEST_CLASS, TestId.ROOT, TEST_CLASS_NAME, new Runnable() {
+        suite.test(run2, TestId.ROOT, TEST_CLASS_NAME, new Runnable() {
             public void run() {
-                suite.test(run2, TEST_CLASS, TestId.of(1), "testTwo");
+                suite.test(run2, TestId.of(1), "testTwo");
             }
         });
         suite.runFinished(run2);
@@ -98,10 +98,10 @@ public class SuiteMother {
         suite.runStarted(run2, TEST_CLASS);
         listener.onTestFound(TEST_CLASS, TestId.of(0), "testOne");
         listener.onTestFound(TEST_CLASS, TestId.of(1), "testTwo");
-        listener.onTestStarted(run1, TEST_CLASS, TestId.of(0));
-        listener.onTestStarted(run2, TEST_CLASS, TestId.of(1));
-        listener.onTestFinished(run1, TEST_CLASS, TestId.of(0));
-        listener.onTestFinished(run2, TEST_CLASS, TestId.of(1));
+        listener.onTestStarted(run1, TestId.of(0));
+        listener.onTestStarted(run2, TestId.of(1));
+        listener.onTestFinished(run1, TestId.of(0));
+        listener.onTestFinished(run2, TestId.of(1));
         suite.runFinished(run1);
         suite.runFinished(run2);
 

@@ -7,12 +7,15 @@ package fi.jumi.core;
 import fi.jumi.api.drivers.TestId;
 import fi.jumi.core.runs.RunId;
 
+import java.util.*;
+
 public class EventBuilder {
 
     public static final int FIRST_RUN_ID = 1;
 
     private final SuiteListener listener;
 
+    private final Map<RunId, String> testClassesByRunId = new HashMap<RunId, String>();
     private int nextRunId = FIRST_RUN_ID;
 
     public EventBuilder(SuiteListener listener) {
@@ -36,6 +39,7 @@ public class EventBuilder {
     }
 
     public void runStarted(RunId runId, String testClass) {
+        testClassesByRunId.put(runId, testClass);
         listener.onRunStarted(runId, testClass);
     }
 
@@ -43,24 +47,27 @@ public class EventBuilder {
         listener.onRunFinished(runId);
     }
 
-    public void test(RunId runId, String testClass, TestId id, String name, Runnable testBody) {
-        listener.onTestFound(testClass, id, name);
-        listener.onTestStarted(runId, testClass, id);
+    public void test(RunId runId, TestId testId, String name, Runnable testBody) {
+        String testClass = testClassesByRunId.get(runId);
+        assert testClass != null;
+        listener.onTestFound(testClass, testId, name);
+
+        listener.onTestStarted(runId, testId);
         testBody.run();
-        listener.onTestFinished(runId, testClass, id);
+        listener.onTestFinished(runId, testId);
     }
 
-    public void test(RunId runId, String testClass, TestId id, String name) {
-        test(runId, testClass, id, name, new Runnable() {
+    public void test(RunId runId, TestId id, String name) {
+        test(runId, id, name, new Runnable() {
             public void run() {
             }
         });
     }
 
-    public void failingTest(final RunId runId, final String testClass, final TestId id, String name, final Throwable failure) {
-        test(runId, testClass, id, name, new Runnable() {
+    public void failingTest(final RunId runId, final TestId id, String name, final Throwable failure) {
+        test(runId, id, name, new Runnable() {
             public void run() {
-                listener.onFailure(runId, testClass, id, failure);
+                listener.onFailure(runId, id, failure);
             }
         });
     }
