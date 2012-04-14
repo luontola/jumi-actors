@@ -10,6 +10,7 @@ import fi.jumi.core.*;
 import fi.jumi.core.drivers.DriverFinder;
 import fi.jumi.core.events.*;
 import fi.jumi.core.files.*;
+import fi.jumi.core.utils.SpyListener;
 
 import java.util.concurrent.Executor;
 
