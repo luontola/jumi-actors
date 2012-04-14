@@ -7,7 +7,6 @@ package fi.jumi.launcher.ui;
 import fi.jumi.actors.*;
 import fi.jumi.api.drivers.TestId;
 import fi.jumi.core.SuiteListener;
-import fi.jumi.core.events.suiteListener.*;
 import fi.jumi.core.runs.RunId;
 
 import javax.annotation.concurrent.NotThreadSafe;
@@ -15,7 +14,7 @@ import java.io.PrintStream;
 import java.util.*;
 
 @NotThreadSafe
-public class TextUI implements SuiteListener {
+public class TextUI {
 
     private final PrintStream out;
     private final PrintStream err;
@@ -31,6 +30,9 @@ public class TextUI implements SuiteListener {
     private final Set<GlobalTestId> failedTests = new HashSet<GlobalTestId>();
     private final Set<GlobalTestId> allTests = new HashSet<GlobalTestId>();
 
+    private EventCollector eventCollector = new EventCollector();
+    private Event<SuiteListener> currentMessage;
+
     public TextUI(PrintStream out, PrintStream err, MessageReceiver<Event<SuiteListener>> eventStream) {
         this.out = out;
         this.err = err;
@@ -43,14 +45,23 @@ public class TextUI implements SuiteListener {
             if (message == null) {
                 break;
             }
-            message.fireOn(this);
+            updateWithMessage(message);
         }
     }
 
     public void updateUntilFinished() throws InterruptedException {
         while (!suiteFinished) {
             Event<SuiteListener> message = eventStream.take();
-            message.fireOn(this);
+            updateWithMessage(message);
+        }
+    }
+
+    private void updateWithMessage(Event<SuiteListener> message) {
+        currentMessage = message;
+        try {
+            message.fireOn(eventCollector);
+        } finally {
+            currentMessage = null;
         }
     }
 
@@ -80,58 +91,59 @@ public class TextUI implements SuiteListener {
     }
 
 
-    // SuiteListener
+    @NotThreadSafe
+    private class EventCollector implements SuiteListener {
 
-    @Override
-    public void onSuiteStarted() {
+        @Override
+        public void onSuiteStarted() {
+        }
+
+        @Override
+        public void onTestFound(String testClass, TestId testId, String name) {
+            addTestName(testClass, testId, name);
+        }
+
+        @Override
+        public void onRunStarted(RunId runId, String testClass) {
+            createRun(runId);
+            addRunEvent(runId, currentMessage);
+        }
+
+        @Override
+        public void onTestStarted(RunId runId, String testClass, TestId testId) {
+            addRunEvent(runId, currentMessage);
+            allTests.add(new GlobalTestId(testClass, testId));
+        }
+
+        @Override
+        public void onFailure(RunId runId, String testClass, TestId testId, Throwable cause) {
+            addRunEvent(runId, currentMessage);
+            failedTests.add(new GlobalTestId(testClass, testId));
+        }
+
+        @Override
+        public void onTestFinished(RunId runId, String testClass, TestId testId) {
+            addRunEvent(runId, currentMessage);
+        }
+
+        @Override
+        public void onRunFinished(RunId runId) {
+            addRunEvent(runId, currentMessage);
+            // TODO: option for printing only failing or all runs
+            visitRun(runId, new RunPrinter());
+        }
+
+        @Override
+        public void onSuiteFinished() {
+            int totalCount = allTests.size();
+            int failCount = failedTests.size();
+            int passCount = totalCount - failCount;
+
+            out.println(String.format("Pass: %d, Fail: %d, Total: %d", passCount, failCount, totalCount));
+
+            suiteFinished = true;
+        }
     }
-
-    @Override
-    public void onTestFound(String testClass, TestId testId, String name) {
-        addTestName(testClass, testId, name);
-    }
-
-    @Override
-    public void onRunStarted(RunId runId, String testClass) {
-        createRun(runId);
-        addRunEvent(runId, new OnRunStartedEvent(runId, testClass));
-    }
-
-    @Override
-    public void onTestStarted(RunId runId, String testClass, TestId testId) {
-        addRunEvent(runId, new OnTestStartedEvent(runId, testClass, testId));
-        allTests.add(new GlobalTestId(testClass, testId));
-    }
-
-    @Override
-    public void onFailure(RunId runId, String testClass, TestId testId, Throwable cause) {
-        addRunEvent(runId, new OnFailureEvent(runId, testClass, testId, cause));
-        failedTests.add(new GlobalTestId(testClass, testId));
-    }
-
-    @Override
-    public void onTestFinished(RunId runId, String testClass, TestId testId) {
-        addRunEvent(runId, new OnTestFinishedEvent(runId, testClass, testId));
-    }
-
-    @Override
-    public void onRunFinished(RunId runId) {
-        addRunEvent(runId, new OnRunFinishedEvent(runId));
-        // TODO: option for printing only failing or all runs
-        visitRun(runId, new RunPrinter());
-    }
-
-    @Override
-    public void onSuiteFinished() {
-        int totalCount = this.allTests.size();
-        int failCount = this.failedTests.size();
-        int passCount = totalCount - failCount;
-
-        out.println(String.format("Pass: %d, Fail: %d, Total: %d", passCount, failCount, totalCount));
-
-        suiteFinished = true;
-    }
-
 
     @NotThreadSafe
     private class RunPrinter extends TestRunListener {
