@@ -1,4 +1,4 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -86,8 +86,8 @@ public class TestIdTest {
         Collections.sort(actualOrder);
 
         assertThat("natural order", actualOrder, is(expectedOrder));
-        for (TestId id : expectedOrder) {
-            assertThat("comparing with self: " + id, id.compareTo(id), is(0));
+        for (TestId testId : expectedOrder) {
+            assertThat("comparing with self: " + testId, testId.compareTo(testId), is(0));
         }
     }
 

@@ -81,8 +81,8 @@ public class SuiteRunner implements Startable, TestClassFinderListener, WorkerCo
         }
 
         @Override
-        public void onTestFound(TestId id, String name) {
-            listener.onTestFound(testClass.getName(), id, name);
+        public void onTestFound(TestId testId, String name) {
+            listener.onTestFound(testClass.getName(), testId, name);
         }
 
         @Override
@@ -91,17 +91,17 @@ public class SuiteRunner implements Startable, TestClassFinderListener, WorkerCo
         }
 
         @Override
-        public void onTestStarted(RunId runId, TestId id) {
-            listener.onTestStarted(runId, id);
+        public void onTestStarted(RunId runId, TestId testId) {
+            listener.onTestStarted(runId, testId);
         }
 
         @Override
-        public void onFailure(RunId runId, TestId id, Throwable cause) {
+        public void onFailure(RunId runId, TestId testId, Throwable cause) {
             listener.onFailure(runId, cause);
         }
 
         @Override
-        public void onTestFinished(RunId runId, TestId id) {
+        public void onTestFinished(RunId runId, TestId testId) {
             listener.onTestFinished(runId);
         }
 

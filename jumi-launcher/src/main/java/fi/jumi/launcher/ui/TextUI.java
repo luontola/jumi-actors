@@ -68,13 +68,13 @@ public class TextUI {
         }
     }
 
-    private void addTestName(String testClass, TestId id, String name) {
-        testNamesById.put(new GlobalTestId(testClass, id), name);
+    private void addTestName(String testClass, TestId testId, String name) {
+        testNamesById.put(new GlobalTestId(testClass, testId), name);
     }
 
-    private String getTestName(String testClass, TestId id) {
-        String name = testNamesById.get(new GlobalTestId(testClass, id));
-        assert name != null : "name not found for " + testClass + " and " + id;
+    private String getTestName(String testClass, TestId testId) {
+        String name = testNamesById.get(new GlobalTestId(testClass, testId));
+        assert name != null : "name not found for " + testClass + " and " + testId;
         return name;
     }
 
@@ -201,8 +201,8 @@ public class TextUI {
             out.println(" > Run #" + runId.toInt() + " in " + testClass);
         }
 
-        private void printTestName(String bullet, String testClass, TestId id) {
-            out.println(" > " + testNameIndent() + bullet + " " + getTestName(testClass, id));
+        private void printTestName(String bullet, String testClass, TestId testId) {
+            out.println(" > " + testNameIndent() + bullet + " " + getTestName(testClass, testId));
         }
 
         private void printRunFooter() {

@@ -21,34 +21,34 @@ public class DuplicateOnTestFoundEventFilter implements TestClassListener {
     }
 
     @Override
-    public void onTestFound(TestId id, String name) {
-        if (hasNotBeenFoundBefore(id)) {
-            checkParentWasFoundFirst(id);
-            rememberFoundTest(id, name);
-            target.onTestFound(id, name);
+    public void onTestFound(TestId testId, String name) {
+        if (hasNotBeenFoundBefore(testId)) {
+            checkParentWasFoundFirst(testId);
+            rememberFoundTest(testId, name);
+            target.onTestFound(testId, name);
         } else {
-            checkNameIsSameAsBefore(id, name);
+            checkNameIsSameAsBefore(testId, name);
         }
     }
 
-    private void rememberFoundTest(TestId id, String name) {
-        tests.put(id, name);
+    private void rememberFoundTest(TestId testId, String name) {
+        tests.put(testId, name);
     }
 
-    private boolean hasNotBeenFoundBefore(TestId id) {
-        return !tests.containsKey(id);
+    private boolean hasNotBeenFoundBefore(TestId testId) {
+        return !tests.containsKey(testId);
     }
 
-    private void checkParentWasFoundFirst(TestId id) {
-        if (!id.isRoot() && hasNotBeenFoundBefore(id.getParent())) {
-            throw new IllegalStateException("parent of " + id + " must be found first");
+    private void checkParentWasFoundFirst(TestId testId) {
+        if (!testId.isRoot() && hasNotBeenFoundBefore(testId.getParent())) {
+            throw new IllegalStateException("parent of " + testId + " must be found first");
         }
     }
 
-    private void checkNameIsSameAsBefore(TestId id, String newName) {
-        String oldName = tests.get(id);
+    private void checkNameIsSameAsBefore(TestId testId, String newName) {
+        String oldName = tests.get(testId);
         if (oldName != null && !oldName.equals(newName)) {
-            throw new IllegalArgumentException("test " + id + " was already found with another name: " + oldName);
+            throw new IllegalArgumentException("test " + testId + " was already found with another name: " + oldName);
         }
     }
 
@@ -60,18 +60,18 @@ public class DuplicateOnTestFoundEventFilter implements TestClassListener {
     }
 
     @Override
-    public void onTestStarted(RunId runId, TestId id) {
-        target.onTestStarted(runId, id);
+    public void onTestStarted(RunId runId, TestId testId) {
+        target.onTestStarted(runId, testId);
     }
 
     @Override
-    public void onFailure(RunId runId, TestId id, Throwable cause) {
-        target.onFailure(runId, id, cause);
+    public void onFailure(RunId runId, TestId testId, Throwable cause) {
+        target.onFailure(runId, testId, cause);
     }
 
     @Override
-    public void onTestFinished(RunId runId, TestId id) {
-        target.onTestFinished(runId, id);
+    public void onTestFinished(RunId runId, TestId testId) {
+        target.onTestFinished(runId, testId);
     }
 
     @Override

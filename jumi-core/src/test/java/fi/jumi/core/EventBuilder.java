@@ -57,15 +57,15 @@ public class EventBuilder {
         listener.onTestFinished(runId);
     }
 
-    public void test(RunId runId, TestId id, String name) {
-        test(runId, id, name, new Runnable() {
+    public void test(RunId runId, TestId testId, String name) {
+        test(runId, testId, name, new Runnable() {
             public void run() {
             }
         });
     }
 
-    public void failingTest(final RunId runId, final TestId id, String name, final Throwable failure) {
-        test(runId, id, name, new Runnable() {
+    public void failingTest(final RunId runId, final TestId testId, String name, final Throwable failure) {
+        test(runId, testId, name, new Runnable() {
             public void run() {
                 listener.onFailure(runId, failure);
             }

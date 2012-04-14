@@ -11,15 +11,15 @@ public interface TestClassListener {
 
     // XXX: duplicate method signatures in TestClassListener and TestClassRunnerListener
 
-    void onTestFound(TestId id, String name);
+    void onTestFound(TestId testId, String name);
 
     void onRunStarted(RunId runId);
 
-    void onTestStarted(RunId runId, TestId id);
+    void onTestStarted(RunId runId, TestId testId);
 
-    void onFailure(RunId runId, TestId id, Throwable cause);
+    void onFailure(RunId runId, TestId testId, Throwable cause);
 
-    void onTestFinished(RunId runId, TestId id);
+    void onTestFinished(RunId runId, TestId testId);
 
     void onRunFinished(RunId runId);
 }
