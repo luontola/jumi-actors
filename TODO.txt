@@ -84,7 +84,7 @@ TODO NEXT:
 				OK - implement onRunStarted, onRunFinished in fi.jumi.core.runners.TestClassRunner
 				OK - refactor CurrentRun, maybe move some event firing from the notifiers inside it
 				OK - enable the disabled e2e tests
-				- update the TextUI to use onRunStarted & onRunFinished
+				!! - update the TextUI to use onRunStarted & onRunFinished
 		- refactor tests; create hand-written spies
 			- refactor TestClassRunnerTest's test to mention only onTestClassFinished
 			- refactor SuiteRunnerTest's test to mention only onSuiteFinished

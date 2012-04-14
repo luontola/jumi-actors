@@ -49,16 +49,13 @@ public class TextUI implements SuiteListener {
 
     private void addRunEvent(RunId runId, Event<SuiteListener> event) {
         List<Event<SuiteListener>> events = eventsByRunId.get(runId);
-        if (events == null) {
-            events = new ArrayList<Event<SuiteListener>>();
-            eventsByRunId.put(runId, events);
-        }
         events.add(event);
     }
 
     private boolean isRunFinished(RunId runId) {
         RunStatusEvaluator runStatus = new RunStatusEvaluator();
 
+        // TODO: extract "visit(runId, visitor): visitor"
         List<Event<SuiteListener>> events = eventsByRunId.get(runId);
         for (Event<SuiteListener> event : events) {
             event.fireOn(runStatus);
@@ -118,7 +115,8 @@ public class TextUI implements SuiteListener {
 
     @Override
     public void onRunStarted(RunId runId, String testClass) {
-        // TODO
+        eventsByRunId.put(runId, new ArrayList<Event<SuiteListener>>());
+        addRunEvent(runId, new OnRunStartedEvent(runId, testClass));
     }
 
     @Override
@@ -138,16 +136,13 @@ public class TextUI implements SuiteListener {
     @Override
     public void onTestFinished(RunId runId, String testClass, TestId testId) {
         addRunEvent(runId, new OnTestFinishedEvent(runId, testClass, testId));
-
-        // TODO: option for printing only failing or all runs
-        if (isRunFinished(runId)) {
-            printRun(runId);
-        }
     }
 
     @Override
     public void onRunFinished(RunId runId) {
-        // TODO
+        // TODO: add run event
+        // TODO: option for printing only failing or all runs
+        printRun(runId);
     }
 
 
@@ -157,14 +152,11 @@ public class TextUI implements SuiteListener {
 
         @Override
         public void onRunStarted(RunId runId, String testClass) {
-            // TODO
+            printRunHeader(testClass, runId);
         }
 
         @Override
         public void onTestStarted(RunId runId, String testClass, TestId testId) {
-            if (runningTests == 0) {
-                printRunHeader(testClass, runId);
-            }
             printTestName("+", testClass, testId);
             runningTests++;
         }
@@ -182,7 +174,7 @@ public class TextUI implements SuiteListener {
 
         @Override
         public void onRunFinished(RunId runId) {
-            // TODO
+            // TODO: empty line or other spacer? printRunFooter
         }
 
         // visual style
@@ -205,7 +197,7 @@ public class TextUI implements SuiteListener {
     }
 
     @NotThreadSafe
-    private class RunStatusEvaluator extends TestRunListener {
+    private class RunStatusEvaluator extends TestRunListener { // TODO: extract NullTestRunListener, only onRunFinished is needed here
         private int runningTests = 0;
 
         public boolean isRunFinished() {

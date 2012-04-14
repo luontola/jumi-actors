@@ -35,6 +35,14 @@ public class EventBuilder {
         listener.onSuiteFinished();
     }
 
+    public void runStarted(RunId runId, String testClass) {
+        listener.onRunStarted(runId, testClass);
+    }
+
+    public void runFinished(RunId runId) {
+        listener.onRunFinished(runId);
+    }
+
     public void test(RunId runId, String testClass, TestId id, String name, Runnable testBody) {
         listener.onTestFound(testClass, id, name);
         listener.onTestStarted(runId, testClass, id);

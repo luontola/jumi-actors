@@ -109,23 +109,29 @@ public class TextUITest {
         suite.begin();
 
         final RunId run1 = suite.nextRunId();
+        suite.runStarted(run1, SuiteMother.TEST_CLASS);
         suite.test(run1, SuiteMother.TEST_CLASS, TestId.ROOT, SuiteMother.TEST_CLASS_NAME, new Runnable() {
             public void run() {
                 suite.test(run1, SuiteMother.TEST_CLASS, TestId.of(0), "test one");
             }
         });
+        suite.runFinished(run1);
 
         // same root test is executed twice, but should be counted only once in the total
         final RunId run2 = suite.nextRunId();
+        suite.runStarted(run2, SuiteMother.TEST_CLASS);
         suite.test(run2, SuiteMother.TEST_CLASS, TestId.ROOT, SuiteMother.TEST_CLASS_NAME, new Runnable() {
             public void run() {
                 suite.test(run2, SuiteMother.TEST_CLASS, TestId.of(1), "test two");
             }
         });
+        suite.runFinished(run2);
 
         // a different test class, same TestId, should be counted separately
         final RunId run3 = suite.nextRunId();
+        suite.runStarted(run3, SuiteMother.TEST_CLASS);
         suite.test(run3, "com.example.AnotherDummyTest", TestId.ROOT, "AnotherDummyTest");
+        suite.runFinished(run3);
         suite.end();
 
         assertInOutput("Pass: 4, Fail: 0, Total: 4");
@@ -138,7 +144,9 @@ public class TextUITest {
     public void prints_test_run_header() {
         suite.begin();
         RunId run1 = suite.nextRunId();
+        suite.runStarted(run1, "com.example.DummyTest");
         suite.test(run1, "com.example.DummyTest", TestId.ROOT, "Human-readable name");
+        suite.runFinished(run1);
         suite.end();
 
         // expected content:
@@ -167,7 +175,8 @@ public class TextUITest {
         final RunId run1 = suite.nextRunId();
 
         // First test of the test run - should print the class name
-        suite.test(run1, SuiteMother.TEST_CLASS, TestId.ROOT, "Dummy test", new Runnable() {
+        suite.runStarted(run1, SuiteMother.TEST_CLASS);
+        suite.test(run1, SuiteMother.TEST_CLASS, TestId.ROOT, "Human readable name of test class", new Runnable() {
             public void run() {
 
                 // Second test of the test run - should NOT print the class name a second time,
@@ -175,6 +184,7 @@ public class TextUITest {
                 suite.test(run1, SuiteMother.TEST_CLASS, TestId.of(0), "test one");
             }
         });
+        suite.runFinished(run1);
         suite.end();
 
         assertInOutput(SuiteMother.TEST_CLASS); // should show once
@@ -202,7 +212,9 @@ public class TextUITest {
     public void prints_that_when_a_test_starts_and_ends() {
         suite.begin();
         RunId run1 = suite.nextRunId();
+        suite.runStarted(run1, SuiteMother.TEST_CLASS);
         suite.test(run1, "com.example.DummyTest", TestId.ROOT, "Dummy test");
+        suite.runFinished(run1);
         suite.end();
 
         assertInOutput(
@@ -215,6 +227,7 @@ public class TextUITest {
     public void prints_with_indentation_that_when_a_nested_test_starts_and_ends() {
         suite.begin();
         final RunId run1 = suite.nextRunId();
+        suite.runStarted(run1, SuiteMother.TEST_CLASS);
         suite.test(run1, SuiteMother.TEST_CLASS, TestId.ROOT, "Dummy test", new Runnable() {
             public void run() {
                 suite.test(run1, SuiteMother.TEST_CLASS, TestId.of(0), "test one");
@@ -225,6 +238,7 @@ public class TextUITest {
                 });
             }
         });
+        suite.runFinished(run1);
         suite.end();
 
         assertInOutput(
@@ -256,12 +270,14 @@ public class TextUITest {
             {
                 RunId run1 = suite.nextRunId();
                 listener.onTestFound(SuiteMother.TEST_CLASS, TestId.ROOT, SuiteMother.TEST_CLASS_NAME);
+                listener.onRunStarted(run1, SuiteMother.TEST_CLASS);
                 listener.onTestStarted(run1, SuiteMother.TEST_CLASS, TestId.ROOT);
                 listener.onFailure(run1, SuiteMother.TEST_CLASS, TestId.ROOT, new Throwable("dummy exception"));
 
                 assertNotInOutput("java.lang.Throwable: dummy exception");
 
                 listener.onTestFinished(run1, SuiteMother.TEST_CLASS, TestId.ROOT);
+                listener.onRunFinished(run1);
             }
 
             assertInOutput("java.lang.Throwable: dummy exception");
@@ -276,6 +292,7 @@ public class TextUITest {
             {
                 RunId run1 = suite.nextRunId();
                 listener.onTestFound(SuiteMother.TEST_CLASS, TestId.ROOT, SuiteMother.TEST_CLASS_NAME);
+                listener.onRunStarted(run1, SuiteMother.TEST_CLASS);
                 listener.onTestStarted(run1, SuiteMother.TEST_CLASS, TestId.ROOT);
                 suite.failingTest(run1, SuiteMother.TEST_CLASS, TestId.of(0), "testOne",
                         new Throwable("dummy exception")
@@ -284,6 +301,7 @@ public class TextUITest {
                 assertNotInOutput("java.lang.Throwable: dummy exception");
 
                 listener.onTestFinished(run1, SuiteMother.TEST_CLASS, TestId.ROOT);
+                listener.onRunFinished(run1);
             }
             assertInOutput("java.lang.Throwable: dummy exception");
         }
