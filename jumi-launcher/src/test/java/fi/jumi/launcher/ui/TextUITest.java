@@ -29,7 +29,12 @@ public class TextUITest {
 
     private String runAndGetOutput() {
         ui.update();
-        return out.toString();
+        return forceUnixLineSeparators(out.toString());
+    }
+
+    private static String forceUnixLineSeparators(String output) {
+        String lineSeparator = System.getProperty("line.separator");
+        return output.replaceAll(lineSeparator, "\n");
     }
 
     private void assertInOutput(String... expectedLines) {
@@ -189,6 +194,16 @@ public class TextUITest {
 
         assertInOutput(SuiteMother.TEST_CLASS); // should show once
         assertNotInOutput(SuiteMother.TEST_CLASS, SuiteMother.TEST_CLASS); // should not show twice
+    }
+
+    @Test
+    public void there_is_a_spacer_between_test_runs() {
+        SuiteMother.twoPassingRuns(listener);
+
+        assertInOutput("" +
+                " > - DummyTest\n" +
+                "\n" +                  // the expected spacer - an empty line
+                " > Run #2");
     }
 
     @Test

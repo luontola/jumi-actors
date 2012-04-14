@@ -102,7 +102,6 @@ public class TextUI implements SuiteListener {
         int failCount = this.failCount.size();
         int passCount = totalCount - failCount;
 
-        out.println();
         out.println(String.format("Pass: %d, Fail: %d, Total: %d", passCount, failCount, totalCount));
 
         suiteFinished = true;
@@ -140,7 +139,8 @@ public class TextUI implements SuiteListener {
 
     @Override
     public void onRunFinished(RunId runId) {
-        // TODO: add run event
+        addRunEvent(runId, new OnRunFinishedEvent(runId));
+
         // TODO: option for printing only failing or all runs
         printRun(runId);
     }
@@ -174,7 +174,7 @@ public class TextUI implements SuiteListener {
 
         @Override
         public void onRunFinished(RunId runId) {
-            // TODO: empty line or other spacer? printRunFooter
+            printRunFooter();
         }
 
         // visual style
@@ -185,6 +185,10 @@ public class TextUI implements SuiteListener {
 
         private void printTestName(String bullet, String testClass, TestId id) {
             out.println(" > " + testNameIndent() + bullet + " " + getTestName(testClass, id));
+        }
+
+        private void printRunFooter() {
+            out.println();
         }
 
         private String testNameIndent() {
