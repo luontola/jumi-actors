@@ -85,9 +85,9 @@ TODO NEXT:
 				OK - refactor CurrentRun, maybe move some event firing from the notifiers inside it
 				OK - enable the disabled e2e tests
 				OK - update the TextUI to use onRunStarted & onRunFinished
-		!! - refactor tests; create hand-written spies
+		OK - refactor tests; create hand-written spies
 			OK - refactor TestClassRunnerTest's test to mention only onTestClassFinished
-			- refactor SuiteRunnerTest's test to mention only onSuiteFinished
+			OK - refactor SuiteRunnerTest's test to mention only onSuiteFinished
 		- improve e2e test to check test start/end events
 	- remove redundant parameters for SuiteListener
 		- testClass can be deduced from onRunStarted's RunId

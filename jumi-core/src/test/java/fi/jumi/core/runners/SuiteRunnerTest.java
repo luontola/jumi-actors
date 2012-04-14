@@ -5,13 +5,16 @@
 package fi.jumi.core.runners;
 
 import fi.jumi.api.drivers.*;
+import fi.jumi.core.SuiteListener;
 import fi.jumi.core.drivers.DriverFinder;
-import fi.jumi.core.runs.RunId;
+import fi.jumi.core.utils.MethodCallSpy;
 import org.junit.Test;
 
 import java.util.*;
 import java.util.concurrent.Executor;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -61,25 +64,13 @@ public class SuiteRunnerTest extends SuiteRunnerIntegrationHelper {
 
     @Test
     public void notifies_when_all_test_classes_are_finished() {
-        // TODO: these expectations are not interesting for this test - find a way to write this test without mentioning them
-        expect.onSuiteStarted();
+        MethodCallSpy spy = new MethodCallSpy();
+        SuiteListener listener = spy.createProxyTo(SuiteListener.class);
 
-        expect.onTestFound(CLASS_1.getName(), TestId.ROOT, "DummyTest");
-        expect.onRunStarted(new RunId(1), CLASS_1.getName());
-        expect.onTestStarted(new RunId(1), CLASS_1.getName(), TestId.ROOT);
-        expect.onTestFinished(new RunId(1), CLASS_1.getName(), TestId.ROOT);
-        expect.onRunFinished(new RunId(1));
+        run(listener, new FakeTestClassDriver(), CLASS_1, CLASS_2);
 
-        expect.onTestFound(CLASS_2.getName(), TestId.ROOT, "SecondDummyTest");
-        expect.onRunStarted(new RunId(2), CLASS_2.getName());
-        expect.onTestStarted(new RunId(2), CLASS_2.getName(), TestId.ROOT);
-        expect.onTestFinished(new RunId(2), CLASS_2.getName(), TestId.ROOT);
-        expect.onRunFinished(new RunId(2));
-
-        // this must happen last, once
-        expect.onSuiteFinished();
-
-        runAndCheckExpectations(new FakeTestClassDriver(), CLASS_1, CLASS_2);
+        assertThat("should happen once", spy.countCallsTo("onSuiteFinished"), is(1));
+        assertThat("should happen last", spy.getLastCall(), is("onSuiteFinished"));
     }
 
 
