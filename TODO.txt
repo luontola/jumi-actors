@@ -69,7 +69,7 @@ TODO NEXT:
 				OK - create sub-package names using Class.getSimpleName, without changing case or dropping "Listener"
 					* still assumes that SimpleNames are unique, but that should be OK
 				OK - update integration tests
-		!!- update fi.jumi.core.runners.SuiteRunner.TestClassRunnerListenerToSuiteListener to use real runId
+		OK- update fi.jumi.core.runners.SuiteRunner.TestClassRunnerListenerToSuiteListener to use real runId
 			OK - create RunIdSequence
 			OK - write AssigningRunIdsTest against DefaultSuiteNotifier/DefaultTestNotifier
 				OK - RunId is assigned when a test is started
@@ -79,12 +79,12 @@ TODO NEXT:
 					OK - extract mutable fields (RunContext) from CurrentRun into a ThreadLocal
 				OK - nested tests in child threads get the same RunId
 				OK - onRunStarted, onRunFinished events
-			!! - propagate the RunIds to upper levels, until connected in SuiteRunner.TestClassRunnerListenerToSuiteListener
+			OK - propagate the RunIds to upper levels, until connected in SuiteRunner.TestClassRunnerListenerToSuiteListener
 				OK - SuiteListenerProtocolTest: add tests for onRunStarted, onRunFinished
 				OK - implement onRunStarted, onRunFinished in fi.jumi.core.runners.TestClassRunner
 				OK - refactor CurrentRun, maybe move some event firing from the notifiers inside it
 				OK - enable the disabled e2e tests
-				!! - update the TextUI to use onRunStarted & onRunFinished
+				OK - update the TextUI to use onRunStarted & onRunFinished
 		- refactor tests; create hand-written spies
 			- refactor TestClassRunnerTest's test to mention only onTestClassFinished
 			- refactor SuiteRunnerTest's test to mention only onSuiteFinished
@@ -208,7 +208,7 @@ TODO NEXT:
 		http://pyx4me.com/pyx4me-maven-plugins/proguard-maven-plugin/
 
 - improving TextUI
-	- spacing between test runs (empty line or horizontal bar?)
+	OK - spacing between test runs (empty line or horizontal bar?)
 	- option for showing all test runs or only failing
 	(- if multiple readers are needed: Streamer class for receiving events from UI thread)
 	- different colors for out (default), err (red), metadata e.g. test names (blue), binary output (yellow BG)?

@@ -28,49 +28,13 @@ public class TextUI implements SuiteListener {
     private final Map<RunId, List<Event<SuiteListener>>> eventsByRunId = new HashMap<RunId, List<Event<SuiteListener>>>();
 
     // TODO: extract counting to its own class
-    private final Set<GlobalTestId> failCount = new HashSet<GlobalTestId>();
-    private final Set<GlobalTestId> totalCount = new HashSet<GlobalTestId>();
+    private final Set<GlobalTestId> failedTests = new HashSet<GlobalTestId>();
+    private final Set<GlobalTestId> allTests = new HashSet<GlobalTestId>();
 
     public TextUI(PrintStream out, PrintStream err, MessageReceiver<Event<SuiteListener>> eventStream) {
         this.out = out;
         this.err = err;
         this.eventStream = eventStream;
-    }
-
-    private void addTestName(String testClass, TestId id, String name) {
-        testNamesById.put(new GlobalTestId(testClass, id), name);
-    }
-
-    private String getTestName(String testClass, TestId id) {
-        String name = testNamesById.get(new GlobalTestId(testClass, id));
-        assert name != null : "name not found for " + testClass + " and " + id;
-        return name;
-    }
-
-    private void addRunEvent(RunId runId, Event<SuiteListener> event) {
-        List<Event<SuiteListener>> events = eventsByRunId.get(runId);
-        events.add(event);
-    }
-
-    private boolean isRunFinished(RunId runId) {
-        RunStatusEvaluator runStatus = new RunStatusEvaluator();
-
-        // TODO: extract "visit(runId, visitor): visitor"
-        List<Event<SuiteListener>> events = eventsByRunId.get(runId);
-        for (Event<SuiteListener> event : events) {
-            event.fireOn(runStatus);
-        }
-
-        return runStatus.isRunFinished();
-    }
-
-    private void printRun(RunId runId) {
-        RunPrinter printer = new RunPrinter();
-
-        List<Event<SuiteListener>> events = eventsByRunId.get(runId);
-        for (Event<SuiteListener> event : events) {
-            event.fireOn(printer);
-        }
     }
 
     public void update() {
@@ -90,21 +54,36 @@ public class TextUI implements SuiteListener {
         }
     }
 
+    private void addTestName(String testClass, TestId id, String name) {
+        testNamesById.put(new GlobalTestId(testClass, id), name);
+    }
+
+    private String getTestName(String testClass, TestId id) {
+        String name = testNamesById.get(new GlobalTestId(testClass, id));
+        assert name != null : "name not found for " + testClass + " and " + id;
+        return name;
+    }
+
+    private void createRun(RunId runId) {
+        eventsByRunId.put(runId, new ArrayList<Event<SuiteListener>>());
+    }
+
+    private void addRunEvent(RunId runId, Event<SuiteListener> event) {
+        eventsByRunId.get(runId).add(event);
+    }
+
+    private void visitRun(RunId runId, SuiteListener visitor) {
+        List<Event<SuiteListener>> events = eventsByRunId.get(runId);
+        for (Event<SuiteListener> event : events) {
+            event.fireOn(visitor);
+        }
+    }
+
+
     // SuiteListener
 
     @Override
     public void onSuiteStarted() {
-    }
-
-    @Override
-    public void onSuiteFinished() {
-        int totalCount = this.totalCount.size();
-        int failCount = this.failCount.size();
-        int passCount = totalCount - failCount;
-
-        out.println(String.format("Pass: %d, Fail: %d, Total: %d", passCount, failCount, totalCount));
-
-        suiteFinished = true;
     }
 
     @Override
@@ -114,22 +93,20 @@ public class TextUI implements SuiteListener {
 
     @Override
     public void onRunStarted(RunId runId, String testClass) {
-        eventsByRunId.put(runId, new ArrayList<Event<SuiteListener>>());
+        createRun(runId);
         addRunEvent(runId, new OnRunStartedEvent(runId, testClass));
     }
 
     @Override
     public void onTestStarted(RunId runId, String testClass, TestId testId) {
         addRunEvent(runId, new OnTestStartedEvent(runId, testClass, testId));
-
-        totalCount.add(new GlobalTestId(testClass, testId));
+        allTests.add(new GlobalTestId(testClass, testId));
     }
 
     @Override
     public void onFailure(RunId runId, String testClass, TestId testId, Throwable cause) {
         addRunEvent(runId, new OnFailureEvent(runId, testClass, testId, cause));
-
-        failCount.add(new GlobalTestId(testClass, testId));
+        failedTests.add(new GlobalTestId(testClass, testId));
     }
 
     @Override
@@ -140,9 +117,19 @@ public class TextUI implements SuiteListener {
     @Override
     public void onRunFinished(RunId runId) {
         addRunEvent(runId, new OnRunFinishedEvent(runId));
-
         // TODO: option for printing only failing or all runs
-        printRun(runId);
+        visitRun(runId, new RunPrinter());
+    }
+
+    @Override
+    public void onSuiteFinished() {
+        int totalCount = this.allTests.size();
+        int failCount = this.failedTests.size();
+        int passCount = totalCount - failCount;
+
+        out.println(String.format("Pass: %d, Fail: %d, Total: %d", passCount, failCount, totalCount));
+
+        suiteFinished = true;
     }
 
 
@@ -197,41 +184,6 @@ public class TextUI implements SuiteListener {
                 indent.append("  ");
             }
             return indent.toString();
-        }
-    }
-
-    @NotThreadSafe
-    private class RunStatusEvaluator extends TestRunListener { // TODO: extract NullTestRunListener, only onRunFinished is needed here
-        private int runningTests = 0;
-
-        public boolean isRunFinished() {
-            // XXX: should not be finished before it is started (i.e. there are zero events)
-            return runningTests == 0;
-        }
-
-        @Override
-        public void onRunStarted(RunId runId, String testClass) {
-            // TODO
-        }
-
-        @Override
-        public void onTestStarted(RunId runId, String testClass, TestId testId) {
-            runningTests++;
-        }
-
-        @Override
-        public void onFailure(RunId runId, String testClass, TestId testId, Throwable cause) {
-            // ignore - doesn't affect run status
-        }
-
-        @Override
-        public void onTestFinished(RunId runId, String testClass, TestId testId) {
-            runningTests--;
-        }
-
-        @Override
-        public void onRunFinished(RunId runId) {
-            // TODO
         }
     }
 }
