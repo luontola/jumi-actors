@@ -17,9 +17,9 @@ public interface SuiteListener {
 
     void onTestStarted(RunId runId, TestId testId);
 
-    void onFailure(RunId runId, TestId testId, Throwable cause);
+    void onFailure(RunId runId, Throwable cause);
 
-    void onTestFinished(RunId runId, TestId testId);
+    void onTestFinished(RunId runId);
 
     void onRunFinished(RunId runId);
 

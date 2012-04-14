@@ -100,8 +100,8 @@ public class SuiteMother {
         listener.onTestFound(TEST_CLASS, TestId.of(1), "testTwo");
         listener.onTestStarted(run1, TestId.of(0));
         listener.onTestStarted(run2, TestId.of(1));
-        listener.onTestFinished(run1, TestId.of(0));
-        listener.onTestFinished(run2, TestId.of(1));
+        listener.onTestFinished(run1);
+        listener.onTestFinished(run2);
         suite.runFinished(run1);
         suite.runFinished(run2);
 

@@ -54,7 +54,7 @@ public class EventBuilder {
 
         listener.onTestStarted(runId, testId);
         testBody.run();
-        listener.onTestFinished(runId, testId);
+        listener.onTestFinished(runId);
     }
 
     public void test(RunId runId, TestId id, String name) {
@@ -67,7 +67,7 @@ public class EventBuilder {
     public void failingTest(final RunId runId, final TestId id, String name, final Throwable failure) {
         test(runId, id, name, new Runnable() {
             public void run() {
-                listener.onFailure(runId, id, failure);
+                listener.onFailure(runId, failure);
             }
         });
     }

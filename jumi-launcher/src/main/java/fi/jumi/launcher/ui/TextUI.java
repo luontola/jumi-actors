@@ -23,8 +23,10 @@ public class TextUI {
     private final MessageReceiver<Event<SuiteListener>> eventStream;
     private boolean suiteFinished = false;
 
+    // TODO: extract run context into its own class
     private final Map<GlobalTestId, String> testNamesById = new HashMap<GlobalTestId, String>();
     private final Map<RunId, String> testClassesByRunId = new HashMap<RunId, String>();
+    private final Map<RunId, Deque<TestId>> runningTestsByRunId = new HashMap<RunId, Deque<TestId>>();
     private final Map<RunId, List<Event<SuiteListener>>> eventsByRunId = new HashMap<RunId, List<Event<SuiteListener>>>();
 
     // TODO: extract counting to its own class
@@ -77,6 +79,7 @@ public class TextUI {
     }
 
     private void createRun(RunId runId, String testClass) {
+        runningTestsByRunId.put(runId, new ArrayDeque<TestId>());
         eventsByRunId.put(runId, new ArrayList<Event<SuiteListener>>());
         testClassesByRunId.put(runId, testClass);
     }
@@ -123,18 +126,21 @@ public class TextUI {
             addRunEvent(runId, currentMessage);
             String testClass = testClassesByRunId.get(runId);
             allTests.add(new GlobalTestId(testClass, testId));
+            runningTestsByRunId.get(runId).push(testId);
         }
 
         @Override
-        public void onFailure(RunId runId, TestId testId, Throwable cause) {
+        public void onFailure(RunId runId, Throwable cause) {
             addRunEvent(runId, currentMessage);
             String testClass = testClassesByRunId.get(runId);
+            TestId testId = runningTestsByRunId.get(runId).getLast();
             failedTests.add(new GlobalTestId(testClass, testId));
         }
 
         @Override
-        public void onTestFinished(RunId runId, TestId testId) {
+        public void onTestFinished(RunId runId) {
             addRunEvent(runId, currentMessage);
+            runningTestsByRunId.get(runId).poll();
         }
 
         @Override
@@ -157,7 +163,8 @@ public class TextUI {
 
     @NotThreadSafe
     private class RunPrinter extends TestRunListener {
-        private int runningTests = 0;
+
+        private final Deque<TestId> runningTests = new ArrayDeque<TestId>();
 
         @Override
         public void onRunStarted(RunId runId, String testClass) {
@@ -168,17 +175,17 @@ public class TextUI {
         public void onTestStarted(RunId runId, TestId testId) {
             String testClass = testClassesByRunId.get(runId);
             printTestName("+", testClass, testId);
-            runningTests++;
+            runningTests.push(testId);
         }
 
         @Override
-        public void onFailure(RunId runId, TestId testId, Throwable cause) {
+        public void onFailure(RunId runId, Throwable cause) {
             cause.printStackTrace(err);
         }
 
         @Override
-        public void onTestFinished(RunId runId, TestId testId) {
-            runningTests--;
+        public void onTestFinished(RunId runId) {
+            TestId testId = runningTests.pop();
             String testClass = testClassesByRunId.get(runId);
             printTestName("-", testClass, testId);
         }
@@ -204,7 +211,7 @@ public class TextUI {
 
         private String testNameIndent() {
             StringBuilder indent = new StringBuilder();
-            for (int i = 0; i < runningTests; i++) {
+            for (int i = 0; i < runningTests.size(); i++) {
                 indent.append("  ");
             }
             return indent.toString();
