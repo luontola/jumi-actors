@@ -8,15 +8,17 @@ import fi.jumi.actors.SingleThreadedActors;
 import fi.jumi.api.drivers.*;
 import fi.jumi.core.Startable;
 import fi.jumi.core.events.*;
-import fi.jumi.core.runs.*;
+import fi.jumi.core.runs.RunIdSequence;
+import fi.jumi.core.utils.MethodCallSpy;
 import org.junit.Test;
 
 import java.util.concurrent.Executor;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
 public class TestClassRunnerTest {
 
-    private final SpyListener<TestClassRunnerListener> spy = new SpyListener<TestClassRunnerListener>(TestClassRunnerListener.class);
-    private final TestClassRunnerListener expect = spy.getListener();
     private final SingleThreadedActors actors = new SingleThreadedActors(
             new StartableFactory(),
             new RunnableFactory(),
@@ -25,27 +27,15 @@ public class TestClassRunnerTest {
             new TestClassListenerFactory()
     );
 
+    private final MethodCallSpy spy = new MethodCallSpy();
+    private final TestClassRunnerListener listener = spy.createProxyTo(TestClassRunnerListener.class);
+
     @Test
     public void notifies_when_the_test_class_is_finished() {
-        // TODO: these expectations are not interesting for this test - find a way to write this test without mentioning them
-        expect.onTestFound(TestId.ROOT, "root test");
+        run(new TwoTestsDriver());
 
-        expect.onTestFound(TestId.of(0), "test one");
-        expect.onRunStarted(new RunId(1));
-        expect.onTestStarted(new RunId(1), TestId.of(0));
-        expect.onTestFinished(new RunId(1), TestId.of(0));
-        expect.onRunFinished(new RunId(1));
-
-        expect.onTestFound(TestId.of(1), "test two");
-        expect.onRunStarted(new RunId(2));
-        expect.onTestStarted(new RunId(2), TestId.of(1));
-        expect.onTestFinished(new RunId(2), TestId.of(1));
-        expect.onRunFinished(new RunId(2));
-
-        // this must happen last, once
-        expect.onTestClassFinished();
-
-        runAndCheckExpectations(new TwoTestsDriver());
+        assertThat("should happen once", spy.countCallsTo("onTestClassFinished"), is(1));
+        assertThat("should happen last", spy.getLastCall(), is("onTestClassFinished"));
     }
 
     // TODO: forwards_all_other_events - find a way to write this as unit test
@@ -53,14 +43,12 @@ public class TestClassRunnerTest {
 
     // helpers
 
-    private void runAndCheckExpectations(Driver driver) {
+    private void run(Driver driver) {
         RunIdSequence runIdSequence = new RunIdSequence();
-        TestClassRunner runner = new TestClassRunner(DummyTest.class, driver, expect, actors, actors.getExecutor(), runIdSequence);
+        TestClassRunner runner = new TestClassRunner(DummyTest.class, driver, listener, actors, actors.getExecutor(), runIdSequence);
 
-        spy.replay();
         actors.createPrimaryActor(Startable.class, runner, "TestClassRunner").start();
         actors.processEventsUntilIdle();
-        spy.verify();
     }
 
 
