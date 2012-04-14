@@ -93,8 +93,12 @@ TODO NEXT:
 		OK - testClass can be deduced from onRunStarted's RunId
 		OK - TestId of onTestFinished & onFailure can be deduced from last call to onTestStarted (also prevents faulty input)
 		OK - refactor TextUI, keep hold of suite/run state better
-	- eliminate duplicate method signatures in TestClassListener and TestClassRunnerListener
+	!! - eliminate duplicate method signatures in TestClassListener and TestClassRunnerListener
 		- consider eliminating redundant parameters; should we also check for correctness here?
+	- TestClassRunnerTest: write forwards_all_other_events (don't call start)
+	- add @Override annotations to all interface implementations
+		- enable "Missing @Override annotation" inspection
+		- Analyze | Run Inspection by Name, Apply Quickfix
 
 - refactor jumi-actors
 	- make it impossible to use actors wrong
@@ -178,7 +182,6 @@ TODO NEXT:
 
 - misc refactoring
 	OK - find files which have DOS newlines and convert them to UNIX newlines
-	- add @Override annotations to all interface implementations
 	- refactor SimpleUnit
 		- simplity the tests by creating helper which runs using SuiteRunner, collects the results and provides assert methods
 		- move to its own module, simpleunit
@@ -193,7 +196,6 @@ TODO NEXT:
 		actors
 			mq
 	- try using FEST asserts in BuildTest, it should help with generics
-	- figure out a way to rewrite TestClassRunnerTest as a unit test
 	- kill daemon before removing temp files: fi.jumi.test.AppRunner#tearDown
 	- SuiteRunner has a cyclic dependency with TestRunCoordinator
 	- put end-to-end tests in their own package (test.fi.jumi?), separate them from unit tests
