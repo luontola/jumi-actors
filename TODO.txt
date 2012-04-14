@@ -33,7 +33,7 @@ TODO NEXT:
 			OK - update test count checks
 			OK - expose run output form parser
 			OK - update checkHasStackTrace
-	!! - identify concurrent test runs with a unique ID (necessary yet?)
+	OK - identify concurrent test runs with a unique ID (necessary yet?)
 		OK - improve e2e test to check number of test runs
 		OK - refactor the code to be changed
 			OK - move duplicate removal from TestClassRunner to its own proxy class, to be composed inside SuiteRunner
@@ -88,7 +88,7 @@ TODO NEXT:
 		OK - refactor tests; create hand-written spies
 			OK - refactor TestClassRunnerTest's test to mention only onTestClassFinished
 			OK - refactor SuiteRunnerTest's test to mention only onSuiteFinished
-		- improve e2e test to check test start/end events
+		OK - improve e2e test to check test start/end events
 	- remove redundant parameters for SuiteListener
 		- testClass can be deduced from onRunStarted's RunId
 		- TestId of onTestFinished & onFailure can be deduced from last call to onTestStarted (also prevents faulty input)

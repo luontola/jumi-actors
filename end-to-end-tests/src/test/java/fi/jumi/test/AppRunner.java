@@ -5,7 +5,7 @@
 package fi.jumi.test;
 
 import fi.jumi.actors.*;
-import fi.jumi.core.*;
+import fi.jumi.core.SuiteListener;
 import fi.jumi.core.runs.RunId;
 import fi.jumi.core.utils.Strings;
 import fi.jumi.launcher.JumiLauncher;
@@ -16,10 +16,10 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import java.io.*;
-import java.util.UUID;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertTrue;
 
 public class AppRunner implements TestRule {
@@ -69,6 +69,15 @@ public class AppRunner implements TestRule {
 
     public void checkTotalTestRuns(int expectedRunCount) {
         assertThat("total test runs", ui.getRunCount(), is(expectedRunCount));
+    }
+
+    public void checkContainsRun(String... startAndEndEvents) {
+        List<String> expected = Arrays.asList(startAndEndEvents);
+        List<List<String>> actuals = new ArrayList<List<String>>();
+        for (RunId runId : ui.getRunIds()) {
+            actuals.add(ui.getTestStartAndEndEvents(runId));
+        }
+        assertThat("did not contain a run with the expected events", actuals, hasItem(expected));
     }
 
     public void checkHasStackTrace(String... expectedElements) {

@@ -29,6 +29,7 @@ public class RunningTestsTest {
 
         app.checkPassingAndFailingTests(2, 0);
         app.checkTotalTestRuns(1);
+        app.checkContainsRun("OnePassingTest", "testPassing", "/", "/");
     }
 
     @Test(timeout = TIMEOUT)
@@ -37,6 +38,7 @@ public class RunningTestsTest {
 
         app.checkPassingAndFailingTests(1, 1);
         app.checkTotalTestRuns(1);
+        app.checkContainsRun("OneFailingTest", "testFailing", "/", "/");
     }
 
     @Test(timeout = TIMEOUT)
@@ -54,8 +56,7 @@ public class RunningTestsTest {
 
         app.checkPassingAndFailingTests(3, 0);
         app.checkTotalTestRuns(2);
-        // TODO: check the test start/end events of each test run, if the test doesn't otherwise fail for lack of RunID
+        app.checkContainsRun("ParallelismTest", "testOne", "/", "/");
+        app.checkContainsRun("ParallelismTest", "testTwo", "/", "/");
     }
-
-    // TODO: reporting test names
 }
