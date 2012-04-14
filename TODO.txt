@@ -95,10 +95,16 @@ TODO NEXT:
 		OK - refactor TextUI, keep hold of suite/run state better
 	!! - eliminate duplicate method signatures in TestClassListener and TestClassRunnerListener
 		- consider eliminating redundant parameters; should we also check for correctness here?
-	- TestClassRunnerTest: write forwards_all_other_events (don't call start)
+	- TestClassRunnerTest: write forwards_all_other_events (don't call start, check the assumed number of methods)
 	- add @Override annotations to all interface implementations
 		- enable "Missing @Override annotation" inspection
 		- Analyze | Run Inspection by Name, Apply Quickfix
+	- refactor TextUI
+		- create SuiteState/SuiteEventDemuxer which collects all events and groups them into runs (fields: testNames, runs, suiteFinished, currentMessage)
+		- move the counting passing/failing tests into its own visitor (fields: failedTests, allTests)
+		- make SuitePrinter contain only printing commands, update it after updating SuiteState
+		- create an abstract StatefulRunVisitor which keeps track of runningTests, gives access to testClass and testId (methods: getTestClass, getTestId, getTestName(testId), int getRunningTests)
+		- make RunPrinter extend StatefulRunVisitor, do printing in overridden methods
 
 - refactor jumi-actors
 	- make it impossible to use actors wrong
