@@ -1,4 +1,4 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -24,6 +24,7 @@ public class ThreadSafetyCheckerTest {
     @Test
     public void is_silent_when_called_from_just_one_thread() throws Throwable {
         runInNewThread("T1", new Runnable() {
+            @Override
             public void run() {
                 checker.checkCurrentThread();
                 checker.checkCurrentThread();
@@ -34,12 +35,14 @@ public class ThreadSafetyCheckerTest {
     @Test
     public void throws_an_exception_when_called_from_many_threads() throws Throwable {
         runInNewThread("T1", new Runnable() {
+            @Override
             public void run() {
                 checker.checkCurrentThread();
             }
         });
 
         Throwable t = getExceptionFromNewThread("T2", new Runnable() {
+            @Override
             public void run() {
                 checker.checkCurrentThread();
             }
@@ -61,6 +64,7 @@ public class ThreadSafetyCheckerTest {
     @Test
     public void fails_at_most_once_per_thread() throws Throwable {
         runInNewThread("T1", new Runnable() {
+            @Override
             public void run() {
                 checker.checkCurrentThread();
             }
@@ -78,12 +82,14 @@ public class ThreadSafetyCheckerTest {
     @Test
     public void fails_for_each_new_thread() throws Throwable {
         runInNewThread("T1", new Runnable() {
+            @Override
             public void run() {
                 checker.checkCurrentThread();
             }
         });
         try {
             runInNewThread("T2", new Runnable() {
+                @Override
                 public void run() {
                     checker.checkCurrentThread();
                 }
@@ -98,6 +104,7 @@ public class ThreadSafetyCheckerTest {
         thrown.expect(stackTraceContains("T3"));
 
         runInNewThread("T3", new Runnable() {
+            @Override
             public void run() {
                 checker.checkCurrentThread();
             }
@@ -107,11 +114,13 @@ public class ThreadSafetyCheckerTest {
     @Test
     public void exception_cause_stack_traces_mention_for_each_thread_from_where_the_calls_were_made() throws Throwable {
         runInNewThread("T1", new Runnable() {
+            @Override
             public void run() {
                 callLocation1();
             }
         });
         Throwable t = getExceptionFromNewThread("T2", new Runnable() {
+            @Override
             public void run() {
                 callLocation2();
             }
@@ -151,10 +160,12 @@ public class ThreadSafetyCheckerTest {
             this.expected = expected;
         }
 
+        @Override
         protected boolean matchesSafely(Throwable item) {
             return stackTraceAsText(item).indexOf(expected) >= 0;
         }
 
+        @Override
         public void describeTo(Description description) {
             description.appendText("stack trace contains ").appendValue(expected);
         }

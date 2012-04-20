@@ -1,4 +1,4 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -64,18 +64,22 @@ public abstract class JavaType {
             this.type = type;
         }
 
+        @Override
         public String getPackage() {
             return type.getPackage().getName();
         }
 
+        @Override
         public String getRawName() {
             return type.getSimpleName();
         }
 
+        @Override
         public String getSimpleName() {
             return type.getSimpleName();
         }
 
+        @Override
         public List<Class<?>> getRawTypesToImport() {
             ArrayList<Class<?>> imports = new ArrayList<Class<?>>();
             imports.add(type);
@@ -93,14 +97,17 @@ public abstract class JavaType {
             this.typeArguments = typeArguments;
         }
 
+        @Override
         public String getPackage() {
             return type.getPackage().getName();
         }
 
+        @Override
         public String getRawName() {
             return type.getSimpleName();
         }
 
+        @Override
         public String getSimpleName() {
             return type.getSimpleName() + "<" + typeArgumentsAsString() + ">";
         }
@@ -116,6 +123,7 @@ public abstract class JavaType {
             return result;
         }
 
+        @Override
         public List<Class<?>> getRawTypesToImport() {
             List<Class<?>> imports = new ArrayList<Class<?>>();
             imports.add(type);
@@ -132,19 +140,23 @@ public abstract class JavaType {
             super();
         }
 
+        @Override
         public String getPackage() {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public String getRawName() {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public String getSimpleName() {
             // TODO: upper and lower bounds
             return "?";
         }
 
+        @Override
         public List<Class<?>> getRawTypesToImport() {
             return Collections.emptyList();
         }

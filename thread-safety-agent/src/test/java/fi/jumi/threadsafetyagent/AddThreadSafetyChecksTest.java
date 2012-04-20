@@ -1,4 +1,4 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -98,6 +98,7 @@ public class AddThreadSafetyChecksTest {
 
     private static Class<?> instrumentClass(Class<?> cls) throws Exception {
         ClassFileTransformer transformer = new ThreadSafetyCheckerTransformer() {
+            @Override
             protected ClassVisitor getAdapters(ClassVisitor cv) {
                 return super.getAdapters(new CheckClassAdapter(cv));
             }
@@ -112,6 +113,7 @@ public class AddThreadSafetyChecksTest {
     public static class ReferenceImplementation implements Runnable {
         private final ThreadSafetyChecker checker = new ThreadSafetyChecker();
 
+        @Override
         public void run() {
             checker.checkCurrentThread();
         }
@@ -119,23 +121,27 @@ public class AddThreadSafetyChecksTest {
 
     @NotThreadSafe
     public static class NotThreadSafeClass implements Runnable {
+        @Override
         public void run() {
         }
     }
 
     @ThreadSafe
     public static class ThreadSafeClass implements Runnable {
+        @Override
         public void run() {
         }
     }
 
     @Immutable
     public static class ImmutableClass implements Runnable {
+        @Override
         public void run() {
         }
     }
 
     public static class NonAnnotatedClass implements Runnable {
+        @Override
         public void run() {
         }
     }
@@ -202,6 +208,7 @@ public class AddThreadSafetyChecksTest {
 
     @NotThreadSafe
     public static class ThrowExceptionOnSecondLine implements Runnable {
+        @Override
         public void run() {
             // Dummy line, to make the exception throw to be the second line.
             // This tests against duplicate line number entries, in which case

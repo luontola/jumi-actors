@@ -1,13 +1,11 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
 package fi.jumi.launcher;
 
-import fi.jumi.actors.Event;
-import fi.jumi.actors.MessageSender;
-import fi.jumi.core.CommandListener;
-import fi.jumi.core.SuiteListener;
+import fi.jumi.actors.*;
+import fi.jumi.core.*;
 import org.jboss.netty.channel.*;
 
 import javax.annotation.concurrent.ThreadSafe;
@@ -27,16 +25,19 @@ public class JumiLauncherHandler extends SimpleChannelHandler {
         this.startupCommand = startupCommand;
     }
 
+    @Override
     public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
         // TODO: move the responsibility of sending this command into JumiLauncher (requires actor model?)
         // TODO: send an event that the we have connected?
         e.getChannel().write(startupCommand);
     }
 
+    @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
         target.send((Event<SuiteListener>) e.getMessage());
     }
 
+    @Override
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
         // TODO: better error handling
         e.getCause().printStackTrace();

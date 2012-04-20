@@ -18,10 +18,12 @@ public class SingleThreadedActors extends Actors {
         super(factories);
     }
 
+    @Override
     protected <T> void startEventPoller(String name, MessageQueue<Event<T>> queue, MessageSender<Event<T>> receiver) {
         pollers.add(new EventPoller<T>(queue, receiver));
     }
 
+    @Override
     protected void doStartUnattendedWorker(Runnable worker) {
         workers.add(worker);
     }
@@ -80,6 +82,7 @@ public class SingleThreadedActors extends Actors {
             this.runnable = runnable;
         }
 
+        @Override
         public boolean processedSomething() {
             runnable.run();
             return true;
@@ -97,6 +100,7 @@ public class SingleThreadedActors extends Actors {
             this.target = target;
         }
 
+        @Override
         public boolean processedSomething() {
             Event<T> event = source.poll();
             if (event != null) {
@@ -115,6 +119,7 @@ public class SingleThreadedActors extends Actors {
 
     @NotThreadSafe
     private class AsynchronousExecutor implements Executor {
+        @Override
         public void execute(Runnable command) {
             workers.add(command);
         }

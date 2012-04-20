@@ -77,6 +77,7 @@ public class JumiLauncher {
 
         @ThreadSafe
         class MyChannelPipelineFactory implements ChannelPipelineFactory {
+            @Override
             public ChannelPipeline getPipeline() {
                 return Channels.pipeline(
                         new ObjectEncoder(),
@@ -118,6 +119,7 @@ public class JumiLauncher {
     private void copyInBackground(final InputStream src, final Writer dest) {
         @NotThreadSafe
         class Copier implements Runnable {
+            @Override
             public void run() {
                 try {
                     IOUtils.copy(src, dest);

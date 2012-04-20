@@ -1,4 +1,4 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -17,13 +17,16 @@ public class MultiThreadedActorsTest extends ActorsContract<MultiThreadedActors>
 
     private final List<MultiThreadedActors> createdActorses = new ArrayList<MultiThreadedActors>();
 
+    @Override
     protected MultiThreadedActors newActors(ListenerFactory<?>... factories) {
         class SilentUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {
+            @Override
             public void uncaughtException(Thread t, Throwable e) {
                 // do not print failures; it keeps the test logs cleaner
             }
         }
         ScheduledThreadPoolExecutor threadPool = new ScheduledThreadPoolExecutor(1, new ThreadFactory() {
+            @Override
             public Thread newThread(Runnable r) {
                 Thread t = new Thread(r);
                 t.setUncaughtExceptionHandler(new SilentUncaughtExceptionHandler());
@@ -35,6 +38,7 @@ public class MultiThreadedActorsTest extends ActorsContract<MultiThreadedActors>
         return actors;
     }
 
+    @Override
     protected void processEvents() {
         // noop; background threads run automatically, rely on the timeouts in the contract tests for waiting
     }
@@ -96,6 +100,7 @@ public class MultiThreadedActorsTest extends ActorsContract<MultiThreadedActors>
         final BlockingQueue<String> events = new LinkedBlockingQueue<String>();
 
         final Runnable worker = new Runnable() {
+            @Override
             public void run() {
                 events.add("worker started");
                 try {

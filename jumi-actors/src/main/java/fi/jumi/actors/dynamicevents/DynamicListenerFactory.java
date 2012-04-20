@@ -1,4 +1,4 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -38,10 +38,12 @@ public class DynamicListenerFactory<T> implements ListenerFactory<T> {
         }
     }
 
+    @Override
     public Class<T> getType() {
         return type;
     }
 
+    @Override
     public T newFrontend(MessageSender<Event<T>> target) {
         return type.cast(Proxy.newProxyInstance(
                 type.getClassLoader(),
@@ -50,6 +52,7 @@ public class DynamicListenerFactory<T> implements ListenerFactory<T> {
         );
     }
 
+    @Override
     public MessageSender<Event<T>> newBackend(T target) {
         return new EventToDynamicListener<T>(target);
     }

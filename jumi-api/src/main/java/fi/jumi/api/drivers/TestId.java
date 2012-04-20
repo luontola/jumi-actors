@@ -1,4 +1,4 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -73,6 +73,7 @@ public abstract class TestId implements Comparable<TestId>, Serializable {
         return path;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof TestId) {
             TestId that = (TestId) obj;
@@ -84,6 +85,7 @@ public abstract class TestId implements Comparable<TestId>, Serializable {
         return false;
     }
 
+    @Override
     public int hashCode() {
         // We use an algorithm similar to java.util.Arrays.hashCode()
         int hash = 1;
@@ -93,6 +95,7 @@ public abstract class TestId implements Comparable<TestId>, Serializable {
         return hash;
     }
 
+    @Override
     public int compareTo(TestId that) {
         int[] thisPath = this.getPath();
         int[] thatPath = that.getPath();
@@ -107,6 +110,7 @@ public abstract class TestId implements Comparable<TestId>, Serializable {
         return thisPath.length - thatPath.length;
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("TestId(");
@@ -126,22 +130,27 @@ public abstract class TestId implements Comparable<TestId>, Serializable {
     @Immutable
     private static class Root extends TestId {
 
+        @Override
         public boolean isRoot() {
             return true;
         }
 
+        @Override
         public boolean isFirstChild() {
             throw new UnsupportedOperationException("root is not a child");
         }
 
+        @Override
         public TestId getParent() {
             throw new UnsupportedOperationException("root has no parent");
         }
 
+        @Override
         public TestId getNextSibling() {
             throw new UnsupportedOperationException("root has no siblings");
         }
 
+        @Override
         public int getIndex() {
             throw new UnsupportedOperationException("root has no index");
         }
@@ -161,22 +170,27 @@ public abstract class TestId implements Comparable<TestId>, Serializable {
             this.index = index;
         }
 
+        @Override
         public boolean isRoot() {
             return false;
         }
 
+        @Override
         public boolean isFirstChild() {
             return index == 0;
         }
 
+        @Override
         public TestId getParent() {
             return parent;
         }
 
+        @Override
         public TestId getNextSibling() {
             return new Child(parent, index + 1);
         }
 
+        @Override
         public int getIndex() {
             return index;
         }

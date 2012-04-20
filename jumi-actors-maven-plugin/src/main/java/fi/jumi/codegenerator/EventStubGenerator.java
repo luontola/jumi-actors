@@ -28,6 +28,7 @@ public class EventStubGenerator {
         listenerInterface = JavaType.of(listenerType);
         listenerMethods = listenerType.getMethods();
         Arrays.sort(listenerMethods, new Comparator<Method>() {
+            @Override
             public int compare(Method m1, Method m2) {
                 return m1.getName().compareTo(m2.getName());
             }
@@ -128,6 +129,7 @@ public class EventStubGenerator {
         }
 
         Collections.sort(events, new Comparator<GeneratedClass>() {
+            @Override
             public int compare(GeneratedClass o1, GeneratedClass o2) {
                 return o1.path.compareTo(o2.path);
             }

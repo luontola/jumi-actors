@@ -19,31 +19,37 @@ public class EnabledWhenAnnotatedWith extends ClassVisitor {
         this.enablerAnnotationDesc = "L" + enablerAnnotation + ";";
     }
 
+    @Override
     public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
         myAnnotationDescs.add(desc);
         return super.visitAnnotation(desc, visible);
     }
 
+    @Override
     public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
         checkIsTransformationEnabled();
         return super.visitField(access, name, desc, signature, value);
     }
 
+    @Override
     public void visitInnerClass(String name, String outerName, String innerName, int access) {
         checkIsTransformationEnabled();
         super.visitInnerClass(name, outerName, innerName, access);
     }
 
+    @Override
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         checkIsTransformationEnabled();
         return super.visitMethod(access, name, desc, signature, exceptions);
     }
 
+    @Override
     public void visitOuterClass(String owner, String name, String desc) {
         checkIsTransformationEnabled();
         super.visitOuterClass(owner, name, desc);
     }
 
+    @Override
     public void visitEnd() {
         checkIsTransformationEnabled();
         super.visitEnd();

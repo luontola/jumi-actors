@@ -16,6 +16,7 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
 
     private final List<SingleThreadedActors> createdActors = new ArrayList<SingleThreadedActors>();
 
+    @Override
     protected SingleThreadedActors newActors(ListenerFactory<?>... factories) {
         SingleThreadedActors actors = new SingleThreadedActors(factories) {
             @Override
@@ -28,6 +29,7 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
         return actors;
     }
 
+    @Override
     protected void processEvents() {
         for (SingleThreadedActors actors : createdActors) {
             actors.processEventsUntilIdle();
@@ -39,6 +41,7 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
         SingleThreadedActors actors = new SingleThreadedActors(new DummyListenerFactory());
 
         actors.doStartUnattendedWorker(new Runnable() {
+            @Override
             public void run() {
                 throw new RuntimeException("dummy exception");
             }
@@ -54,6 +57,7 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
         SingleThreadedActors actors = new SingleThreadedActors(new DummyListenerFactory());
 
         DummyListener actor = actors.createPrimaryActor(DummyListener.class, new DummyListener() {
+            @Override
             public void onSomething(String parameter) {
                 throw new RuntimeException("dummy exception");
             }
@@ -69,12 +73,14 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
     public void will_keep_on_processing_messages_when_uncaught_exceptions_from_pollers_are_suppressed() {
         final List<Throwable> uncaughtExceptions = new ArrayList<Throwable>();
         SingleThreadedActors actors = new SingleThreadedActors(new DummyListenerFactory()) {
+            @Override
             protected void handleUncaughtException(Object source, Throwable uncaughtException) {
                 uncaughtExceptions.add(uncaughtException);
             }
         };
 
         DummyListener actor = actors.createPrimaryActor(DummyListener.class, new DummyListener() {
+            @Override
             public void onSomething(String parameter) {
                 throw new RuntimeException("dummy exception");
             }
@@ -90,17 +96,20 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
     public void will_keep_on_processing_messages_when_uncaught_exceptions_from_workers_are_suppressed_and_workers_launch_more_workers() {
         final List<Throwable> uncaughtExceptions = new ArrayList<Throwable>();
         final SingleThreadedActors actors = new SingleThreadedActors(new DummyListenerFactory()) {
+            @Override
             protected void handleUncaughtException(Object source, Throwable uncaughtException) {
                 uncaughtExceptions.add(uncaughtException);
             }
         };
 
         final Runnable worker2 = new Runnable() {
+            @Override
             public void run() {
                 throw new RuntimeException("dummy exception");
             }
         };
         Runnable worker1 = new Runnable() {
+            @Override
             public void run() {
                 actors.doStartUnattendedWorker(worker2);
                 throw new RuntimeException("dummy exception");
@@ -119,11 +128,13 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
 
         Executor executor = actors.getExecutor();
         executor.execute(new Runnable() {
+            @Override
             public void run() {
                 spy.append("a");
             }
         });
         executor.execute(new Runnable() {
+            @Override
             public void run() {
                 spy.append("b");
             }

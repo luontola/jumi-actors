@@ -17,6 +17,7 @@ public class ClassFileTransformerTest {
     @Test
     public void instruments_classes_with_the_provided_transformer() throws Exception {
         AbstractTransformationChain transformer = new AbstractTransformationChain() {
+            @Override
             protected ClassVisitor getAdapters(ClassVisitor cv) {
                 return new AddEqualsMethodWhichReturnsTrue(cv);
             }
@@ -49,6 +50,7 @@ public class ClassFileTransformerTest {
             super(Opcodes.ASM4, cv);
         }
 
+        @Override
         public void visitEnd() {
             MethodVisitor mv = super.visitMethod(Opcodes.ACC_PUBLIC, "equals", "(Ljava/lang/Object;)Z", null, null);
             mv.visitCode();

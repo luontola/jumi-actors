@@ -1,4 +1,4 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -40,6 +40,7 @@ public class TestEnvironment {
 
     private static File getProjectArtifact(final String prefix, final String suffix) {
         File[] files = PROJECT_ARTIFACTS_DIR.listFiles(new FilenameFilter() {
+            @Override
             public boolean accept(File dir, String name) {
                 return name.startsWith(prefix) && name.endsWith(suffix);
             }

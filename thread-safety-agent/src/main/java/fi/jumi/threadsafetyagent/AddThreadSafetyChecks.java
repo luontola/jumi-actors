@@ -23,6 +23,7 @@ public class AddThreadSafetyChecks extends ClassVisitor {
         super(Opcodes.ASM4, cv);
     }
 
+    @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         if ((access & ACC_INTERFACE) == ACC_INTERFACE) {
             throw new DoNotTransformException();
@@ -31,6 +32,7 @@ public class AddThreadSafetyChecks extends ClassVisitor {
         super.visit(version, access, name, signature, superName, interfaces);
     }
 
+    @Override
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
         if (isConstructor(name)) {
@@ -41,6 +43,7 @@ public class AddThreadSafetyChecks extends ClassVisitor {
         return mv;
     }
 
+    @Override
     public void visitEnd() {
         createCheckerField();
         super.visitEnd();
@@ -68,6 +71,7 @@ public class AddThreadSafetyChecks extends ClassVisitor {
             super(api, mv);
         }
 
+        @Override
         public void visitInsn(int opcode) {
             if (opcode == RETURN) {
                 // insert to the end of the method
@@ -80,6 +84,7 @@ public class AddThreadSafetyChecks extends ClassVisitor {
             super.visitInsn(opcode);
         }
 
+        @Override
         public void visitMaxs(int maxStack, int maxLocals) {
             // TODO: stack might not be empty right before a RETURN statement, so this maxStack can be too optimistic
             super.visitMaxs(max(3, maxStack), maxLocals);
@@ -91,6 +96,7 @@ public class AddThreadSafetyChecks extends ClassVisitor {
             super(api, mv);
         }
 
+        @Override
         public void visitCode() {
             super.visitCode();
 
@@ -104,6 +110,7 @@ public class AddThreadSafetyChecks extends ClassVisitor {
             super.visitMethodInsn(INVOKEVIRTUAL, CHECKER_CLASS, "checkCurrentThread", "()V");
         }
 
+        @Override
         public void visitLineNumber(int line, Label start) {
             if (lastGeneratedCode != null) {
                 super.visitLineNumber(line, lastGeneratedCode);
@@ -112,6 +119,7 @@ public class AddThreadSafetyChecks extends ClassVisitor {
             super.visitLineNumber(line, start);
         }
 
+        @Override
         public void visitMaxs(int maxStack, int maxLocals) {
             super.visitMaxs(max(1, maxStack), maxLocals);
         }

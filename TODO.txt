@@ -97,9 +97,9 @@ TODO NEXT:
 		OK - combine the interfaces
 		SKIP - consider eliminating redundant parameters; should we also check for correctness here?
 	OK - TestClassRunnerTest: write forwards_all_other_events (don't call start, check the assumed number of methods)
-	!! - add @Override annotations to all interface implementations
-		- enable "Missing @Override annotation" inspection
-		- Analyze | Run Inspection by Name, Apply Quickfix
+	OK - add @Override annotations to all interface implementations
+		OK - enable "Missing @Override annotation" inspection
+		OK - Analyze | Run Inspection by Name, Apply Quickfix
 	- refactor TextUI
 		- create SuiteState/SuiteEventDemuxer which collects all events and groups them into runs (fields: testNames, runs, suiteFinished, currentMessage)
 		- move the counting passing/failing tests into its own visitor (fields: failedTests, allTests)
@@ -268,6 +268,7 @@ TODO NEXT:
 	- DummyListenerToEvent: rename sender to target
 	- EventToDummyListener: rename listener to target
 	- @Generated annotation, example: @Generated(value = "fi.jumi.codegenerator.EventStubGenerator", comments = "Generated based on fi.jumi.codegenerator.DummyListener", date = "2000-01-01")
+	- @Override annotation to all methods
 	- annotation to suppress unchecked warnings due to type erasure?
 	- toString?
 	- Externalizable? should give overall best performance without additional dependencies: https://github.com/eishay/jvm-serializers/wiki/

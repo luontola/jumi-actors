@@ -87,6 +87,7 @@ public class TestClassRunnerTest {
     }
 
     public static class TwoTestsDriver implements Driver {
+        @Override
         public void findTests(Class<?> testClass, final SuiteNotifier notifier, Executor executor) {
             notifier.fireTestFound(TestId.ROOT, "root test");
             executor.execute(new Runnable() {

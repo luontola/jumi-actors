@@ -59,6 +59,7 @@ public class EventBuilder {
 
     public void test(RunId runId, TestId testId, String name) {
         test(runId, testId, name, new Runnable() {
+            @Override
             public void run() {
             }
         });
@@ -66,6 +67,7 @@ public class EventBuilder {
 
     public void failingTest(final RunId runId, final TestId testId, String name, final Throwable failure) {
         test(runId, testId, name, new Runnable() {
+            @Override
             public void run() {
                 listener.onFailure(runId, failure);
             }

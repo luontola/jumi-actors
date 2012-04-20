@@ -1,4 +1,4 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -16,6 +16,7 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
         this.factories = factories;
     }
 
+    @Override
     public <T> T createPrimaryActor(Class<T> type, T target, String name) {
         checkNotInsideAnActor();
         ListenerFactory<T> factory = getFactoryForType(type);
@@ -36,6 +37,7 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
 
     protected abstract <T> void startEventPoller(String name, MessageQueue<Event<T>> queue, MessageSender<Event<T>> receiver);
 
+    @Override
     public void startUnattendedWorker(Runnable worker, Runnable onFinished) {
         Runnable onFinishedHandle = createSecondaryActor(Runnable.class, onFinished);
         doStartUnattendedWorker(new UnattendedWorker(worker, onFinishedHandle));
@@ -43,6 +45,7 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
 
     protected abstract void doStartUnattendedWorker(Runnable worker);
 
+    @Override
     public <T> T createSecondaryActor(Class<T> type, final T target) {
         ListenerFactory<T> factory = getFactoryForType(type);
         final MessageQueue<Event<?>> queue = getQueueOfCurrentActor();
@@ -88,6 +91,7 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
             this.queue = queue;
         }
 
+        @Override
         @SuppressWarnings({"unchecked"})
         public void run() {
             initActorContext(queue);
@@ -109,6 +113,7 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
             this.onFinished = onFinished;
         }
 
+        @Override
         public void run() {
             try {
                 worker.run();
@@ -128,6 +133,7 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
             this.target = target;
         }
 
+        @Override
         public void send(Event<T> message) {
             queue.send(new CustomTargetEvent<T>(message, target));
         }
@@ -143,6 +149,7 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
             this.target = target;
         }
 
+        @Override
         public void fireOn(Object ignored) {
             // TODO: double-check that we are on the right thread?
             message.fireOn(target);

@@ -95,6 +95,7 @@ public class AppRunner implements TestRule {
     @Override
     public Statement apply(final Statement base, Description description) {
         return new Statement() {
+            @Override
             public void evaluate() throws Throwable {
                 setUp();
                 try {
@@ -129,14 +130,17 @@ public class AppRunner implements TestRule {
 
     private static void printProcessOutput(JumiLauncher launcher) {
         launcher.setOutputListener(new Writer() {
+            @Override
             public void write(char[] cbuf, int off, int len) {
                 System.out.print(new String(cbuf, off, len));
             }
 
+            @Override
             public void flush() {
                 System.out.flush();
             }
 
+            @Override
             public void close() {
                 flush();
             }

@@ -27,6 +27,7 @@ public class SpyListener<T> implements InvocationHandler {
         return listenerType.cast(proxy);
     }
 
+    @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         if (args == null) {
             args = new Object[0];
@@ -87,11 +88,13 @@ public class SpyListener<T> implements InvocationHandler {
             this.args = args;
         }
 
+        @Override
         public String toString() {
             String args = Arrays.toString(this.args);
             return methodName + "(" + args.substring(1, args.length() - 1) + ")";
         }
 
+        @Override
         public boolean equals(Object obj) {
             Call that = (Call) obj;
             return this.methodName.equals(that.methodName) && argsMatch(that);

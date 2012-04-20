@@ -1,16 +1,12 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
 package fi.jumi.actors;
 
 import javax.annotation.concurrent.ThreadSafe;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.concurrent.*;
 
 @ThreadSafe
 public class MultiThreadedActors extends Actors {
@@ -27,12 +23,14 @@ public class MultiThreadedActors extends Actors {
         unattendedWorkers = threadPool;
     }
 
+    @Override
     protected <T> void startEventPoller(String name, MessageQueue<Event<T>> queue, MessageSender<Event<T>> receiver) {
         Thread t = new Thread(new ActorContext<T>(queue, new EventPoller<T>(queue, receiver)), name);
         t.start();
         actorThreads.add(t);
     }
 
+    @Override
     protected void doStartUnattendedWorker(Runnable worker) {
         unattendedWorkers.execute(worker);
     }
@@ -59,6 +57,7 @@ public class MultiThreadedActors extends Actors {
             this.target = target;
         }
 
+        @Override
         public void run() {
             try {
                 while (!Thread.interrupted()) {

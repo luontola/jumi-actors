@@ -18,10 +18,12 @@ public class DefaultSuiteNotifier implements SuiteNotifier {
         this.currentRun = new CurrentRun(listener, runIdSequence);
     }
 
+    @Override
     public void fireTestFound(TestId testId, String name) {
         currentRun.fireTestFound(testId, name);
     }
 
+    @Override
     public TestNotifier fireTestStarted(TestId testId) {
         currentRun.fireTestStarted(testId);
         return new DefaultTestNotifier(currentRun, testId);

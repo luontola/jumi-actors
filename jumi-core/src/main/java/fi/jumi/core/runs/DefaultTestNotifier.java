@@ -19,10 +19,12 @@ public class DefaultTestNotifier implements TestNotifier {
         this.testId = testId;
     }
 
+    @Override
     public void fireFailure(Throwable cause) {
         currentRun.fireFailure(testId, cause);
     }
 
+    @Override
     public void fireTestFinished() {
         currentRun.fireTestFinished(testId);
     }

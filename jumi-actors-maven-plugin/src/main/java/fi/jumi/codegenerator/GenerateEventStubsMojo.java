@@ -76,6 +76,7 @@ public class GenerateEventStubsMojo extends AbstractMojo {
     protected MavenProject project;
 
 
+    @Override
     public void execute() throws MojoExecutionException {
         TargetPackageResolver targetPackageResolver = new TargetPackageResolver(targetPackage);
         for (String eventInterface : eventInterfaces) {

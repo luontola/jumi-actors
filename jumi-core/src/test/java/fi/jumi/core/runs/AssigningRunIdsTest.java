@@ -55,6 +55,7 @@ public class AssigningRunIdsTest {
         notifier.fireTestStarted(TestId.ROOT);
 
         execute(new Runnable() {
+            @Override
             public void run() {
                 notifier.fireTestStarted(TestId.of(0));
             }

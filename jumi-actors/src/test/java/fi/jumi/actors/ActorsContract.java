@@ -1,4 +1,4 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -60,6 +60,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
         final AtomicReference<Throwable> thrown = new AtomicReference<Throwable>();
 
         actors.createPrimaryActor(DummyListener.class, new DummyListener() {
+            @Override
             public void onSomething(String parameter) {
                 try {
                     actors.createPrimaryActor(DummyListener.class, new SpyDummyListener(), "Actor 2");
@@ -89,6 +90,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
             public volatile Thread primaryEventThread;
             public volatile Thread secondaryEventThread;
 
+            @Override
             public void onPrimaryEvent() {
                 // binding must be done inside an actor
                 secondaryHandle = actors.createSecondaryActor(SecondaryInterface.class, this);
@@ -97,6 +99,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
                 logEvent("primary event");
             }
 
+            @Override
             public void onSecondaryEvent() {
                 secondaryEventThread = Thread.currentThread();
                 logEvent("secondary event");

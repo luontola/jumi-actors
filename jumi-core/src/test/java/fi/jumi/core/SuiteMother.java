@@ -51,6 +51,7 @@ public class SuiteMother {
         final RunId run1 = suite.nextRunId();
         suite.runStarted(run1, TEST_CLASS);
         suite.test(run1, TestId.ROOT, TEST_CLASS_NAME, new Runnable() {
+            @Override
             public void run() {
                 suite.test(run1, TestId.of(0), "testOne");
                 suite.failingTest(run1, TestId.of(1), "testTwo",
@@ -70,6 +71,7 @@ public class SuiteMother {
         final RunId run1 = suite.nextRunId();
         suite.runStarted(run1, TEST_CLASS);
         suite.test(run1, TestId.ROOT, TEST_CLASS_NAME, new Runnable() {
+            @Override
             public void run() {
                 suite.test(run1, TestId.of(0), "testOne");
             }
@@ -79,6 +81,7 @@ public class SuiteMother {
         final RunId run2 = suite.nextRunId();
         suite.runStarted(run2, TEST_CLASS);
         suite.test(run2, TestId.ROOT, TEST_CLASS_NAME, new Runnable() {
+            @Override
             public void run() {
                 suite.test(run2, TestId.of(1), "testTwo");
             }

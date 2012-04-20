@@ -1,4 +1,4 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -14,6 +14,7 @@ import java.util.concurrent.Executor;
 @NotThreadSafe
 public class SimpleUnit implements Driver {
 
+    @Override
     public void findTests(Class<?> testClass, SuiteNotifier notifier, Executor executor) {
         notifier.fireTestFound(TestId.ROOT, testClass.getSimpleName());
 
@@ -55,6 +56,7 @@ public class SimpleUnit implements Driver {
             this.notifier = notifier;
         }
 
+        @Override
         public void run() {
             TestNotifier tn = notifier.fireTestStarted(TestId.ROOT);
             try {

@@ -1,4 +1,4 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -22,6 +22,7 @@ public class DynamicEvent<T> implements Event<T>, Serializable {
         this.args = args;
     }
 
+    @Override
     public void fireOn(T target) {
         try {
             method.invoke(target, args);
@@ -51,6 +52,7 @@ public class DynamicEvent<T> implements Event<T>, Serializable {
         }
     }
 
+    @Override
     public String toString() {
         String args = Arrays.toString(this.args);
         args = args.substring(1, args.length() - 1);

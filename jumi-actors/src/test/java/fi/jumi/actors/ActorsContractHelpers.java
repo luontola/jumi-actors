@@ -1,4 +1,4 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -47,6 +47,7 @@ public abstract class ActorsContractHelpers<T extends Actors> {
     public class SpyDummyListener implements DummyListener {
         public volatile Thread thread;
 
+        @Override
         public void onSomething(String parameter) {
             thread = Thread.currentThread();
             logEvent(parameter);
@@ -61,6 +62,7 @@ public abstract class ActorsContractHelpers<T extends Actors> {
             this.event = event;
         }
 
+        @Override
         public void run() {
             thread = Thread.currentThread();
             logEvent(event);
@@ -104,6 +106,7 @@ public abstract class ActorsContractHelpers<T extends Actors> {
     }
 
     public static class NullRunnable implements Runnable {
+        @Override
         public void run() {
         }
     }
@@ -129,14 +132,17 @@ public abstract class ActorsContractHelpers<T extends Actors> {
 
     public class DummyListenerFactory implements ListenerFactory<DummyListener> {
 
+        @Override
         public Class<DummyListener> getType() {
             return DummyListener.class;
         }
 
+        @Override
         public DummyListener newFrontend(MessageSender<Event<DummyListener>> target) {
             return new DummyListenerToEvent(target);
         }
 
+        @Override
         public MessageSender<Event<DummyListener>> newBackend(DummyListener target) {
             return new EventToDummyListener(target);
         }
@@ -149,6 +155,7 @@ public abstract class ActorsContractHelpers<T extends Actors> {
             this.parameter = parameter;
         }
 
+        @Override
         public void fireOn(DummyListener target) {
             target.onSomething(parameter);
         }
@@ -161,6 +168,7 @@ public abstract class ActorsContractHelpers<T extends Actors> {
             this.sender = sender;
         }
 
+        @Override
         public void onSomething(String parameter) {
             sender.send(new OnSomethingEvent(parameter));
         }
@@ -173,6 +181,7 @@ public abstract class ActorsContractHelpers<T extends Actors> {
             this.listener = listener;
         }
 
+        @Override
         public void send(Event<DummyListener> message) {
             message.fireOn(listener);
         }

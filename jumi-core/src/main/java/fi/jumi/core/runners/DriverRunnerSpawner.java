@@ -6,8 +6,7 @@ package fi.jumi.core.runners;
 
 import fi.jumi.actors.OnDemandActors;
 import fi.jumi.api.drivers.*;
-import fi.jumi.core.runs.RunIdSequence;
-import fi.jumi.core.runs.DefaultSuiteNotifier;
+import fi.jumi.core.runs.*;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.concurrent.Executor;
@@ -41,6 +40,7 @@ public class DriverRunnerSpawner {
     private void spawnWorker(DriverRunner worker) {
         @NotThreadSafe
         class OnWorkerFinished implements Runnable {
+            @Override
             public void run() {
                 workerCounter.fireWorkerFinished();
             }

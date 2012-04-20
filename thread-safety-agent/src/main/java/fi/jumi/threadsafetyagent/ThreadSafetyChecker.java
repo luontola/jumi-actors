@@ -1,4 +1,4 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -42,6 +42,7 @@ public class ThreadSafetyChecker {
         callLocations = new CallLocation(callLocations);
         if (calledFromThreads.size() > 1) {
             AssertionError e = new AssertionError("non-thread-safe instance called from multiple threads: " + threadNames(calledFromThreads)) {
+                @Override
                 public Throwable fillInStackTrace() {
                     return this;
                 }

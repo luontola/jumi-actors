@@ -1,13 +1,11 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
 package fi.jumi.daemon;
 
-import fi.jumi.actors.Event;
-import fi.jumi.actors.MessageSender;
-import fi.jumi.core.CommandListener;
-import fi.jumi.core.SuiteListener;
+import fi.jumi.actors.*;
+import fi.jumi.core.*;
 import fi.jumi.core.events.SuiteListenerFactory;
 import org.jboss.netty.channel.*;
 
@@ -21,17 +19,20 @@ public class JumiDaemonHandler extends SimpleChannelHandler {
         this.coordinator = coordinator;
     }
 
+    @Override
     public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
         // TODO: notify the coordinator on disconnect
         SuiteListener listener = new SuiteListenerFactory().newFrontend(new ChannelMessageSender(e.getChannel()));
         coordinator.addSuiteListener(listener);
     }
 
+    @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
         Event<CommandListener> event = (Event<CommandListener>) e.getMessage();
         event.fireOn(coordinator);
     }
 
+    @Override
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
         // TODO: better error handling
         e.getCause().printStackTrace();
@@ -46,6 +47,7 @@ public class JumiDaemonHandler extends SimpleChannelHandler {
             this.channel = channel;
         }
 
+        @Override
         public void send(Event<SuiteListener> message) {
             channel.write(message);
         }

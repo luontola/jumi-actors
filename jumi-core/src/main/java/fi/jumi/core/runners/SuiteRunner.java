@@ -38,6 +38,7 @@ public class SuiteRunner implements Startable, TestClassFinderListener, WorkerCo
         this.workers = new WorkerCounter(this);
     }
 
+    @Override
     public void start() {
         // XXX: this call might not be needed (it could even be harmful because of asynchrony); the caller of SuiteRunner knows when the suite is started
         listener.onSuiteStarted();
@@ -51,6 +52,7 @@ public class SuiteRunner implements Startable, TestClassFinderListener, WorkerCo
 
         @NotThreadSafe
         class FireWorkerFinished implements Runnable {
+            @Override
             public void run() {
                 workers.fireWorkerFinished();
             }
@@ -63,6 +65,7 @@ public class SuiteRunner implements Startable, TestClassFinderListener, WorkerCo
         listener.onSuiteFinished();
     }
 
+    @Override
     public void onTestClassFound(final Class<?> testClass) {
         Driver driver = driverFinder.findTestClassDriver(testClass);
 
@@ -126,6 +129,7 @@ public class SuiteRunner implements Startable, TestClassFinderListener, WorkerCo
             this.testClassFinder = testClassFinder;
         }
 
+        @Override
         public void run() {
             testClassFinder.findTestClasses(finderListener);
         }

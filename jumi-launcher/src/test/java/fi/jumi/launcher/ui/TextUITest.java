@@ -58,6 +58,7 @@ public class TextUITest {
     @Test(timeout = 1000L)
     public void can_update_blockingly() throws InterruptedException {
         Thread t = new Thread(new Runnable() {
+            @Override
             public void run() {
                 SuiteMother.emptySuite(listener);
             }
@@ -116,6 +117,7 @@ public class TextUITest {
         final RunId run1 = suite.nextRunId();
         suite.runStarted(run1, SuiteMother.TEST_CLASS);
         suite.test(run1, TestId.ROOT, SuiteMother.TEST_CLASS_NAME, new Runnable() {
+            @Override
             public void run() {
                 suite.test(run1, TestId.of(0), "test one");
             }
@@ -126,6 +128,7 @@ public class TextUITest {
         final RunId run2 = suite.nextRunId();
         suite.runStarted(run2, SuiteMother.TEST_CLASS);
         suite.test(run2, TestId.ROOT, SuiteMother.TEST_CLASS_NAME, new Runnable() {
+            @Override
             public void run() {
                 suite.test(run2, TestId.of(1), "test two");
             }
@@ -182,6 +185,7 @@ public class TextUITest {
         // First test of the test run - should print the class name
         suite.runStarted(run1, SuiteMother.TEST_CLASS);
         suite.test(run1, TestId.ROOT, "Human readable name of test class", new Runnable() {
+            @Override
             public void run() {
 
                 // Second test of the test run - should NOT print the class name a second time,
@@ -244,9 +248,11 @@ public class TextUITest {
         final RunId run1 = suite.nextRunId();
         suite.runStarted(run1, SuiteMother.TEST_CLASS);
         suite.test(run1, TestId.ROOT, "Dummy test", new Runnable() {
+            @Override
             public void run() {
                 suite.test(run1, TestId.of(0), "test one");
                 suite.test(run1, TestId.of(1), "test two", new Runnable() {
+                    @Override
                     public void run() {
                         suite.test(run1, TestId.of(1, 0), "deeply nested test");
                     }

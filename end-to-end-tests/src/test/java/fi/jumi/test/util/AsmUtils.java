@@ -1,4 +1,4 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -28,11 +28,13 @@ public class AsmUtils {
             expected.add(annotation.getName());
         }
         return new TypeSafeMatcher<ClassNode>() {
+            @Override
             protected boolean matchesSafely(ClassNode item) {
                 List<String> actual = getAnnotations(item);
                 return !Collections.disjoint(actual, expected);
             }
 
+            @Override
             public void describeTo(Description description) {
                 description.appendText("annotated with one of ").appendText(expected.toString());
             }

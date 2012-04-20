@@ -49,6 +49,7 @@ public class Main {
 
         @ThreadSafe
         class MyChannelPipelineFactory implements ChannelPipelineFactory {
+            @Override
             public ChannelPipeline getPipeline() {
                 return Channels.pipeline(
                         new ObjectEncoder(),
@@ -70,6 +71,7 @@ public class Main {
 
         @Immutable
         class DelayedSystemExit implements Runnable {
+            @Override
             public void run() {
                 try {
                     Thread.sleep(2 * 1000);

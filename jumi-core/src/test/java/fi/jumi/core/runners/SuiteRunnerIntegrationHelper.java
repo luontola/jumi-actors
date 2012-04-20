@@ -61,6 +61,7 @@ public abstract class SuiteRunnerIntegrationHelper {
             this.driver = driver;
         }
 
+        @Override
         public Driver findTestClassDriver(Class<?> testClass) {
             return driver;
         }
@@ -73,6 +74,7 @@ public abstract class SuiteRunnerIntegrationHelper {
             this.testClasses = testClasses;
         }
 
+        @Override
         public void findTestClasses(TestClassFinderListener listener) {
             for (Class<?> testClass : testClasses) {
                 listener.onTestClassFound(testClass);

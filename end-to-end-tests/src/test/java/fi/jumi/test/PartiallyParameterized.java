@@ -1,4 +1,4 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -47,11 +47,13 @@ public class PartiallyParameterized extends Parameterized {
             this.nonParameterizedMethods = nonParameterizedMethods;
         }
 
+        @Override
         public boolean shouldRun(Description description) {
             String methodName = description.getMethodName().replaceAll("\\[\\d+\\]$", "");
             return !nonParameterizedMethods.contains(methodName);
         }
 
+        @Override
         public String describe() {
             return "exclude non parameterized";
         }
