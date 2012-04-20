@@ -9,7 +9,7 @@ import fi.jumi.core.runs.RunId;
 
 public interface TestClassListener {
 
-    // XXX: duplicate method signatures in TestClassListener and TestClassRunnerListener
+    // TODO: consider eliminating redundant parameters
 
     void onTestFound(TestId testId, String name);
 

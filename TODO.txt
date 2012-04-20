@@ -93,8 +93,9 @@ TODO NEXT:
 		OK - testClass can be deduced from onRunStarted's RunId
 		OK - TestId of onTestFinished & onFailure can be deduced from last call to onTestStarted (also prevents faulty input)
 		OK - refactor TextUI, keep hold of suite/run state better
-	!! - eliminate duplicate method signatures in TestClassListener and TestClassRunnerListener
-		- consider eliminating redundant parameters; should we also check for correctness here?
+	OK - eliminate duplicate method signatures in TestClassListener and TestClassRunnerListener
+		OK - combine the interfaces
+		SKIP - consider eliminating redundant parameters; should we also check for correctness here?
 	- TestClassRunnerTest: write forwards_all_other_events (don't call start, check the assumed number of methods)
 	- add @Override annotations to all interface implementations
 		- enable "Missing @Override annotation" inspection
@@ -147,6 +148,7 @@ TODO NEXT:
 		- create a MonitoredExecutorSpawner which executes the callback in the current actor thread
 		- use MonitoredExecutor instead of Actors.startUnattendedWorker (keep SingleThreadedActors.getExecutor)
 		- remove Actors.startUnattendedWorker
+		- try removing fi.jumi.core.runners.TestClassRunnerListener#onTestClassFinished
 	- or, implement unattended workers as actors which stop themselves (Thread.interrupt()) after running the command
 	- refactor Actors
 		- make DynamicListenerFactory support all types without having to declare them
@@ -222,6 +224,11 @@ TODO NEXT:
 		- they take no input when running, so no actor handle needs to be created for them
 		OK - the thing which coordinates a test class's workers might need to be an actor (it receives events from the tests), but it should also be able to exit itself when it has done its work
 	- bullet proofing the public api, cross-references from javadocs to tests (a new xref tag?)
+		- testId in onTestFinished must be correspond last onTestStarted, correctly nested
+		- testId in onFailure must equal the currently running test
+		- disallow TestNotifier.fireFailure and fireTestFinished after test is finished
+		- log all incorrect usages to some internal log and make the suite fail?
+		- TestClassListener: consider eliminating redundant parameters
 	- duplicate method signatures in TestClassListener and TestClassRunnerListener
 	- should SuiteRunner or TestClassRunner be responsible for filtering duplicate onTestFound events?
 	- evaluate JarJar or ProGuard, maybe it could minimize the jars better than the shade plugin by removing also unused methods
