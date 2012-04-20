@@ -140,13 +140,14 @@ TODO NEXT:
 				- extract TestClassFinderSpawner
 			- fi.jumi.core.runners.TestClassRunner
 				- push dependencies out of constructor (pass WorkerCounter and `this` as method parameters to DriverRunnerSpawner)
-	- decouple unattended workers from Actors
+	- either, decouple unattended workers from Actors
 		- hide WorkerCounter, create a wrapper: new MonitoredExecutor(realExecutor, onAllFinishedCallback)
 			- thred safe, counts commands with AtomicInteger
 			- executes the callback using realExecutor, as its own command
 		- create a MonitoredExecutorSpawner which executes the callback in the current actor thread
 		- use MonitoredExecutor instead of Actors.startUnattendedWorker (keep SingleThreadedActors.getExecutor)
 		- remove Actors.startUnattendedWorker
+	- or, implement unattended workers as actors which stop themselves (Thread.interrupt()) after running the command
 	- refactor Actors
 		- make DynamicListenerFactory support all types without having to declare them
 			- move the type comparison in Actors.getFactoryForType to ListenerFactory.supportsType
@@ -186,6 +187,8 @@ TODO NEXT:
 
 - end-to-end tests: failures outside tests (in drivers and core)
 	- actor tests print dummy exceptions; solve by having a custom pluggable exception handler which doesn't print stack traces of a DummyException class
+	- consider a supervisor pattern for actors (like in Akka)
+	- consider a command for stopping actors (Thread.interrupt(), DeathPill)
 
 - deployment pipeline
 	- install Go
