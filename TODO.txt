@@ -108,6 +108,12 @@ TODO NEXT:
 
 - refactor jumi-actors
 	- make it impossible to use actors wrong
+		- ActorRef (might make spawners and auto wrapping unnecessary!)
+			- return ActorRef from creation methods instead of the proxy
+			- create NakedActorRef for unit testing, ProxyActorRef for production 
+			- in all constructors and fields, use ActorRef instead of proxy to make it easier to keep track of the communication patterns
+			- use ActorRef in callbacks (WorkerCounter, unattended workers, other method parameters if any)
+			- eliminate spawners, see if it the code can be safe enough without them
 		- wrap all NonThreadSafe collaborators of a worker automatically into a secondary actor.
 			Usage:
 			        Spawner<DriverRunnerFactory> driverRunnerSpawner = new Spawner<DriverRunnerFactory>(DriverRunnerFactory.class, new BareDriverRunnerFactory());
@@ -152,10 +158,12 @@ TODO NEXT:
 			- move wiring the MessageQueue in it
 				- from createPrimaryActor
 				- from createSecondaryActor
+		- create Actors.getCurrentActor: ActorRef
+			- implement using the thread-local actor context
+			- use it instead of createSecondaryActor(this)
 		- make all events of type CustomTargetEvent (or would it complicate custom prosessing the messages? do we need to use MessageQueue<MessageToActor> for direct messages, and MessageQueue<Event<T>> for networking and stuff?)
 			- make primary actors use CustomTargetEvent
 			- remove duplication: unify the message processing/sending of primary and secondary actors
-		- should createPrimaryActor/createSecondaryActor return a wrapper for the actor, instead of the actor's handle, to make it easier to see when we are using a handle? or would that unnecessarily couple the code which uses actors into the actors framework?
 
 - end-to-end tests: running multiple test classes
 	- it's not sure whether SuiteRunner works correctly when there are many test classes
