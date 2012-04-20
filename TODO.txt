@@ -96,8 +96,8 @@ TODO NEXT:
 	OK - eliminate duplicate method signatures in TestClassListener and TestClassRunnerListener
 		OK - combine the interfaces
 		SKIP - consider eliminating redundant parameters; should we also check for correctness here?
-	- TestClassRunnerTest: write forwards_all_other_events (don't call start, check the assumed number of methods)
-	- add @Override annotations to all interface implementations
+	OK - TestClassRunnerTest: write forwards_all_other_events (don't call start, check the assumed number of methods)
+	!! - add @Override annotations to all interface implementations
 		- enable "Missing @Override annotation" inspection
 		- Analyze | Run Inspection by Name, Apply Quickfix
 	- refactor TextUI

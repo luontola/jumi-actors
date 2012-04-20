@@ -8,7 +8,7 @@ import fi.jumi.actors.SingleThreadedActors;
 import fi.jumi.api.drivers.*;
 import fi.jumi.core.Startable;
 import fi.jumi.core.events.*;
-import fi.jumi.core.runs.RunIdSequence;
+import fi.jumi.core.runs.*;
 import fi.jumi.core.utils.MethodCallSpy;
 import org.junit.Test;
 
@@ -16,6 +16,7 @@ import java.util.concurrent.Executor;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.*;
 
 public class TestClassRunnerTest {
 
@@ -38,7 +39,35 @@ public class TestClassRunnerTest {
         assertThat("should happen last", spy.getLastCall(), is("onTestClassFinished"));
     }
 
-    // TODO: forwards_all_other_events - find a way to write this as unit test
+    @Test
+    public void forwards_all_other_events() {
+        TestClassRunnerListener target = mock(TestClassRunnerListener.class);
+        TestClassRunner runner = new TestClassRunner(null, null, target, null, null, null);
+        final TestId TEST_ID = TestId.of(1);
+        final String NAME = "name";
+        final RunId RUN_ID = new RunId(1);
+        final Throwable CAUSE = new Throwable();
+
+        runner.onTestFound(TEST_ID, NAME);
+        verify(target).onTestFound(TEST_ID, NAME);
+
+        runner.onRunStarted(RUN_ID);
+        verify(target).onRunStarted(RUN_ID);
+
+        runner.onTestStarted(RUN_ID, TEST_ID);
+        verify(target).onTestStarted(RUN_ID, TEST_ID);
+
+        runner.onFailure(RUN_ID, TEST_ID, CAUSE);
+        verify(target).onFailure(RUN_ID, TEST_ID, CAUSE);
+
+        runner.onTestFinished(RUN_ID, TEST_ID);
+        verify(target).onTestFinished(RUN_ID, TEST_ID);
+
+        runner.onRunFinished(RUN_ID);
+        verify(target).onRunFinished(RUN_ID);
+
+        verifyNoMoreInteractions(target);
+    }
 
 
     // helpers
