@@ -12,10 +12,11 @@ import fi.jumi.core.runs.RunId;
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.*;
 
-public class SuiteEventDemuxer implements SuiteListener, MessageSender<Event<SuiteListener>> {
+public class SuiteEventDemuxer implements MessageSender<Event<SuiteListener>> {
 
     private final Map<GlobalTestId, String> testNames = new HashMap<GlobalTestId, String>();
     private final Map<RunId, RunState> runs = new HashMap<RunId, RunState>();
+    private final InternalDemuxer internalDemuxer = new InternalDemuxer();
 
     private Event<SuiteListener> currentMessage;
     private boolean suiteFinished = false;
@@ -24,7 +25,7 @@ public class SuiteEventDemuxer implements SuiteListener, MessageSender<Event<Sui
     public void send(Event<SuiteListener> message) {
         currentMessage = message;
         try {
-            message.fireOn(this);
+            message.fireOn(internalDemuxer);
         } finally {
             currentMessage = null;
         }
@@ -52,61 +53,64 @@ public class SuiteEventDemuxer implements SuiteListener, MessageSender<Event<Sui
 
     public String getTestName(String testClass, TestId testId) {
         String name = testNames.get(new GlobalTestId(testClass, testId));
-        assert name != null : "name not found for " + testClass + " and " + testId;
+        if (name == null) {
+            throw new IllegalArgumentException("name not found for " + testClass + " and " + testId);
+        }
         return name;
-    }
-
-
-    // TODO: make SuiteListener methods private
-
-    @Override
-    public void onSuiteStarted() {
-    }
-
-    @Override
-    public void onTestFound(String testClass, TestId testId, String name) {
-        addTestName(testClass, testId, name);
-    }
-
-    @Override
-    public void onRunStarted(RunId runId, String testClass) {
-        RunState run = new RunState();
-        runs.put(runId, run);
-        run.events.add(currentMessage);
-    }
-
-    @Override
-    public void onTestStarted(RunId runId, TestId testId) {
-        RunState run = runs.get(runId);
-        run.events.add(currentMessage);
-    }
-
-    @Override
-    public void onFailure(RunId runId, Throwable cause) {
-        RunState run = runs.get(runId);
-        run.events.add(currentMessage);
-    }
-
-    @Override
-    public void onTestFinished(RunId runId) {
-        RunState run = runs.get(runId);
-        run.events.add(currentMessage);
-    }
-
-    @Override
-    public void onRunFinished(RunId runId) {
-        RunState run = runs.get(runId);
-        run.events.add(currentMessage);
-    }
-
-    @Override
-    public void onSuiteFinished() {
-        suiteFinished = true;
     }
 
 
     @NotThreadSafe
     private static class RunState {
-        private final List<Event<SuiteListener>> events = new ArrayList<Event<SuiteListener>>();
+        public final List<Event<SuiteListener>> events = new ArrayList<Event<SuiteListener>>();
+    }
+
+    @NotThreadSafe
+    private class InternalDemuxer implements SuiteListener {
+
+        @Override
+        public void onSuiteStarted() {
+        }
+
+        @Override
+        public void onTestFound(String testClass, TestId testId, String name) {
+            addTestName(testClass, testId, name);
+        }
+
+        @Override
+        public void onRunStarted(RunId runId, String testClass) {
+            RunState run = new RunState();
+            runs.put(runId, run);
+            run.events.add(currentMessage);
+        }
+
+        @Override
+        public void onTestStarted(RunId runId, TestId testId) {
+            RunState run = runs.get(runId);
+            run.events.add(currentMessage);
+        }
+
+        @Override
+        public void onFailure(RunId runId, Throwable cause) {
+            RunState run = runs.get(runId);
+            run.events.add(currentMessage);
+        }
+
+        @Override
+        public void onTestFinished(RunId runId) {
+            RunState run = runs.get(runId);
+            run.events.add(currentMessage);
+        }
+
+        @Override
+        public void onRunFinished(RunId runId) {
+            RunState run = runs.get(runId);
+            run.events.add(currentMessage);
+        }
+
+        @Override
+        public void onSuiteFinished() {
+            suiteFinished = true;
+        }
     }
 }

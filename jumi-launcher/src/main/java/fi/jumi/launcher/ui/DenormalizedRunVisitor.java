@@ -42,7 +42,7 @@ public abstract class DenormalizedRunVisitor extends RunVisitor {
 
     @Override
     public void onTestFinished(RunId runId) {
-        runningTests.pop(); // XXX: this line is not tested
+        runningTests.pop();
     }
 
     @Override
