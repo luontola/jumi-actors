@@ -100,11 +100,11 @@ TODO NEXT:
 	OK - add @Override annotations to all interface implementations
 		OK - enable "Missing @Override annotation" inspection
 		OK - Analyze | Run Inspection by Name, Apply Quickfix
-	- refactor TextUI
-		- create SuiteState/SuiteEventDemuxer which collects all events and groups them into runs (fields: testNames, runs, suiteFinished, currentMessage)
-		- move the counting passing/failing tests into its own visitor (fields: failedTests, allTests)
+	!! - refactor TextUI
+		OK - create SuiteResults(interface?)/SuiteState/SuiteEventDemuxer(class?) which collects all events and groups them into runs (fields: testNames, runs, suiteFinished, currentMessage)
+		!! - move the counting passing/failing tests into its own visitor (fields: failedTests, allTests)
 		- make SuitePrinter contain only printing commands, update it after updating SuiteState
-		- create an abstract StatefulRunVisitor which keeps track of runningTests, gives access to testClass and testId (methods: getTestClass, getTestId, getTestName(testId), int getRunningTests)
+		- create an abstract DenormalizedRunVisitor/StatefulRunVisitor which keeps track of runningTests, gives access to testClass and testId (methods: getTestClass, getTestId, getTestName(testId), int getRunningTests), either as fields/getters or as extra method parameters (original methods final?)
 		- make RunPrinter extend StatefulRunVisitor, do printing in overridden methods
 
 - refactor jumi-actors

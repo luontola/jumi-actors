@@ -21,17 +21,13 @@ public class TextUI {
 
     // TODO: if multiple readers are needed, create a Streamer class per the original designs
     private final MessageReceiver<Event<SuiteListener>> eventStream;
-    private boolean suiteFinished = false;
-
-    private final Map<GlobalTestId, String> testNames = new HashMap<GlobalTestId, String>();
-    private final Map<RunId, RunState> runs = new HashMap<RunId, RunState>();
 
     // TODO: extract counting to its own class
-    private final Set<GlobalTestId> failedTests = new HashSet<GlobalTestId>();
-    private final Set<GlobalTestId> allTests = new HashSet<GlobalTestId>();
+    final Set<GlobalTestId> failedTests = new HashSet<GlobalTestId>();
+    final Set<GlobalTestId> allTests = new HashSet<GlobalTestId>();
 
+    private final SuiteEventDemuxer demuxer = new SuiteEventDemuxer(this);
     private SuitePrinter suitePrinter = new SuitePrinter();
-    private Event<SuiteListener> currentMessage;
 
     public TextUI(PrintStream out, PrintStream err, MessageReceiver<Event<SuiteListener>> eventStream) {
         this.out = out;
@@ -40,7 +36,7 @@ public class TextUI {
     }
 
     public void update() {
-        while (!suiteFinished) {
+        while (!demuxer.isSuiteFinished()) {
             Event<SuiteListener> message = eventStream.poll();
             if (message == null) {
                 break;
@@ -50,35 +46,15 @@ public class TextUI {
     }
 
     public void updateUntilFinished() throws InterruptedException {
-        while (!suiteFinished) {
+        while (!demuxer.isSuiteFinished()) {
             Event<SuiteListener> message = eventStream.take();
             updateWithMessage(message);
         }
     }
 
     private void updateWithMessage(Event<SuiteListener> message) {
-        currentMessage = message;
-        try {
-            message.fireOn(suitePrinter);
-        } finally {
-            currentMessage = null;
-        }
-    }
-
-    private void addTestName(String testClass, TestId testId, String name) {
-        testNames.put(new GlobalTestId(testClass, testId), name);
-    }
-
-    private String getTestName(String testClass, TestId testId) {
-        String name = testNames.get(new GlobalTestId(testClass, testId));
-        assert name != null : "name not found for " + testClass + " and " + testId;
-        return name;
-    }
-
-    private void visitRun(RunId runId, SuiteListener visitor) {
-        for (Event<SuiteListener> event : runs.get(runId).events) {
-            event.fireOn(visitor);
-        }
+        demuxer.send(message);
+        message.fireOn(suitePrinter);
     }
 
     // visual style
@@ -90,17 +66,6 @@ public class TextUI {
 
 
     @NotThreadSafe
-    private static class RunState {
-        private final String testClass;
-        private final Deque<TestId> runningTests = new ArrayDeque<TestId>();
-        private final List<Event<SuiteListener>> events = new ArrayList<Event<SuiteListener>>();
-
-        private RunState(String testClass) {
-            this.testClass = testClass;
-        }
-    }
-
-    @NotThreadSafe
     private class SuitePrinter implements SuiteListener {
 
         @Override
@@ -109,50 +74,28 @@ public class TextUI {
 
         @Override
         public void onTestFound(String testClass, TestId testId, String name) {
-            addTestName(testClass, testId, name);
         }
 
         @Override
         public void onRunStarted(RunId runId, String testClass) {
-            RunState run = new RunState(testClass);
-            runs.put(runId, run);
-            run.events.add(currentMessage);
         }
 
         @Override
         public void onTestStarted(RunId runId, TestId testId) {
-            RunState run = runs.get(runId);
-            run.events.add(currentMessage);
-
-            run.runningTests.push(testId);
-            allTests.add(new GlobalTestId(run.testClass, testId));
         }
 
         @Override
         public void onFailure(RunId runId, Throwable cause) {
-            RunState run = runs.get(runId);
-            run.events.add(currentMessage);
-
-            TestId testId = run.runningTests.getLast();
-            failedTests.add(new GlobalTestId(run.testClass, testId));
         }
 
         @Override
         public void onTestFinished(RunId runId) {
-            RunState run = runs.get(runId);
-            run.events.add(currentMessage);
-
-            run.runningTests.pop(); // XXX: this line is not tested
         }
 
         @Override
         public void onRunFinished(RunId runId) {
-            RunState run = runs.get(runId);
-            run.events.add(currentMessage);
-
             // TODO: option for printing only failing or all runs
-            // TODO: decouple printing from collecting the results
-            visitRun(runId, new RunPrinter());
+            demuxer.visitRun(runId, new RunPrinter());
         }
 
         @Override
@@ -161,9 +104,7 @@ public class TextUI {
             int failCount = failedTests.size();
             int passCount = totalCount - failCount;
 
-            // TODO: decouple printing from collecting the results
             printSuiteFooter(passCount, failCount);
-            suiteFinished = true;
         }
     }
 
@@ -209,7 +150,7 @@ public class TextUI {
         }
 
         private void printTestName(String bullet, String testClass, TestId testId) {
-            out.println(" > " + testNameIndent() + bullet + " " + getTestName(testClass, testId));
+            out.println(" > " + testNameIndent() + bullet + " " + demuxer.getTestName(testClass, testId));
         }
 
         private void printRunFooter() {
