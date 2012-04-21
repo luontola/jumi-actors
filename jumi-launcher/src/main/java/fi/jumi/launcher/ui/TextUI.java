@@ -7,6 +7,7 @@ package fi.jumi.launcher.ui;
 import fi.jumi.actors.*;
 import fi.jumi.api.drivers.TestId;
 import fi.jumi.core.SuiteListener;
+import fi.jumi.core.results.*;
 import fi.jumi.core.runs.RunId;
 
 import javax.annotation.concurrent.NotThreadSafe;
