@@ -82,13 +82,13 @@ public class TextUI {
         @Override
         public void onRunFinished(RunId runId) {
             // TODO: option for printing only failing or all runs
-            demuxer.visitRun(runId, new RunPrinter());
+            demuxer.visitRun(runId, new RunVisitorDenormalizer(new RunPrinter()));
         }
 
         @Override
         public void onSuiteFinished() {
             SuiteResultsSummary summary = new SuiteResultsSummary();
-            demuxer.visitAllRuns(summary);
+            demuxer.visitAllRuns(new RunVisitorDenormalizer(summary));
             printSuiteFooter(summary);
         }
 
@@ -103,42 +103,34 @@ public class TextUI {
     }
 
     @NotThreadSafe
-    private class RunPrinter extends DenormalizedRunVisitor {
+    private class RunPrinter implements RunVisitor {
 
-        // TODO: refactor so that calling super is not needed
+        private int testNestingLevel = 0;
 
         @Override
         public void onRunStarted(RunId runId, String testClass) {
-            super.onRunStarted(runId, testClass);
-
             printRunHeader(testClass, runId);
         }
 
         @Override
-        public void onTestStarted(RunId runId, TestId testId) {
-            super.onTestStarted(runId, testId);
-
-            printTestName("+", getTestClass(), testId);
+        public void onTestStarted(RunId runId, String testClass, TestId testId) {
+            testNestingLevel++;
+            printTestName("+", testClass, testId);
         }
 
         @Override
-        public void onFailure(RunId runId, Throwable cause) {
-            super.onFailure(runId, cause);
-
+        public void onFailure(RunId runId, String testClass, TestId testId, Throwable cause) {
             cause.printStackTrace(err);
         }
 
         @Override
-        public void onTestFinished(RunId runId) {
-            printTestName("-", getTestClass(), getTestId());
-
-            super.onTestFinished(runId);
+        public void onTestFinished(RunId runId, String testClass, TestId testId) {
+            printTestName("-", testClass, testId);
+            testNestingLevel--;
         }
 
         @Override
-        public void onRunFinished(RunId runId) {
-            super.onRunFinished(runId);
-
+        public void onRunFinished(RunId runId, String testClass) {
             printRunFooter();
         }
 
@@ -158,7 +150,7 @@ public class TextUI {
 
         private String testNameIndent() {
             StringBuilder indent = new StringBuilder();
-            for (int i = 1; i < getTestNestingLevel(); i++) {
+            for (int i = 1; i < testNestingLevel; i++) {
                 indent.append("  ");
             }
             return indent.toString();

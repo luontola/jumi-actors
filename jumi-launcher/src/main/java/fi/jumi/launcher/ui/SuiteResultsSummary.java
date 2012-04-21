@@ -9,23 +9,31 @@ import fi.jumi.core.runs.RunId;
 
 import java.util.*;
 
-public class SuiteResultsSummary extends DenormalizedRunVisitor {
+public class SuiteResultsSummary implements RunVisitor {
 
     private final Set<GlobalTestId> failedTests = new HashSet<GlobalTestId>();
     private final Set<GlobalTestId> allTests = new HashSet<GlobalTestId>();
 
     @Override
-    public void onTestStarted(RunId runId, TestId testId) {
-        super.onTestStarted(runId, testId);
-
-        allTests.add(new GlobalTestId(getTestClass(), testId));
+    public void onRunStarted(RunId runId, String testClass) {
     }
 
     @Override
-    public void onFailure(RunId runId, Throwable cause) {
-        super.onFailure(runId, cause);
+    public void onTestStarted(RunId runId, String testClass, TestId testId) {
+        allTests.add(new GlobalTestId(testClass, testId));
+    }
 
-        failedTests.add(new GlobalTestId(getTestClass(), getTestId()));
+    @Override
+    public void onFailure(RunId runId, String testClass, TestId testId, Throwable cause) {
+        failedTests.add(new GlobalTestId(testClass, testId));
+    }
+
+    @Override
+    public void onTestFinished(RunId runId, String testClass, TestId testId) {
+    }
+
+    @Override
+    public void onRunFinished(RunId runId, String testClass) {
     }
 
     public int getPassingTests() {

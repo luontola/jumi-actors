@@ -5,29 +5,17 @@
 package fi.jumi.launcher.ui;
 
 import fi.jumi.api.drivers.TestId;
-import fi.jumi.core.SuiteListener;
+import fi.jumi.core.runs.RunId;
 
-import javax.annotation.concurrent.ThreadSafe;
+public interface RunVisitor {
 
-@ThreadSafe
-public abstract class RunVisitor implements SuiteListener {
+    void onRunStarted(RunId runId, String testClass);
 
-    private static void assertShouldNotBeCalled() {
-        throw new AssertionError("should not be called; not a run-specific event");
-    }
+    void onTestStarted(RunId runId, String testClass, TestId testId);
 
-    @Override
-    public final void onSuiteStarted() {
-        assertShouldNotBeCalled();
-    }
+    void onFailure(RunId runId, String testClass, TestId testId, Throwable cause);
 
-    @Override
-    public final void onSuiteFinished() {
-        assertShouldNotBeCalled();
-    }
+    void onTestFinished(RunId runId, String testClass, TestId testId);
 
-    @Override
-    public final void onTestFound(String testClass, TestId testId, String name) {
-        assertShouldNotBeCalled();
-    }
+    void onRunFinished(RunId runId, String testClass);
 }
