@@ -10,7 +10,7 @@ import fi.jumi.core.SuiteListener;
 import javax.annotation.concurrent.ThreadSafe;
 
 @ThreadSafe
-public abstract class TestRunListener implements SuiteListener {
+public abstract class RunVisitor implements SuiteListener {
 
     private static void assertShouldNotBeCalled() {
         throw new AssertionError("should not be called; not a run-specific event");

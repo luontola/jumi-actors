@@ -22,12 +22,8 @@ public class TextUI {
     // TODO: if multiple readers are needed, create a Streamer class per the original designs
     private final MessageReceiver<Event<SuiteListener>> eventStream;
 
-    // TODO: extract counting to its own class
-    final Set<GlobalTestId> failedTests = new HashSet<GlobalTestId>();
-    final Set<GlobalTestId> allTests = new HashSet<GlobalTestId>();
-
-    private final SuiteEventDemuxer demuxer = new SuiteEventDemuxer(this);
-    private SuitePrinter suitePrinter = new SuitePrinter();
+    private final SuiteEventDemuxer demuxer = new SuiteEventDemuxer();
+    private final SuitePrinter suitePrinter = new SuitePrinter();
 
     public TextUI(PrintStream out, PrintStream err, MessageReceiver<Event<SuiteListener>> eventStream) {
         this.out = out;
@@ -56,14 +52,6 @@ public class TextUI {
         demuxer.send(message);
         message.fireOn(suitePrinter);
     }
-
-    // visual style
-    // TODO: define all visual styles in one place (now parts is in RunPrinter)
-
-    private void printSuiteFooter(int passCount, int failCount) {
-        out.println(String.format("Pass: %d, Fail: %d, Total: %d", passCount, failCount, passCount + failCount));
-    }
-
 
     @NotThreadSafe
     private class SuitePrinter implements SuiteListener {
@@ -100,24 +88,30 @@ public class TextUI {
 
         @Override
         public void onSuiteFinished() {
-            int totalCount = allTests.size();
-            int failCount = failedTests.size();
-            int passCount = totalCount - failCount;
+            SuiteResultsSummary summary = new SuiteResultsSummary();
+            demuxer.visitAllRuns(summary);
+            printSuiteFooter(summary);
+        }
 
-            printSuiteFooter(passCount, failCount);
+        // visual style
+
+        private void printSuiteFooter(SuiteResultsSummary summary) {
+            int pass = summary.getPassingTests();
+            int fail = summary.getFailingTests();
+            int total = summary.getTotalTests();
+            out.println(String.format("Pass: %d, Fail: %d, Total: %d", pass, fail, total));
         }
     }
 
     @NotThreadSafe
-    private class RunPrinter extends TestRunListener {
-        // TODO: make static? (must first give access to getTestName)
+    private class RunPrinter extends RunVisitor {
 
         private final Deque<TestId> runningTests = new ArrayDeque<TestId>();
         private String testClass;
 
         @Override
         public void onRunStarted(RunId runId, String testClass) {
-            this.testClass = testClass;
+            this.testClass = testClass; // TODO: use denormalized run visitor
             printRunHeader(testClass, runId);
         }
 
