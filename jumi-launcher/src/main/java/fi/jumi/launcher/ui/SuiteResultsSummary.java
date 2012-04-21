@@ -7,8 +7,10 @@ package fi.jumi.launcher.ui;
 import fi.jumi.api.drivers.TestId;
 import fi.jumi.core.runs.RunId;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import java.util.*;
 
+@NotThreadSafe
 public class SuiteResultsSummary implements RunVisitor {
 
     private final Set<GlobalTestId> failedTests = new HashSet<GlobalTestId>();
