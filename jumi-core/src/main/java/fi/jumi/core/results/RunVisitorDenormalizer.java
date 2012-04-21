@@ -8,8 +8,10 @@ import fi.jumi.api.drivers.TestId;
 import fi.jumi.core.SuiteListener;
 import fi.jumi.core.runs.RunId;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import java.util.*;
 
+@NotThreadSafe
 public class RunVisitorDenormalizer implements SuiteListener {
 
     private final RunVisitor visitor;

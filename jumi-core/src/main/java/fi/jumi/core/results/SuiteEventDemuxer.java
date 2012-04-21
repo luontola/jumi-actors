@@ -12,6 +12,7 @@ import fi.jumi.core.runs.RunId;
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.*;
 
+@NotThreadSafe
 public class SuiteEventDemuxer implements MessageSender<Event<SuiteListener>> {
 
     private final Map<GlobalTestId, String> testNames = new HashMap<GlobalTestId, String>();
