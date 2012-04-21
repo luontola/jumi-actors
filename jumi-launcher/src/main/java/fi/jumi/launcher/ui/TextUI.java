@@ -11,7 +11,6 @@ import fi.jumi.core.runs.RunId;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.io.PrintStream;
-import java.util.*;
 
 @NotThreadSafe
 public class TextUI {
@@ -104,36 +103,42 @@ public class TextUI {
     }
 
     @NotThreadSafe
-    private class RunPrinter extends RunVisitor {
+    private class RunPrinter extends DenormalizedRunVisitor {
 
-        private final Deque<TestId> runningTests = new ArrayDeque<TestId>();
-        private String testClass;
+        // TODO: refactor so that calling super is not needed
 
         @Override
         public void onRunStarted(RunId runId, String testClass) {
-            this.testClass = testClass; // TODO: use denormalized run visitor
+            super.onRunStarted(runId, testClass);
+
             printRunHeader(testClass, runId);
         }
 
         @Override
         public void onTestStarted(RunId runId, TestId testId) {
-            printTestName("+", testClass, testId);
-            runningTests.push(testId);
+            super.onTestStarted(runId, testId);
+
+            printTestName("+", getTestClass(), testId);
         }
 
         @Override
         public void onFailure(RunId runId, Throwable cause) {
+            super.onFailure(runId, cause);
+
             cause.printStackTrace(err);
         }
 
         @Override
         public void onTestFinished(RunId runId) {
-            TestId testId = runningTests.pop();
-            printTestName("-", testClass, testId);
+            printTestName("-", getTestClass(), getTestId());
+
+            super.onTestFinished(runId);
         }
 
         @Override
         public void onRunFinished(RunId runId) {
+            super.onRunFinished(runId);
+
             printRunFooter();
         }
 
@@ -153,7 +158,7 @@ public class TextUI {
 
         private String testNameIndent() {
             StringBuilder indent = new StringBuilder();
-            for (int i = 0; i < runningTests.size(); i++) {
+            for (int i = 1; i < getTestNestingLevel(); i++) {
                 indent.append("  ");
             }
             return indent.toString();

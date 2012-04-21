@@ -19,7 +19,11 @@ public abstract class DenormalizedRunVisitor extends RunVisitor {
     }
 
     public TestId getTestId() {
-        return runningTests.getLast();
+        return runningTests.getFirst();
+    }
+
+    public int getTestNestingLevel() {
+        return runningTests.size();
     }
 
     @Override
