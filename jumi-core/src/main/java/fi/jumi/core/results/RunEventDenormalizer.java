@@ -12,13 +12,13 @@ import javax.annotation.concurrent.NotThreadSafe;
 import java.util.*;
 
 @NotThreadSafe
-public class RunVisitorDenormalizer implements SuiteListener {
+public class RunEventDenormalizer implements SuiteListener {
 
     private final RunVisitor visitor;
     private final Deque<TestId> runningTests = new ArrayDeque<TestId>();
     private String testClass;
 
-    public RunVisitorDenormalizer(RunVisitor visitor) {
+    public RunEventDenormalizer(RunVisitor visitor) {
         this.visitor = visitor;
     }
 

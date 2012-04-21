@@ -37,7 +37,7 @@ public class SuiteEventDemuxer implements MessageSender<Event<SuiteListener>> {
     }
 
     public void visitAllRuns(RunVisitor visitor) {
-        visitAllRuns(new RunVisitorDenormalizer(visitor));
+        visitAllRuns(new RunEventDenormalizer(visitor));
     }
 
     public void visitAllRuns(SuiteListener visitor) {
@@ -47,7 +47,7 @@ public class SuiteEventDemuxer implements MessageSender<Event<SuiteListener>> {
     }
 
     public void visitRun(RunId runId, RunVisitor visitor) {
-        visitRun(runId, new RunVisitorDenormalizer(visitor));
+        visitRun(runId, new RunEventDenormalizer(visitor));
     }
 
     public void visitRun(RunId runId, SuiteListener visitor) {
