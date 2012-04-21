@@ -82,13 +82,13 @@ public class TextUI {
         @Override
         public void onRunFinished(RunId runId) {
             // TODO: option for printing only failing or all runs
-            demuxer.visitRun(runId, new RunVisitorDenormalizer(new RunPrinter()));
+            demuxer.visitRun(runId, new RunPrinter());
         }
 
         @Override
         public void onSuiteFinished() {
             SuiteResultsSummary summary = new SuiteResultsSummary();
-            demuxer.visitAllRuns(new RunVisitorDenormalizer(summary));
+            demuxer.visitAllRuns(summary);
             printSuiteFooter(summary);
         }
 

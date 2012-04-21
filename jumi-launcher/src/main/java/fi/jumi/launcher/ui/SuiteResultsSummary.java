@@ -14,6 +14,20 @@ public class SuiteResultsSummary implements RunVisitor {
     private final Set<GlobalTestId> failedTests = new HashSet<GlobalTestId>();
     private final Set<GlobalTestId> allTests = new HashSet<GlobalTestId>();
 
+    public int getPassingTests() {
+        int totalCount = getTotalTests();
+        int failCount = getFailingTests();
+        return totalCount - failCount;
+    }
+
+    public int getFailingTests() {
+        return failedTests.size();
+    }
+
+    public int getTotalTests() {
+        return allTests.size();
+    }
+
     @Override
     public void onRunStarted(RunId runId, String testClass) {
     }
@@ -34,19 +48,5 @@ public class SuiteResultsSummary implements RunVisitor {
 
     @Override
     public void onRunFinished(RunId runId, String testClass) {
-    }
-
-    public int getPassingTests() {
-        int totalCount = getTotalTests();
-        int failCount = getFailingTests();
-        return totalCount - failCount;
-    }
-
-    public int getFailingTests() {
-        return failedTests.size();
-    }
-
-    public int getTotalTests() {
-        return allTests.size();
     }
 }

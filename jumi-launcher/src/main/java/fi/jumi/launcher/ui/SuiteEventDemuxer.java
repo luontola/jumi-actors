@@ -35,10 +35,18 @@ public class SuiteEventDemuxer implements MessageSender<Event<SuiteListener>> {
         return suiteFinished;
     }
 
+    public void visitAllRuns(RunVisitor visitor) {
+        visitAllRuns(new RunVisitorDenormalizer(visitor));
+    }
+
     public void visitAllRuns(SuiteListener visitor) {
         for (RunId runId : runs.keySet()) {
             visitRun(runId, visitor);
         }
+    }
+
+    public void visitRun(RunId runId, RunVisitor visitor) {
+        visitRun(runId, new RunVisitorDenormalizer(visitor));
     }
 
     public void visitRun(RunId runId, SuiteListener visitor) {
