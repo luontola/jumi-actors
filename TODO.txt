@@ -34,6 +34,25 @@ TODO NEXT:
 				- extract TestClassFinderSpawner
 			- fi.jumi.core.runners.TestClassRunner
 				- push dependencies out of constructor (pass WorkerCounter and `this` as method parameters to DriverRunnerSpawner)
+	- create a class (Actor?) to represent Actors.queueOfCurrentActor
+		- wrap the MessageQueue in it
+		- move processing the next message in it
+		- move wiring the MessageQueue in it
+			- from createPrimaryActor
+			- from createSecondaryActor
+	- make all events of type CustomTargetEvent (or would it complicate custom prosessing the messages? do we need to use MessageQueue<MessageToActor> for direct messages, and MessageQueue<Event<T>> for networking and stuff?)
+		- make primary actors use CustomTargetEvent
+		- remove duplication: unify the message processing/sending of primary and secondary actors
+			- unify SingleThreadedActors.EventPoller and Actors.ActorContext
+			- maybe doable by setting up the context for every message also in MultiThreadedActors, or get rid of the need for more than one context in SingleThreadedActors
+	- separate creating ActorRefs from assigning threads. Might allow creating ActorRefs/secondary actors in constuctors, outside actor thread.
+		- estimate whether it would make code simpler and/or help to get rid of spawners
+		- create interface ActorThread.createActor(Object): ActorRef
+		- create Actors.newThread(): ActorThread
+		- refactor the code to use it (at first probably only Main creates the thread)
+	- create Actors.getCurrentActor: ActorRef (or maybe it's not needed when creating refs and threads are separated?)
+		- implement using the thread-local actor context
+		- use it instead of createSecondaryActor(this)
 	- either, decouple unattended workers from Actors
 		- hide WorkerCounter, create a wrapper: new MonitoredExecutor(realExecutor, onAllFinishedCallback)
 			- thred safe, counts commands with AtomicInteger
@@ -43,23 +62,10 @@ TODO NEXT:
 		- remove Actors.startUnattendedWorker
 		- try removing fi.jumi.core.runners.TestClassRunnerListener#onTestClassFinished
 	- or, implement unattended workers as actors which stop themselves (Thread.interrupt()) after running the command
-	- refactor Actors
-		- make DynamicListenerFactory support all types without having to declare them
-			- move the type comparison in Actors.getFactoryForType to ListenerFactory.supportsType
-			- need to give type as parameter to DynamicListenerFactory.newFrontend/newBackend?
-			- refactor tests to use just one DynamicListenerFactory, use generated factories only in Main
-		- create a class (Actor?) to represent Actors.queueOfCurrentActor
-			- wrap the MessageQueue in it
-			- move processing the next message in it
-			- move wiring the MessageQueue in it
-				- from createPrimaryActor
-				- from createSecondaryActor
-		- create Actors.getCurrentActor: ActorRef
-			- implement using the thread-local actor context
-			- use it instead of createSecondaryActor(this)
-		- make all events of type CustomTargetEvent (or would it complicate custom prosessing the messages? do we need to use MessageQueue<MessageToActor> for direct messages, and MessageQueue<Event<T>> for networking and stuff?)
-			- make primary actors use CustomTargetEvent
-			- remove duplication: unify the message processing/sending of primary and secondary actors
+	- make DynamicListenerFactory support all types without having to declare them
+		- move the type comparison in Actors.getFactoryForType to ListenerFactory.supportsType
+		- need to give type as parameter to DynamicListenerFactory.newFrontend/newBackend?
+		- refactor tests to use just one DynamicListenerFactory, use generated factories only in Main
 
 - end-to-end tests: running multiple test classes
 	- it's not sure whether SuiteRunner works correctly when there are many test classes
