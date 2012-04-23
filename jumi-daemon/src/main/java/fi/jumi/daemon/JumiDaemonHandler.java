@@ -13,9 +13,9 @@ import javax.annotation.concurrent.ThreadSafe;
 
 @ThreadSafe
 public class JumiDaemonHandler extends SimpleChannelHandler {
-    private final CommandListener coordinator;
+    private final ActorRef<CommandListener> coordinator;
 
-    public JumiDaemonHandler(CommandListener coordinator) {
+    public JumiDaemonHandler(ActorRef<CommandListener> coordinator) {
         this.coordinator = coordinator;
     }
 
@@ -23,13 +23,13 @@ public class JumiDaemonHandler extends SimpleChannelHandler {
     public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
         // TODO: notify the coordinator on disconnect
         SuiteListener listener = new SuiteListenerEventizer().newFrontend(new ChannelMessageSender(e.getChannel()));
-        coordinator.addSuiteListener(listener);
+        coordinator.tell().addSuiteListener(listener);
     }
 
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
         Event<CommandListener> event = (Event<CommandListener>) e.getMessage();
-        event.fireOn(coordinator);
+        event.fireOn(coordinator.tell());
     }
 
     @Override

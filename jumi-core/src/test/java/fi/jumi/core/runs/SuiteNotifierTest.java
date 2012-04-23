@@ -5,6 +5,7 @@
 package fi.jumi.core.runs;
 
 
+import fi.jumi.actors.ActorRef;
 import fi.jumi.api.drivers.*;
 import fi.jumi.core.runners.TestClassListener;
 import org.junit.Test;
@@ -17,7 +18,7 @@ public class SuiteNotifierTest {
     private static final RunId FIRST_RUN_ID = new RunId(RunId.FIRST_ID);
 
     private final TestClassListener listener = mock(TestClassListener.class);
-    private final SuiteNotifier notifier = new DefaultSuiteNotifier(listener, new RunIdSequence());
+    private final SuiteNotifier notifier = new DefaultSuiteNotifier(ActorRef.wrap(listener), new RunIdSequence());
 
     @Test
     public void notifies_about_the_beginning_and_end_of_a_run() {

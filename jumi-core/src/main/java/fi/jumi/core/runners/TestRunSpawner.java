@@ -4,7 +4,7 @@
 
 package fi.jumi.core.runners;
 
-import fi.jumi.actors.OnDemandActors;
+import fi.jumi.actors.*;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.concurrent.Executor;
@@ -23,10 +23,10 @@ public class TestRunSpawner {
     }
 
     public Executor getExecutor() {
-        return getProxyToSelf();
+        return self().tell();
     }
 
-    private ExecutorListener getProxyToSelf() {
+    private ActorRef<ExecutorListener> self() {
         return actors.createSecondaryActor(ExecutorListener.class, new WorkerCountingExecutor(workerCounter, realExecutor));
     }
 
@@ -47,7 +47,7 @@ public class TestRunSpawner {
 
         @Override
         public void execute(final Runnable runnable) {
-            final ExecutorListener self = getProxyToSelf();
+            final ActorRef<ExecutorListener> self = self();
 
             @NotThreadSafe
             class RunWorkerAndNotifyWhenFinished implements Runnable {
@@ -56,7 +56,7 @@ public class TestRunSpawner {
                     try {
                         runnable.run();
                     } finally {
-                        self.onCommandFinished();
+                        self.tell().onCommandFinished();
                     }
                 }
             }

@@ -4,6 +4,7 @@
 
 package fi.jumi.core.runs;
 
+import fi.jumi.actors.ActorRef;
 import fi.jumi.api.drivers.TestId;
 import fi.jumi.core.runners.TestClassListener;
 
@@ -13,17 +14,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 @ThreadSafe
 public class CurrentRun {
 
-    private final TestClassListener listener;
+    private final ActorRef<TestClassListener> listener;
     private final RunIdSequence runIdSequence;
     private final InheritableThreadLocal<RunContext> currentRun = new InheritableThreadLocal<RunContext>();
 
-    public CurrentRun(TestClassListener listener, RunIdSequence runIdSequence) {
+    public CurrentRun(ActorRef<TestClassListener> listener, RunIdSequence runIdSequence) {
         this.listener = listener;
         this.runIdSequence = runIdSequence;
     }
 
     public void fireTestFound(TestId testId, String name) {
-        listener.onTestFound(testId, name);
+        listener.tell().onTestFound(testId, name);
     }
 
     public void fireTestStarted(TestId testId) {
@@ -32,26 +33,26 @@ public class CurrentRun {
             currentRun = new RunContext(runIdSequence.nextRunId());
             this.currentRun.set(currentRun);
 
-            listener.onRunStarted(currentRun.runId);
+            listener.tell().onRunStarted(currentRun.runId);
         }
         currentRun.countTestStarted();
-        listener.onTestStarted(currentRun.runId, testId);
+        listener.tell().onTestStarted(currentRun.runId, testId);
     }
 
     public void fireFailure(TestId testId, Throwable cause) {
         RunContext currentRun = this.currentRun.get();
-        listener.onFailure(currentRun.runId, testId, cause);
+        listener.tell().onFailure(currentRun.runId, testId, cause);
     }
 
     public void fireTestFinished(TestId testId) {
         RunContext currentRun = this.currentRun.get();
 
-        listener.onTestFinished(currentRun.runId, testId);
+        listener.tell().onTestFinished(currentRun.runId, testId);
         currentRun.countTestFinished();
 
         if (currentRun.isRunFinished()) {
             this.currentRun.remove();
-            listener.onRunFinished(currentRun.runId);
+            listener.tell().onRunFinished(currentRun.runId);
         }
     }
 

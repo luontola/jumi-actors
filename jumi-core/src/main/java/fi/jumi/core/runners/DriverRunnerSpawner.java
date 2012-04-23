@@ -4,7 +4,7 @@
 
 package fi.jumi.core.runners;
 
-import fi.jumi.actors.OnDemandActors;
+import fi.jumi.actors.*;
 import fi.jumi.api.drivers.*;
 import fi.jumi.core.runs.*;
 
@@ -30,7 +30,7 @@ public class DriverRunnerSpawner {
     }
 
     public void spawnDriverRunner(Driver driver, Class<?> testClass) {
-        TestClassListener target = actors.createSecondaryActor(TestClassListener.class, rawTarget);
+        ActorRef<TestClassListener> target = actors.createSecondaryActor(TestClassListener.class, rawTarget);
 
         SuiteNotifier notifier = new DefaultSuiteNotifier(target, runIdSequence);
         Executor executor = testRunSpawner.getExecutor();

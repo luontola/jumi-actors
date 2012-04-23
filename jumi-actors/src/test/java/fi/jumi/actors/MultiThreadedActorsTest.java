@@ -57,8 +57,8 @@ public class MultiThreadedActorsTest extends ActorsContract<MultiThreadedActors>
     public void target_is_invoked_in_its_own_actor_thread() throws InterruptedException {
         SpyDummyListener actor = new SpyDummyListener();
 
-        DummyListener handle = actors.createPrimaryActor(DummyListener.class, actor, "ActorName");
-        handle.onSomething("event");
+        ActorRef<DummyListener> actorRef = actors.createPrimaryActor(DummyListener.class, actor, "ActorName");
+        actorRef.tell().onSomething("event");
         awaitEvents(1);
 
         assertThat(actor.thread.getName(), is("ActorName"));
@@ -71,7 +71,8 @@ public class MultiThreadedActorsTest extends ActorsContract<MultiThreadedActors>
         SpyRunnable worker = new SpyRunnable("event 2");
         SpyRunnable actor = new WorkerStartingSpyRunnable("event 1", worker, new NullRunnable());
 
-        actors.createPrimaryActor(Runnable.class, actor, "ActorName").run();
+        ActorRef<Runnable> actorRef = actors.createPrimaryActor(Runnable.class, actor, "ActorName");
+        actorRef.tell().run();
         awaitEvents(2);
 
         assertThat("worker is run", worker.thread, is(notNullValue()));
@@ -84,8 +85,8 @@ public class MultiThreadedActorsTest extends ActorsContract<MultiThreadedActors>
     @Test
     public void actor_threads_can_be_shut_down() throws InterruptedException {
         SpyDummyListener actor = new SpyDummyListener();
-        DummyListener handle = actors.createPrimaryActor(DummyListener.class, actor, "ActorName");
-        handle.onSomething("event");
+        ActorRef<DummyListener> actorRef = actors.createPrimaryActor(DummyListener.class, actor, "ActorName");
+        actorRef.tell().onSomething("event");
         awaitEvents(1);
 
         assertThat("alive before shutdown", actor.thread.isAlive(), is(true));
@@ -111,7 +112,8 @@ public class MultiThreadedActorsTest extends ActorsContract<MultiThreadedActors>
                 events.add("worker finished");
             }
         };
-        actors.createPrimaryActor(Runnable.class, new WorkerStartingSpyRunnable("", worker, new NullRunnable()), "Actor").run();
+        ActorRef<Runnable> actor = actors.createPrimaryActor(Runnable.class, new WorkerStartingSpyRunnable("", worker, new NullRunnable()), "Actor");
+        actor.tell().run();
 
         assertThat("worker did not start", events.poll(TIMEOUT, TimeUnit.MILLISECONDS), is("worker started"));
         actors.shutdown(TIMEOUT);

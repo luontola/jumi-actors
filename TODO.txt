@@ -3,14 +3,12 @@ TODO NEXT:
 - refactor jumi-actors
 	OK - rename package to fi.jumi.actors.maven
 	OK - rename factories to Eventizer (also generated)
-	- make it impossible to use actors wrong
-		- ActorRef (might make spawners and auto wrapping unnecessary!)
-			- return ActorRef from creation methods instead of the proxy
-			- create NakedActorRef for unit testing, ProxyActorRef for production 
-			- in all constructors and fields, use ActorRef instead of proxy to make it easier to keep track of the communication patterns
-			- use ActorRef in callbacks (WorkerCounter, unattended workers, other method parameters if any)
-			- eliminate spawners, see if it the code can be safe enough without them
-		- wrap all NonThreadSafe collaborators of a worker automatically into a secondary actor.
+	OK? - make it impossible to use actors wrong
+		OK - ActorRef (might make spawners and auto wrapping unnecessary!)
+			OK - return ActorRef from creation methods instead of the proxy
+			OK - in all constructors and fields, use ActorRef instead of proxy to make it easier to keep track of the communication patterns
+			OK - use ActorRef in callbacks (WorkerCounter, unattended workers, other method parameters if any)
+		SKIP - wrap all NonThreadSafe collaborators of a worker automatically into a secondary actor.
 			Usage:
 			        Spawner<DriverRunnerFactory> driverRunnerSpawner = new Spawner<DriverRunnerFactory>(DriverRunnerFactory.class, new BareDriverRunnerFactory());
 			        // ...
@@ -27,7 +25,7 @@ TODO NEXT:
 				        return new DriverRunner(testClass, driverClass, new DefaultSuiteNotifier(listener), executor);
 				    }
 				}
-		- use OnDemandActors only in classes whose responsibility is to start actors; current users:
+		SKIP - use OnDemandActors only in classes whose responsibility is to start actors; current users:
 			- fi.jumi.core.runners.DriverRunnerSpawner
 				- now too complex
 			- fi.jumi.core.runners.TestRunSpawner
@@ -52,6 +50,8 @@ TODO NEXT:
 		- create interface ActorThread.createActor(Object): ActorRef
 		- create Actors.newThread(): ActorThread
 		- refactor the code to use it (at first probably only Main creates the thread)
+		- rename/remove fi.jumi.actors.LongLivedActors
+	- eliminate spawners, see if it the code can be safe enough without them
 	- create Actors.getCurrentActor: ActorRef (or maybe it's not needed when creating refs and threads are separated?)
 		- implement using the thread-local actor context
 		- use it instead of createSecondaryActor(this)
@@ -63,11 +63,15 @@ TODO NEXT:
 		- use MonitoredExecutor instead of Actors.startUnattendedWorker (keep SingleThreadedActors.getExecutor)
 		- remove Actors.startUnattendedWorker
 		- try removing fi.jumi.core.runners.TestClassRunnerListener#onTestClassFinished
+		- rename/remove fi.jumi.actors.OnDemandActors
 	- or, implement unattended workers as actors which stop themselves (Thread.interrupt()) after running the command
+	- refactor actor tests, some tests might be outdated
 	- make DynamicListenerFactory support all types without having to declare them
 		- move the type comparison in Actors.getFactoryForType to ListenerFactory.supportsType
 		- need to give type as parameter to DynamicListenerFactory.newFrontend/newBackend?
 		- refactor tests to use just one DynamicListenerFactory, use generated factories only in Main
+	- consider creating NakedActorRef for unit testing, ProxyActorRef for production
+		- throw an exception in fi.jumi.actors.ActorRef#wrap if not a proxy (see TODO)
 
 - end-to-end tests: running multiple test classes
 	- it's not sure whether SuiteRunner works correctly when there are many test classes

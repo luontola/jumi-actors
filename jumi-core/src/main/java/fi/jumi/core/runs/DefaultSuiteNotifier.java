@@ -4,6 +4,7 @@
 
 package fi.jumi.core.runs;
 
+import fi.jumi.actors.ActorRef;
 import fi.jumi.api.drivers.*;
 import fi.jumi.core.runners.TestClassListener;
 
@@ -14,7 +15,7 @@ public class DefaultSuiteNotifier implements SuiteNotifier {
 
     private final CurrentRun currentRun;
 
-    public DefaultSuiteNotifier(TestClassListener listener, RunIdSequence runIdSequence) {
+    public DefaultSuiteNotifier(ActorRef<TestClassListener> listener, RunIdSequence runIdSequence) {
         this.currentRun = new CurrentRun(listener, runIdSequence);
     }
 

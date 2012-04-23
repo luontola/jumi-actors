@@ -4,7 +4,7 @@
 
 package fi.jumi.core.runners;
 
-import fi.jumi.actors.SingleThreadedActors;
+import fi.jumi.actors.*;
 import fi.jumi.api.drivers.*;
 import fi.jumi.core.Startable;
 import fi.jumi.core.events.*;
@@ -74,9 +74,9 @@ public class TestClassRunnerTest {
 
     private void run(Driver driver) {
         RunIdSequence runIdSequence = new RunIdSequence();
-        TestClassRunner runner = new TestClassRunner(DummyTest.class, driver, listener, actors, actors.getExecutor(), runIdSequence);
-
-        actors.createPrimaryActor(Startable.class, runner, "TestClassRunner").start();
+        ActorRef<Startable> runner = actors.createPrimaryActor(Startable.class,
+                new TestClassRunner(DummyTest.class, driver, listener, actors, actors.getExecutor(), runIdSequence), "TestClassRunner");
+        runner.tell().start();
         actors.processEventsUntilIdle();
     }
 

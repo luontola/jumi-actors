@@ -5,6 +5,7 @@
 package fi.jumi.core.runs;
 
 
+import fi.jumi.actors.ActorRef;
 import fi.jumi.api.drivers.*;
 import fi.jumi.core.runners.TestClassListener;
 import org.junit.Test;
@@ -21,7 +22,7 @@ public class AssigningRunIdsTest {
 
     private final TestClassListener listener = mock(TestClassListener.class);
     private final RunIdSequence runIdSequence = new RunIdSequence();
-    private final SuiteNotifier notifier = new DefaultSuiteNotifier(listener, runIdSequence);
+    private final SuiteNotifier notifier = new DefaultSuiteNotifier(ActorRef.wrap(listener), runIdSequence);
 
     @Test
     public void RunId_is_assigned_when_a_test_is_started() {

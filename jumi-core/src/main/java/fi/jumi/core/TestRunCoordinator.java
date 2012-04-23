@@ -4,7 +4,7 @@
 
 package fi.jumi.core;
 
-import fi.jumi.actors.OnDemandActors;
+import fi.jumi.actors.*;
 import fi.jumi.core.drivers.*;
 import fi.jumi.core.files.*;
 import fi.jumi.core.runners.SuiteRunner;
@@ -35,8 +35,9 @@ public class TestRunCoordinator implements CommandListener {
     public void runTests(final List<File> classPath, final String testsToIncludePattern) {
         TestClassFinder testClassFinder = new FileSystemTestClassFinder(classPath, testsToIncludePattern);
         DriverFinder driverFinder = new RunViaAnnotationDriverFinder();
-        SuiteRunner suiteRunner = new SuiteRunner(listener, testClassFinder, driverFinder, actors, executor);
 
-        actors.createSecondaryActor(Startable.class, suiteRunner).start();
+        ActorRef<Startable> suiteRunner = actors.createSecondaryActor(Startable.class,
+                new SuiteRunner(listener, testClassFinder, driverFinder, actors, executor));
+        suiteRunner.tell().start();
     }
 }

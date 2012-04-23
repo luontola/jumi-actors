@@ -31,9 +31,9 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
 
     @Test
     public void method_calls_on_handle_are_forwarded_to_target() throws InterruptedException {
-        DummyListener handle = actors.createPrimaryActor(DummyListener.class, new SpyDummyListener(), "ActorName");
+        ActorRef<DummyListener> actor = actors.createPrimaryActor(DummyListener.class, new SpyDummyListener(), "ActorName");
 
-        handle.onSomething("event parameter");
+        actor.tell().onSomething("event parameter");
         awaitEvents(1);
 
         assertEvents("event parameter");
@@ -41,11 +41,11 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
 
     @Test
     public void actor_processes_multiple_events_in_the_order_they_were_sent() throws InterruptedException {
-        DummyListener handle = actors.createPrimaryActor(DummyListener.class, new SpyDummyListener(), "ActorName");
+        ActorRef<DummyListener> actor = actors.createPrimaryActor(DummyListener.class, new SpyDummyListener(), "ActorName");
 
-        handle.onSomething("event 1");
-        handle.onSomething("event 2");
-        handle.onSomething("event 3");
+        actor.tell().onSomething("event 1");
+        actor.tell().onSomething("event 2");
+        actor.tell().onSomething("event 3");
         awaitEvents(3);
 
         assertEvents("event 1", "event 2", "event 3");
@@ -70,7 +70,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
                     logEvent("done");
                 }
             }
-        }, "Actor 1").onSomething("");
+        }, "Actor 1").tell().onSomething("");
 
         awaitEvents(1);
 
@@ -86,14 +86,14 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
     public void an_actor_can_receive_events_in_the_same_thread_through_a_secondary_interface() {
         actors = newActors(DynamicEventizer.factoriesFor(PrimaryInterface.class, SecondaryInterface.class));
         class MultiPurposeActor implements PrimaryInterface, SecondaryInterface {
-            public volatile SecondaryInterface secondaryHandle;
+            public volatile ActorRef<SecondaryInterface> secondary;
             public volatile Thread primaryEventThread;
             public volatile Thread secondaryEventThread;
 
             @Override
             public void onPrimaryEvent() {
                 // binding must be done inside an actor
-                secondaryHandle = actors.createSecondaryActor(SecondaryInterface.class, this);
+                secondary = actors.createSecondaryActor(SecondaryInterface.class, this);
 
                 primaryEventThread = Thread.currentThread();
                 logEvent("primary event");
@@ -107,11 +107,12 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
         }
         MultiPurposeActor actor = new MultiPurposeActor();
 
-        PrimaryInterface primaryHandle = actors.createPrimaryActor(PrimaryInterface.class, actor, "ActorName");
-        primaryHandle.onPrimaryEvent();
+        ActorRef<PrimaryInterface> primary = actors.createPrimaryActor(PrimaryInterface.class, actor, "ActorName");
+        primary.tell().onPrimaryEvent();
         awaitEvents(1);
 
-        actor.secondaryHandle.onSecondaryEvent();
+        ActorRef<SecondaryInterface> secondary = actor.secondary;
+        secondary.tell().onSecondaryEvent();
         awaitEvents(2);
 
         assertEvents("primary event", "secondary event");
@@ -138,7 +139,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
         SpyRunnable onFinished = new SpyRunnable("on finished");
         SpyRunnable actor = new WorkerStartingSpyRunnable("start worker", worker, onFinished);
 
-        actors.createPrimaryActor(Runnable.class, actor, "Actor").run();
+        actors.createPrimaryActor(Runnable.class, actor, "Actor").tell().run();
         awaitEvents(3);
 
         assertEvents("start worker", "run worker", "on finished");
@@ -152,7 +153,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
         SpyRunnable onFinished = new SpyRunnable("on finished");
         SpyRunnable actor = new WorkerStartingSpyRunnable("start worker", worker, onFinished);
 
-        actors.createPrimaryActor(Runnable.class, actor, "Actor").run();
+        actors.createPrimaryActor(Runnable.class, actor, "Actor").tell().run();
         awaitEvents(3);
 
         assertEvents("start worker", "run worker", "on finished");

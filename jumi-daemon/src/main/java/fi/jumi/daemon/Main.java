@@ -4,7 +4,7 @@
 
 package fi.jumi.daemon;
 
-import fi.jumi.actors.MultiThreadedActors;
+import fi.jumi.actors.*;
 import fi.jumi.core.*;
 import fi.jumi.core.events.*;
 import org.jboss.netty.bootstrap.ClientBootstrap;
@@ -38,12 +38,12 @@ public class Main {
 
         // TODO: do not create unlimited numbers of threads; make it by default CPUs+1 or something
         Executor executor = Executors.newCachedThreadPool();
-        CommandListener toCoordinator = actors.createPrimaryActor(CommandListener.class, new TestRunCoordinator(actors, executor), "Coordinator");
+        ActorRef<CommandListener> coordinator = actors.createPrimaryActor(CommandListener.class, new TestRunCoordinator(actors, executor), "Coordinator");
 
-        connectToLauncher(launcherPort, toCoordinator);
+        connectToLauncher(launcherPort, coordinator);
     }
 
-    private static void connectToLauncher(int launcherPort, final CommandListener toCoordinator) {
+    private static void connectToLauncher(int launcherPort, final ActorRef<CommandListener> coordinator) {
         ChannelFactory factory = new OioClientSocketChannelFactory(Executors.newCachedThreadPool());
         ClientBootstrap bootstrap = new ClientBootstrap(factory);
 
@@ -55,7 +55,7 @@ public class Main {
                         new ObjectEncoder(),
                         new ObjectDecoder(ClassResolvers.softCachingResolver(Main.class.getClassLoader())),
                         new LoggingHandler(InternalLogLevel.INFO), // TODO: remove this debug code
-                        new JumiDaemonHandler(toCoordinator));
+                        new JumiDaemonHandler(coordinator));
             }
         }
         bootstrap.setPipelineFactory(new MyChannelPipelineFactory());

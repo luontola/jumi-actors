@@ -4,6 +4,7 @@
 
 package fi.jumi.core.files;
 
+import fi.jumi.actors.ActorRef;
 import fi.jumi.core.files.dummies.DummyTest;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
@@ -37,7 +38,7 @@ public class FileSystemTestClassFinderTest {
     private void findTestsMatchingPattern(String pattern) {
         File classesDir = getClassesDirectory(getClass());
         FileSystemTestClassFinder finder = new FileSystemTestClassFinder(Arrays.asList(classesDir), pattern);
-        finder.findTestClasses(listener);
+        finder.findTestClasses(ActorRef.wrap(listener));
     }
 
     private static File getClassesDirectory(Class<?> clazz) {

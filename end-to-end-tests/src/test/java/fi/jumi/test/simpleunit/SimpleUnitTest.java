@@ -4,6 +4,7 @@
 
 package fi.jumi.test.simpleunit;
 
+import fi.jumi.actors.ActorRef;
 import fi.jumi.api.drivers.TestId;
 import fi.jumi.core.runners.TestClassListener;
 import fi.jumi.core.runs.*;
@@ -144,7 +145,7 @@ public class SimpleUnitTest {
     // helpers
 
     private void executeTestClass(Class<?> testClass, TestClassListener listener) throws InterruptedException {
-        driver.findTests(testClass, new DefaultSuiteNotifier(listener, new RunIdSequence()), executor);
+        driver.findTests(testClass, new DefaultSuiteNotifier(ActorRef.wrap(listener), new RunIdSequence()), executor);
         waitForTestsToExecute();
     }
 

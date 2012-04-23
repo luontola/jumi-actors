@@ -4,7 +4,7 @@
 
 package fi.jumi.core.runners;
 
-import fi.jumi.actors.OnDemandActors;
+import fi.jumi.actors.*;
 import fi.jumi.api.drivers.*;
 import fi.jumi.core.*;
 import fi.jumi.core.drivers.DriverFinder;
@@ -43,7 +43,7 @@ public class SuiteRunner implements Startable, TestClassFinderListener, WorkerCo
         // XXX: this call might not be needed (it could even be harmful because of asynchrony); the caller of SuiteRunner knows when the suite is started
         listener.onSuiteStarted();
 
-        final TestClassFinderListener finderListener = actors.createSecondaryActor(TestClassFinderListener.class, this);
+        ActorRef<TestClassFinderListener> finderListener = actors.createSecondaryActor(TestClassFinderListener.class, this);
         startUnattendedWorker(new TestClassFinderRunner(testClassFinder, finderListener));
     }
 
@@ -121,10 +121,10 @@ public class SuiteRunner implements Startable, TestClassFinderListener, WorkerCo
 
     @ThreadSafe
     private static class TestClassFinderRunner implements Runnable {
-        private final TestClassFinderListener finderListener;
+        private final ActorRef<TestClassFinderListener> finderListener;
         private final TestClassFinder testClassFinder;
 
-        public TestClassFinderRunner(TestClassFinder testClassFinder, TestClassFinderListener finderListener) {
+        public TestClassFinderRunner(TestClassFinder testClassFinder, ActorRef<TestClassFinderListener> finderListener) {
             this.finderListener = finderListener;
             this.testClassFinder = testClassFinder;
         }

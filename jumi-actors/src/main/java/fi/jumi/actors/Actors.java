@@ -17,7 +17,7 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
     }
 
     @Override
-    public <T> T createPrimaryActor(Class<T> type, T target, String name) {
+    public <T> ActorRef<T> createPrimaryActor(Class<T> type, T target, String name) {
         checkNotInsideAnActor();
         Eventizer<T> factory = getFactoryForType(type);
 
@@ -26,7 +26,7 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
         T handle = factory.newFrontend(queue);
 
         startEventPoller(name, queue, receiver);
-        return type.cast(handle);
+        return ActorRef.wrap(type.cast(handle));
     }
 
     private <T> void checkNotInsideAnActor() {
@@ -39,19 +39,19 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
 
     @Override
     public void startUnattendedWorker(Runnable worker, Runnable onFinished) {
-        Runnable onFinishedHandle = createSecondaryActor(Runnable.class, onFinished);
+        ActorRef<Runnable> onFinishedHandle = createSecondaryActor(Runnable.class, onFinished);
         doStartUnattendedWorker(new UnattendedWorker(worker, onFinishedHandle));
     }
 
     protected abstract void doStartUnattendedWorker(Runnable worker);
 
     @Override
-    public <T> T createSecondaryActor(Class<T> type, final T target) {
+    public <T> ActorRef<T> createSecondaryActor(Class<T> type, T target) {
         Eventizer<T> factory = getFactoryForType(type);
         final MessageQueue<Event<?>> queue = getQueueOfCurrentActor();
 
         T handle = factory.newFrontend(new DelegateToCustomTarget<T>(queue, target));
-        return type.cast(handle);
+        return ActorRef.wrap(type.cast(handle));
     }
 
     private MessageQueue<Event<?>> getQueueOfCurrentActor() {
@@ -106,9 +106,9 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
     @NotThreadSafe
     private static class UnattendedWorker implements Runnable {
         private final Runnable worker;
-        private final Runnable onFinished;
+        private final ActorRef<Runnable> onFinished;
 
-        public UnattendedWorker(Runnable worker, Runnable onFinished) {
+        public UnattendedWorker(Runnable worker, ActorRef<Runnable> onFinished) {
             this.worker = worker;
             this.onFinished = onFinished;
         }
@@ -118,7 +118,7 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
             try {
                 worker.run();
             } finally {
-                onFinished.run();
+                onFinished.tell().run();
             }
         }
     }
