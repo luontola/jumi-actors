@@ -117,8 +117,6 @@ TODO NEXT:
 			suite
 			classes
 			runs
-		actors
-			mq
 	- try using FEST asserts in BuildTest, it should help with generics
 	- kill daemon before removing temp files: fi.jumi.test.AppRunner#tearDown
 	- SuiteRunner has a cyclic dependency with TestRunCoordinator

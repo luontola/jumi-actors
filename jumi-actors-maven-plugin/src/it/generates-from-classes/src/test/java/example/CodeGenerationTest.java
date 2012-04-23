@@ -2,6 +2,7 @@ package example;
 
 import example.generated.*;
 import fi.jumi.actors.*;
+import fi.jumi.actors.mq.MessageSender;
 import org.junit.Test;
 
 import static org.mockito.Mockito.*;

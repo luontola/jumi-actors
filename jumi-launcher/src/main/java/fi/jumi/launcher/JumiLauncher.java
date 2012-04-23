@@ -5,6 +5,7 @@
 package fi.jumi.launcher;
 
 import fi.jumi.actors.*;
+import fi.jumi.actors.mq.*;
 import fi.jumi.core.*;
 import fi.jumi.core.events.CommandListenerEventizer;
 import fi.jumi.launcher.daemon.Daemon;

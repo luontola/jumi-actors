@@ -4,7 +4,7 @@
 
 package fi.jumi.actors;
 
-public interface MessageProcessor {
+interface MessageProcessor {
 
     void processNextMessage() throws InterruptedException;
 

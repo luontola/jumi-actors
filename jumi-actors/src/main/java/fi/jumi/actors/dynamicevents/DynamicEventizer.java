@@ -5,6 +5,7 @@
 package fi.jumi.actors.dynamicevents;
 
 import fi.jumi.actors.*;
+import fi.jumi.actors.mq.MessageSender;
 
 import javax.annotation.concurrent.Immutable;
 import java.lang.reflect.*;

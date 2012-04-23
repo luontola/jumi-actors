@@ -4,6 +4,8 @@
 
 package fi.jumi.actors;
 
+import fi.jumi.actors.mq.*;
+
 import javax.annotation.concurrent.*;
 import java.util.concurrent.Executor;
 

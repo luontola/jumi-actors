@@ -4,6 +4,8 @@
 
 package fi.jumi.actors;
 
+import fi.jumi.actors.mq.MessageSender;
+
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 

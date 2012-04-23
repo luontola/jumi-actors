@@ -5,6 +5,7 @@
 package fi.jumi.launcher;
 
 import fi.jumi.actors.*;
+import fi.jumi.actors.mq.MessageSender;
 import fi.jumi.core.*;
 import org.jboss.netty.channel.*;
 

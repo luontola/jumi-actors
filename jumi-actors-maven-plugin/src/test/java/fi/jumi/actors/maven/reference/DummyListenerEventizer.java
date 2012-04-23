@@ -2,9 +2,9 @@ package fi.jumi.actors.maven.reference;
 
 import fi.jumi.actors.Event;
 import fi.jumi.actors.Eventizer;
-import fi.jumi.actors.MessageSender;
 import fi.jumi.actors.maven.DummyListener;
 import fi.jumi.actors.maven.reference.dummyListener.*;
+import fi.jumi.actors.mq.MessageSender;
 
 public class DummyListenerEventizer implements Eventizer<DummyListener> {
 

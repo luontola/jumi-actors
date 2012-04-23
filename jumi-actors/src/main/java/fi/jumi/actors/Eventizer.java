@@ -4,6 +4,8 @@
 
 package fi.jumi.actors;
 
+import fi.jumi.actors.mq.MessageSender;
+
 public interface Eventizer<T> {
 
     Class<T> getType();

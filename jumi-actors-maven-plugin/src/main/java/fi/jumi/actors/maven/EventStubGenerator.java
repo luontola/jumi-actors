@@ -6,6 +6,7 @@ package fi.jumi.actors.maven;
 
 import fi.jumi.actors.*;
 import fi.jumi.actors.maven.codegen.*;
+import fi.jumi.actors.mq.MessageSender;
 import org.codehaus.plexus.util.StringUtils;
 
 import java.io.Serializable;

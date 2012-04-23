@@ -5,6 +5,7 @@
 package fi.jumi.test;
 
 import fi.jumi.actors.*;
+import fi.jumi.actors.mq.MessageQueue;
 import fi.jumi.core.*;
 import fi.jumi.core.events.suiteListener.SuiteListenerToEvent;
 import fi.jumi.core.runs.RunId;

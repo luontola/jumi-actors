@@ -5,6 +5,7 @@
 package fi.jumi.daemon;
 
 import fi.jumi.actors.*;
+import fi.jumi.actors.mq.MessageSender;
 import fi.jumi.core.*;
 import fi.jumi.core.events.SuiteListenerEventizer;
 import org.jboss.netty.channel.*;

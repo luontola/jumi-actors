@@ -5,6 +5,7 @@
 package fi.jumi.core.results;
 
 import fi.jumi.actors.*;
+import fi.jumi.actors.mq.MessageSender;
 import fi.jumi.api.drivers.TestId;
 import fi.jumi.core.SuiteListener;
 import fi.jumi.core.runs.RunId;
