@@ -40,11 +40,11 @@ TODO NEXT:
 		OK - move wiring the MessageQueue in it
 			OK - from createPrimaryActor
 			SKIP - from createSecondaryActor
-	- make all events of type CustomTargetEvent (or would it complicate custom prosessing the messages? do we need to use MessageQueue<MessageToActor> for direct messages, and MessageQueue<Event<T>> for networking and stuff?)
-		- make primary actors use CustomTargetEvent
-		- remove duplication: unify the message processing/sending of primary and secondary actors
-			- unify SingleThreadedActors.EventPoller and Actors.ActorContext
-			- maybe doable by setting up the context for every message also in MultiThreadedActors, or get rid of the need for more than one context in SingleThreadedActors
+	OK - make all events of type CustomTargetEvent (or would it complicate custom prosessing the messages? do we need to use MessageQueue<MessageToActor> for direct messages, and MessageQueue<Event<T>> for networking and stuff?)
+		OK - make primary actors use CustomTargetEvent
+		OK - remove duplication: unify the message processing/sending of primary and secondary actors
+			OK - unify SingleThreadedActors.EventPoller and Actors.ActorContext
+			OK - maybe doable by setting up the context for every message also in MultiThreadedActors, or get rid of the need for more than one context in SingleThreadedActors
 	- separate creating ActorRefs from assigning threads. Might allow creating ActorRefs/secondary actors in constuctors, outside actor thread.
 		- estimate whether it would make code simpler and/or help to get rid of spawners
 		- create interface ActorThread.createActor(Object): ActorRef

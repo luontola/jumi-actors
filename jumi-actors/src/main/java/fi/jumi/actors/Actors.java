@@ -5,12 +5,13 @@
 package fi.jumi.actors;
 
 import javax.annotation.concurrent.*;
+import java.util.concurrent.Executor;
 
 @ThreadSafe
 public abstract class Actors implements LongLivedActors, OnDemandActors {
 
     private final Eventizer<?>[] factories;
-    private final ThreadLocal<Actor<?>> currentActor = new ThreadLocal<Actor<?>>();
+    private final ThreadLocal<Executor> currentActorThread = new ThreadLocal<Executor>();
 
     public Actors(Eventizer<?>... factories) {
         this.factories = factories;
@@ -19,21 +20,21 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
     @Override
     public <T> ActorRef<T> createPrimaryActor(Class<T> type, T target, String name) {
         checkNotInsideAnActor();
+        ActorThread actorThread = new ActorThread();
+        startActorThread(name, actorThread);
+
         Eventizer<T> factory = getFactoryForType(type);
-
-        Actor<T> actor = new Actor<T>(factory, target);
-
-        startEventPoller(name, actor);
-        return ActorRef.wrap(actor.frontend);
+        T proxy = factory.newFrontend(new MessageToActorSender<T>(actorThread, target));
+        return ActorRef.wrap(proxy);
     }
 
     private <T> void checkNotInsideAnActor() {
-        if (currentActor.get() != null) {
+        if (currentActorThread.get() != null) {
             throw new IllegalStateException("already inside an actor");
         }
     }
 
-    protected abstract <T> void startEventPoller(String name, Actor<T> actor);
+    protected abstract <T> void startActorThread(String name, ActorThread actorThread);
 
     @Override
     public void startUnattendedWorker(Runnable worker, Runnable onFinished) {
@@ -45,19 +46,20 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
 
     @Override
     public <T> ActorRef<T> createSecondaryActor(Class<T> type, T target) {
-        Eventizer<T> factory = getFactoryForType(type);
-        MessageQueue<Event<?>> queue = (MessageQueue) getCurrentActor().queue;
+        Executor actorThread = getCurrentActorThread();
 
-        T handle = factory.newFrontend(new DelegateToCustomTarget<T>(queue, target));
-        return ActorRef.wrap(type.cast(handle));
+        // TODO: duplication with primary actors
+        Eventizer<T> factory = getFactoryForType(type);
+        T proxy = factory.newFrontend(new MessageToActorSender<T>(actorThread, target));
+        return ActorRef.wrap(type.cast(proxy));
     }
 
-    private Actor<?> getCurrentActor() {
-        Actor<?> actor = currentActor.get();
-        if (actor == null) {
+    private Executor getCurrentActorThread() {
+        Executor actorThread = currentActorThread.get();
+        if (actorThread == null) {
             throw new IllegalStateException("We are not inside an actor");
         }
-        return actor;
+        return actorThread;
     }
 
     @SuppressWarnings({"unchecked"})
@@ -71,43 +73,41 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
     }
 
 
-    @NotThreadSafe
-    protected class Actor<T> {
-        private final MessageQueue<Event<T>> queue = new MessageQueue<Event<T>>();
-        private final MessageSender<Event<T>> backend;
-        public final T frontend;
+    @ThreadSafe
+    protected class ActorThread implements Executor {
+        private final MessageQueue<Runnable> taskQueue = new MessageQueue<Runnable>();
 
-        public Actor(Eventizer<T> factory, T rawActor) {
-            this.backend = factory.newBackend(rawActor);
-            this.frontend = factory.newFrontend(queue);
+        @Override
+        public void execute(Runnable task) {
+            taskQueue.send(task);
         }
 
         public void processNextMessage() throws InterruptedException {
-            Event<T> message = queue.take();
-            process(message);
+            Runnable task = taskQueue.take();
+            process(task);
         }
 
         public boolean processNextMessageIfAny() {
-            Event<T> message = queue.poll();
-            if (message == null) {
+            Runnable task = taskQueue.poll();
+            if (task == null) {
                 return false;
             }
-            process(message);
+            process(task);
             return true;
         }
 
-        private void process(Event<T> event) {
-            currentActor.set(this);
+        private void process(Runnable task) {
+            currentActorThread.set(this);
             try {
-                backend.send(event);
+                task.run();
             } finally {
-                currentActor.remove();
+                currentActorThread.remove();
             }
         }
     }
 
     @NotThreadSafe
-    private static class UnattendedWorker implements Runnable {
+    private static class UnattendedWorker implements Runnable { // TODO: decouple workers from actors
         private final Runnable worker;
         private final ActorRef<Runnable> onFinished;
 
@@ -127,40 +127,34 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
     }
 
     @ThreadSafe
-    private static class DelegateToCustomTarget<T> implements MessageSender<Event<T>> {
-        private final MessageQueue<Event<?>> queue;
-        private final T target;
+    private static class MessageToActorSender<T> implements MessageSender<Event<T>> {
+        private final Executor actorThread;
+        private final T rawActor;
 
-        public DelegateToCustomTarget(MessageQueue<Event<?>> queue, T target) {
-            this.queue = queue;
-            this.target = target;
+        public MessageToActorSender(Executor actorThread, T rawActor) {
+            this.actorThread = actorThread;
+            this.rawActor = rawActor;
         }
 
         @Override
-        public void send(Event<T> message) {
-            queue.send(new CustomTargetEvent<T>(message, target));
+        public void send(final Event<T> message) {
+            actorThread.execute(new MessageToActor<T>(rawActor, message));
         }
     }
 
-    @ThreadSafe
-    private static class CustomTargetEvent<T> implements Event<Object> {
+    @NotThreadSafe
+    private static class MessageToActor<T> implements Runnable {
+        private T rawActor;
         private final Event<T> message;
-        private final T target;
 
-        public CustomTargetEvent(Event<T> message, T target) {
+        public MessageToActor(T rawActor, Event<T> message) {
+            this.rawActor = rawActor;
             this.message = message;
-            this.target = target;
         }
 
         @Override
-        public void fireOn(Object ignored) {
-            // TODO: double-check that we are on the right thread?
-            message.fireOn(target);
-        }
-
-        @Override
-        public String toString() {
-            return "CustomTargetEvent(" + target + ", " + message + ")";
+        public void run() {
+            message.fireOn(rawActor);
         }
     }
 }

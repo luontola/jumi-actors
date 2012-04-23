@@ -11,7 +11,7 @@ import java.util.concurrent.Executor;
 @NotThreadSafe
 public class SingleThreadedActors extends Actors {
 
-    private final List<ProcessableEventPoller<?>> pollers = new ArrayList<ProcessableEventPoller<?>>();
+    private final List<NonBlockingActorProcessor<?>> pollers = new ArrayList<NonBlockingActorProcessor<?>>();
     private final List<Runnable> workers = new ArrayList<Runnable>();
 
     public SingleThreadedActors(Eventizer<?>... factories) {
@@ -19,8 +19,8 @@ public class SingleThreadedActors extends Actors {
     }
 
     @Override
-    protected <T> void startEventPoller(String name, Actor<T> actor) {
-        pollers.add(new ProcessableEventPoller<T>(actor));
+    protected <T> void startActorThread(String name, ActorThread actorThread) {
+        pollers.add(new NonBlockingActorProcessor<T>(actorThread));
     }
 
     @Override
@@ -75,7 +75,7 @@ public class SingleThreadedActors extends Actors {
     }
 
     @NotThreadSafe
-    private static class ProcessableRunnable implements Processable {
+    private static class ProcessableRunnable implements Processable { // TODO: decouple workers from actors
         private final Runnable runnable;
 
         public ProcessableRunnable(Runnable runnable) {
@@ -90,16 +90,16 @@ public class SingleThreadedActors extends Actors {
     }
 
     @ThreadSafe
-    private static class ProcessableEventPoller<T> implements Processable {
-        private final Actor<T> actor;
+    private static class NonBlockingActorProcessor<T> implements Processable {
+        private final ActorThread actorThread;
 
-        public ProcessableEventPoller(Actor<T> actor) {
-            this.actor = actor;
+        public NonBlockingActorProcessor(ActorThread actorThread) {
+            this.actorThread = actorThread;
         }
 
         @Override
         public boolean processedSomething() {
-            return actor.processNextMessageIfAny();
+            return actorThread.processNextMessageIfAny();
         }
     }
 
