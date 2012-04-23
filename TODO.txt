@@ -1,6 +1,8 @@
 
 TODO NEXT:
 - refactor jumi-actors
+	- rename package to fi.jumi.actors.maven
+	- rename factories to Eventizer (also generated)
 	- make it impossible to use actors wrong
 		- ActorRef (might make spawners and auto wrapping unnecessary!)
 			- return ActorRef from creation methods instead of the proxy

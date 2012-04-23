@@ -32,6 +32,15 @@ public class SuiteEventDemuxer implements MessageSender<Event<SuiteListener>> {
         }
     }
 
+    private void saveCurrentMessageToRun(RunId runId) {
+        RunState run = runs.get(runId);
+        if (run == null) {
+            run = new RunState();
+            runs.put(runId, run);
+        }
+        run.events.add(currentMessage);
+    }
+
     public boolean isSuiteFinished() {
         return suiteFinished;
     }
@@ -88,33 +97,27 @@ public class SuiteEventDemuxer implements MessageSender<Event<SuiteListener>> {
 
         @Override
         public void onRunStarted(RunId runId, String testClass) {
-            RunState run = new RunState();
-            runs.put(runId, run);
-            run.events.add(currentMessage);
+            saveCurrentMessageToRun(runId);
         }
 
         @Override
         public void onTestStarted(RunId runId, TestId testId) {
-            RunState run = runs.get(runId);
-            run.events.add(currentMessage);
+            saveCurrentMessageToRun(runId);
         }
 
         @Override
         public void onFailure(RunId runId, Throwable cause) {
-            RunState run = runs.get(runId);
-            run.events.add(currentMessage);
+            saveCurrentMessageToRun(runId);
         }
 
         @Override
         public void onTestFinished(RunId runId) {
-            RunState run = runs.get(runId);
-            run.events.add(currentMessage);
+            saveCurrentMessageToRun(runId);
         }
 
         @Override
         public void onRunFinished(RunId runId) {
-            RunState run = runs.get(runId);
-            run.events.add(currentMessage);
+            saveCurrentMessageToRun(runId);
         }
 
         @Override

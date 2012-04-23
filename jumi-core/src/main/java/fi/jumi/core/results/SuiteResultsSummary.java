@@ -17,9 +17,7 @@ public class SuiteResultsSummary implements RunVisitor {
     private final Set<GlobalTestId> allTests = new HashSet<GlobalTestId>();
 
     public int getPassingTests() {
-        int totalCount = getTotalTests();
-        int failCount = getFailingTests();
-        return totalCount - failCount;
+        return getTotalTests() - getFailingTests();
     }
 
     public int getFailingTests() {
