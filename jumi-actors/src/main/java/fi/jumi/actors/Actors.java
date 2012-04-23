@@ -11,7 +11,7 @@ import java.util.concurrent.Executor;
 public abstract class Actors implements LongLivedActors, OnDemandActors {
 
     private final Eventizer<?>[] factories;
-    private final ThreadLocal<ActorThreadImpl> currentActorThread = new ThreadLocal<ActorThreadImpl>();
+    private final ThreadLocal<ActorThread> currentActorThread = new ThreadLocal<ActorThread>();
 
     public Actors(Eventizer<?>... factories) {
         this.factories = factories;
@@ -36,7 +36,7 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
         }
     }
 
-    protected abstract void startActorThread(String name, ActorThreadImpl actorThread);
+    protected abstract void startActorThread(String name, MessageProcessor actorThread);
 
     @Override
     public void startUnattendedWorker(Runnable worker, Runnable onFinished) {
@@ -52,8 +52,8 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
         return actorThread.createActor(type, target);
     }
 
-    private ActorThreadImpl getCurrentActorThread() {
-        ActorThreadImpl actorThread = currentActorThread.get();
+    private ActorThread getCurrentActorThread() {
+        ActorThread actorThread = currentActorThread.get();
         if (actorThread == null) {
             throw new IllegalStateException("We are not inside an actor");
         }
@@ -72,13 +72,14 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
 
 
     @ThreadSafe
-    protected class ActorThreadImpl implements Executor, ActorThread {
+    private class ActorThreadImpl implements ActorThread, Executor, MessageProcessor {
+
         private final MessageQueue<Runnable> taskQueue = new MessageQueue<Runnable>();
 
         @Override
-        public <T> ActorRef<T> createActor(Class<T> type, T target) {
+        public <T> ActorRef<T> createActor(Class<T> type, T rawActor) {
             Eventizer<T> factory = getFactoryForType(type);
-            T proxy = factory.newFrontend(new MessageToActorSender<T>(this, target));
+            T proxy = factory.newFrontend(new MessageToActorSender<T>(this, rawActor));
             return ActorRef.wrap(type.cast(proxy));
         }
 
@@ -87,11 +88,13 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
             taskQueue.send(task);
         }
 
+        @Override
         public void processNextMessage() throws InterruptedException {
             Runnable task = taskQueue.take();
             process(task);
         }
 
+        @Override
         public boolean processNextMessageIfAny() {
             Runnable task = taskQueue.poll();
             if (task == null) {

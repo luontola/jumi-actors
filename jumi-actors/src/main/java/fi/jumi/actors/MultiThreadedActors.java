@@ -24,7 +24,7 @@ public class MultiThreadedActors extends Actors {
     }
 
     @Override
-    protected void startActorThread(String name, ActorThreadImpl actorThread) {
+    protected void startActorThread(String name, MessageProcessor actorThread) {
         Thread t = new Thread(new BlockingActorProcessor(actorThread), name);
         t.start();
         actorThreads.add(t);
@@ -49,9 +49,9 @@ public class MultiThreadedActors extends Actors {
 
     @ThreadSafe
     private static class BlockingActorProcessor implements Runnable {
-        private final ActorThreadImpl actorThread;
+        private final MessageProcessor actorThread;
 
-        public BlockingActorProcessor(ActorThreadImpl actorThread) {
+        public BlockingActorProcessor(MessageProcessor actorThread) {
             this.actorThread = actorThread;
         }
 

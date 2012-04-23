@@ -4,7 +4,9 @@
 
 package fi.jumi.actors;
 
-public interface ActorThread {
+public interface MessageProcessor {
 
-    <T> ActorRef<T> createActor(Class<T> type, T rawActor);
+    void processNextMessage() throws InterruptedException;
+
+    boolean processNextMessageIfAny();
 }

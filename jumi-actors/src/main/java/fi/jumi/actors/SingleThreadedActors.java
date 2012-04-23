@@ -19,7 +19,7 @@ public class SingleThreadedActors extends Actors {
     }
 
     @Override
-    protected void startActorThread(String name, ActorThreadImpl actorThread) {
+    protected void startActorThread(String name, MessageProcessor actorThread) {
         pollers.add(new NonBlockingActorProcessor(actorThread));
     }
 
@@ -91,9 +91,9 @@ public class SingleThreadedActors extends Actors {
 
     @NotThreadSafe
     private static class NonBlockingActorProcessor implements Processable {
-        private final ActorThreadImpl actorThread;
+        private final MessageProcessor actorThread;
 
-        public NonBlockingActorProcessor(ActorThreadImpl actorThread) {
+        public NonBlockingActorProcessor(MessageProcessor actorThread) {
             this.actorThread = actorThread;
         }
 
