@@ -22,16 +22,14 @@ public class ClassBuilder {
         this.targetPackage = targetPackage;
     }
 
-    public ClassBuilder implement(JavaType anInterface) {
+    public void implement(JavaType anInterface) {
         interfaces.add(anInterface);
         imports.addImports(anInterface);
-        return this;
     }
 
-    public ClassBuilder fieldsAndConstructorParameters(ArgumentList arguments) {
+    public void fieldsAndConstructorParameters(ArgumentList arguments) {
         addImports(arguments);
         this.constructorArguments = arguments;
-        return this;
     }
 
     public String getImportedName(JavaType type) {
@@ -39,22 +37,19 @@ public class ClassBuilder {
         return type.getSimpleName();
     }
 
-    public ClassBuilder addImports(ArgumentList arguments) {
+    public void addImports(ArgumentList arguments) {
         imports.addImports(arguments);
-        return this;
     }
 
-    public ClassBuilder addPackageImport(String packageName) {
+    public void addPackageImport(String packageName) {
         imports.addPackageImport(packageName);
-        return this;
     }
 
-    public ClassBuilder addMethod(CharSequence methodSource) {
+    public void addMethod(CharSequence methodSource) {
         if (methods.length() > 0) {
             methods.append("\n");
         }
         methods.append(methodSource);
-        return this;
     }
 
     public GeneratedClass build() {

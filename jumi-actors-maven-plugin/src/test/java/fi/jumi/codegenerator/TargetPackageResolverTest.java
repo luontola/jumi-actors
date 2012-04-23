@@ -12,7 +12,7 @@ import static org.hamcrest.Matchers.is;
 
 public class TargetPackageResolverTest {
 
-    public static final String TOP_LEVEL_PACKAGE = "com.example.toplevel";
+    private static final String TOP_LEVEL_PACKAGE = "com.example.toplevel";
 
     @Test
     public void factories_go_to_the_top_level_package() {

@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @ThreadSafe
 public class RunIdSequence {
 
-    private AtomicInteger nextId = new AtomicInteger(RunId.FIRST_ID);
+    private final AtomicInteger nextId = new AtomicInteger(RunId.FIRST_ID);
 
     public RunId nextRunId() {
         int currentId = nextId.getAndIncrement();

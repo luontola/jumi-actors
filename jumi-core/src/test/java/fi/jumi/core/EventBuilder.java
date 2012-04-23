@@ -11,12 +11,10 @@ import java.util.*;
 
 public class EventBuilder {
 
-    public static final int FIRST_RUN_ID = 1;
-
     private final SuiteListener listener;
 
     private final Map<RunId, String> testClassesByRunId = new HashMap<RunId, String>();
-    private int nextRunId = FIRST_RUN_ID;
+    private int nextRunId = RunId.FIRST_ID;
 
     public EventBuilder(SuiteListener listener) {
         this.listener = listener;

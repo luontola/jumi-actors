@@ -21,8 +21,8 @@ public class SimpleUnitTest {
 
     private static final RunId RUN_1 = new RunId(1);
 
-    private ExecutorService executor = Executors.newCachedThreadPool();
-    private SimpleUnit driver = new SimpleUnit();
+    private final ExecutorService executor = Executors.newCachedThreadPool();
+    private final SimpleUnit driver = new SimpleUnit();
 
     @Test
     public void the_test_class_is_named_after_its_simple_name() throws InterruptedException {

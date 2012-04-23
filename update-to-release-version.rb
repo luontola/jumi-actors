@@ -35,7 +35,7 @@ root_pom = REXML::Document.new(File.new("pom.xml"))
 old_version = root_pom.elements["/project/version"].text
 new_version = get_release_version(old_version, BUILD_NUMBER)
 
-Dir.glob(["pom.xml", "*/pom.xml"]) { |pom_path|
+Dir.glob(%w(pom.xml */pom.xml)) { |pom_path|
   puts pom_path
 
   pom = REXML::Document.new(File.new(pom_path))

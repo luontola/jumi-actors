@@ -27,7 +27,7 @@ import java.util.concurrent.Executors;
 public class JumiLauncher {
     private File jumiHome; // TODO: default to "~/.jumi"
     private Writer outputListener = new NullWriter();
-    private File javaExecutable = new File(System.getProperty("java.home"), "bin/java");
+    private final File javaExecutable = new File(System.getProperty("java.home"), "bin/java");
     private Process process;
 
     private final JumiLauncherHandler handler;

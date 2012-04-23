@@ -122,7 +122,7 @@ public class SuiteRunner implements Startable, TestClassFinderListener, WorkerCo
     @ThreadSafe
     private static class TestClassFinderRunner implements Runnable {
         private final TestClassFinderListener finderListener;
-        private TestClassFinder testClassFinder;
+        private final TestClassFinder testClassFinder;
 
         public TestClassFinderRunner(TestClassFinder testClassFinder, TestClassFinderListener finderListener) {
             this.finderListener = finderListener;

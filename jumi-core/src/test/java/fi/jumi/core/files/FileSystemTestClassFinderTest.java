@@ -1,4 +1,4 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -18,7 +18,7 @@ public class FileSystemTestClassFinderTest {
 
     private static final String DUMMIES_PACKAGE = DummyTest.class.getPackage().getName();
 
-    private TestClassFinderListener listener = mock(TestClassFinderListener.class);
+    private final TestClassFinderListener listener = mock(TestClassFinderListener.class);
 
     @Test
     public void finds_an_explicitly_named_class() throws IOException {
