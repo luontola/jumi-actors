@@ -10,19 +10,13 @@ import javax.annotation.concurrent.*;
 import java.util.concurrent.Executor;
 
 @ThreadSafe
-public abstract class Actors implements LongLivedActors, OnDemandActors {
+public abstract class Actors implements OnDemandActors {
 
     private final Eventizer<?>[] factories;
     private final ThreadLocal<ActorThread> currentActorThread = new ThreadLocal<ActorThread>();
 
     public Actors(Eventizer<?>... factories) {
         this.factories = factories;
-    }
-
-    @Override
-    public <T> ActorRef<T> createPrimaryActor(Class<T> type, T target, String name) {
-        ActorThread actorThread = startActorThread(name);
-        return actorThread.createActor(type, target);
     }
 
     public ActorThread startActorThread(String name) {

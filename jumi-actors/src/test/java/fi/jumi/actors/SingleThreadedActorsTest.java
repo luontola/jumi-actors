@@ -56,12 +56,13 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
     public void uncaught_exceptions_from_pollers_will_be_rethrown_to_the_caller_by_default() {
         SingleThreadedActors actors = new SingleThreadedActors(new DummyListenerEventizer());
 
-        ActorRef<DummyListener> actor = actors.createPrimaryActor(DummyListener.class, new DummyListener() {
+        ActorThread actorThread = actors.startActorThread("DummyActor");
+        ActorRef<DummyListener> actor = actorThread.createActor(DummyListener.class, new DummyListener() {
             @Override
             public void onSomething(String parameter) {
                 throw new RuntimeException("dummy exception");
             }
-        }, "DummyActor");
+        });
         actor.tell().onSomething("");
 
         thrown.expect(Error.class);
@@ -79,12 +80,13 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
             }
         };
 
-        ActorRef<DummyListener> actor = actors.createPrimaryActor(DummyListener.class, new DummyListener() {
+        ActorThread actorThread = actors.startActorThread("DummyActor");
+        ActorRef<DummyListener> actor = actorThread.createActor(DummyListener.class, new DummyListener() {
             @Override
             public void onSomething(String parameter) {
                 throw new RuntimeException("dummy exception");
             }
-        }, "DummyActor");
+        });
         actor.tell().onSomething("one");
         actor.tell().onSomething("two");
         actors.processEventsUntilIdle();

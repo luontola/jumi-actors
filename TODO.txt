@@ -50,7 +50,7 @@ TODO NEXT:
 		OK - create interface ActorThread.createActor(Object): ActorRef
 		OK - create Actors.newThread(): ActorThread
 		!! - refactor the code to use it (at first probably only Main creates the thread)
-		- rename/remove fi.jumi.actors.LongLivedActors
+		OK - rename/remove fi.jumi.actors.LongLivedActors
 	- eliminate spawners, see if it the code can be safe enough without them
 	- create Actors.getCurrentActor: ActorRef (or maybe it's not needed when creating refs and threads are separated?)
 		- implement using the thread-local actor context

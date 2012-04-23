@@ -31,7 +31,8 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
 
     @Test
     public void method_calls_on_handle_are_forwarded_to_target() throws InterruptedException {
-        ActorRef<DummyListener> actor = actors.createPrimaryActor(DummyListener.class, new SpyDummyListener(), "ActorName");
+        ActorThread actorThread = actors.startActorThread("ActorName");
+        ActorRef<DummyListener> actor = actorThread.createActor(DummyListener.class, new SpyDummyListener());
 
         actor.tell().onSomething("event parameter");
         awaitEvents(1);
@@ -41,7 +42,8 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
 
     @Test
     public void actor_processes_multiple_events_in_the_order_they_were_sent() throws InterruptedException {
-        ActorRef<DummyListener> actor = actors.createPrimaryActor(DummyListener.class, new SpyDummyListener(), "ActorName");
+        ActorThread actorThread = actors.startActorThread("ActorName");
+        ActorRef<DummyListener> actor = actorThread.createActor(DummyListener.class, new SpyDummyListener());
 
         actor.tell().onSomething("event 1");
         actor.tell().onSomething("event 2");
@@ -59,18 +61,21 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
     public void event_pollers_cannot_be_started_inside_other_event_pollers() {
         final AtomicReference<Throwable> thrown = new AtomicReference<Throwable>();
 
-        actors.createPrimaryActor(DummyListener.class, new DummyListener() {
+        ActorThread actorThread = actors.startActorThread("Actor 1");
+        ActorRef<DummyListener> actor = actorThread.createActor(DummyListener.class, new DummyListener() {
             @Override
             public void onSomething(String parameter) {
                 try {
-                    actors.createPrimaryActor(DummyListener.class, new SpyDummyListener(), "Actor 2");
+                    ActorThread actorThread = actors.startActorThread("Actor 2");
+                    actorThread.createActor(DummyListener.class, new SpyDummyListener());
                 } catch (Throwable t) {
                     thrown.set(t);
                 } finally {
                     logEvent("done");
                 }
             }
-        }, "Actor 1").tell().onSomething("");
+        });
+        actor.tell().onSomething("");
 
         awaitEvents(1);
 
@@ -105,20 +110,21 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
                 logEvent("secondary event");
             }
         }
-        MultiPurposeActor actor = new MultiPurposeActor();
+        MultiPurposeActor rawActor = new MultiPurposeActor();
 
-        ActorRef<PrimaryInterface> primary = actors.createPrimaryActor(PrimaryInterface.class, actor, "ActorName");
+        ActorThread actorThread = actors.startActorThread("ActorName");
+        ActorRef<PrimaryInterface> primary = actorThread.createActor(PrimaryInterface.class, rawActor);
         primary.tell().onPrimaryEvent();
         awaitEvents(1);
 
-        ActorRef<SecondaryInterface> secondary = actor.secondary;
+        ActorRef<SecondaryInterface> secondary = rawActor.secondary;
         secondary.tell().onSecondaryEvent();
         awaitEvents(2);
 
         assertEvents("primary event", "secondary event");
-        assertThat("secondary event happened", actor.secondaryEventThread, is(notNullValue()));
+        assertThat("secondary event happened", rawActor.secondaryEventThread, is(notNullValue()));
         assertThat("secondary event happened in same thread as primary event",
-                actor.secondaryEventThread, is(actor.primaryEventThread));
+                rawActor.secondaryEventThread, is(rawActor.primaryEventThread));
     }
 
 
@@ -137,13 +143,14 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
     public void when_worker_finishes_the_actor_which_started_it_is_notified_in_the_actor_thread() throws InterruptedException {
         SpyRunnable worker = new SpyRunnable("run worker");
         SpyRunnable onFinished = new SpyRunnable("on finished");
-        SpyRunnable actor = new WorkerStartingSpyRunnable("start worker", worker, onFinished);
+        SpyRunnable rawActor = new WorkerStartingSpyRunnable("start worker", worker, onFinished);
 
-        actors.createPrimaryActor(Runnable.class, actor, "Actor").tell().run();
+        ActorThread actorThread = actors.startActorThread("Actor");
+        actorThread.createActor(Runnable.class, rawActor).tell().run();
         awaitEvents(3);
 
         assertEvents("start worker", "run worker", "on finished");
-        assertThat("notification should have been in the actor thread", onFinished.thread, is(actor.thread));
+        assertThat("notification should have been in the actor thread", onFinished.thread, is(rawActor.thread));
     }
 
     @Test
@@ -151,9 +158,10 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
         // TODO: create a custom exception handler, then make it ignore this exception
         SpyRunnable worker = new ExceptionThrowingSpyRunnable("run worker", new RuntimeException("dummy exception"));
         SpyRunnable onFinished = new SpyRunnable("on finished");
-        SpyRunnable actor = new WorkerStartingSpyRunnable("start worker", worker, onFinished);
+        SpyRunnable rawActor = new WorkerStartingSpyRunnable("start worker", worker, onFinished);
 
-        actors.createPrimaryActor(Runnable.class, actor, "Actor").tell().run();
+        ActorThread actorThread = actors.startActorThread("Actor");
+        actorThread.createActor(Runnable.class, rawActor).tell().run();
         awaitEvents(3);
 
         assertEvents("start worker", "run worker", "on finished");
@@ -179,6 +187,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
         thrown.expectMessage("unsupported listener type");
         thrown.expectMessage(NoFactoryForThisListener.class.getName());
 
-        actors.createPrimaryActor(NoFactoryForThisListener.class, listener, "ActorName");
+        ActorThread actorThread = actors.startActorThread("ActorName");
+        actorThread.createActor(NoFactoryForThisListener.class, listener);
     }
 }
