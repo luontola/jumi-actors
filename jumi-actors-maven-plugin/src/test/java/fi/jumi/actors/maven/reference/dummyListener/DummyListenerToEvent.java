@@ -1,8 +1,8 @@
-package fi.jumi.codegenerator.reference.dummyListener;
+package fi.jumi.actors.maven.reference.dummyListener;
 
 import fi.jumi.actors.Event;
 import fi.jumi.actors.MessageSender;
-import fi.jumi.codegenerator.DummyListener;
+import fi.jumi.actors.maven.DummyListener;
 
 public class DummyListenerToEvent implements DummyListener {
 

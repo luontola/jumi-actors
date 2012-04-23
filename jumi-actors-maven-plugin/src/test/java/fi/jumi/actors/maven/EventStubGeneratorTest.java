@@ -2,11 +2,11 @@
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
-package fi.jumi.codegenerator;
+package fi.jumi.actors.maven;
 
 import fi.jumi.actors.*;
-import fi.jumi.codegenerator.reference.DummyListenerFactory;
-import fi.jumi.codegenerator.java.GeneratedClass;
+import fi.jumi.actors.maven.reference.DummyListenerFactory;
+import fi.jumi.actors.maven.codegen.GeneratedClass;
 import org.apache.commons.io.IOUtils;
 import org.junit.*;
 
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.*;
 
 public class EventStubGeneratorTest {
 
-    private static final String TARGET_PACKAGE = "fi.jumi.codegenerator.reference";
+    private static final String TARGET_PACKAGE = "fi.jumi.actors.maven.reference";
 
     private TargetPackageResolver targetPackageResolver;
     private EventStubGenerator generator;
@@ -81,24 +81,24 @@ public class EventStubGeneratorTest {
 
     @Test
     public void generates_factory_class() throws IOException {
-        assertClassEquals("fi/jumi/codegenerator/reference/DummyListenerFactory.java", generator.getFactory());
+        assertClassEquals("fi/jumi/actors/maven/reference/DummyListenerFactory.java", generator.getFactory());
     }
 
     @Test
     public void generates_frontend_class() throws IOException {
-        assertClassEquals("fi/jumi/codegenerator/reference/dummyListener/DummyListenerToEvent.java", generator.getFrontend());
+        assertClassEquals("fi/jumi/actors/maven/reference/dummyListener/DummyListenerToEvent.java", generator.getFrontend());
     }
 
     @Test
     public void generates_backend_class() throws IOException {
-        assertClassEquals("fi/jumi/codegenerator/reference/dummyListener/EventToDummyListener.java", generator.getBackend());
+        assertClassEquals("fi/jumi/actors/maven/reference/dummyListener/EventToDummyListener.java", generator.getBackend());
     }
 
     @Test
     public void generates_event_classes() throws IOException {
         List<GeneratedClass> events = generator.getEvents();
-        assertClassEquals("fi/jumi/codegenerator/reference/dummyListener/OnOtherEvent.java", events.get(0));
-        assertClassEquals("fi/jumi/codegenerator/reference/dummyListener/OnSomethingEvent.java", events.get(1));
+        assertClassEquals("fi/jumi/actors/maven/reference/dummyListener/OnOtherEvent.java", events.get(0));
+        assertClassEquals("fi/jumi/actors/maven/reference/dummyListener/OnSomethingEvent.java", events.get(1));
     }
 
     @Test

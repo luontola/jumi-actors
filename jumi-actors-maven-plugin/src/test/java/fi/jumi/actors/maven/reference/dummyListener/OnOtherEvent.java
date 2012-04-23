@@ -1,7 +1,7 @@
-package fi.jumi.codegenerator.reference.dummyListener;
+package fi.jumi.actors.maven.reference.dummyListener;
 
 import fi.jumi.actors.Event;
-import fi.jumi.codegenerator.DummyListener;
+import fi.jumi.actors.maven.DummyListener;
 import java.io.Serializable;
 
 public class OnOtherEvent implements Event<DummyListener>, Serializable {

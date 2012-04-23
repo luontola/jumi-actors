@@ -2,10 +2,10 @@
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
-package fi.jumi.codegenerator;
+package fi.jumi.actors.maven;
 
 import fi.jumi.actors.*;
-import fi.jumi.codegenerator.java.*;
+import fi.jumi.actors.maven.codegen.*;
 import org.codehaus.plexus.util.StringUtils;
 
 import java.io.Serializable;

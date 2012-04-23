@@ -2,7 +2,7 @@
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
-package fi.jumi.codegenerator.java;
+package fi.jumi.actors.maven.codegen;
 
 import org.junit.Test;
 
@@ -24,7 +24,7 @@ public class JavaTypeTest {
     public void regular_type() {
         JavaType t = JavaType.of(NonGenericType.class);
 
-        assertThat(t.getPackage(), is("fi.jumi.codegenerator.java"));
+        assertThat(t.getPackage(), is("fi.jumi.actors.maven.codegen"));
         assertThat(t.getRawName(), is("NonGenericType"));
         assertThat(t.getSimpleName(), is("NonGenericType"));
     }
@@ -33,7 +33,7 @@ public class JavaTypeTest {
     public void generic_type() throws Exception {
         JavaType t = JavaType.of(genericTypeOfField("SINGLE_TYPE_ARGUMENT"));
 
-        assertThat(t.getPackage(), is("fi.jumi.codegenerator.java"));
+        assertThat(t.getPackage(), is("fi.jumi.actors.maven.codegen"));
         assertThat(t.getRawName(), is("GenericType"));
         assertThat(t.getSimpleName(), is("GenericType<String>"));
     }
@@ -42,7 +42,7 @@ public class JavaTypeTest {
     public void wildcard_type() throws Exception {
         JavaType t = JavaType.of(genericTypeOfField("WILDCARD_TYPE_ARGUMENT"));
 
-        assertThat(t.getPackage(), is("fi.jumi.codegenerator.java"));
+        assertThat(t.getPackage(), is("fi.jumi.actors.maven.codegen"));
         assertThat(t.getRawName(), is("GenericType"));
         assertThat(t.getSimpleName(), is("GenericType<?>"));
     }
