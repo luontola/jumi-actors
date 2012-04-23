@@ -10,7 +10,7 @@ import javax.annotation.concurrent.*;
 public abstract class Actors implements LongLivedActors, OnDemandActors {
 
     private final Eventizer<?>[] factories;
-    private final ThreadLocal<MessageQueue<Event<?>>> queueOfCurrentActor = new ThreadLocal<MessageQueue<Event<?>>>();
+    private final ThreadLocal<Actor<?>> currentActor = new ThreadLocal<Actor<?>>();
 
     public Actors(Eventizer<?>... factories) {
         this.factories = factories;
@@ -21,21 +21,19 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
         checkNotInsideAnActor();
         Eventizer<T> factory = getFactoryForType(type);
 
-        MessageQueue<Event<T>> queue = new MessageQueue<Event<T>>();
-        MessageSender<Event<T>> receiver = factory.newBackend(target);
-        T handle = factory.newFrontend(queue);
+        Actor<T> actor = new Actor<T>(factory, target);
 
-        startEventPoller(name, queue, receiver);
-        return ActorRef.wrap(type.cast(handle));
+        startEventPoller(name, actor);
+        return ActorRef.wrap(actor.frontend);
     }
 
     private <T> void checkNotInsideAnActor() {
-        if (queueOfCurrentActor.get() != null) {
+        if (currentActor.get() != null) {
             throw new IllegalStateException("already inside an actor");
         }
     }
 
-    protected abstract <T> void startEventPoller(String name, MessageQueue<Event<T>> queue, MessageSender<Event<T>> receiver);
+    protected abstract <T> void startEventPoller(String name, Actor<T> actor);
 
     @Override
     public void startUnattendedWorker(Runnable worker, Runnable onFinished) {
@@ -48,26 +46,18 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
     @Override
     public <T> ActorRef<T> createSecondaryActor(Class<T> type, T target) {
         Eventizer<T> factory = getFactoryForType(type);
-        final MessageQueue<Event<?>> queue = getQueueOfCurrentActor();
+        MessageQueue<Event<?>> queue = (MessageQueue) getCurrentActor().queue;
 
         T handle = factory.newFrontend(new DelegateToCustomTarget<T>(queue, target));
         return ActorRef.wrap(type.cast(handle));
     }
 
-    private MessageQueue<Event<?>> getQueueOfCurrentActor() {
-        MessageQueue<Event<?>> queue = queueOfCurrentActor.get();
-        if (queue == null) {
-            throw new IllegalStateException("queue not set up; maybe we are not inside an actor?");
+    private Actor<?> getCurrentActor() {
+        Actor<?> actor = currentActor.get();
+        if (actor == null) {
+            throw new IllegalStateException("We are not inside an actor");
         }
-        return queue;
-    }
-
-    protected void initActorContext(MessageQueue<?> queue) {
-        queueOfCurrentActor.set((MessageQueue) queue);
-    }
-
-    protected void clearActorContext() {
-        queueOfCurrentActor.remove();
+        return actor;
     }
 
     @SuppressWarnings({"unchecked"})
@@ -82,23 +72,36 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
 
 
     @NotThreadSafe
-    protected class ActorContext<T> implements Runnable {
-        private final MessageQueue<Event<T>> queue;
-        private final Runnable actor;
+    protected class Actor<T> {
+        private final MessageQueue<Event<T>> queue = new MessageQueue<Event<T>>();
+        private final MessageSender<Event<T>> backend;
+        public final T frontend;
 
-        public ActorContext(MessageQueue<Event<T>> queue, Runnable actor) {
-            this.actor = actor;
-            this.queue = queue;
+        public Actor(Eventizer<T> factory, T rawActor) {
+            this.backend = factory.newBackend(rawActor);
+            this.frontend = factory.newFrontend(queue);
         }
 
-        @Override
-        @SuppressWarnings({"unchecked"})
-        public void run() {
-            initActorContext(queue);
+        public void processNextMessage() throws InterruptedException {
+            Event<T> message = queue.take();
+            process(message);
+        }
+
+        public boolean processNextMessageIfAny() {
+            Event<T> message = queue.poll();
+            if (message == null) {
+                return false;
+            }
+            process(message);
+            return true;
+        }
+
+        private void process(Event<T> event) {
+            currentActor.set(this);
             try {
-                actor.run();
+                backend.send(event);
             } finally {
-                clearActorContext();
+                currentActor.remove();
             }
         }
     }

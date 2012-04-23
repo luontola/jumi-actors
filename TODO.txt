@@ -34,12 +34,12 @@ TODO NEXT:
 				- extract TestClassFinderSpawner
 			- fi.jumi.core.runners.TestClassRunner
 				- push dependencies out of constructor (pass WorkerCounter and `this` as method parameters to DriverRunnerSpawner)
-	- create a class (Actor?) to represent Actors.queueOfCurrentActor
-		- wrap the MessageQueue in it
-		- move processing the next message in it
-		- move wiring the MessageQueue in it
-			- from createPrimaryActor
-			- from createSecondaryActor
+	OK - create a class (Actor?) to represent Actors.queueOfCurrentActor
+		OK - wrap the MessageQueue in it
+		OK - move processing the next message in it
+		OK - move wiring the MessageQueue in it
+			OK - from createPrimaryActor
+			SKIP - from createSecondaryActor
 	- make all events of type CustomTargetEvent (or would it complicate custom prosessing the messages? do we need to use MessageQueue<MessageToActor> for direct messages, and MessageQueue<Event<T>> for networking and stuff?)
 		- make primary actors use CustomTargetEvent
 		- remove duplication: unify the message processing/sending of primary and secondary actors

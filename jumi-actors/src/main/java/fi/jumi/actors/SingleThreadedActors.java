@@ -11,7 +11,7 @@ import java.util.concurrent.Executor;
 @NotThreadSafe
 public class SingleThreadedActors extends Actors {
 
-    private final List<EventPoller<?>> pollers = new ArrayList<EventPoller<?>>();
+    private final List<ProcessableEventPoller<?>> pollers = new ArrayList<ProcessableEventPoller<?>>();
     private final List<Runnable> workers = new ArrayList<Runnable>();
 
     public SingleThreadedActors(Eventizer<?>... factories) {
@@ -19,8 +19,8 @@ public class SingleThreadedActors extends Actors {
     }
 
     @Override
-    protected <T> void startEventPoller(String name, MessageQueue<Event<T>> queue, MessageSender<Event<T>> receiver) {
-        pollers.add(new EventPoller<T>(queue, receiver));
+    protected <T> void startEventPoller(String name, Actor<T> actor) {
+        pollers.add(new ProcessableEventPoller<T>(actor));
     }
 
     @Override
@@ -90,30 +90,16 @@ public class SingleThreadedActors extends Actors {
     }
 
     @ThreadSafe
-    private class EventPoller<T> implements Processable {
+    private static class ProcessableEventPoller<T> implements Processable {
+        private final Actor<T> actor;
 
-        private final MessageQueue<Event<T>> source;
-        private final MessageSender<Event<T>> target;
-
-        public EventPoller(MessageQueue<Event<T>> source, MessageSender<Event<T>> target) {
-            this.source = source;
-            this.target = target;
+        public ProcessableEventPoller(Actor<T> actor) {
+            this.actor = actor;
         }
 
         @Override
         public boolean processedSomething() {
-            Event<T> event = source.poll();
-            if (event != null) {
-                initActorContext(source);
-                try {
-                    target.send(event);
-                } finally {
-                    clearActorContext();
-                }
-                return true;
-            } else {
-                return false;
-            }
+            return actor.processNextMessageIfAny();
         }
     }
 
