@@ -24,8 +24,8 @@ public class MultiThreadedActors extends Actors {
     }
 
     @Override
-    protected <T> void startActorThread(String name, ActorThread actorThread) {
-        Thread t = new Thread(new EventPoller<T>(actorThread), name);
+    protected void startActorThread(String name, ActorThreadImpl actorThread) {
+        Thread t = new Thread(new BlockingActorProcessor(actorThread), name);
         t.start();
         actorThreads.add(t);
     }
@@ -48,10 +48,10 @@ public class MultiThreadedActors extends Actors {
 
 
     @ThreadSafe
-    private static class EventPoller<T> implements Runnable {
-        private final ActorThread actorThread;
+    private static class BlockingActorProcessor implements Runnable {
+        private final ActorThreadImpl actorThread;
 
-        public EventPoller(ActorThread actorThread) {
+        public BlockingActorProcessor(ActorThreadImpl actorThread) {
             this.actorThread = actorThread;
         }
 

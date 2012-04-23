@@ -4,14 +4,14 @@
 
 package fi.jumi.actors;
 
-import javax.annotation.concurrent.*;
+import javax.annotation.concurrent.NotThreadSafe;
 import java.util.*;
 import java.util.concurrent.Executor;
 
 @NotThreadSafe
 public class SingleThreadedActors extends Actors {
 
-    private final List<NonBlockingActorProcessor<?>> pollers = new ArrayList<NonBlockingActorProcessor<?>>();
+    private final List<NonBlockingActorProcessor> pollers = new ArrayList<NonBlockingActorProcessor>();
     private final List<Runnable> workers = new ArrayList<Runnable>();
 
     public SingleThreadedActors(Eventizer<?>... factories) {
@@ -19,8 +19,8 @@ public class SingleThreadedActors extends Actors {
     }
 
     @Override
-    protected <T> void startActorThread(String name, ActorThread actorThread) {
-        pollers.add(new NonBlockingActorProcessor<T>(actorThread));
+    protected void startActorThread(String name, ActorThreadImpl actorThread) {
+        pollers.add(new NonBlockingActorProcessor(actorThread));
     }
 
     @Override
@@ -89,11 +89,11 @@ public class SingleThreadedActors extends Actors {
         }
     }
 
-    @ThreadSafe
-    private static class NonBlockingActorProcessor<T> implements Processable {
-        private final ActorThread actorThread;
+    @NotThreadSafe
+    private static class NonBlockingActorProcessor implements Processable {
+        private final ActorThreadImpl actorThread;
 
-        public NonBlockingActorProcessor(ActorThread actorThread) {
+        public NonBlockingActorProcessor(ActorThreadImpl actorThread) {
             this.actorThread = actorThread;
         }
 

@@ -11,7 +11,7 @@ import java.util.concurrent.Executor;
 public abstract class Actors implements LongLivedActors, OnDemandActors {
 
     private final Eventizer<?>[] factories;
-    private final ThreadLocal<Executor> currentActorThread = new ThreadLocal<Executor>();
+    private final ThreadLocal<ActorThreadImpl> currentActorThread = new ThreadLocal<ActorThreadImpl>();
 
     public Actors(Eventizer<?>... factories) {
         this.factories = factories;
@@ -19,22 +19,24 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
 
     @Override
     public <T> ActorRef<T> createPrimaryActor(Class<T> type, T target, String name) {
-        checkNotInsideAnActor();
-        ActorThread actorThread = new ActorThread();
-        startActorThread(name, actorThread);
-
-        Eventizer<T> factory = getFactoryForType(type);
-        T proxy = factory.newFrontend(new MessageToActorSender<T>(actorThread, target));
-        return ActorRef.wrap(proxy);
+        ActorThread actorThread = startActorThread(name);
+        return actorThread.createActor(type, target);
     }
 
-    private <T> void checkNotInsideAnActor() {
+    public ActorThread startActorThread(String name) {
+        checkNotInsideAnActor();
+        ActorThreadImpl actorThread = new ActorThreadImpl();
+        startActorThread(name, actorThread);
+        return actorThread;
+    }
+
+    private void checkNotInsideAnActor() {
         if (currentActorThread.get() != null) {
             throw new IllegalStateException("already inside an actor");
         }
     }
 
-    protected abstract <T> void startActorThread(String name, ActorThread actorThread);
+    protected abstract void startActorThread(String name, ActorThreadImpl actorThread);
 
     @Override
     public void startUnattendedWorker(Runnable worker, Runnable onFinished) {
@@ -46,16 +48,12 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
 
     @Override
     public <T> ActorRef<T> createSecondaryActor(Class<T> type, T target) {
-        Executor actorThread = getCurrentActorThread();
-
-        // TODO: duplication with primary actors
-        Eventizer<T> factory = getFactoryForType(type);
-        T proxy = factory.newFrontend(new MessageToActorSender<T>(actorThread, target));
-        return ActorRef.wrap(type.cast(proxy));
+        ActorThread actorThread = getCurrentActorThread();
+        return actorThread.createActor(type, target);
     }
 
-    private Executor getCurrentActorThread() {
-        Executor actorThread = currentActorThread.get();
+    private ActorThreadImpl getCurrentActorThread() {
+        ActorThreadImpl actorThread = currentActorThread.get();
         if (actorThread == null) {
             throw new IllegalStateException("We are not inside an actor");
         }
@@ -74,8 +72,15 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
 
 
     @ThreadSafe
-    protected class ActorThread implements Executor {
+    protected class ActorThreadImpl implements Executor, ActorThread {
         private final MessageQueue<Runnable> taskQueue = new MessageQueue<Runnable>();
+
+        @Override
+        public <T> ActorRef<T> createActor(Class<T> type, T target) {
+            Eventizer<T> factory = getFactoryForType(type);
+            T proxy = factory.newFrontend(new MessageToActorSender<T>(this, target));
+            return ActorRef.wrap(type.cast(proxy));
+        }
 
         @Override
         public void execute(Runnable task) {
