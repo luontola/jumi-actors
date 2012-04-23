@@ -20,7 +20,8 @@ public class SuiteRunner implements Startable, TestClassFinderListener, WorkerCo
     private final SuiteListener listener;
     private final TestClassFinder testClassFinder;
     private final DriverFinder driverFinder;
-    private final OnDemandActors actors;
+    private final Actors actors;
+    private final ActorThread actorThread;
     private final Executor executor;
     private final WorkerCounter workers;
     private final RunIdSequence runIdSequence = new RunIdSequence();
@@ -28,12 +29,14 @@ public class SuiteRunner implements Startable, TestClassFinderListener, WorkerCo
     public SuiteRunner(SuiteListener listener,
                        TestClassFinder testClassFinder,
                        DriverFinder driverFinder,
-                       OnDemandActors actors,
+                       Actors actors,
+                       ActorThread actorThread,
                        Executor executor) {
         this.listener = listener;
         this.testClassFinder = testClassFinder;
         this.driverFinder = driverFinder;
         this.actors = actors;
+        this.actorThread = actorThread;
         this.executor = executor;
         this.workers = new WorkerCounter(this);
     }
@@ -43,7 +46,7 @@ public class SuiteRunner implements Startable, TestClassFinderListener, WorkerCo
         // XXX: this call might not be needed (it could even be harmful because of asynchrony); the caller of SuiteRunner knows when the suite is started
         listener.onSuiteStarted();
 
-        ActorRef<TestClassFinderListener> finderListener = actors.createSecondaryActor(TestClassFinderListener.class, this);
+        ActorRef<TestClassFinderListener> finderListener = actorThread.createActor(TestClassFinderListener.class, this);
         startUnattendedWorker(new TestClassFinderRunner(testClassFinder, finderListener));
     }
 
@@ -71,7 +74,7 @@ public class SuiteRunner implements Startable, TestClassFinderListener, WorkerCo
 
         workers.fireWorkerStarted();
         new TestClassRunner(
-                testClass, driver, new TestClassRunnerListenerToSuiteListener(testClass), actors, executor, runIdSequence
+                testClass, driver, new TestClassRunnerListenerToSuiteListener(testClass), actors, actorThread, executor, runIdSequence
         ).start();
     }
 

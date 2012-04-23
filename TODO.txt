@@ -45,11 +45,11 @@ TODO NEXT:
 		OK - remove duplication: unify the message processing/sending of primary and secondary actors
 			OK - unify SingleThreadedActors.EventPoller and Actors.ActorContext
 			OK - maybe doable by setting up the context for every message also in MultiThreadedActors, or get rid of the need for more than one context in SingleThreadedActors
-	!! - separate creating ActorRefs from assigning threads. Might allow creating ActorRefs/secondary actors in constuctors, outside actor thread.
+	OK - separate creating ActorRefs from assigning threads. Might allow creating ActorRefs/secondary actors in constuctors, outside actor thread.
 		OK - estimate whether it would make code simpler and/or help to get rid of spawners
 		OK - create interface ActorThread.createActor(Object): ActorRef
 		OK - create Actors.newThread(): ActorThread
-		!! - refactor the code to use it (at first probably only Main creates the thread)
+		OK - refactor the code to use it (at first probably only Main creates the thread)
 		OK - rename/remove fi.jumi.actors.LongLivedActors
 	- eliminate spawners, see if it the code can be safe enough without them
 	- create Actors.getCurrentActor: ActorRef (or maybe it's not needed when creating refs and threads are separated?)
@@ -63,7 +63,7 @@ TODO NEXT:
 		- use MonitoredExecutor instead of Actors.startUnattendedWorker (keep SingleThreadedActors.getExecutor)
 		- remove Actors.startUnattendedWorker
 		- try removing fi.jumi.core.runners.TestClassRunnerListener#onTestClassFinished
-		- rename/remove fi.jumi.actors.OnDemandActors
+		OK - rename/remove fi.jumi.actors.OnDemandActors
 	- or, implement unattended workers as actors which stop themselves (Thread.interrupt()) after running the command
 	- refactor actor tests, some tests might be outdated
 	- make DynamicListenerFactory support all types without having to declare them

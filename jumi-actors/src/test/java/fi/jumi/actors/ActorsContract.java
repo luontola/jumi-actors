@@ -12,7 +12,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.mock;
 
 public abstract class ActorsContract<T extends Actors> extends ActorsContractHelpers<T> {
 
@@ -89,17 +88,16 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
 
     @Test
     public void an_actor_can_receive_events_in_the_same_thread_through_a_secondary_interface() {
+        // TODO: update this test; it's checking that things bound to the same ActorThread are executed in same thread
         actors = newActors(DynamicEventizer.factoriesFor(PrimaryInterface.class, SecondaryInterface.class));
+        final ActorThread actorThread = actors.startActorThread("ActorName");
+
         class MultiPurposeActor implements PrimaryInterface, SecondaryInterface {
-            public volatile ActorRef<SecondaryInterface> secondary;
             public volatile Thread primaryEventThread;
             public volatile Thread secondaryEventThread;
 
             @Override
             public void onPrimaryEvent() {
-                // binding must be done inside an actor
-                secondary = actors.createSecondaryActor(SecondaryInterface.class, this);
-
                 primaryEventThread = Thread.currentThread();
                 logEvent("primary event");
             }
@@ -112,12 +110,11 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
         }
         MultiPurposeActor rawActor = new MultiPurposeActor();
 
-        ActorThread actorThread = actors.startActorThread("ActorName");
         ActorRef<PrimaryInterface> primary = actorThread.createActor(PrimaryInterface.class, rawActor);
         primary.tell().onPrimaryEvent();
         awaitEvents(1);
 
-        ActorRef<SecondaryInterface> secondary = rawActor.secondary;
+        ActorRef<SecondaryInterface> secondary = actorThread.createActor(SecondaryInterface.class, rawActor);
         secondary.tell().onSecondaryEvent();
         awaitEvents(2);
 
@@ -125,15 +122,6 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
         assertThat("secondary event happened", rawActor.secondaryEventThread, is(notNullValue()));
         assertThat("secondary event happened in same thread as primary event",
                 rawActor.secondaryEventThread, is(rawActor.primaryEventThread));
-    }
-
-
-    @Test
-    public void secondary_interfaces_cannot_be_bound_outside_an_actor() {
-        thrown.expect(IllegalStateException.class);
-        thrown.expectMessage("not inside an actor");
-
-        actors.createSecondaryActor(DummyListener.class, mock(DummyListener.class));
     }
 
 

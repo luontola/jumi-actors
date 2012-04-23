@@ -39,7 +39,8 @@ public class Main {
         // TODO: do not create unlimited numbers of threads; make it by default CPUs+1 or something
         Executor executor = Executors.newCachedThreadPool();
         ActorThread actorThread = actors.startActorThread("Coordinator");
-        ActorRef<CommandListener> coordinator = actorThread.createActor(CommandListener.class, new TestRunCoordinator(actors, executor));
+        ActorRef<CommandListener> coordinator = actorThread.createActor(CommandListener.class,
+                new TestRunCoordinator(actors, actorThread, executor));
 
         connectToLauncher(launcherPort, coordinator);
     }

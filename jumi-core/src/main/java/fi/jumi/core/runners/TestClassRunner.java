@@ -4,7 +4,7 @@
 
 package fi.jumi.core.runners;
 
-import fi.jumi.actors.OnDemandActors;
+import fi.jumi.actors.*;
 import fi.jumi.api.drivers.*;
 import fi.jumi.core.Startable;
 import fi.jumi.core.runs.*;
@@ -24,7 +24,8 @@ public class TestClassRunner implements Startable, TestClassListener, WorkerCoun
     public TestClassRunner(Class<?> testClass,
                            Driver driver,
                            TestClassRunnerListener target,
-                           OnDemandActors actors,
+                           Actors actors,
+                           ActorThread actorThread,
                            Executor executor,
                            RunIdSequence runIdSequence) {
         this.testClass = testClass;
@@ -32,8 +33,8 @@ public class TestClassRunner implements Startable, TestClassListener, WorkerCoun
         this.target = target;
 
         WorkerCounter workerCounter = new WorkerCounter(this);
-        TestRunSpawner testRunSpawner = new TestRunSpawner(workerCounter, actors, executor);
-        this.driverRunnerSpawner = new DriverRunnerSpawner(workerCounter, actors, testRunSpawner, runIdSequence,
+        TestRunSpawner testRunSpawner = new TestRunSpawner(actorThread, workerCounter, executor);
+        this.driverRunnerSpawner = new DriverRunnerSpawner(actors, actorThread, workerCounter, testRunSpawner, runIdSequence,
                 new DuplicateOnTestFoundEventFilter(this));
     }
 

@@ -12,14 +12,14 @@ import java.util.concurrent.Executor;
 @NotThreadSafe
 public class TestRunSpawner {
 
-    private final OnDemandActors actors;
-    private final Executor realExecutor;
+    private final ActorThread actorThread;
     private final WorkerCounter workerCounter;
+    private final Executor realExecutor;
 
-    public TestRunSpawner(WorkerCounter workerCounter, OnDemandActors actors, Executor realExecutor) {
-        this.actors = actors;
-        this.realExecutor = realExecutor;
+    public TestRunSpawner(ActorThread actorThread, WorkerCounter workerCounter, Executor realExecutor) {
+        this.actorThread = actorThread;
         this.workerCounter = workerCounter;
+        this.realExecutor = realExecutor;
     }
 
     public Executor getExecutor() {
@@ -27,7 +27,7 @@ public class TestRunSpawner {
     }
 
     private ActorRef<ExecutorListener> self() {
-        return actors.createSecondaryActor(ExecutorListener.class, new WorkerCountingExecutor(workerCounter, realExecutor));
+        return actorThread.createActor(ExecutorListener.class, new WorkerCountingExecutor(workerCounter, realExecutor));
     }
 
 

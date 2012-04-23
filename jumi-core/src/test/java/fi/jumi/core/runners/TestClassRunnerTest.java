@@ -42,7 +42,7 @@ public class TestClassRunnerTest {
     @Test
     public void forwards_all_other_events() {
         TestClassRunnerListener target = mock(TestClassRunnerListener.class);
-        TestClassRunner runner = new TestClassRunner(null, null, target, null, null, null);
+        TestClassRunner runner = new TestClassRunner(null, null, target, null, null, null, null);
         final TestId TEST_ID = TestId.of(1);
         final String NAME = "name";
         final RunId RUN_ID = new RunId(1);
@@ -75,7 +75,8 @@ public class TestClassRunnerTest {
     private void run(Driver driver) {
         RunIdSequence runIdSequence = new RunIdSequence();
         ActorThread actorThread = actors.startActorThread("TestClassRunner");
-        ActorRef<Startable> runner = actorThread.createActor(Startable.class, new TestClassRunner(DummyTest.class, driver, listener, actors, actors.getExecutor(), runIdSequence));
+        ActorRef<Startable> runner = actorThread.createActor(Startable.class,
+                new TestClassRunner(DummyTest.class, driver, listener, actors, actorThread, actors.getExecutor(), runIdSequence));
         runner.tell().start();
         actors.processEventsUntilIdle();
     }

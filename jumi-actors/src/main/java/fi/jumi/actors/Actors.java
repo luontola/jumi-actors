@@ -10,7 +10,7 @@ import javax.annotation.concurrent.*;
 import java.util.concurrent.Executor;
 
 @ThreadSafe
-public abstract class Actors implements OnDemandActors {
+public abstract class Actors {
 
     private final Eventizer<?>[] factories;
     private final ThreadLocal<ActorThread> currentActorThread = new ThreadLocal<ActorThread>();
@@ -34,21 +34,15 @@ public abstract class Actors implements OnDemandActors {
 
     protected abstract void startActorThread(String name, MessageProcessor actorThread);
 
-    @Override
     public void startUnattendedWorker(Runnable worker, Runnable onFinished) {
-        ActorRef<Runnable> onFinishedHandle = createSecondaryActor(Runnable.class, onFinished);
+        ActorThread actorThread = getCurrentActorThread();
+        ActorRef<Runnable> onFinishedHandle = actorThread.createActor(Runnable.class, onFinished);
         doStartUnattendedWorker(new UnattendedWorker(worker, onFinishedHandle));
     }
 
     protected abstract void doStartUnattendedWorker(Runnable worker);
 
-    @Override
-    public <T> ActorRef<T> createSecondaryActor(Class<T> type, T target) {
-        ActorThread actorThread = getCurrentActorThread();
-        return actorThread.createActor(type, target);
-    }
-
-    private ActorThread getCurrentActorThread() {
+    public ActorThread getCurrentActorThread() {
         ActorThread actorThread = currentActorThread.get();
         if (actorThread == null) {
             throw new IllegalStateException("We are not inside an actor");

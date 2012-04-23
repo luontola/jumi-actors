@@ -14,15 +14,17 @@ import java.util.concurrent.Executor;
 @NotThreadSafe
 public class DriverRunnerSpawner {
 
+    private final Actors actors;
+    private final ActorThread actorThread;
     private final WorkerCounter workerCounter;
-    private final OnDemandActors actors;
     private final TestRunSpawner testRunSpawner;
     private final RunIdSequence runIdSequence;
 
     private final TestClassListener rawTarget;
 
-    public DriverRunnerSpawner(WorkerCounter workerCounter, OnDemandActors actors, TestRunSpawner testRunSpawner, RunIdSequence runIdSequence, TestClassListener rawTarget) {
+    public DriverRunnerSpawner(Actors actors, ActorThread actorThread, WorkerCounter workerCounter, TestRunSpawner testRunSpawner, RunIdSequence runIdSequence, TestClassListener rawTarget) {
         this.actors = actors;
+        this.actorThread = actorThread;
         this.workerCounter = workerCounter;
         this.testRunSpawner = testRunSpawner;
         this.runIdSequence = runIdSequence;
@@ -30,7 +32,7 @@ public class DriverRunnerSpawner {
     }
 
     public void spawnDriverRunner(Driver driver, Class<?> testClass) {
-        ActorRef<TestClassListener> target = actors.createSecondaryActor(TestClassListener.class, rawTarget);
+        ActorRef<TestClassListener> target = actorThread.createActor(TestClassListener.class, rawTarget);
 
         SuiteNotifier notifier = new DefaultSuiteNotifier(target, runIdSequence);
         Executor executor = testRunSpawner.getExecutor();
