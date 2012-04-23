@@ -21,11 +21,11 @@ import static org.mockito.Mockito.*;
 public class TestClassRunnerTest {
 
     private final SingleThreadedActors actors = new SingleThreadedActors(
-            new StartableFactory(),
-            new RunnableFactory(),
-            new ExecutorFactory(),
-            new ExecutorListenerFactory(),
-            new TestClassListenerFactory()
+            new StartableEventizer(),
+            new RunnableEventizer(),
+            new ExecutorEventizer(),
+            new ExecutorListenerEventizer(),
+            new TestClassListenerEventizer()
     );
 
     private final MethodCallSpy spy = new MethodCallSpy();

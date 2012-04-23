@@ -9,17 +9,17 @@ import javax.annotation.concurrent.*;
 @ThreadSafe
 public abstract class Actors implements LongLivedActors, OnDemandActors {
 
-    private final ListenerFactory<?>[] factories;
+    private final Eventizer<?>[] factories;
     private final ThreadLocal<MessageQueue<Event<?>>> queueOfCurrentActor = new ThreadLocal<MessageQueue<Event<?>>>();
 
-    public Actors(ListenerFactory<?>... factories) {
+    public Actors(Eventizer<?>... factories) {
         this.factories = factories;
     }
 
     @Override
     public <T> T createPrimaryActor(Class<T> type, T target, String name) {
         checkNotInsideAnActor();
-        ListenerFactory<T> factory = getFactoryForType(type);
+        Eventizer<T> factory = getFactoryForType(type);
 
         MessageQueue<Event<T>> queue = new MessageQueue<Event<T>>();
         MessageSender<Event<T>> receiver = factory.newBackend(target);
@@ -47,7 +47,7 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
 
     @Override
     public <T> T createSecondaryActor(Class<T> type, final T target) {
-        ListenerFactory<T> factory = getFactoryForType(type);
+        Eventizer<T> factory = getFactoryForType(type);
         final MessageQueue<Event<?>> queue = getQueueOfCurrentActor();
 
         T handle = factory.newFrontend(new DelegateToCustomTarget<T>(queue, target));
@@ -71,10 +71,10 @@ public abstract class Actors implements LongLivedActors, OnDemandActors {
     }
 
     @SuppressWarnings({"unchecked"})
-    private <T> ListenerFactory<T> getFactoryForType(Class<T> type) {
-        for (ListenerFactory<?> factory : factories) {
+    private <T> Eventizer<T> getFactoryForType(Class<T> type) {
+        for (Eventizer<?> factory : factories) {
             if (factory.getType().equals(type)) {
-                return (ListenerFactory<T>) factory;
+                return (Eventizer<T>) factory;
             }
         }
         throw new IllegalArgumentException("unsupported listener type: " + type);

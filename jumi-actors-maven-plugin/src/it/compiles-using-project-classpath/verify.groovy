@@ -5,5 +5,5 @@
 import static org.junit.Assert.*
 
 def generatedDir = new File(basedir, "target/generated-sources/jumi-actors")
-def generatedSourceFile = new File(generatedDir, "example/generated/ExampleListenerFactory.java")
+def generatedSourceFile = new File(generatedDir, "example/generated/ExampleListenerEventizer.java")
 assertTrue("should have compiled the event interface with external libraries on the classpath", generatedSourceFile.exists())

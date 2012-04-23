@@ -34,7 +34,7 @@ public class EventStubGenerator {
             }
         });
 
-        factoryInterface = JavaType.of(ListenerFactory.class, listenerInterface);
+        factoryInterface = JavaType.of(Eventizer.class, listenerInterface);
         eventInterface = JavaType.of(Event.class, listenerInterface);
         senderInterface = JavaType.of(MessageSender.class, eventInterface);
 
@@ -141,7 +141,7 @@ public class EventStubGenerator {
     // names of generated classes
 
     private String myFactoryName() {
-        return listenerInterface.getRawName() + "Factory";
+        return listenerInterface.getRawName() + "Eventizer";
     }
 
     private String myFrontendName() {

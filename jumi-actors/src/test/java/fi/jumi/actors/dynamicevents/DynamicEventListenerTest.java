@@ -16,7 +16,7 @@ import static org.mockito.Mockito.*;
 
 public class DynamicEventListenerTest {
 
-    private final DynamicListenerFactory<DummyListener> factory = new DynamicListenerFactory<DummyListener>(DummyListener.class);
+    private final DynamicEventizer<DummyListener> factory = new DynamicEventizer<DummyListener>(DummyListener.class);
     private final MessageQueue<Event<DummyListener>> queue = new MessageQueue<Event<DummyListener>>();
     private final DummyListener frontend = factory.newFrontend(queue);
 
@@ -69,7 +69,7 @@ public class DynamicEventListenerTest {
         thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage("listeners may contain only void methods, but onSomething had return type java.lang.String");
 
-        new DynamicListenerFactory<ListenerWithNonVoidMethods>(ListenerWithNonVoidMethods.class);
+        new DynamicEventizer<ListenerWithNonVoidMethods>(ListenerWithNonVoidMethods.class);
     }
 
 

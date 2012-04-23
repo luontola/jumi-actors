@@ -14,7 +14,7 @@ public class SingleThreadedActors extends Actors {
     private final List<EventPoller<?>> pollers = new ArrayList<EventPoller<?>>();
     private final List<Runnable> workers = new ArrayList<Runnable>();
 
-    public SingleThreadedActors(ListenerFactory<?>... factories) {
+    public SingleThreadedActors(Eventizer<?>... factories) {
         super(factories);
     }
 

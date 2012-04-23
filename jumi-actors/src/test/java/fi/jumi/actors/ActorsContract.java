@@ -4,7 +4,7 @@
 
 package fi.jumi.actors;
 
-import fi.jumi.actors.dynamicevents.DynamicListenerFactory;
+import fi.jumi.actors.dynamicevents.DynamicEventizer;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 
@@ -21,10 +21,10 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
 
     @Before
     public void initActors() {
-        actors = newActors(new DummyListenerFactory(), new DynamicListenerFactory<Runnable>(Runnable.class));
+        actors = newActors(new DummyListenerEventizer(), new DynamicEventizer<Runnable>(Runnable.class));
     }
 
-    protected abstract T newActors(ListenerFactory<?>... factories);
+    protected abstract T newActors(Eventizer<?>... factories);
 
 
     // normal event-polling actors
@@ -84,7 +84,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
 
     @Test
     public void an_actor_can_receive_events_in_the_same_thread_through_a_secondary_interface() {
-        actors = newActors(DynamicListenerFactory.factoriesFor(PrimaryInterface.class, SecondaryInterface.class));
+        actors = newActors(DynamicEventizer.factoriesFor(PrimaryInterface.class, SecondaryInterface.class));
         class MultiPurposeActor implements PrimaryInterface, SecondaryInterface {
             public volatile SecondaryInterface secondaryHandle;
             public volatile Thread primaryEventThread;

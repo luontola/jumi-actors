@@ -4,7 +4,7 @@
 
 package fi.jumi.actors;
 
-public interface ListenerFactory<T> {
+public interface Eventizer<T> {
 
     Class<T> getType();
 

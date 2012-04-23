@@ -11,9 +11,9 @@ public class CodeGenerationTest {
     @Test
     public void generates_a_working_listener_factory() {
         Runnable target = mock(Runnable.class);
-        ListenerFactory<Runnable> factory = new RunnableFactory();
-        MessageSender<Event<Runnable>> backend = factory.newBackend(target);
-        Runnable frontend = factory.newFrontend(backend);
+        Eventizer<Runnable> eventizer = new RunnableEventizer();
+        MessageSender<Event<Runnable>> backend = eventizer.newBackend(target);
+        Runnable frontend = eventizer.newFrontend(backend);
 
         frontend.run();
 

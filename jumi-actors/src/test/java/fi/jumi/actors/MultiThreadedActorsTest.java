@@ -4,7 +4,7 @@
 
 package fi.jumi.actors;
 
-import fi.jumi.actors.dynamicevents.DynamicListenerFactory;
+import fi.jumi.actors.dynamicevents.DynamicEventizer;
 import org.junit.*;
 
 import java.util.*;
@@ -18,7 +18,7 @@ public class MultiThreadedActorsTest extends ActorsContract<MultiThreadedActors>
     private final List<MultiThreadedActors> createdActorses = new ArrayList<MultiThreadedActors>();
 
     @Override
-    protected MultiThreadedActors newActors(ListenerFactory<?>... factories) {
+    protected MultiThreadedActors newActors(Eventizer<?>... factories) {
         class SilentUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {
             @Override
             public void uncaughtException(Thread t, Throwable e) {
@@ -96,7 +96,7 @@ public class MultiThreadedActorsTest extends ActorsContract<MultiThreadedActors>
 
     @Test
     public void shutting_down_waits_for_workers_to_finish() throws InterruptedException {
-        actors = newActors(new DummyListenerFactory(), new DynamicListenerFactory<Runnable>(Runnable.class));
+        actors = newActors(new DummyListenerEventizer(), new DynamicEventizer<Runnable>(Runnable.class));
         final BlockingQueue<String> events = new LinkedBlockingQueue<String>();
 
         final Runnable worker = new Runnable() {

@@ -14,11 +14,11 @@ public class MultiThreadedActors extends Actors {
     private final Set<Thread> actorThreads = Collections.synchronizedSet(new HashSet<Thread>());
     private final ExecutorService unattendedWorkers;
 
-    public MultiThreadedActors(ListenerFactory<?>... factories) {
+    public MultiThreadedActors(Eventizer<?>... factories) {
         this(Executors.newCachedThreadPool(), factories);
     }
 
-    public MultiThreadedActors(ExecutorService threadPool, ListenerFactory<?>... factories) {
+    public MultiThreadedActors(ExecutorService threadPool, Eventizer<?>... factories) {
         super(factories);
         unattendedWorkers = threadPool;
     }

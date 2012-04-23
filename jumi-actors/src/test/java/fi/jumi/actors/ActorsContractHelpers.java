@@ -130,7 +130,7 @@ public abstract class ActorsContractHelpers<T extends Actors> {
         void onSomething(String parameter);
     }
 
-    public class DummyListenerFactory implements ListenerFactory<DummyListener> {
+    public class DummyListenerEventizer implements Eventizer<DummyListener> {
 
         @Override
         public Class<DummyListener> getType() {

@@ -1,12 +1,12 @@
 package fi.jumi.actors.maven.reference;
 
 import fi.jumi.actors.Event;
-import fi.jumi.actors.ListenerFactory;
+import fi.jumi.actors.Eventizer;
 import fi.jumi.actors.MessageSender;
 import fi.jumi.actors.maven.DummyListener;
 import fi.jumi.actors.maven.reference.dummyListener.*;
 
-public class DummyListenerFactory implements ListenerFactory<DummyListener> {
+public class DummyListenerEventizer implements Eventizer<DummyListener> {
 
     public Class<DummyListener> getType() {
         return DummyListener.class;

@@ -20,12 +20,12 @@ public abstract class SuiteRunnerIntegrationHelper {
     protected final SuiteListener expect = spy.getListener();
 
     private final SingleThreadedActors actors = new SingleThreadedActors(
-            new StartableFactory(),
-            new RunnableFactory(),
-            new ExecutorFactory(),
-            new ExecutorListenerFactory(),
-            new TestClassFinderListenerFactory(),
-            new TestClassListenerFactory()
+            new StartableEventizer(),
+            new RunnableEventizer(),
+            new ExecutorEventizer(),
+            new ExecutorListenerEventizer(),
+            new TestClassFinderListenerEventizer(),
+            new TestClassListenerEventizer()
     );
     private final Executor executor = new SynchronousExecutor();
 

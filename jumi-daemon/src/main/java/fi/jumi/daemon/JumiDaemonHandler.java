@@ -6,7 +6,7 @@ package fi.jumi.daemon;
 
 import fi.jumi.actors.*;
 import fi.jumi.core.*;
-import fi.jumi.core.events.SuiteListenerFactory;
+import fi.jumi.core.events.SuiteListenerEventizer;
 import org.jboss.netty.channel.*;
 
 import javax.annotation.concurrent.ThreadSafe;
@@ -22,7 +22,7 @@ public class JumiDaemonHandler extends SimpleChannelHandler {
     @Override
     public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
         // TODO: notify the coordinator on disconnect
-        SuiteListener listener = new SuiteListenerFactory().newFrontend(new ChannelMessageSender(e.getChannel()));
+        SuiteListener listener = new SuiteListenerEventizer().newFrontend(new ChannelMessageSender(e.getChannel()));
         coordinator.addSuiteListener(listener);
     }
 

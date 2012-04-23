@@ -10,20 +10,20 @@ import javax.annotation.concurrent.Immutable;
 import java.lang.reflect.*;
 
 @Immutable
-public class DynamicListenerFactory<T> implements ListenerFactory<T> {
+public class DynamicEventizer<T> implements Eventizer<T> {
 
     private final Class<T> type;
 
     @SuppressWarnings({"unchecked"})
-    public static ListenerFactory<?>[] factoriesFor(Class<?>... types) {
-        ListenerFactory<?>[] factories = new ListenerFactory<?>[types.length];
+    public static Eventizer<?>[] factoriesFor(Class<?>... types) {
+        Eventizer<?>[] factories = new Eventizer<?>[types.length];
         for (int i = 0; i < types.length; i++) {
-            factories[i] = new DynamicListenerFactory(types[i]);
+            factories[i] = new DynamicEventizer(types[i]);
         }
         return factories;
     }
 
-    public DynamicListenerFactory(Class<T> type) {
+    public DynamicEventizer(Class<T> type) {
         for (Method method : type.getMethods()) {
             checkReturnTypeIsVoid(method);
         }

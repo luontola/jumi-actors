@@ -5,7 +5,7 @@
 package fi.jumi.actors.maven;
 
 import fi.jumi.actors.*;
-import fi.jumi.actors.maven.reference.DummyListenerFactory;
+import fi.jumi.actors.maven.reference.DummyListenerEventizer;
 import fi.jumi.actors.maven.codegen.GeneratedClass;
 import org.apache.commons.io.IOUtils;
 import org.junit.*;
@@ -34,7 +34,7 @@ public class EventStubGeneratorTest {
 
     @Test
     public void factory_advertises_its_listener_type() {
-        DummyListenerFactory factory = new DummyListenerFactory();
+        DummyListenerEventizer factory = new DummyListenerEventizer();
 
         assertEquals(DummyListener.class, factory.getType());
     }
@@ -42,7 +42,7 @@ public class EventStubGeneratorTest {
     @Test
     public void stubs_forward_events_from_frontend_to_backend() {
         DummyListener target = mock(DummyListener.class);
-        DummyListenerFactory factory = new DummyListenerFactory();
+        DummyListenerEventizer factory = new DummyListenerEventizer();
         MessageSender<Event<DummyListener>> backend = factory.newBackend(target);
         DummyListener frontend = factory.newFrontend(backend);
 
@@ -57,7 +57,7 @@ public class EventStubGeneratorTest {
     @Test
     public void event_classes_are_serializable() {
         MessageQueue<Event<DummyListener>> spy = new MessageQueue<Event<DummyListener>>();
-        DummyListenerFactory factory = new DummyListenerFactory();
+        DummyListenerEventizer factory = new DummyListenerEventizer();
         DummyListener frontend = factory.newFrontend(spy);
 
         frontend.onSomething("foo", "bar");
@@ -69,7 +69,7 @@ public class EventStubGeneratorTest {
     @Test
     public void the_events_have_descriptive_toString_methods() {
         MessageQueue<Event<DummyListener>> spy = new MessageQueue<Event<DummyListener>>();
-        DummyListenerFactory factory = new DummyListenerFactory();
+        DummyListenerEventizer factory = new DummyListenerEventizer();
         DummyListener frontend = factory.newFrontend(spy);
 
         frontend.onSomething("foo", "bar");
@@ -81,7 +81,7 @@ public class EventStubGeneratorTest {
 
     @Test
     public void generates_factory_class() throws IOException {
-        assertClassEquals("fi/jumi/actors/maven/reference/DummyListenerFactory.java", generator.getFactory());
+        assertClassEquals("fi/jumi/actors/maven/reference/DummyListenerEventizer.java", generator.getFactory());
     }
 
     @Test

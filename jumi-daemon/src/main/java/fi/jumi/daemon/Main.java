@@ -27,13 +27,13 @@ public class Main {
         int launcherPort = Integer.parseInt(args[0]);
 
         MultiThreadedActors actors = new MultiThreadedActors(
-                new StartableFactory(),
-                new RunnableFactory(),
-                new ExecutorListenerFactory(),
-                new TestClassFinderListenerFactory(),
-                new SuiteListenerFactory(),
-                new CommandListenerFactory(),
-                new TestClassListenerFactory()
+                new StartableEventizer(),
+                new RunnableEventizer(),
+                new ExecutorListenerEventizer(),
+                new TestClassFinderListenerEventizer(),
+                new SuiteListenerEventizer(),
+                new CommandListenerEventizer(),
+                new TestClassListenerEventizer()
         );
 
         // TODO: do not create unlimited numbers of threads; make it by default CPUs+1 or something
