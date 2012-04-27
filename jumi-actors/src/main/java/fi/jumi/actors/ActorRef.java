@@ -12,7 +12,6 @@ public class ActorRef<T> {
     private final T proxy;
 
     public static <T> ActorRef<T> wrap(T proxy) {
-        // TODO: we could check that it's really a proxy, and raise and exception otherwise (another ActorRef implementation would then be just for testing)
         return new ActorRef<T>(proxy);
     }
 

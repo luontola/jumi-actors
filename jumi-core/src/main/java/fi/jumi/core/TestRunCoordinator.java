@@ -38,7 +38,7 @@ public class TestRunCoordinator implements CommandListener {
         TestClassFinder testClassFinder = new FileSystemTestClassFinder(classPath, testsToIncludePattern);
         DriverFinder driverFinder = new RunViaAnnotationDriverFinder();
 
-        ActorRef<Startable> suiteRunner = actorThread.createActor(Startable.class,
+        ActorRef<Startable> suiteRunner = actorThread.bindActor(Startable.class,
                 new SuiteRunner(listener, testClassFinder, driverFinder, actors, actorThread, executor));
         suiteRunner.tell().start();
     }

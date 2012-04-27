@@ -32,7 +32,7 @@ public class DriverRunnerSpawner {
     }
 
     public void spawnDriverRunner(Driver driver, Class<?> testClass) {
-        ActorRef<TestClassListener> target = actorThread.createActor(TestClassListener.class, rawTarget);
+        ActorRef<TestClassListener> target = actorThread.bindActor(TestClassListener.class, rawTarget);
 
         SuiteNotifier notifier = new DefaultSuiteNotifier(target, runIdSequence);
         Executor executor = testRunSpawner.getExecutor();

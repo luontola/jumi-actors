@@ -27,7 +27,7 @@ public class TestRunSpawner {
     }
 
     private ActorRef<ExecutorListener> self() {
-        return actorThread.createActor(ExecutorListener.class, new WorkerCountingExecutor(workerCounter, realExecutor));
+        return actorThread.bindActor(ExecutorListener.class, new WorkerCountingExecutor(workerCounter, realExecutor));
     }
 
 

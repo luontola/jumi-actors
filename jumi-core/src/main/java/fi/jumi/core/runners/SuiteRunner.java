@@ -46,7 +46,7 @@ public class SuiteRunner implements Startable, TestClassFinderListener, WorkerCo
         // XXX: this call might not be needed (it could even be harmful because of asynchrony); the caller of SuiteRunner knows when the suite is started
         listener.onSuiteStarted();
 
-        ActorRef<TestClassFinderListener> finderListener = actorThread.createActor(TestClassFinderListener.class, this);
+        ActorRef<TestClassFinderListener> finderListener = actorThread.bindActor(TestClassFinderListener.class, this);
         startUnattendedWorker(new TestClassFinderRunner(testClassFinder, finderListener));
     }
 

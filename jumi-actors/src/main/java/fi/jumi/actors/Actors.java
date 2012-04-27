@@ -36,7 +36,7 @@ public abstract class Actors {
 
     public void startUnattendedWorker(Runnable worker, Runnable onFinished) {
         ActorThread actorThread = getCurrentActorThread();
-        ActorRef<Runnable> onFinishedHandle = actorThread.createActor(Runnable.class, onFinished);
+        ActorRef<Runnable> onFinishedHandle = actorThread.bindActor(Runnable.class, onFinished);
         doStartUnattendedWorker(new UnattendedWorker(worker, onFinishedHandle));
     }
 
@@ -67,7 +67,7 @@ public abstract class Actors {
         private final MessageQueue<Runnable> taskQueue = new MessageQueue<Runnable>();
 
         @Override
-        public <T> ActorRef<T> createActor(Class<T> type, T rawActor) {
+        public <T> ActorRef<T> bindActor(Class<T> type, T rawActor) {
             Eventizer<T> factory = getFactoryForType(type);
             T proxy = factory.newFrontend(new MessageToActorSender<T>(this, rawActor));
             return ActorRef.wrap(type.cast(proxy));

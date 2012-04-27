@@ -75,7 +75,7 @@ public class TestClassRunnerTest {
     private void run(Driver driver) {
         RunIdSequence runIdSequence = new RunIdSequence();
         ActorThread actorThread = actors.startActorThread("TestClassRunner");
-        ActorRef<Startable> runner = actorThread.createActor(Startable.class,
+        ActorRef<Startable> runner = actorThread.bindActor(Startable.class,
                 new TestClassRunner(DummyTest.class, driver, listener, actors, actorThread, actors.getExecutor(), runIdSequence));
         runner.tell().start();
         actors.processEventsUntilIdle();

@@ -31,7 +31,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
     @Test
     public void method_calls_on_handle_are_forwarded_to_target() throws InterruptedException {
         ActorThread actorThread = actors.startActorThread("ActorName");
-        ActorRef<DummyListener> actor = actorThread.createActor(DummyListener.class, new SpyDummyListener());
+        ActorRef<DummyListener> actor = actorThread.bindActor(DummyListener.class, new SpyDummyListener());
 
         actor.tell().onSomething("event parameter");
         awaitEvents(1);
@@ -42,7 +42,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
     @Test
     public void actor_processes_multiple_events_in_the_order_they_were_sent() throws InterruptedException {
         ActorThread actorThread = actors.startActorThread("ActorName");
-        ActorRef<DummyListener> actor = actorThread.createActor(DummyListener.class, new SpyDummyListener());
+        ActorRef<DummyListener> actor = actorThread.bindActor(DummyListener.class, new SpyDummyListener());
 
         actor.tell().onSomething("event 1");
         actor.tell().onSomething("event 2");
@@ -61,12 +61,12 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
         final AtomicReference<Throwable> thrown = new AtomicReference<Throwable>();
 
         ActorThread actorThread = actors.startActorThread("Actor 1");
-        ActorRef<DummyListener> actor = actorThread.createActor(DummyListener.class, new DummyListener() {
+        ActorRef<DummyListener> actor = actorThread.bindActor(DummyListener.class, new DummyListener() {
             @Override
             public void onSomething(String parameter) {
                 try {
                     ActorThread actorThread = actors.startActorThread("Actor 2");
-                    actorThread.createActor(DummyListener.class, new SpyDummyListener());
+                    actorThread.bindActor(DummyListener.class, new SpyDummyListener());
                 } catch (Throwable t) {
                     thrown.set(t);
                 } finally {
@@ -110,11 +110,11 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
         }
         MultiPurposeActor rawActor = new MultiPurposeActor();
 
-        ActorRef<PrimaryInterface> primary = actorThread.createActor(PrimaryInterface.class, rawActor);
+        ActorRef<PrimaryInterface> primary = actorThread.bindActor(PrimaryInterface.class, rawActor);
         primary.tell().onPrimaryEvent();
         awaitEvents(1);
 
-        ActorRef<SecondaryInterface> secondary = actorThread.createActor(SecondaryInterface.class, rawActor);
+        ActorRef<SecondaryInterface> secondary = actorThread.bindActor(SecondaryInterface.class, rawActor);
         secondary.tell().onSecondaryEvent();
         awaitEvents(2);
 
@@ -134,7 +134,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
         SpyRunnable rawActor = new WorkerStartingSpyRunnable("start worker", worker, onFinished);
 
         ActorThread actorThread = actors.startActorThread("Actor");
-        actorThread.createActor(Runnable.class, rawActor).tell().run();
+        actorThread.bindActor(Runnable.class, rawActor).tell().run();
         awaitEvents(3);
 
         assertEvents("start worker", "run worker", "on finished");
@@ -149,7 +149,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
         SpyRunnable rawActor = new WorkerStartingSpyRunnable("start worker", worker, onFinished);
 
         ActorThread actorThread = actors.startActorThread("Actor");
-        actorThread.createActor(Runnable.class, rawActor).tell().run();
+        actorThread.bindActor(Runnable.class, rawActor).tell().run();
         awaitEvents(3);
 
         assertEvents("start worker", "run worker", "on finished");
@@ -176,6 +176,6 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
         thrown.expectMessage(NoFactoryForThisListener.class.getName());
 
         ActorThread actorThread = actors.startActorThread("ActorName");
-        actorThread.createActor(NoFactoryForThisListener.class, listener);
+        actorThread.bindActor(NoFactoryForThisListener.class, listener);
     }
 }

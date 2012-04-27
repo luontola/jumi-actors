@@ -51,11 +51,10 @@ TODO NEXT:
 		OK - create Actors.newThread(): ActorThread
 		OK - refactor the code to use it (at first probably only Main creates the thread)
 		OK - rename/remove fi.jumi.actors.LongLivedActors
-	- eliminate spawners, see if it the code can be safe enough without them
-	- create Actors.getCurrentActor: ActorRef (or maybe it's not needed when creating refs and threads are separated?)
+	SKIP - create Actors.getCurrentActor: ActorRef (or maybe it's not needed when creating refs and threads are separated?)
 		- implement using the thread-local actor context
 		- use it instead of createSecondaryActor(this)
-	- either, decouple unattended workers from Actors
+	!! - either, decouple unattended workers from Actors
 		- hide WorkerCounter, create a wrapper: new MonitoredExecutor(realExecutor, onAllFinishedCallback)
 			- thred safe, counts commands with AtomicInteger
 			- executes the callback using realExecutor, as its own command
@@ -65,13 +64,23 @@ TODO NEXT:
 		- try removing fi.jumi.core.runners.TestClassRunnerListener#onTestClassFinished
 		OK - rename/remove fi.jumi.actors.OnDemandActors
 	- or, implement unattended workers as actors which stop themselves (Thread.interrupt()) after running the command
+	- eliminate spawners
 	- refactor actor tests, some tests might be outdated
 	- make DynamicListenerFactory support all types without having to declare them
 		- move the type comparison in Actors.getFactoryForType to ListenerFactory.supportsType
 		- need to give type as parameter to DynamicListenerFactory.newFrontend/newBackend?
 		- refactor tests to use just one DynamicListenerFactory, use generated factories only in Main
-	- consider creating NakedActorRef for unit testing, ProxyActorRef for production
-		- throw an exception in fi.jumi.actors.ActorRef#wrap if not a proxy (see TODO)
+	SKIP - consider creating NakedActorRef for unit testing, ProxyActorRef for production
+		- throw an exception in fi.jumi.actors.ActorRef#wrap if not a proxy (see TODO), or is it even possible because of not always using dynamic proxies?
+	- rename any remaining "factories" variables and methods to "eventizers"
+	- remove support for named actor threads
+		- remove name parameter from startActorThread
+		- MultiThreadedActors: don't create threads manually
+			- use thread pool
+			- remove the constructor which creates a default thread pool; the caller shall manage its lifecycle
+			- remove shutdown method (use ExecutorService.shutdownNow/awaitTermination directly in tests)
+		- create PrefixedThreadFactory, e.g. "foo-" -> "foo-1", "foo-2" etc.
+		- use it in Main, prefixes: "jumi-actors-", "jumi-tests-"
 
 - end-to-end tests: running multiple test classes
 	- it's not sure whether SuiteRunner works correctly when there are many test classes
@@ -137,6 +146,7 @@ TODO NEXT:
 	- evaluate JarJar or ProGuard, maybe it could minimize the jars better than the shade plugin by removing also unused methods
 		http://sonatype.github.com/jarjar-maven-plugin/
 		http://pyx4me.com/pyx4me-maven-plugins/proguard-maven-plugin/
+	- seems that Eventizer.newBackend is not used; keep it for symmetry or remove it?
 
 - improving TextUI
 	OK - spacing between test runs (empty line or horizontal bar?)

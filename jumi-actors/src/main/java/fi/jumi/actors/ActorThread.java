@@ -6,5 +6,5 @@ package fi.jumi.actors;
 
 public interface ActorThread {
 
-    <T> ActorRef<T> createActor(Class<T> type, T rawActor);
+    <T> ActorRef<T> bindActor(Class<T> type, T rawActor);
 }

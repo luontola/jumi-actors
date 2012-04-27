@@ -57,7 +57,7 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
         SingleThreadedActors actors = new SingleThreadedActors(new DummyListenerEventizer());
 
         ActorThread actorThread = actors.startActorThread("DummyActor");
-        ActorRef<DummyListener> actor = actorThread.createActor(DummyListener.class, new DummyListener() {
+        ActorRef<DummyListener> actor = actorThread.bindActor(DummyListener.class, new DummyListener() {
             @Override
             public void onSomething(String parameter) {
                 throw new RuntimeException("dummy exception");
@@ -81,7 +81,7 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
         };
 
         ActorThread actorThread = actors.startActorThread("DummyActor");
-        ActorRef<DummyListener> actor = actorThread.createActor(DummyListener.class, new DummyListener() {
+        ActorRef<DummyListener> actor = actorThread.bindActor(DummyListener.class, new DummyListener() {
             @Override
             public void onSomething(String parameter) {
                 throw new RuntimeException("dummy exception");
