@@ -5,15 +5,15 @@
 package fi.jumi.actors.workers;
 
 import javax.annotation.concurrent.ThreadSafe;
-import java.util.concurrent.*;
+import java.util.concurrent.Executor;
 
 @ThreadSafe
 public class MonitoredExecutor implements Executor {
 
-    private final ExecutorService realExecutor;
+    private final Executor realExecutor;
     private final WorkerCounter workerCounter;
 
-    public MonitoredExecutor(ExecutorService realExecutor, WorkerCounter workerCounter) {
+    public MonitoredExecutor(Executor realExecutor, WorkerCounter workerCounter) {
         this.realExecutor = realExecutor;
         this.workerCounter = workerCounter;
     }

@@ -154,5 +154,11 @@ public abstract class Actors {
         public void run() {
             message.fireOn(rawActor);
         }
+
+        @Override
+        public String toString() {
+            // TODO: write a test
+            return "MessageToActor(" + rawActor.getClass().getName() + ", " + message + ")";
+        }
     }
 }

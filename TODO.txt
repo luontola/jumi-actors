@@ -62,6 +62,7 @@ TODO NEXT:
 		!! - use MonitoredExecutor instead of Actors.startUnattendedWorker (keep SingleThreadedActors.getExecutor)
 		- remove Actors.startUnattendedWorker
 		- try removing fi.jumi.core.runners.TestClassRunnerListener#onTestClassFinished
+		- try removing fi.jumi.core.runners.WorkerCounter, replace with the new MonitoredExecutor
 		OK - rename/remove fi.jumi.actors.OnDemandActors
 	- or, implement unattended workers as actors which stop themselves (Thread.interrupt()) after running the command
 	- eliminate spawners

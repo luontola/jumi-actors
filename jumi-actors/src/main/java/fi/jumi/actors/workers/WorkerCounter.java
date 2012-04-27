@@ -4,6 +4,8 @@
 
 package fi.jumi.actors.workers;
 
+import fi.jumi.actors.ActorRef;
+
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -11,9 +13,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class WorkerCounter {
 
     private final AtomicInteger activeWorkers = new AtomicInteger(0);
-    private final Runnable onFinished;
+    private final ActorRef<Runnable> onFinished;
 
-    public WorkerCounter(Runnable onFinished) {
+    public WorkerCounter(ActorRef<Runnable> onFinished) {
         this.onFinished = onFinished;
     }
 
@@ -24,7 +26,7 @@ public class WorkerCounter {
     public void fireWorkerFinished() {
         int workers = activeWorkers.decrementAndGet();
         if (workers == 0) {
-            onFinished.run();
+            onFinished.tell().run();
         }
     }
 }

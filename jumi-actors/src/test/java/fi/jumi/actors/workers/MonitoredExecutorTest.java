@@ -4,6 +4,7 @@
 
 package fi.jumi.actors.workers;
 
+import fi.jumi.actors.ActorRef;
 import org.junit.*;
 
 import java.util.concurrent.*;
@@ -16,7 +17,7 @@ public class MonitoredExecutorTest {
 
     private final UncaughtExceptionCollector uncaughtExceptions = new UncaughtExceptionCollector();
     private final Runnable callback = mock(Runnable.class);
-    private final WorkerCounter workerCounter = new WorkerCounter(callback);
+    private final WorkerCounter workerCounter = new WorkerCounter(ActorRef.wrap(callback));
     private ExecutorService realExecutor;
 
     @Before
