@@ -55,11 +55,11 @@ TODO NEXT:
 		- implement using the thread-local actor context
 		- use it instead of createSecondaryActor(this)
 	!! - either, decouple unattended workers from Actors
-		- hide WorkerCounter, create a wrapper: new MonitoredExecutor(realExecutor, onAllFinishedCallback)
-			- thred safe, counts commands with AtomicInteger
-			- executes the callback using realExecutor, as its own command
-		- create a MonitoredExecutorSpawner which executes the callback in the current actor thread
-		- use MonitoredExecutor instead of Actors.startUnattendedWorker (keep SingleThreadedActors.getExecutor)
+		OK - hide WorkerCounter, create a wrapper: new MonitoredExecutor(realExecutor, onAllFinishedCallback)
+			OK - thred safe, counts commands with AtomicInteger
+			SKIP - executes the callback using realExecutor, as its own command
+		SKIP - create a MonitoredExecutorSpawner which executes the callback in the current actor thread
+		!! - use MonitoredExecutor instead of Actors.startUnattendedWorker (keep SingleThreadedActors.getExecutor)
 		- remove Actors.startUnattendedWorker
 		- try removing fi.jumi.core.runners.TestClassRunnerListener#onTestClassFinished
 		OK - rename/remove fi.jumi.actors.OnDemandActors
