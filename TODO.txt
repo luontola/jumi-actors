@@ -59,6 +59,10 @@ TODO NEXT:
 			OK - thred safe, counts commands with AtomicInteger
 			SKIP - executes the callback using realExecutor, as its own command
 		SKIP - create a MonitoredExecutorSpawner which executes the callback in the current actor thread
+		OK - make it work for commands which launch other commands (when backed by an asynchronous executor)
+		OK - test: a single command
+		OK - use BlockingQueue in tests instead of latches where possible
+			OK - extract fi.jumi.actors.ActorsContractHelpers#events to EventSpy
 		!! - use MonitoredExecutor instead of Actors.startUnattendedWorker (keep SingleThreadedActors.getExecutor)
 		- remove Actors.startUnattendedWorker
 		- try removing fi.jumi.core.runners.TestClassRunnerListener#onTestClassFinished
@@ -66,7 +70,9 @@ TODO NEXT:
 		OK - rename/remove fi.jumi.actors.OnDemandActors
 	- or, implement unattended workers as actors which stop themselves (Thread.interrupt()) after running the command
 	- eliminate spawners
-	- refactor actor tests, some tests might be outdated
+	- refactor actor tests
+		- use UncaughtExceptionCollector in ActorsContract
+		- some tests might be outdated; update or remove them
 	- make DynamicListenerFactory support all types without having to declare them
 		- move the type comparison in Actors.getFactoryForType to ListenerFactory.supportsType
 		- need to give type as parameter to DynamicListenerFactory.newFrontend/newBackend?
@@ -82,6 +88,7 @@ TODO NEXT:
 			- remove shutdown method (use ExecutorService.shutdownNow/awaitTermination directly in tests)
 		- create PrefixedThreadFactory, e.g. "foo-" -> "foo-1", "foo-2" etc.
 		- use it in Main, prefixes: "jumi-actors-", "jumi-tests-"
+	- write user documentation for jumi-actors
 
 - end-to-end tests: running multiple test classes
 	- it's not sure whether SuiteRunner works correctly when there are many test classes
@@ -191,6 +198,12 @@ TODO NEXT:
 
 - organize the project so that it's possible to run unit tests separate from end-to-end tests
 	- maybe using ClasspathSuite?
+
+- write performance tests
+	- test: suite with a hundred test classes, each with a hundred tests, some of which also do printing; measure total time of running the suite
+	- experiment with different queue implementations, for example ConcurrentLinkedQueue
+	- try following the single writer principle: http://mechanical-sympathy.blogspot.com/2011/09/single-writer-principle.html
+		- for example: separate queue for each test worker (implies parallelism = locally sequential, except for slow tests?, use a work stealing executor?) and one thread which loops through them and writes to the coordinator actor queue
 
 - "Error creating shaded jar", probably an issue with NTFS's pending delete and the shade plugin
 	- make a bug request, maybe also a patch

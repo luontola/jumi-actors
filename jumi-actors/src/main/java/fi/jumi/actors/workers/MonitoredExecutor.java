@@ -20,6 +20,7 @@ public class MonitoredExecutor implements Executor {
 
     @Override
     public void execute(Runnable command) {
+        workerCounter.fireWorkerStarted();
         realExecutor.execute(new Worker(command));
     }
 
@@ -34,7 +35,6 @@ public class MonitoredExecutor implements Executor {
 
         @Override
         public void run() {
-            workerCounter.fireWorkerStarted();
             try {
                 command.run();
             } finally {
