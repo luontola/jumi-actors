@@ -29,7 +29,6 @@ public class Main {
         MultiThreadedActors actors = new MultiThreadedActors(
                 new StartableEventizer(),
                 new RunnableEventizer(),
-                new ExecutorListenerEventizer(),
                 new TestClassFinderListenerEventizer(),
                 new SuiteListenerEventizer(),
                 new CommandListenerEventizer(),

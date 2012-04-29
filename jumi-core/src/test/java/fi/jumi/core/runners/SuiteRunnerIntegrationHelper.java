@@ -23,11 +23,10 @@ public abstract class SuiteRunnerIntegrationHelper {
             new StartableEventizer(),
             new RunnableEventizer(),
             new ExecutorEventizer(),
-            new ExecutorListenerEventizer(),
             new TestClassFinderListenerEventizer(),
             new TestClassListenerEventizer()
     );
-    private final Executor executor = new SynchronousExecutor();
+    private final Executor executor = actors.getExecutor();
 
     protected void runAndCheckExpectations(Driver driver, Class<?>... testClasses) {
         spy.replay();
@@ -51,7 +50,7 @@ public abstract class SuiteRunnerIntegrationHelper {
         TestClassFinder testClassFinder = new StubTestClassFinder(testClasses);
         ActorThread actorThread = actors.startActorThread("SuiteRunner");
         ActorRef<Startable> runner = actorThread.bindActor(Startable.class,
-                new SuiteRunner(listener, testClassFinder, driverFinder, actors, actorThread, executor));
+                new SuiteRunner(listener, testClassFinder, driverFinder, actorThread, executor));
         runner.tell().start();
         actors.processEventsUntilIdle();
     }

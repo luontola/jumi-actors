@@ -77,7 +77,6 @@
                                 <interface>fi.jumi.core.SuiteListener</interface>
                                 <interface>fi.jumi.core.files.TestClassFinderListener</interface>
                                 <interface>fi.jumi.core.runners.TestClassListener</interface>
-                                <interface>fi.jumi.core.runners.ExecutorListener</interface>
                             </eventInterfaces>
                         </configuration>
                     </execution>

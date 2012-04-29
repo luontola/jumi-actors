@@ -5,136 +5,80 @@
 package fi.jumi.core.runners;
 
 import fi.jumi.actors.*;
+import fi.jumi.actors.workers.*;
 import fi.jumi.api.drivers.*;
 import fi.jumi.core.*;
 import fi.jumi.core.drivers.DriverFinder;
 import fi.jumi.core.files.*;
 import fi.jumi.core.runs.*;
 
-import javax.annotation.concurrent.*;
+import javax.annotation.concurrent.NotThreadSafe;
 import java.util.concurrent.Executor;
 
 @NotThreadSafe
-public class SuiteRunner implements Startable, TestClassFinderListener, WorkerCounterListener {
+public class SuiteRunner implements Startable, TestClassFinderListener {
 
-    private final SuiteListener listener;
+    private final SuiteListener suiteListener;
     private final TestClassFinder testClassFinder;
     private final DriverFinder driverFinder;
-    private final Actors actors;
     private final ActorThread actorThread;
-    private final Executor executor;
-    private final WorkerCounter workers;
-    private final RunIdSequence runIdSequence = new RunIdSequence();
+    private final Executor testExecutor;
 
-    public SuiteRunner(SuiteListener listener,
+    private final RunIdSequence runIdSequence = new RunIdSequence();
+    private int activeRunners = 0;
+
+    public SuiteRunner(SuiteListener suiteListener,
                        TestClassFinder testClassFinder,
                        DriverFinder driverFinder,
-                       Actors actors,
                        ActorThread actorThread,
-                       Executor executor) {
-        this.listener = listener;
+                       Executor testExecutor) {
+        this.suiteListener = suiteListener;
         this.testClassFinder = testClassFinder;
         this.driverFinder = driverFinder;
-        this.actors = actors;
         this.actorThread = actorThread;
-        this.executor = executor;
-        this.workers = new WorkerCounter(this);
+        this.testExecutor = testExecutor;
     }
 
     @Override
     public void start() {
-        // XXX: this call might not be needed (it could even be harmful because of asynchrony); the caller of SuiteRunner knows when the suite is started
-        listener.onSuiteStarted();
+        suiteListener.onSuiteStarted();
 
-        ActorRef<TestClassFinderListener> finderListener = actorThread.bindActor(TestClassFinderListener.class, this);
-        startUnattendedWorker(new TestClassFinderRunner(testClassFinder, finderListener));
-    }
-
-    private void startUnattendedWorker(Runnable worker) {
-        workers.fireWorkerStarted();
-
-        @NotThreadSafe
-        class FireWorkerFinished implements Runnable {
-            @Override
-            public void run() {
-                workers.fireWorkerFinished();
-            }
-        }
-        actors.startUnattendedWorker(worker, new FireWorkerFinished());
+        MonitoredExecutor executor = createRunnerExecutor();
+        executor.execute(new TestClassFinderRunner(
+                testClassFinder,
+                actorThread.bindActor(TestClassFinderListener.class, this)
+        ));
     }
 
     @Override
-    public void onAllWorkersFinished() {
-        listener.onSuiteFinished();
-    }
-
-    @Override
-    public void onTestClassFound(final Class<?> testClass) {
+    public void onTestClassFound(Class<?> testClass) {
         Driver driver = driverFinder.findTestClassDriver(testClass);
 
-        workers.fireWorkerStarted();
-        new TestClassRunner(
-                testClass, driver, new TestClassRunnerListenerToSuiteListener(testClass), actors, actorThread, executor, runIdSequence
-        ).start();
+        SuiteNotifier suiteNotifier = new DefaultSuiteNotifier(
+                actorThread.bindActor(TestClassListener.class,
+                        new DuplicateOnTestFoundEventFilter(
+                                new SuiteListenerAdapter(suiteListener, testClass))),
+                runIdSequence
+        );
+
+        MonitoredExecutor executor = createRunnerExecutor();
+        executor.execute(new DriverRunner(driver, testClass, suiteNotifier, executor));
     }
 
-    @NotThreadSafe
-    private class TestClassRunnerListenerToSuiteListener implements TestClassRunnerListener {
-        private final Class<?> testClass;
+    private MonitoredExecutor createRunnerExecutor() {
+        activeRunners++;
 
-        public TestClassRunnerListenerToSuiteListener(Class<?> testClass) {
-            this.testClass = testClass;
+        @NotThreadSafe
+        class OnRunnerFinished implements Runnable {
+            @Override
+            public void run() {
+                activeRunners--;
+                if (activeRunners == 0) {
+                    suiteListener.onSuiteFinished();
+                }
+            }
         }
-
-        @Override
-        public void onTestFound(TestId testId, String name) {
-            listener.onTestFound(testClass.getName(), testId, name);
-        }
-
-        @Override
-        public void onRunStarted(RunId runId) {
-            listener.onRunStarted(runId, testClass.getName());
-        }
-
-        @Override
-        public void onTestStarted(RunId runId, TestId testId) {
-            listener.onTestStarted(runId, testId);
-        }
-
-        @Override
-        public void onFailure(RunId runId, TestId testId, Throwable cause) {
-            listener.onFailure(runId, cause);
-        }
-
-        @Override
-        public void onTestFinished(RunId runId, TestId testId) {
-            listener.onTestFinished(runId);
-        }
-
-        @Override
-        public void onRunFinished(RunId runId) {
-            listener.onRunFinished(runId);
-        }
-
-        @Override
-        public void onTestClassFinished() {
-            workers.fireWorkerFinished();
-        }
-    }
-
-    @ThreadSafe
-    private static class TestClassFinderRunner implements Runnable {
-        private final ActorRef<TestClassFinderListener> finderListener;
-        private final TestClassFinder testClassFinder;
-
-        public TestClassFinderRunner(TestClassFinder testClassFinder, ActorRef<TestClassFinderListener> finderListener) {
-            this.finderListener = finderListener;
-            this.testClassFinder = testClassFinder;
-        }
-
-        @Override
-        public void run() {
-            testClassFinder.findTestClasses(finderListener);
-        }
+        ActorRef<Runnable> callback = actorThread.bindActor(Runnable.class, new OnRunnerFinished());
+        return new MonitoredExecutor(testExecutor, new WorkerCounter(callback));
     }
 }

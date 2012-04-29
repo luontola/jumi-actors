@@ -63,13 +63,13 @@ TODO NEXT:
 		OK - test: a single command
 		OK - use BlockingQueue in tests instead of latches where possible
 			OK - extract fi.jumi.actors.ActorsContractHelpers#events to EventSpy
-		!! - use MonitoredExecutor instead of Actors.startUnattendedWorker (keep SingleThreadedActors.getExecutor)
-		- remove Actors.startUnattendedWorker
-		- try removing fi.jumi.core.runners.TestClassRunnerListener#onTestClassFinished
-		- try removing fi.jumi.core.runners.WorkerCounter, replace with the new MonitoredExecutor
+		OK - use MonitoredExecutor instead of Actors.startUnattendedWorker (keep SingleThreadedActors.getExecutor)
+		!! - remove Actors.startUnattendedWorker
+		OK - try removing fi.jumi.core.runners.TestClassRunnerListener#onTestClassFinished
+		OK - try removing fi.jumi.core.runners.WorkerCounter, replace with the new MonitoredExecutor
 		OK - rename/remove fi.jumi.actors.OnDemandActors
 	- or, implement unattended workers as actors which stop themselves (Thread.interrupt()) after running the command
-	- eliminate spawners
+	OK - eliminate spawners
 	- refactor actor tests
 		- use UncaughtExceptionCollector in ActorsContract
 		- some tests might be outdated; update or remove them
@@ -122,7 +122,7 @@ TODO NEXT:
 	- approved deployment to Maven Central
 
 - misc refactoring
-	OK - find files which have DOS newlines and convert them to UNIX newlines
+	- logging actor messages could benefit from seeing that from which actor a messages was sent; a trace of intermediate actors
 	- refactor SimpleUnit
 		- simplity the tests by creating helper which runs using SuiteRunner, collects the results and provides assert methods
 		- move to its own module, simpleunit
