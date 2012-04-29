@@ -6,41 +6,27 @@ package fi.jumi.actors;
 
 import fi.jumi.actors.mq.MessageSender;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-
 public abstract class ActorsContractHelpers<T extends Actors> {
 
     protected T actors;
 
     public static final long TIMEOUT = 1000;
 
-    private final Queue<String> events = new ConcurrentLinkedQueue<String>();
+    private final EventSpy events = new EventSpy();
 
     public void logEvent(String event) {
-        events.add(event);
+        events.log(event);
     }
 
     public void awaitEvents(int expectedEventCount) {
         processEvents();
-
-        long limit = System.currentTimeMillis() + TIMEOUT;
-        while (events.size() < expectedEventCount) {
-            if (System.currentTimeMillis() > limit) {
-                throw new AssertionError("timed out; received events " + events + " but expected " + expectedEventCount);
-            }
-            Thread.yield();
-        }
+        events.await(expectedEventCount, TIMEOUT);
     }
 
     protected abstract void processEvents();
 
     public void assertEvents(String... expected) {
-        List<String> actual = new ArrayList<String>(events);
-        assertThat("events", actual, is(Arrays.asList(expected)));
+        events.assertContains(expected);
     }
 
 
