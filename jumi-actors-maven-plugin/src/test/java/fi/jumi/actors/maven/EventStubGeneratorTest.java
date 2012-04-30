@@ -34,18 +34,18 @@ public class EventStubGeneratorTest {
     }
 
     @Test
-    public void factory_advertises_its_listener_type() {
-        DummyListenerEventizer factory = new DummyListenerEventizer();
+    public void eventizer_advertises_its_listener_type() {
+        DummyListenerEventizer eventizer = new DummyListenerEventizer();
 
-        assertEquals(DummyListener.class, factory.getType());
+        assertEquals(DummyListener.class, eventizer.getType());
     }
 
     @Test
     public void stubs_forward_events_from_frontend_to_backend() {
         DummyListener target = mock(DummyListener.class);
-        DummyListenerEventizer factory = new DummyListenerEventizer();
-        MessageSender<Event<DummyListener>> backend = factory.newBackend(target);
-        DummyListener frontend = factory.newFrontend(backend);
+        DummyListenerEventizer eventizer = new DummyListenerEventizer();
+        MessageSender<Event<DummyListener>> backend = eventizer.newBackend(target);
+        DummyListener frontend = eventizer.newFrontend(backend);
 
         frontend.onSomething("foo", "bar");
         frontend.onOther();
@@ -58,8 +58,8 @@ public class EventStubGeneratorTest {
     @Test
     public void event_classes_are_serializable() {
         MessageQueue<Event<DummyListener>> spy = new MessageQueue<Event<DummyListener>>();
-        DummyListenerEventizer factory = new DummyListenerEventizer();
-        DummyListener frontend = factory.newFrontend(spy);
+        DummyListenerEventizer eventizer = new DummyListenerEventizer();
+        DummyListener frontend = eventizer.newFrontend(spy);
 
         frontend.onSomething("foo", "bar");
         Event<DummyListener> event = spy.poll();
@@ -70,8 +70,8 @@ public class EventStubGeneratorTest {
     @Test
     public void the_events_have_descriptive_toString_methods() {
         MessageQueue<Event<DummyListener>> spy = new MessageQueue<Event<DummyListener>>();
-        DummyListenerEventizer factory = new DummyListenerEventizer();
-        DummyListener frontend = factory.newFrontend(spy);
+        DummyListenerEventizer eventizer = new DummyListenerEventizer();
+        DummyListener frontend = eventizer.newFrontend(spy);
 
         frontend.onSomething("foo", "bar");
         frontend.onOther();
@@ -81,8 +81,8 @@ public class EventStubGeneratorTest {
     }
 
     @Test
-    public void generates_factory_class() throws IOException {
-        assertClassEquals("fi/jumi/actors/maven/reference/DummyListenerEventizer.java", generator.getFactory());
+    public void generates_eventizer_class() throws IOException {
+        assertClassEquals("fi/jumi/actors/maven/reference/DummyListenerEventizer.java", generator.getEventizer());
     }
 
     @Test

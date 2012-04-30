@@ -83,7 +83,7 @@ public class GenerateEventStubsMojo extends AbstractMojo {
             EventStubGenerator generator = new EventStubGenerator(loadClass(eventInterface), targetPackageResolver);
 
             List<GeneratedClass> generated = new ArrayList<GeneratedClass>();
-            generated.add(generator.getFactory());
+            generated.add(generator.getEventizer());
             generated.add(generator.getFrontend());
             generated.add(generator.getBackend());
             generated.addAll(generator.getEvents());

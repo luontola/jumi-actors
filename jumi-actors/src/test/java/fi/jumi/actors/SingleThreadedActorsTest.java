@@ -18,13 +18,7 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
 
     @Override
     protected SingleThreadedActors newActors(Eventizer<?>... factories) {
-        SingleThreadedActors actors = new SingleThreadedActors(factories) {
-            @Override
-            protected void handleUncaughtException(Object source, Throwable uncaughtException) {
-                // Rethrowing here would break the general contracts from ActorsContract,
-                // even though by default it's best in unit tests to fail early.
-            }
-        };
+        SingleThreadedActors actors = new SingleThreadedActors(factories);
         createdActors.add(actors);
         return actors;
     }
@@ -37,7 +31,7 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
     }
 
     @Test
-    public void uncaught_exceptions_from_pollers_will_be_rethrown_to_the_caller_by_default() {
+    public void uncaught_exceptions_from_actors_will_be_rethrown_to_the_caller_by_default() {
         SingleThreadedActors actors = new SingleThreadedActors(new DummyListenerEventizer());
 
         ActorThread actorThread = actors.startActorThread("DummyActor");
@@ -55,7 +49,7 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
     }
 
     @Test
-    public void will_keep_on_processing_messages_when_uncaught_exceptions_from_pollers_are_suppressed() {
+    public void will_keep_on_processing_messages_when_uncaught_exceptions_from_actors_are_suppressed() {
         final List<Throwable> uncaughtExceptions = new ArrayList<Throwable>();
         SingleThreadedActors actors = new SingleThreadedActors(new DummyListenerEventizer()) {
             @Override

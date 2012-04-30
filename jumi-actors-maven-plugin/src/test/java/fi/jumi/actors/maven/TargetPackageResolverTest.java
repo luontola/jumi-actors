@@ -18,7 +18,7 @@ public class TargetPackageResolverTest {
     public void factories_go_to_the_top_level_package() {
         TargetPackageResolver resolver = new TargetPackageResolver(TOP_LEVEL_PACKAGE);
 
-        assertThat(resolver.getFactoryPackage(), is(TOP_LEVEL_PACKAGE));
+        assertThat(resolver.getEventizerPackage(), is(TOP_LEVEL_PACKAGE));
     }
 
     @Test

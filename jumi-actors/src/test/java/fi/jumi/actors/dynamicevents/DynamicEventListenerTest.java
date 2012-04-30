@@ -17,9 +17,9 @@ import static org.mockito.Mockito.*;
 
 public class DynamicEventListenerTest {
 
-    private final DynamicEventizer<DummyListener> factory = new DynamicEventizer<DummyListener>(DummyListener.class);
+    private final DynamicEventizer<DummyListener> eventizer = new DynamicEventizer<DummyListener>(DummyListener.class);
     private final MessageQueue<Event<DummyListener>> queue = new MessageQueue<Event<DummyListener>>();
-    private final DummyListener frontend = factory.newFrontend(queue);
+    private final DummyListener frontend = eventizer.newFrontend(queue);
 
     @Rule
     public final ExpectedException thrown = ExpectedException.none();
@@ -34,7 +34,7 @@ public class DynamicEventListenerTest {
     @Test
     public void event_objects_are_converted_back_into_method_calls() {
         DummyListener target = mock(DummyListener.class);
-        MessageSender<Event<DummyListener>> backend = factory.newBackend(target);
+        MessageSender<Event<DummyListener>> backend = eventizer.newBackend(target);
 
         frontend.onSomething("param");
         Event<DummyListener> event = queue.poll();
@@ -46,7 +46,7 @@ public class DynamicEventListenerTest {
     @Test
     public void event_objects_are_serializable() throws Exception {
         DummyListener target = mock(DummyListener.class);
-        MessageSender<Event<DummyListener>> backend = factory.newBackend(target);
+        MessageSender<Event<DummyListener>> backend = eventizer.newBackend(target);
 
         frontend.onSomething("param");
         Event<DummyListener> original = queue.poll();

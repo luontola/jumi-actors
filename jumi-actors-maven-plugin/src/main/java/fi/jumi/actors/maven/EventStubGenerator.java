@@ -18,11 +18,11 @@ public class EventStubGenerator {
     private final JavaType listenerInterface;
     private final Method[] listenerMethods;
 
-    private final JavaType factoryInterface;
+    private final JavaType eventizerInterface;
     private final JavaType eventInterface;
     private final JavaType senderInterface;
 
-    private final String factoryPackage;
+    private final String eventizerPackage;
     private final String stubsPackage;
 
     public EventStubGenerator(Class<?> listenerType, TargetPackageResolver targetPackageResolver) {
@@ -35,17 +35,17 @@ public class EventStubGenerator {
             }
         });
 
-        factoryInterface = JavaType.of(Eventizer.class, listenerInterface);
+        eventizerInterface = JavaType.of(Eventizer.class, listenerInterface);
         eventInterface = JavaType.of(Event.class, listenerInterface);
         senderInterface = JavaType.of(MessageSender.class, eventInterface);
 
-        factoryPackage = targetPackageResolver.getFactoryPackage();
+        eventizerPackage = targetPackageResolver.getEventizerPackage();
         stubsPackage = targetPackageResolver.getStubsPackage(listenerInterface);
     }
 
-    public GeneratedClass getFactory() {
-        ClassBuilder cb = new ClassBuilder(myFactoryName(), factoryPackage);
-        cb.implement(factoryInterface);
+    public GeneratedClass getEventizer() {
+        ClassBuilder cb = new ClassBuilder(myEventizerName(), eventizerPackage);
+        cb.implement(eventizerInterface);
         cb.addPackageImport(stubsPackage);
 
         String listenerName = cb.getImportedName(listenerInterface);
@@ -141,7 +141,7 @@ public class EventStubGenerator {
 
     // names of generated classes
 
-    private String myFactoryName() {
+    private String myEventizerName() {
         return listenerInterface.getRawName() + "Eventizer";
     }
 

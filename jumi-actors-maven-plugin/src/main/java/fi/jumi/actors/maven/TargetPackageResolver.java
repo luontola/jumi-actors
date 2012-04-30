@@ -14,7 +14,7 @@ public class TargetPackageResolver {
         this.targetPackage = targetPackage;
     }
 
-    public String getFactoryPackage() {
+    public String getEventizerPackage() {
         return targetPackage;
     }
 

@@ -9,7 +9,7 @@ import org.junit.*;
 import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 public class MultiThreadedActorsTest extends ActorsContract<MultiThreadedActors> {
 
@@ -35,18 +35,20 @@ public class MultiThreadedActorsTest extends ActorsContract<MultiThreadedActors>
     }
 
 
-    // normal event-polling actors
+    // actors
 
     @Test
-    public void target_is_invoked_in_its_own_actor_thread() throws InterruptedException {
+    public void actor_threads_are_backed_by_real_threads() throws InterruptedException {
         SpyDummyListener rawActor = new SpyDummyListener();
 
-        ActorThread actorThread = actors.startActorThread("ActorName");
+        ActorThread actorThread = actors.startActorThread("ActorThread");
         ActorRef<DummyListener> actorRef = actorThread.bindActor(DummyListener.class, rawActor);
         actorRef.tell().onSomething("event");
         awaitEvents(1);
 
-        assertThat(rawActor.thread.getName(), is("ActorName"));
+        assertThat(rawActor.thread, is(notNullValue()));
+        assertThat(rawActor.thread, is(not(Thread.currentThread())));
+        assertThat(rawActor.thread.getName(), is("ActorThread"));
     }
 
 
@@ -55,7 +57,7 @@ public class MultiThreadedActorsTest extends ActorsContract<MultiThreadedActors>
     @Test
     public void stops_actor_threads_on_shutdown() throws InterruptedException {
         SpyDummyListener rawActor = new SpyDummyListener();
-        ActorThread actorThread = actors.startActorThread("ActorName");
+        ActorThread actorThread = actors.startActorThread("ActorThread");
         ActorRef<DummyListener> actorRef = actorThread.bindActor(DummyListener.class, rawActor);
         actorRef.tell().onSomething("event");
         awaitEvents(1);

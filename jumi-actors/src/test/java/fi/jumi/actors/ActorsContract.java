@@ -26,22 +26,22 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
     protected abstract T newActors(Eventizer<?>... factories);
 
 
-    // normal event-polling actors
+    // actors
 
     @Test
-    public void method_calls_on_handle_are_forwarded_to_target() throws InterruptedException {
-        ActorThread actorThread = actors.startActorThread("ActorName");
-        ActorRef<DummyListener> actor = actorThread.bindActor(DummyListener.class, new SpyDummyListener());
+    public void method_calls_on_ActorRef_are_forwarded_to_the_actor() throws InterruptedException {
+        ActorThread actorThread = actors.startActorThread("ActorThread");
+        ActorRef<DummyListener> actorRef = actorThread.bindActor(DummyListener.class, new SpyDummyListener());
 
-        actor.tell().onSomething("event parameter");
+        actorRef.tell().onSomething("event parameter");
         awaitEvents(1);
 
         assertEvents("event parameter");
     }
 
     @Test
-    public void actor_processes_multiple_events_in_the_order_they_were_sent() throws InterruptedException {
-        ActorThread actorThread = actors.startActorThread("ActorName");
+    public void events_to_an_actor_are_processed_in_the_order_they_were_sent() throws InterruptedException {
+        ActorThread actorThread = actors.startActorThread("ActorThread");
         ActorRef<DummyListener> actor = actorThread.bindActor(DummyListener.class, new SpyDummyListener());
 
         actor.tell().onSomething("event 1");
@@ -57,20 +57,19 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
      * the system does not try to release the threads.
      */
     @Test
-    public void event_pollers_cannot_be_started_inside_other_event_pollers() {
+    public void actor_threads_cannot_be_started_inside_other_actor_threads() {
         final AtomicReference<Throwable> thrown = new AtomicReference<Throwable>();
 
-        ActorThread actorThread = actors.startActorThread("Actor 1");
+        ActorThread actorThread = actors.startActorThread("ActorThread 1");
         ActorRef<DummyListener> actor = actorThread.bindActor(DummyListener.class, new DummyListener() {
             @Override
             public void onSomething(String parameter) {
                 try {
-                    ActorThread actorThread = actors.startActorThread("Actor 2");
-                    actorThread.bindActor(DummyListener.class, new SpyDummyListener());
+                    actors.startActorThread("ActorThread 2");
                 } catch (Throwable t) {
                     thrown.set(t);
                 } finally {
-                    logEvent("done");
+                    logEvent("test finished");
                 }
             }
         });
@@ -80,63 +79,62 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
 
         Throwable t = thrown.get();
         assertThat(t, is(instanceOf(IllegalStateException.class)));
-        assertThat(t.getMessage(), containsString("already inside an actor"));
+        assertThat(t.getMessage(), containsString("already inside an actor thread"));
     }
 
-
-    // secondary interfaces
-
     @Test
-    public void an_actor_can_receive_events_in_the_same_thread_through_a_secondary_interface() {
-        // TODO: update this test; it's checking that things bound to the same ActorThread are executed in same thread
+    public void actors_bound_to_the_same_actor_thread_are_processed_in_the_same_thread() {
         actors = newActors(DynamicEventizer.factoriesFor(PrimaryInterface.class, SecondaryInterface.class));
-        final ActorThread actorThread = actors.startActorThread("ActorName");
+        ActorThread actorThread = actors.startActorThread("ActorName");
 
-        class MultiPurposeActor implements PrimaryInterface, SecondaryInterface {
-            public volatile Thread primaryEventThread;
-            public volatile Thread secondaryEventThread;
+        class Actor1 implements PrimaryInterface {
+            public volatile Thread eventThread;
 
             @Override
             public void onPrimaryEvent() {
-                primaryEventThread = Thread.currentThread();
-                logEvent("primary event");
+                eventThread = Thread.currentThread();
+                logEvent("actor1");
             }
+        }
+        class Actor2 implements SecondaryInterface {
+            public volatile Thread eventThread;
 
             @Override
             public void onSecondaryEvent() {
-                secondaryEventThread = Thread.currentThread();
-                logEvent("secondary event");
+                eventThread = Thread.currentThread();
+                logEvent("actor2");
             }
         }
-        MultiPurposeActor rawActor = new MultiPurposeActor();
 
-        ActorRef<PrimaryInterface> primary = actorThread.bindActor(PrimaryInterface.class, rawActor);
-        primary.tell().onPrimaryEvent();
+        Actor1 actor1 = new Actor1();
+        ActorRef<PrimaryInterface> ref1 = actorThread.bindActor(PrimaryInterface.class, actor1);
+        ref1.tell().onPrimaryEvent();
         awaitEvents(1);
 
-        ActorRef<SecondaryInterface> secondary = actorThread.bindActor(SecondaryInterface.class, rawActor);
-        secondary.tell().onSecondaryEvent();
+        Actor2 actor2 = new Actor2();
+        ActorRef<SecondaryInterface> ref2 = actorThread.bindActor(SecondaryInterface.class, actor2);
+        ref2.tell().onSecondaryEvent();
         awaitEvents(2);
 
-        assertEvents("primary event", "secondary event");
-        assertThat("secondary event happened", rawActor.secondaryEventThread, is(notNullValue()));
-        assertThat("secondary event happened in same thread as primary event",
-                rawActor.secondaryEventThread, is(rawActor.primaryEventThread));
+        assertEvents("actor1", "actor2");
+        assertThat("actor1 actor was called", actor1.eventThread, is(notNullValue()));
+        assertThat("actor2 actor was called", actor2.eventThread, is(notNullValue()));
+        assertThat("both actors were processed in the same thread", actor1.eventThread, is(actor2.eventThread));
     }
 
 
     // setup
 
     @Test
-    public void listener_factories_must_be_registered_for_them_to_be_usable() {
-        NoFactoryForThisListener listener = new NoFactoryForThisListener() {
+    public void eventizers_must_be_registered_for_them_to_be_usable() {
+        ActorThread actorThread = actors.startActorThread("ActorThread");
+        NoEventizerForThisListener listener = new NoEventizerForThisListener() {
         };
 
         thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage("unsupported listener type");
-        thrown.expectMessage(NoFactoryForThisListener.class.getName());
+        thrown.expectMessage(NoEventizerForThisListener.class.getName());
 
-        ActorThread actorThread = actors.startActorThread("ActorName");
-        actorThread.bindActor(NoFactoryForThisListener.class, listener);
+        actorThread.bindActor(NoEventizerForThisListener.class, listener);
     }
 }

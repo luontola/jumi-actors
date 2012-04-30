@@ -10,7 +10,7 @@ import static org.mockito.Mockito.*;
 public class CodeGenerationTest {
 
     @Test
-    public void generates_a_working_listener_factory() {
+    public void generates_a_working_eventizer() {
         ExampleListener target = mock(ExampleListener.class);
         Eventizer<ExampleListener> eventizer = new ExampleListenerEventizer();
         MessageSender<Event<ExampleListener>> backend = eventizer.newBackend(target);

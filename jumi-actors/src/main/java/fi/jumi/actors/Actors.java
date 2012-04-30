@@ -12,11 +12,11 @@ import java.util.concurrent.Executor;
 @ThreadSafe
 public abstract class Actors {
 
-    private final Eventizer<?>[] factories;
+    private final Eventizer<?>[] eventizers;
     private final ThreadLocal<ActorThread> currentActorThread = new ThreadLocal<ActorThread>(); // TODO: remove?
 
-    public Actors(Eventizer<?>... factories) {
-        this.factories = factories;
+    public Actors(Eventizer<?>... eventizers) {
+        this.eventizers = eventizers;
     }
 
     public ActorThread startActorThread(String name) {
@@ -28,17 +28,17 @@ public abstract class Actors {
 
     private void checkNotInsideAnActor() {
         if (currentActorThread.get() != null) {
-            throw new IllegalStateException("already inside an actor");
+            throw new IllegalStateException("already inside an actor thread");
         }
     }
 
     protected abstract void startActorThread(String name, MessageProcessor actorThread);
 
     @SuppressWarnings({"unchecked"})
-    private <T> Eventizer<T> getFactoryForType(Class<T> type) {
-        for (Eventizer<?> factory : factories) {
-            if (factory.getType().equals(type)) {
-                return (Eventizer<T>) factory;
+    private <T> Eventizer<T> getEventizerForType(Class<T> type) {
+        for (Eventizer<?> eventizer : eventizers) {
+            if (eventizer.getType().equals(type)) {
+                return (Eventizer<T>) eventizer;
             }
         }
         throw new IllegalArgumentException("unsupported listener type: " + type);
@@ -52,8 +52,8 @@ public abstract class Actors {
 
         @Override
         public <T> ActorRef<T> bindActor(Class<T> type, T rawActor) {
-            Eventizer<T> factory = getFactoryForType(type);
-            T proxy = factory.newFrontend(new MessageToActorSender<T>(this, rawActor));
+            Eventizer<T> eventizer = getEventizerForType(type);
+            T proxy = eventizer.newFrontend(new MessageToActorSender<T>(this, rawActor));
             return ActorRef.wrap(type.cast(proxy));
         }
 
@@ -122,7 +122,7 @@ public abstract class Actors {
         @Override
         public String toString() {
             // TODO: write a test
-            return "MessageToActor(" + rawActor.getClass().getName() + ", " + message + ")";
+            return "MessageToActor@" + hashCode() + "(" + rawActor.getClass().getName() + ", " + message + ")";
         }
     }
 }
