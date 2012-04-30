@@ -54,7 +54,7 @@ TODO NEXT:
 	SKIP - create Actors.getCurrentActor: ActorRef (or maybe it's not needed when creating refs and threads are separated?)
 		- implement using the thread-local actor context
 		- use it instead of createSecondaryActor(this)
-	!! - either, decouple unattended workers from Actors
+	OK - either, decouple unattended workers from Actors
 		OK - hide WorkerCounter, create a wrapper: new MonitoredExecutor(realExecutor, onAllFinishedCallback)
 			OK - thred safe, counts commands with AtomicInteger
 			SKIP - executes the callback using realExecutor, as its own command
@@ -64,15 +64,17 @@ TODO NEXT:
 		OK - use BlockingQueue in tests instead of latches where possible
 			OK - extract fi.jumi.actors.ActorsContractHelpers#events to EventSpy
 		OK - use MonitoredExecutor instead of Actors.startUnattendedWorker (keep SingleThreadedActors.getExecutor)
-		!! - remove Actors.startUnattendedWorker
+		OK - remove Actors.startUnattendedWorker
 		OK - try removing fi.jumi.core.runners.TestClassRunnerListener#onTestClassFinished
 		OK - try removing fi.jumi.core.runners.WorkerCounter, replace with the new MonitoredExecutor
 		OK - rename/remove fi.jumi.actors.OnDemandActors
-	- or, implement unattended workers as actors which stop themselves (Thread.interrupt()) after running the command
+	SKIP - or, implement unattended workers as actors which stop themselves (Thread.interrupt()) after running the command
 	OK - eliminate spawners
 	- refactor actor tests
+		- remove fi.jumi.actors.Actors#currentActorThread?
 		- use UncaughtExceptionCollector in ActorsContract
 		- some tests might be outdated; update or remove them
+		- SingleThreadedActors: consider unifying actors and the Executor so that we have only one actor thread
 	- make DynamicListenerFactory support all types without having to declare them
 		- move the type comparison in Actors.getFactoryForType to ListenerFactory.supportsType
 		- need to give type as parameter to DynamicListenerFactory.newFrontend/newBackend?

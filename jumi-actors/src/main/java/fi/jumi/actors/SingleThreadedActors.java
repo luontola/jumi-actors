@@ -11,8 +11,10 @@ import java.util.concurrent.Executor;
 @NotThreadSafe
 public class SingleThreadedActors extends Actors {
 
+    // TODO: consider unifying actors and the Executor so that we have only one actor thread
+
     private final List<NonBlockingActorProcessor> pollers = new ArrayList<NonBlockingActorProcessor>();
-    private final List<Runnable> workers = new ArrayList<Runnable>();
+    private final List<Runnable> commandsToExecute = new ArrayList<Runnable>();
 
     public SingleThreadedActors(Eventizer<?>... factories) {
         super(factories);
@@ -21,11 +23,6 @@ public class SingleThreadedActors extends Actors {
     @Override
     protected void startActorThread(String name, MessageProcessor actorThread) {
         pollers.add(new NonBlockingActorProcessor(actorThread));
-    }
-
-    @Override
-    protected void doStartUnattendedWorker(Runnable worker) {
-        workers.add(worker);
     }
 
     public void processEventsUntilIdle() {
@@ -48,7 +45,7 @@ public class SingleThreadedActors extends Actors {
     private List<Processable> getProcessableEvents() {
         List<Processable> results = new ArrayList<Processable>();
         results.addAll(pollers);
-        for (Runnable runnable : takeAll(workers)) {
+        for (Runnable runnable : takeAll(commandsToExecute)) {
             results.add(new ProcessableRunnable(runnable));
         }
         return results;
@@ -75,7 +72,7 @@ public class SingleThreadedActors extends Actors {
     }
 
     @NotThreadSafe
-    private static class ProcessableRunnable implements Processable { // TODO: decouple workers from actors
+    private static class ProcessableRunnable implements Processable {
         private final Runnable runnable;
 
         public ProcessableRunnable(Runnable runnable) {
@@ -107,7 +104,7 @@ public class SingleThreadedActors extends Actors {
     private class AsynchronousExecutor implements Executor {
         @Override
         public void execute(Runnable command) {
-            workers.add(command);
+            commandsToExecute.add(command);
         }
     }
 }

@@ -42,63 +42,6 @@ public abstract class ActorsContractHelpers<T extends Actors> {
         }
     }
 
-    public class SpyRunnable implements Runnable {
-        private final String event;
-        public volatile Thread thread;
-
-        public SpyRunnable(String event) {
-            this.event = event;
-        }
-
-        @Override
-        public void run() {
-            thread = Thread.currentThread();
-            logEvent(event);
-        }
-    }
-
-    public class WorkerStartingSpyRunnable extends SpyRunnable {
-        private final Runnable worker;
-        private final Runnable onFinished;
-
-        public WorkerStartingSpyRunnable(String event, Runnable worker, Runnable onFinished) {
-            super(event);
-            this.worker = worker;
-            this.onFinished = onFinished;
-        }
-
-        @Override
-        public void run() {
-            super.run();
-
-            // starting the worker must be done inside an actor
-            actors.startUnattendedWorker(worker, onFinished);
-        }
-    }
-
-    public class ExceptionThrowingSpyRunnable extends SpyRunnable {
-        private final RuntimeException exception;
-
-        public ExceptionThrowingSpyRunnable(String event, RuntimeException exception) {
-            super(event);
-            this.exception = exception;
-        }
-
-        @Override
-        public void run() {
-            super.run();
-
-            // the stack trace will be funny, because it doesn't start from where it was thrown; let's wrap it
-            throw new RuntimeException("rethrowing another exception", exception);
-        }
-    }
-
-    public static class NullRunnable implements Runnable {
-        @Override
-        public void run() {
-        }
-    }
-
 
     // guinea pigs
 

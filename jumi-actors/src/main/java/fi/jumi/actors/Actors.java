@@ -13,7 +13,7 @@ import java.util.concurrent.Executor;
 public abstract class Actors {
 
     private final Eventizer<?>[] factories;
-    private final ThreadLocal<ActorThread> currentActorThread = new ThreadLocal<ActorThread>();
+    private final ThreadLocal<ActorThread> currentActorThread = new ThreadLocal<ActorThread>(); // TODO: remove?
 
     public Actors(Eventizer<?>... factories) {
         this.factories = factories;
@@ -33,22 +33,6 @@ public abstract class Actors {
     }
 
     protected abstract void startActorThread(String name, MessageProcessor actorThread);
-
-    public void startUnattendedWorker(Runnable worker, Runnable onFinished) {
-        ActorThread actorThread = getCurrentActorThread();
-        ActorRef<Runnable> onFinishedHandle = actorThread.bindActor(Runnable.class, onFinished);
-        doStartUnattendedWorker(new UnattendedWorker(worker, onFinishedHandle));
-    }
-
-    protected abstract void doStartUnattendedWorker(Runnable worker);
-
-    public ActorThread getCurrentActorThread() {
-        ActorThread actorThread = currentActorThread.get();
-        if (actorThread == null) {
-            throw new IllegalStateException("We are not inside an actor");
-        }
-        return actorThread;
-    }
 
     @SuppressWarnings({"unchecked"})
     private <T> Eventizer<T> getFactoryForType(Class<T> type) {
@@ -100,26 +84,6 @@ public abstract class Actors {
                 task.run();
             } finally {
                 currentActorThread.remove();
-            }
-        }
-    }
-
-    @NotThreadSafe
-    private static class UnattendedWorker implements Runnable { // TODO: decouple workers from actors
-        private final Runnable worker;
-        private final ActorRef<Runnable> onFinished;
-
-        public UnattendedWorker(Runnable worker, ActorRef<Runnable> onFinished) {
-            this.worker = worker;
-            this.onFinished = onFinished;
-        }
-
-        @Override
-        public void run() {
-            try {
-                worker.run();
-            } finally {
-                onFinished.tell().run();
             }
         }
     }

@@ -37,22 +37,6 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
     }
 
     @Test
-    public void uncaught_exceptions_from_workers_will_be_rethrown_to_the_caller_by_default() {
-        SingleThreadedActors actors = new SingleThreadedActors(new DummyListenerEventizer());
-
-        actors.doStartUnattendedWorker(new Runnable() {
-            @Override
-            public void run() {
-                throw new RuntimeException("dummy exception");
-            }
-        });
-
-        thrown.expect(Error.class);
-        thrown.expectMessage("uncaught exception");
-        actors.processEventsUntilIdle();
-    }
-
-    @Test
     public void uncaught_exceptions_from_pollers_will_be_rethrown_to_the_caller_by_default() {
         SingleThreadedActors actors = new SingleThreadedActors(new DummyListenerEventizer());
 
@@ -89,35 +73,6 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
         });
         actor.tell().onSomething("one");
         actor.tell().onSomething("two");
-        actors.processEventsUntilIdle();
-
-        assertThat("uncaught exceptions count", uncaughtExceptions.size(), is(2));
-    }
-
-    @Test
-    public void will_keep_on_processing_messages_when_uncaught_exceptions_from_workers_are_suppressed_and_workers_launch_more_workers() {
-        final List<Throwable> uncaughtExceptions = new ArrayList<Throwable>();
-        final SingleThreadedActors actors = new SingleThreadedActors(new DummyListenerEventizer()) {
-            @Override
-            protected void handleUncaughtException(Object source, Throwable uncaughtException) {
-                uncaughtExceptions.add(uncaughtException);
-            }
-        };
-
-        final Runnable worker2 = new Runnable() {
-            @Override
-            public void run() {
-                throw new RuntimeException("dummy exception");
-            }
-        };
-        Runnable worker1 = new Runnable() {
-            @Override
-            public void run() {
-                actors.doStartUnattendedWorker(worker2);
-                throw new RuntimeException("dummy exception");
-            }
-        };
-        actors.doStartUnattendedWorker(worker1);
         actors.processEventsUntilIdle();
 
         assertThat("uncaught exceptions count", uncaughtExceptions.size(), is(2));

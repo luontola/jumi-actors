@@ -4,14 +4,12 @@
 
 package fi.jumi.actors;
 
-import fi.jumi.actors.dynamicevents.DynamicEventizer;
 import org.junit.*;
 
 import java.util.*;
-import java.util.concurrent.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 
 public class MultiThreadedActorsTest extends ActorsContract<MultiThreadedActors> {
 
@@ -19,21 +17,7 @@ public class MultiThreadedActorsTest extends ActorsContract<MultiThreadedActors>
 
     @Override
     protected MultiThreadedActors newActors(Eventizer<?>... factories) {
-        class SilentUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {
-            @Override
-            public void uncaughtException(Thread t, Throwable e) {
-                // do not print failures; it keeps the test logs cleaner
-            }
-        }
-        ScheduledThreadPoolExecutor threadPool = new ScheduledThreadPoolExecutor(1, new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread t = new Thread(r);
-                t.setUncaughtExceptionHandler(new SilentUncaughtExceptionHandler());
-                return t;
-            }
-        });
-        MultiThreadedActors actors = new MultiThreadedActors(threadPool, factories);
+        MultiThreadedActors actors = new MultiThreadedActors(factories);
         createdActorses.add(actors);
         return actors;
     }
@@ -65,27 +49,11 @@ public class MultiThreadedActorsTest extends ActorsContract<MultiThreadedActors>
         assertThat(rawActor.thread.getName(), is("ActorName"));
     }
 
-    // unattended workers
-
-    @Test
-    public void unattended_workers_are_run_in_their_own_thread() throws InterruptedException {
-        SpyRunnable worker = new SpyRunnable("event 2");
-        SpyRunnable rawActor = new WorkerStartingSpyRunnable("event 1", worker, new NullRunnable());
-
-        ActorThread actorThread = actors.startActorThread("ActorName");
-        ActorRef<Runnable> actorRef = actorThread.bindActor(Runnable.class, rawActor);
-        actorRef.tell().run();
-        awaitEvents(2);
-
-        assertThat("worker is run", worker.thread, is(notNullValue()));
-        assertThat("worker is run in its own thread", worker.thread, is(not(Thread.currentThread())));
-        assertThat("worker is run in its own thread", worker.thread, is(not(rawActor.thread)));
-    }
 
     // shutdown
 
     @Test
-    public void actor_threads_can_be_shut_down() throws InterruptedException {
+    public void stops_actor_threads_on_shutdown() throws InterruptedException {
         SpyDummyListener rawActor = new SpyDummyListener();
         ActorThread actorThread = actors.startActorThread("ActorName");
         ActorRef<DummyListener> actorRef = actorThread.bindActor(DummyListener.class, rawActor);
@@ -96,31 +64,5 @@ public class MultiThreadedActorsTest extends ActorsContract<MultiThreadedActors>
         actors.shutdown(TIMEOUT);
 
         assertThat("alive after shutdown", rawActor.thread.isAlive(), is(false));
-    }
-
-    @Test
-    public void shutting_down_waits_for_workers_to_finish() throws InterruptedException {
-        actors = newActors(new DummyListenerEventizer(), new DynamicEventizer<Runnable>(Runnable.class));
-        final BlockingQueue<String> events = new LinkedBlockingQueue<String>();
-
-        final Runnable worker = new Runnable() {
-            @Override
-            public void run() {
-                events.add("worker started");
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    // continue executing
-                }
-                events.add("worker finished");
-            }
-        };
-        ActorThread actorThread = actors.startActorThread("Actor");
-        ActorRef<Runnable> actor = actorThread.bindActor(Runnable.class, new WorkerStartingSpyRunnable("", worker, new NullRunnable()));
-        actor.tell().run();
-
-        assertThat("worker did not start", events.poll(TIMEOUT, TimeUnit.MILLISECONDS), is("worker started"));
-        actors.shutdown(TIMEOUT);
-        assertThat("did not wait for worker to finish", events.poll(), is("worker finished"));
     }
 }

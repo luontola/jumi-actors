@@ -6,21 +6,14 @@ package fi.jumi.actors;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.*;
-import java.util.concurrent.*;
 
 @ThreadSafe
 public class MultiThreadedActors extends Actors {
 
     private final Set<Thread> actorThreads = Collections.synchronizedSet(new HashSet<Thread>());
-    private final ExecutorService unattendedWorkers;
 
     public MultiThreadedActors(Eventizer<?>... factories) {
-        this(Executors.newCachedThreadPool(), factories);
-    }
-
-    public MultiThreadedActors(ExecutorService threadPool, Eventizer<?>... factories) {
         super(factories);
-        unattendedWorkers = threadPool;
     }
 
     @Override
@@ -30,20 +23,13 @@ public class MultiThreadedActors extends Actors {
         actorThreads.add(t);
     }
 
-    @Override
-    protected void doStartUnattendedWorker(Runnable worker) {
-        unattendedWorkers.execute(worker);
-    }
-
     public void shutdown(long timeout) throws InterruptedException {
         for (Thread t : actorThreads) {
             t.interrupt();
         }
-        unattendedWorkers.shutdown();
         for (Thread t : actorThreads) {
             t.join(timeout);
         }
-        unattendedWorkers.awaitTermination(timeout, TimeUnit.MILLISECONDS);
     }
 
 

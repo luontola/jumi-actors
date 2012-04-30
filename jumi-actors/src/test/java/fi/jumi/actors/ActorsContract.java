@@ -125,45 +125,6 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
     }
 
 
-    // unattended workers
-
-    @Test
-    public void when_worker_finishes_the_actor_which_started_it_is_notified_in_the_actor_thread() throws InterruptedException {
-        SpyRunnable worker = new SpyRunnable("run worker");
-        SpyRunnable onFinished = new SpyRunnable("on finished");
-        SpyRunnable rawActor = new WorkerStartingSpyRunnable("start worker", worker, onFinished);
-
-        ActorThread actorThread = actors.startActorThread("Actor");
-        actorThread.bindActor(Runnable.class, rawActor).tell().run();
-        awaitEvents(3);
-
-        assertEvents("start worker", "run worker", "on finished");
-        assertThat("notification should have been in the actor thread", onFinished.thread, is(rawActor.thread));
-    }
-
-    @Test
-    public void the_actor_is_notified_on_finish_even_if_the_worker_throws_an_exception() throws InterruptedException {
-        // TODO: create a custom exception handler, then make it ignore this exception
-        SpyRunnable worker = new ExceptionThrowingSpyRunnable("run worker", new RuntimeException("dummy exception"));
-        SpyRunnable onFinished = new SpyRunnable("on finished");
-        SpyRunnable rawActor = new WorkerStartingSpyRunnable("start worker", worker, onFinished);
-
-        ActorThread actorThread = actors.startActorThread("Actor");
-        actorThread.bindActor(Runnable.class, rawActor).tell().run();
-        awaitEvents(3);
-
-        assertEvents("start worker", "run worker", "on finished");
-    }
-
-    @Test
-    public void unattended_workers_cannot_be_bound_outside_an_actor() {
-        thrown.expect(IllegalStateException.class);
-        thrown.expectMessage("not inside an actor");
-
-        actors.startUnattendedWorker(new NullRunnable(), new NullRunnable());
-    }
-
-
     // setup
 
     @Test
