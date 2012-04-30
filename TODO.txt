@@ -73,10 +73,15 @@ TODO NEXT:
 	OK - refactor actor tests
 		OK - some tests might be outdated; update or remove them
 		OK - rename any remaining "factories" variables and methods to "eventizers"
-	- make DynamicListenerFactory support all types without having to declare them
-		- move the type comparison in Actors.getFactoryForType to ListenerFactory.supportsType
-		- need to give type as parameter to DynamicListenerFactory.newFrontend/newBackend?
-		- refactor tests to use just one DynamicListenerFactory, use generated factories only in Main
+	!! - make DynamicListenerFactory support all types without having to declare them
+		OK - move the type comparison in Actors.getFactoryForType to ListenerFactory.supportsType
+		SKIP - need to give type as parameter to DynamicListenerFactory.newFrontend/newBackend?
+		OK - refactor tests to use just one DynamicListenerFactory, use generated factories only in Main
+		- make Actors(EventizerLocator) the only constructor, to make the design clearer, reduce code and avoid mistaking DynamicEventizer for DynamicEventizerLocator
+		- ComposedEventizerLocator: move the last test from ActorsContract to ComposedEventizerLocatorTest
+		- ComposedEventizerLocator: use a HashMap
+		- DynamicEventizer: check that the parameter is an interface (write tests)
+		- DynamicEventizerLocator: cache the eventizers to avoid re-checking the same types?
 	SKIP - consider creating NakedActorRef for unit testing, ProxyActorRef for production
 		- throw an exception in fi.jumi.actors.ActorRef#wrap if not a proxy (see TODO), or is it even possible because of not always using dynamic proxies?
 	- remove support for named actor threads

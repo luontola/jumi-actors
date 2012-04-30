@@ -4,7 +4,8 @@
 
 package fi.jumi.actors;
 
-import fi.jumi.actors.dynamic.DynamicEventizer;
+import fi.jumi.actors.dynamic.DynamicEventizerLocator;
+import fi.jumi.actors.eventizers.*;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 
@@ -20,10 +21,10 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
 
     @Before
     public void initActors() {
-        actors = newActors(new DummyListenerEventizer(), new DynamicEventizer<Runnable>(Runnable.class));
+        actors = newActors(new ComposedEventizerLocator(new DummyListenerEventizer()));
     }
 
-    protected abstract T newActors(Eventizer<?>... factories);
+    protected abstract T newActors(EventizerLocator eventizerLocator);
 
 
     // actors
@@ -84,7 +85,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
 
     @Test
     public void actors_bound_to_the_same_actor_thread_are_processed_in_the_same_thread() {
-        actors = newActors(DynamicEventizer.factoriesFor(PrimaryInterface.class, SecondaryInterface.class));
+        actors = newActors(new DynamicEventizerLocator());
         ActorThread actorThread = actors.startActorThread("ActorName");
 
         class Actor1 implements PrimaryInterface {
@@ -132,7 +133,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
         };
 
         thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("unsupported listener type");
+        thrown.expectMessage("unsupported type");
         thrown.expectMessage(NoEventizerForThisListener.class.getName());
 
         actorThread.bindActor(NoEventizerForThisListener.class, listener);

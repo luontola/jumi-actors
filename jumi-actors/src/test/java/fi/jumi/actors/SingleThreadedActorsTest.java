@@ -4,6 +4,7 @@
 
 package fi.jumi.actors;
 
+import fi.jumi.actors.eventizers.EventizerLocator;
 import org.junit.Test;
 
 import java.util.*;
@@ -17,8 +18,8 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
     private final List<SingleThreadedActors> createdActors = new ArrayList<SingleThreadedActors>();
 
     @Override
-    protected SingleThreadedActors newActors(Eventizer<?>... factories) {
-        SingleThreadedActors actors = new SingleThreadedActors(factories);
+    protected SingleThreadedActors newActors(EventizerLocator eventizerLocator) {
+        SingleThreadedActors actors = new SingleThreadedActors(eventizerLocator);
         createdActors.add(actors);
         return actors;
     }

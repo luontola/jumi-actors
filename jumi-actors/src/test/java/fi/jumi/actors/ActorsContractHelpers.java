@@ -4,6 +4,7 @@
 
 package fi.jumi.actors;
 
+import fi.jumi.actors.eventizers.Eventizer;
 import fi.jumi.actors.mq.MessageSender;
 
 public abstract class ActorsContractHelpers<T extends Actors> {

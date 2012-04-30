@@ -4,6 +4,7 @@
 
 package fi.jumi.actors;
 
+import fi.jumi.actors.eventizers.*;
 import fi.jumi.actors.mq.*;
 
 import javax.annotation.concurrent.*;
@@ -12,11 +13,16 @@ import java.util.concurrent.Executor;
 @ThreadSafe
 public abstract class Actors {
 
-    private final Eventizer<?>[] eventizers;
     private final ThreadLocal<ActorThread> currentActorThread = new ThreadLocal<ActorThread>(); // TODO: remove?
 
+    private final EventizerLocator eventizerLocator;
+
     public Actors(Eventizer<?>... eventizers) {
-        this.eventizers = eventizers;
+        this(new ComposedEventizerLocator(eventizers));
+    }
+
+    public Actors(EventizerLocator eventizerLocator) {
+        this.eventizerLocator = eventizerLocator;
     }
 
     public ActorThread startActorThread(String name) {
@@ -34,16 +40,6 @@ public abstract class Actors {
 
     protected abstract void startActorThread(String name, MessageProcessor actorThread);
 
-    @SuppressWarnings({"unchecked"})
-    private <T> Eventizer<T> getEventizerForType(Class<T> type) {
-        for (Eventizer<?> eventizer : eventizers) {
-            if (eventizer.getType().equals(type)) {
-                return (Eventizer<T>) eventizer;
-            }
-        }
-        throw new IllegalArgumentException("unsupported listener type: " + type);
-    }
-
 
     @ThreadSafe
     private class ActorThreadImpl implements ActorThread, Executor, MessageProcessor {
@@ -52,7 +48,7 @@ public abstract class Actors {
 
         @Override
         public <T> ActorRef<T> bindActor(Class<T> type, T rawActor) {
-            Eventizer<T> eventizer = getEventizerForType(type);
+            Eventizer<T> eventizer = eventizerLocator.getEventizerForType(type);
             T proxy = eventizer.newFrontend(new MessageToActorSender<T>(this, rawActor));
             return ActorRef.wrap(type.cast(proxy));
         }

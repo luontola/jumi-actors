@@ -4,7 +4,8 @@
 
 package fi.jumi.actors.dynamic;
 
-import fi.jumi.actors.*;
+import fi.jumi.actors.Event;
+import fi.jumi.actors.eventizers.Eventizer;
 import fi.jumi.actors.mq.MessageSender;
 
 import javax.annotation.concurrent.Immutable;
@@ -15,16 +16,8 @@ public class DynamicEventizer<T> implements Eventizer<T> {
 
     private final Class<T> type;
 
-    @SuppressWarnings({"unchecked"})
-    public static Eventizer<?>[] factoriesFor(Class<?>... types) {
-        Eventizer<?>[] factories = new Eventizer<?>[types.length];
-        for (int i = 0; i < types.length; i++) {
-            factories[i] = new DynamicEventizer(types[i]);
-        }
-        return factories;
-    }
-
     public DynamicEventizer(Class<T> type) {
+        // TODO: check that it's an interface?
         for (Method method : type.getMethods()) {
             checkReturnTypeIsVoid(method);
         }
