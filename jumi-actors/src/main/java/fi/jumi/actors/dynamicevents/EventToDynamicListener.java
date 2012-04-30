@@ -4,7 +4,7 @@
 
 package fi.jumi.actors.dynamicevents;
 
-import fi.jumi.actors.*;
+import fi.jumi.actors.Event;
 import fi.jumi.actors.mq.MessageSender;
 
 import javax.annotation.concurrent.ThreadSafe;

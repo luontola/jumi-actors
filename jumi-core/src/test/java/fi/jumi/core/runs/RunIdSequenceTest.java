@@ -4,7 +4,6 @@
 
 package fi.jumi.core.runs;
 
-import fi.jumi.core.runs.*;
 import org.junit.Test;
 
 import java.util.*;

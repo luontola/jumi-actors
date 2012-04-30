@@ -4,9 +4,9 @@
 
 package fi.jumi.actors.maven;
 
-import fi.jumi.actors.*;
-import fi.jumi.actors.maven.reference.DummyListenerEventizer;
+import fi.jumi.actors.Event;
 import fi.jumi.actors.maven.codegen.GeneratedClass;
+import fi.jumi.actors.maven.reference.DummyListenerEventizer;
 import fi.jumi.actors.mq.*;
 import org.apache.commons.io.IOUtils;
 import org.junit.*;
