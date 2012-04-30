@@ -19,11 +19,13 @@ public class WorkerCounter {
         this.onFinished = onFinished;
     }
 
-    public void fireWorkerStarted() {
+    // The following methods should be called only from the MonitoredExecutor class
+
+    void fireWorkerStarted() {
         activeWorkers.incrementAndGet();
     }
 
-    public void fireWorkerFinished() {
+    void fireWorkerFinished() {
         int workers = activeWorkers.decrementAndGet();
         if (workers == 0) {
             onFinished.tell().run();

@@ -25,7 +25,7 @@ public class SuiteRunner implements Startable, TestClassFinderListener {
     private final Executor testExecutor;
 
     private final RunIdSequence runIdSequence = new RunIdSequence();
-    private int activeRunners = 0;
+    private int childRunners = 0;
 
     public SuiteRunner(SuiteListener suiteListener,
                        TestClassFinder testClassFinder,
@@ -43,7 +43,7 @@ public class SuiteRunner implements Startable, TestClassFinderListener {
     public void start() {
         suiteListener.onSuiteStarted();
 
-        MonitoredExecutor executor = createRunnerExecutor();
+        MonitoredExecutor executor = createChildRunnerExecutor();
         executor.execute(new TestClassFinderRunner(
                 testClassFinder,
                 actorThread.bindActor(TestClassFinderListener.class, this)
@@ -61,19 +61,19 @@ public class SuiteRunner implements Startable, TestClassFinderListener {
                 runIdSequence
         );
 
-        MonitoredExecutor executor = createRunnerExecutor();
+        MonitoredExecutor executor = createChildRunnerExecutor();
         executor.execute(new DriverRunner(driver, testClass, suiteNotifier, executor));
     }
 
-    private MonitoredExecutor createRunnerExecutor() {
-        activeRunners++;
+    private MonitoredExecutor createChildRunnerExecutor() {
+        childRunners++;
 
         @NotThreadSafe
         class OnRunnerFinished implements Runnable {
             @Override
             public void run() {
-                activeRunners--;
-                if (activeRunners == 0) {
+                childRunners--;
+                if (childRunners == 0) {
                     suiteListener.onSuiteFinished();
                 }
             }

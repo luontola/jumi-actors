@@ -88,6 +88,10 @@ TODO NEXT:
 			- remove shutdown method (use ExecutorService.shutdownNow/awaitTermination directly in tests)
 		- create PrefixedThreadFactory, e.g. "foo-" -> "foo-1", "foo-2" etc.
 		- use it in Main, prefixes: "jumi-actors-", "jumi-tests-"
+	- pluggable logger
+		- create interface MessageLogger, class NullMessageLogger
+		- replace logging in MessageQueue with it
+		- create class SimpleMessageLogger to core tests, use in SuiteRunnerIntegrationHelper
 	- write user documentation for jumi-actors
 
 - end-to-end tests: running multiple test classes
