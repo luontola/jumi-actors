@@ -2,7 +2,7 @@
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
-package fi.jumi.actors.dynamicevents;
+package fi.jumi.actors.dynamic;
 
 import fi.jumi.actors.Event;
 import fi.jumi.actors.mq.*;
@@ -15,7 +15,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 
-public class DynamicEventListenerTest {
+public class DynamicEventizerTest {
 
     private final DynamicEventizer<DummyListener> eventizer = new DynamicEventizer<DummyListener>(DummyListener.class);
     private final MessageQueue<Event<DummyListener>> queue = new MessageQueue<Event<DummyListener>>();

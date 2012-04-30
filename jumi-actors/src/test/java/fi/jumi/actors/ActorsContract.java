@@ -4,7 +4,7 @@
 
 package fi.jumi.actors;
 
-import fi.jumi.actors.dynamicevents.DynamicEventizer;
+import fi.jumi.actors.dynamic.DynamicEventizer;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 
