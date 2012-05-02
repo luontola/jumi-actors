@@ -42,14 +42,13 @@ public class MultiThreadedActorsTest extends ActorsContract<MultiThreadedActors>
     public void actor_threads_are_backed_by_real_threads() throws InterruptedException {
         SpyDummyListener rawActor = new SpyDummyListener();
 
-        ActorThread actorThread = actors.startActorThread("ActorThread");
+        ActorThread actorThread = actors.startActorThread();
         ActorRef<DummyListener> actorRef = actorThread.bindActor(DummyListener.class, rawActor);
         actorRef.tell().onSomething("event");
         awaitEvents(1);
 
         assertThat(rawActor.thread, is(notNullValue()));
         assertThat(rawActor.thread, is(not(Thread.currentThread())));
-        assertThat(rawActor.thread.getName(), is("ActorThread"));
     }
 
 
@@ -58,7 +57,7 @@ public class MultiThreadedActorsTest extends ActorsContract<MultiThreadedActors>
     @Test
     public void stops_actor_threads_on_shutdown() throws InterruptedException {
         SpyDummyListener rawActor = new SpyDummyListener();
-        ActorThread actorThread = actors.startActorThread("ActorThread");
+        ActorThread actorThread = actors.startActorThread();
         ActorRef<DummyListener> actorRef = actorThread.bindActor(DummyListener.class, rawActor);
         actorRef.tell().onSomething("event");
         awaitEvents(1);

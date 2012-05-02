@@ -23,7 +23,7 @@ public class SingleThreadedActors extends Actors {
     }
 
     @Override
-    protected void startActorThread(String name, MessageProcessor actorThread) {
+    protected void startActorThread(MessageProcessor actorThread) {
         pollers.add(new NonBlockingActorProcessor(actorThread));
     }
 

@@ -21,10 +21,10 @@ public abstract class Actors {
         this.eventizerProvider = eventizerProvider;
     }
 
-    public ActorThread startActorThread(String name) {
+    public ActorThread startActorThread() {
         checkNotInsideAnActor();
         ActorThreadImpl actorThread = new ActorThreadImpl();
-        startActorThread(name, actorThread);
+        startActorThread(actorThread);
         return actorThread;
     }
 
@@ -34,7 +34,7 @@ public abstract class Actors {
         }
     }
 
-    protected abstract void startActorThread(String name, MessageProcessor actorThread);
+    protected abstract void startActorThread(MessageProcessor actorThread);
 
 
     @ThreadSafe

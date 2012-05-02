@@ -19,8 +19,8 @@ public class MultiThreadedActors extends Actors {
     }
 
     @Override
-    protected void startActorThread(String name, MessageProcessor actorThread) {
-        Thread t = new Thread(new BlockingActorProcessor(actorThread), name);
+    protected void startActorThread(MessageProcessor actorThread) {
+        Thread t = new Thread(new BlockingActorProcessor(actorThread));
         t.start();
         actorThreads.add(t);
     }

@@ -40,7 +40,7 @@ public class Main {
 
         // TODO: do not create unlimited numbers of threads; make it by default CPUs+1 or something
         Executor executor = Executors.newCachedThreadPool();
-        ActorThread actorThread = actors.startActorThread("Coordinator");
+        ActorThread actorThread = actors.startActorThread();
         ActorRef<CommandListener> coordinator = actorThread.bindActor(CommandListener.class,
                 new TestRunCoordinator(actors, actorThread, executor));
 

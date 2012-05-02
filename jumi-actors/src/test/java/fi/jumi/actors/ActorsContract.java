@@ -31,7 +31,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
 
     @Test
     public void method_calls_on_ActorRef_are_forwarded_to_the_actor() throws InterruptedException {
-        ActorThread actorThread = actors.startActorThread("ActorThread");
+        ActorThread actorThread = actors.startActorThread();
         ActorRef<DummyListener> actorRef = actorThread.bindActor(DummyListener.class, new SpyDummyListener());
 
         actorRef.tell().onSomething("event parameter");
@@ -42,7 +42,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
 
     @Test
     public void events_to_an_actor_are_processed_in_the_order_they_were_sent() throws InterruptedException {
-        ActorThread actorThread = actors.startActorThread("ActorThread");
+        ActorThread actorThread = actors.startActorThread();
         ActorRef<DummyListener> actor = actorThread.bindActor(DummyListener.class, new SpyDummyListener());
 
         actor.tell().onSomething("event 1");
@@ -61,12 +61,12 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
     public void actor_threads_cannot_be_started_inside_other_actor_threads() {
         final AtomicReference<Throwable> thrown = new AtomicReference<Throwable>();
 
-        ActorThread actorThread = actors.startActorThread("ActorThread 1");
+        ActorThread actorThread = actors.startActorThread();
         ActorRef<DummyListener> actor = actorThread.bindActor(DummyListener.class, new DummyListener() {
             @Override
             public void onSomething(String parameter) {
                 try {
-                    actors.startActorThread("ActorThread 2");
+                    actors.startActorThread();
                 } catch (Throwable t) {
                     thrown.set(t);
                 } finally {
@@ -86,7 +86,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
     @Test
     public void actors_bound_to_the_same_actor_thread_are_processed_in_the_same_thread() {
         actors = newActors(new DynamicEventizerProvider());
-        ActorThread actorThread = actors.startActorThread("ActorName");
+        ActorThread actorThread = actors.startActorThread();
 
         class Actor1 implements PrimaryInterface {
             public volatile Thread eventThread;

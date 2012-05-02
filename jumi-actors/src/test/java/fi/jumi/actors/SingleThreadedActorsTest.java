@@ -35,7 +35,7 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
     public void uncaught_exceptions_from_actors_will_be_rethrown_to_the_caller_by_default() {
         SingleThreadedActors actors = new SingleThreadedActors(new ComposedEventizerProvider(new DummyListenerEventizer()));
 
-        ActorThread actorThread = actors.startActorThread("DummyActor");
+        ActorThread actorThread = actors.startActorThread();
         ActorRef<DummyListener> actor = actorThread.bindActor(DummyListener.class, new DummyListener() {
             @Override
             public void onSomething(String parameter) {
@@ -59,7 +59,7 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
             }
         };
 
-        ActorThread actorThread = actors.startActorThread("DummyActor");
+        ActorThread actorThread = actors.startActorThread();
         ActorRef<DummyListener> actor = actorThread.bindActor(DummyListener.class, new DummyListener() {
             @Override
             public void onSomething(String parameter) {

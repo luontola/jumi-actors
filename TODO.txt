@@ -88,8 +88,8 @@ TODO NEXT:
 				- create lots of short-lived actors and send to each of them only one message
 	SKIP - consider creating NakedActorRef for unit testing, ProxyActorRef for production
 		- throw an exception in fi.jumi.actors.ActorRef#wrap if not a proxy (see TODO), or is it even possible because of not always using dynamic proxies?
-	- remove support for named actor threads
-		- remove name parameter from startActorThread
+	!! - remove support for named actor threads
+		OK - remove name parameter from startActorThread
 		- MultiThreadedActors: don't create threads manually
 			- use thread pool
 			- remove the constructor which creates a default thread pool; the caller shall manage its lifecycle
