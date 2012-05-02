@@ -17,10 +17,6 @@ public abstract class Actors {
 
     private final EventizerLocator eventizerLocator;
 
-    public Actors(Eventizer<?>... eventizers) {
-        this(new ComposedEventizerLocator(eventizers));
-    }
-
     public Actors(EventizerLocator eventizerLocator) {
         this.eventizerLocator = eventizerLocator;
     }

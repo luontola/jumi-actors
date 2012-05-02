@@ -77,11 +77,15 @@ TODO NEXT:
 		OK - move the type comparison in Actors.getFactoryForType to ListenerFactory.supportsType
 		SKIP - need to give type as parameter to DynamicListenerFactory.newFrontend/newBackend?
 		OK - refactor tests to use just one DynamicListenerFactory, use generated factories only in Main
-		- make Actors(EventizerLocator) the only constructor, to make the design clearer, reduce code and avoid mistaking DynamicEventizer for DynamicEventizerLocator
+		OK - make Actors(EventizerLocator) the only constructor, to make the design clearer, reduce code and avoid mistaking DynamicEventizer for DynamicEventizerLocator
+		- rename EventizerLocator to EventizerProvider?
 		- ComposedEventizerLocator: move the last test from ActorsContract to ComposedEventizerLocatorTest
 		- ComposedEventizerLocator: use a HashMap
 		- DynamicEventizer: check that the parameter is an interface (write tests)
-		- DynamicEventizerLocator: cache the eventizers to avoid re-checking the same types?
+		- DynamicEventizerLocator: cache the eventizers to avoid re-checking the same types, or premature?
+			- write a benchmark first: http://code.google.com/p/caliper/
+				- micro-benchmark creating a single actor
+				- create lots of short-lived actors and send to each of them only one message
 	SKIP - consider creating NakedActorRef for unit testing, ProxyActorRef for production
 		- throw an exception in fi.jumi.actors.ActorRef#wrap if not a proxy (see TODO), or is it even possible because of not always using dynamic proxies?
 	- remove support for named actor threads
@@ -96,12 +100,13 @@ TODO NEXT:
 		- create interface MessageLogger, class NullMessageLogger
 		- replace logging in MessageQueue with it
 		- create class SimpleMessageLogger to core tests, use in SuiteRunnerIntegrationHelper
+		- write a test for the information shown in Actors.MessageToActor.toString()
 	- support for stopping actors?
 		- create ActorThread.stop()
 		- create ActorThread.isAlive()
 		- SingleThreadedActors: unifying actors and the Executor
 			- implement commands as actors which are stopped immediately after executing them?
-			- have only one actor thread?
+			- have only one actor thread? might not be possible when supporting stopping?
 		- consider removing fi.jumi.actors.Actors#currentActorThread because now resources can be released
 	- handle exceptions from actors (in general, not just in single-threaded actors)
 		- use UncaughtExceptionCollector in ActorsContract
@@ -139,6 +144,8 @@ TODO NEXT:
 	- approved deployment to Maven Central
 
 - misc refactoring
+	- unit tests for fi.jumi.core.results
+	- combine DuplicateOnTestFoundEventFilter and SuiteListenerAdapter, rename to SuiteEventNormalizer/RunEventNormalizer
 	- logging actor messages could benefit from seeing that from which actor a messages was sent; a trace of intermediate actors
 	- refactor SimpleUnit
 		- simplity the tests by creating helper which runs using SuiteRunner, collects the results and provides assert methods
