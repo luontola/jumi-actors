@@ -5,7 +5,7 @@
 package fi.jumi.daemon;
 
 import fi.jumi.actors.*;
-import fi.jumi.actors.eventizers.ComposedEventizerLocator;
+import fi.jumi.actors.eventizers.ComposedEventizerProvider;
 import fi.jumi.core.*;
 import fi.jumi.core.events.*;
 import org.jboss.netty.bootstrap.ClientBootstrap;
@@ -28,7 +28,7 @@ public class Main {
         int launcherPort = Integer.parseInt(args[0]);
 
         MultiThreadedActors actors = new MultiThreadedActors(
-                new ComposedEventizerLocator(
+                new ComposedEventizerProvider(
                         new StartableEventizer(),
                         new RunnableEventizer(),
                         new TestClassFinderListenerEventizer(),

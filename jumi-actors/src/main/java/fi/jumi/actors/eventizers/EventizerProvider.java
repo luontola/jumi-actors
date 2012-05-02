@@ -4,7 +4,7 @@
 
 package fi.jumi.actors.eventizers;
 
-public interface EventizerLocator {
+public interface EventizerProvider {
 
     <T> Eventizer<T> getEventizerForType(Class<T> type);
 }

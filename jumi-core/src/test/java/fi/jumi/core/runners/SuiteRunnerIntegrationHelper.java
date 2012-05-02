@@ -5,7 +5,7 @@
 package fi.jumi.core.runners;
 
 import fi.jumi.actors.*;
-import fi.jumi.actors.dynamic.DynamicEventizerLocator;
+import fi.jumi.actors.dynamic.DynamicEventizerProvider;
 import fi.jumi.api.drivers.Driver;
 import fi.jumi.core.*;
 import fi.jumi.core.drivers.DriverFinder;
@@ -19,7 +19,7 @@ public abstract class SuiteRunnerIntegrationHelper {
     private final SpyListener<SuiteListener> spy = new SpyListener<SuiteListener>(SuiteListener.class);
     protected final SuiteListener expect = spy.getListener();
 
-    private final SingleThreadedActors actors = new SingleThreadedActors(new DynamicEventizerLocator());
+    private final SingleThreadedActors actors = new SingleThreadedActors(new DynamicEventizerProvider());
     private final Executor executor = actors.getExecutor();
 
     protected void runAndCheckExpectations(Driver driver, Class<?>... testClasses) {

@@ -4,7 +4,7 @@
 
 package fi.jumi.actors;
 
-import fi.jumi.actors.dynamic.DynamicEventizerLocator;
+import fi.jumi.actors.dynamic.DynamicEventizerProvider;
 import fi.jumi.actors.eventizers.*;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
@@ -21,10 +21,10 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
 
     @Before
     public void initActors() {
-        actors = newActors(new ComposedEventizerLocator(new DummyListenerEventizer()));
+        actors = newActors(new ComposedEventizerProvider(new DummyListenerEventizer()));
     }
 
-    protected abstract T newActors(EventizerLocator eventizerLocator);
+    protected abstract T newActors(EventizerProvider eventizerProvider);
 
 
     // actors
@@ -85,7 +85,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
 
     @Test
     public void actors_bound_to_the_same_actor_thread_are_processed_in_the_same_thread() {
-        actors = newActors(new DynamicEventizerLocator());
+        actors = newActors(new DynamicEventizerProvider());
         ActorThread actorThread = actors.startActorThread("ActorName");
 
         class Actor1 implements PrimaryInterface {

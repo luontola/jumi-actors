@@ -4,7 +4,7 @@
 
 package fi.jumi.actors;
 
-import fi.jumi.actors.eventizers.EventizerLocator;
+import fi.jumi.actors.eventizers.EventizerProvider;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.*;
@@ -18,8 +18,8 @@ public class SingleThreadedActors extends Actors {
     private final List<NonBlockingActorProcessor> pollers = new ArrayList<NonBlockingActorProcessor>();
     private final List<Runnable> commandsToExecute = new ArrayList<Runnable>();
 
-    public SingleThreadedActors(EventizerLocator eventizerLocator) {
-        super(eventizerLocator);
+    public SingleThreadedActors(EventizerProvider eventizerProvider) {
+        super(eventizerProvider);
     }
 
     @Override

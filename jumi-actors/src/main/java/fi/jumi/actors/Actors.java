@@ -15,10 +15,10 @@ public abstract class Actors {
 
     private final ThreadLocal<ActorThread> currentActorThread = new ThreadLocal<ActorThread>(); // TODO: remove?
 
-    private final EventizerLocator eventizerLocator;
+    private final EventizerProvider eventizerProvider;
 
-    public Actors(EventizerLocator eventizerLocator) {
-        this.eventizerLocator = eventizerLocator;
+    public Actors(EventizerProvider eventizerProvider) {
+        this.eventizerProvider = eventizerProvider;
     }
 
     public ActorThread startActorThread(String name) {
@@ -44,7 +44,7 @@ public abstract class Actors {
 
         @Override
         public <T> ActorRef<T> bindActor(Class<T> type, T rawActor) {
-            Eventizer<T> eventizer = eventizerLocator.getEventizerForType(type);
+            Eventizer<T> eventizer = eventizerProvider.getEventizerForType(type);
             T proxy = eventizer.newFrontend(new MessageToActorSender<T>(this, rawActor));
             return ActorRef.wrap(type.cast(proxy));
         }

@@ -78,7 +78,7 @@ TODO NEXT:
 		SKIP - need to give type as parameter to DynamicListenerFactory.newFrontend/newBackend?
 		OK - refactor tests to use just one DynamicListenerFactory, use generated factories only in Main
 		OK - make Actors(EventizerLocator) the only constructor, to make the design clearer, reduce code and avoid mistaking DynamicEventizer for DynamicEventizerLocator
-		- rename EventizerLocator to EventizerProvider?
+		OK - rename EventizerLocator to EventizerProvider?
 		- ComposedEventizerLocator: move the last test from ActorsContract to ComposedEventizerLocatorTest
 		- ComposedEventizerLocator: use a HashMap
 		- DynamicEventizer: check that the parameter is an interface (write tests)

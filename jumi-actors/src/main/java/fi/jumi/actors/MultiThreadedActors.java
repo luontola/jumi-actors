@@ -4,7 +4,7 @@
 
 package fi.jumi.actors;
 
-import fi.jumi.actors.eventizers.EventizerLocator;
+import fi.jumi.actors.eventizers.EventizerProvider;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.*;
@@ -14,8 +14,8 @@ public class MultiThreadedActors extends Actors {
 
     private final Set<Thread> actorThreads = Collections.synchronizedSet(new HashSet<Thread>());
 
-    public MultiThreadedActors(EventizerLocator eventizerLocator) {
-        super(eventizerLocator);
+    public MultiThreadedActors(EventizerProvider eventizerProvider) {
+        super(eventizerProvider);
     }
 
     @Override

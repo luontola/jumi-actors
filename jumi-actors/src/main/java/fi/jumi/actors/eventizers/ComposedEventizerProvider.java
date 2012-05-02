@@ -7,11 +7,11 @@ package fi.jumi.actors.eventizers;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public class ComposedEventizerLocator implements EventizerLocator {
+public class ComposedEventizerProvider implements EventizerProvider {
 
     private final Eventizer<?>[] eventizers;
 
-    public ComposedEventizerLocator(Eventizer<?>... eventizers) {
+    public ComposedEventizerProvider(Eventizer<?>... eventizers) {
         this.eventizers = eventizers;
     }
 

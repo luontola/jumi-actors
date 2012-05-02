@@ -4,7 +4,7 @@
 
 package fi.jumi.actors;
 
-import fi.jumi.actors.eventizers.EventizerLocator;
+import fi.jumi.actors.eventizers.EventizerProvider;
 import org.junit.*;
 
 import java.util.*;
@@ -17,8 +17,8 @@ public class MultiThreadedActorsTest extends ActorsContract<MultiThreadedActors>
     private final List<MultiThreadedActors> createdActorses = new ArrayList<MultiThreadedActors>();
 
     @Override
-    protected MultiThreadedActors newActors(EventizerLocator eventizerLocator) {
-        MultiThreadedActors actors = new MultiThreadedActors(eventizerLocator);
+    protected MultiThreadedActors newActors(EventizerProvider eventizerProvider) {
+        MultiThreadedActors actors = new MultiThreadedActors(eventizerProvider);
         createdActorses.add(actors);
         return actors;
     }

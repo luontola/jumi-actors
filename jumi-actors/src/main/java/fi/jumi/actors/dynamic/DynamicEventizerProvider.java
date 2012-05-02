@@ -9,7 +9,7 @@ import fi.jumi.actors.eventizers.*;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public class DynamicEventizerLocator implements EventizerLocator {
+public class DynamicEventizerProvider implements EventizerProvider {
 
     @Override
     public <T> Eventizer<T> getEventizerForType(Class<T> type) {
