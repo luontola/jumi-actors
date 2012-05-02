@@ -7,7 +7,7 @@ package fi.jumi.core.runners;
 import fi.jumi.api.drivers.*;
 import fi.jumi.core.SuiteListener;
 import fi.jumi.core.drivers.DriverFinder;
-import fi.jumi.core.utils.MethodCallSpy;
+import fi.jumi.core.util.MethodCallSpy;
 import org.junit.Test;
 
 import java.util.*;

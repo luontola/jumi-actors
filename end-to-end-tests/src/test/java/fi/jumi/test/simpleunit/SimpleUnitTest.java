@@ -8,7 +8,7 @@ import fi.jumi.actors.ActorRef;
 import fi.jumi.api.drivers.TestId;
 import fi.jumi.core.runners.TestClassListener;
 import fi.jumi.core.runs.*;
-import fi.jumi.core.utils.SpyListener;
+import fi.jumi.core.util.SpyListener;
 import org.junit.Test;
 import sample.*;
 

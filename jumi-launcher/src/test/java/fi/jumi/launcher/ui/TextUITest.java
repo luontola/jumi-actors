@@ -14,7 +14,7 @@ import org.junit.Test;
 
 import java.io.*;
 
-import static fi.jumi.core.utils.Asserts.*;
+import static fi.jumi.core.util.Asserts.*;
 
 public class TextUITest {
 

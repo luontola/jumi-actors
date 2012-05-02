@@ -8,7 +8,7 @@ import fi.jumi.actors.Event;
 import fi.jumi.actors.mq.MessageQueue;
 import fi.jumi.core.SuiteListener;
 import fi.jumi.core.runs.RunId;
-import fi.jumi.core.utils.Strings;
+import fi.jumi.core.util.Strings;
 import fi.jumi.launcher.JumiLauncher;
 import fi.jumi.launcher.ui.TextUI;
 import org.apache.commons.io.FileUtils;
