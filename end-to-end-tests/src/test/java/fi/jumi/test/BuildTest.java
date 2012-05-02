@@ -136,8 +136,7 @@ public class BuildTest {
     @SuppressWarnings({"unchecked"})
     public void none_of_the_artifacts_may_contain_classes_from_external_libraries_without_shading_them() {
         for (String content : expectedContents) {
-            // TODO: try FEST asserts
-            // XXX: doesn't work inlined, Java's/Hamcrest's generics are broken
+            // XXX: doesn't work inlined, Java's/Hamcrest's generics are broken (and FEST-Assert doesn't have "or")
             Matcher m1 = startsWith(POM_FILES);
             Matcher m2 = startsWith(BASE_PACKAGE);
             CombinableMatcher matcher = either(m2).or(m1);
