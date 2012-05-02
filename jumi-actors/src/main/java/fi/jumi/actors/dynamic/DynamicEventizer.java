@@ -17,11 +17,17 @@ public class DynamicEventizer<T> implements Eventizer<T> {
     private final Class<T> type;
 
     public DynamicEventizer(Class<T> type) {
-        // TODO: check that it's an interface?
+        checkIsInterface(type);
         for (Method method : type.getMethods()) {
             checkReturnTypeIsVoid(method);
         }
         this.type = type;
+    }
+
+    private static void checkIsInterface(Class<?> type) {
+        if (!type.isInterface()) {
+            throw new IllegalArgumentException("listeners must be interfaces, but got " + type);
+        }
     }
 
     private static void checkReturnTypeIsVoid(Method method) {

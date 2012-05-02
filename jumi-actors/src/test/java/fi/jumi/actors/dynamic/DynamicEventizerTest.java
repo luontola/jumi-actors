@@ -66,11 +66,19 @@ public class DynamicEventizerTest {
     }
 
     @Test
-    public void listeners_may_contain_only_void_methods() {
+    public void listeners_must_contain_only_void_methods() {
         thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage("listeners may contain only void methods, but onSomething had return type java.lang.String");
 
         new DynamicEventizer<ListenerWithNonVoidMethods>(ListenerWithNonVoidMethods.class);
+    }
+
+    @Test
+    public void listeners_must_be_interfaces() {
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("listeners must be interfaces, but got class");
+
+        new DynamicEventizer<ListenerWhichIsNotAnInterface>(ListenerWhichIsNotAnInterface.class);
     }
 
 
@@ -101,5 +109,8 @@ public class DynamicEventizerTest {
     private interface ListenerWithNonVoidMethods {
         @SuppressWarnings({"UnusedDeclaration"})
         String onSomething(String parameter);
+    }
+
+    private static abstract class ListenerWhichIsNotAnInterface {
     }
 }
