@@ -17,14 +17,12 @@ import java.util.concurrent.Executor;
 @NotThreadSafe
 public class TestRunCoordinator implements CommandListener {
 
-    private final Actors actors;
     private final ActorThread actorThread;
-    private final Executor executor;
+    private final Executor testExecutor;
     private SuiteListener listener = null;
 
-    public TestRunCoordinator(Actors actors, ActorThread actorThread, Executor executor) {
-        this.actors = actors;
-        this.executor = executor;
+    public TestRunCoordinator(ActorThread actorThread, Executor testExecutor) {
+        this.testExecutor = testExecutor;
         this.actorThread = actorThread;
     }
 
@@ -39,7 +37,7 @@ public class TestRunCoordinator implements CommandListener {
         DriverFinder driverFinder = new RunViaAnnotationDriverFinder();
 
         ActorRef<Startable> suiteRunner = actorThread.bindActor(Startable.class,
-                new SuiteRunner(listener, testClassFinder, driverFinder, actorThread, executor));
+                new SuiteRunner(listener, testClassFinder, driverFinder, actorThread, testExecutor));
         suiteRunner.tell().start();
     }
 }

@@ -8,6 +8,7 @@ import fi.jumi.actors.*;
 import fi.jumi.actors.eventizers.ComposedEventizerProvider;
 import fi.jumi.core.*;
 import fi.jumi.core.events.*;
+import fi.jumi.core.util.PrefixedThreadFactory;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.socket.oio.OioClientSocketChannelFactory;
@@ -27,7 +28,10 @@ public class Main {
 
         int launcherPort = Integer.parseInt(args[0]);
 
-        ExecutorService actorsThreadPool = Executors.newCachedThreadPool();
+        Executor actorsThreadPool = Executors.newCachedThreadPool(new PrefixedThreadFactory("jumi-actors-"));
+        // TODO: do not create unlimited numbers of threads; make it by default CPUs+1 or something
+        Executor testsThreadPool = Executors.newCachedThreadPool(new PrefixedThreadFactory("jumi-tests-"));
+
         MultiThreadedActors actors = new MultiThreadedActors(
                 new ComposedEventizerProvider(
                         new StartableEventizer(),
@@ -40,11 +44,9 @@ public class Main {
                 actorsThreadPool
         );
 
-        // TODO: do not create unlimited numbers of threads; make it by default CPUs+1 or something
-        Executor executor = Executors.newCachedThreadPool();
         ActorThread actorThread = actors.startActorThread();
         ActorRef<CommandListener> coordinator = actorThread.bindActor(CommandListener.class,
-                new TestRunCoordinator(actors, actorThread, executor));
+                new TestRunCoordinator(actorThread, testsThreadPool));
 
         connectToLauncher(launcherPort, coordinator);
     }

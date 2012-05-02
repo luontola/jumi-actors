@@ -88,14 +88,14 @@ TODO NEXT:
 				- create lots of short-lived actors and send to each of them only one message
 	SKIP - consider creating NakedActorRef for unit testing, ProxyActorRef for production
 		- throw an exception in fi.jumi.actors.ActorRef#wrap if not a proxy (see TODO), or is it even possible because of not always using dynamic proxies?
-	!! - remove support for named actor threads
+	OK - remove support for named actor threads
 		OK - remove name parameter from startActorThread
 		OK - MultiThreadedActors: don't create threads manually
 			OK - use thread pool
 			OK - remove the constructor which creates a default thread pool; the caller shall manage its lifecycle
 			OK - remove shutdown method (use ExecutorService.shutdownNow/awaitTermination directly in tests)
-		- create PrefixedThreadFactory, e.g. "foo-" -> "foo-1", "foo-2" etc.
-		- use it in Main, prefixes: "jumi-actors-", "jumi-tests-"
+		OK - create PrefixedThreadFactory, e.g. "foo-" -> "foo-1", "foo-2" etc.
+		OK - use it in Main, prefixes: "jumi-actors-", "jumi-tests-"
 	- pluggable logger
 		- create interface MessageLogger, class NullMessageLogger
 		- replace logging in MessageQueue with it
