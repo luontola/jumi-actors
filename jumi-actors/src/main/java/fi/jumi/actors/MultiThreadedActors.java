@@ -7,31 +7,21 @@ package fi.jumi.actors;
 import fi.jumi.actors.eventizers.EventizerProvider;
 
 import javax.annotation.concurrent.ThreadSafe;
-import java.util.*;
+import java.util.concurrent.Executor;
 
 @ThreadSafe
 public class MultiThreadedActors extends Actors {
 
-    private final Set<Thread> actorThreads = Collections.synchronizedSet(new HashSet<Thread>());
+    private final Executor executor;
 
-    public MultiThreadedActors(EventizerProvider eventizerProvider) {
+    public MultiThreadedActors(EventizerProvider eventizerProvider, Executor executor) {
         super(eventizerProvider);
+        this.executor = executor;
     }
 
     @Override
     protected void startActorThread(MessageProcessor actorThread) {
-        Thread t = new Thread(new BlockingActorProcessor(actorThread));
-        t.start();
-        actorThreads.add(t);
-    }
-
-    public void shutdown(long timeout) throws InterruptedException {
-        for (Thread t : actorThreads) {
-            t.interrupt();
-        }
-        for (Thread t : actorThreads) {
-            t.join(timeout);
-        }
+        executor.execute(new BlockingActorProcessor(actorThread));
     }
 
 

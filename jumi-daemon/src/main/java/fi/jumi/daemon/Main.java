@@ -27,6 +27,7 @@ public class Main {
 
         int launcherPort = Integer.parseInt(args[0]);
 
+        ExecutorService actorsThreadPool = Executors.newCachedThreadPool();
         MultiThreadedActors actors = new MultiThreadedActors(
                 new ComposedEventizerProvider(
                         new StartableEventizer(),
@@ -35,7 +36,8 @@ public class Main {
                         new SuiteListenerEventizer(),
                         new CommandListenerEventizer(),
                         new TestClassListenerEventizer()
-                )
+                ),
+                actorsThreadPool
         );
 
         // TODO: do not create unlimited numbers of threads; make it by default CPUs+1 or something
