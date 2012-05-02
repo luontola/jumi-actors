@@ -81,9 +81,9 @@ TODO NEXT:
 		OK - rename EventizerLocator to EventizerProvider?
 		OK - ComposedEventizerLocator: move the last test from ActorsContract to ComposedEventizerLocatorTest
 		OK - ComposedEventizerLocator: use a HashMap
-		- DynamicEventizer: check that the parameter is an interface (write tests)
+		OK - DynamicEventizer: check that the parameter is an interface (write tests)
 		- DynamicEventizerLocator: cache the eventizers to avoid re-checking the same types, or premature?
-			- write a benchmark first: http://code.google.com/p/caliper/
+			OK - write a benchmark first: http://code.google.com/p/caliper/
 				- micro-benchmark creating a single actor
 				- create lots of short-lived actors and send to each of them only one message
 	SKIP - consider creating NakedActorRef for unit testing, ProxyActorRef for production
