@@ -54,9 +54,6 @@ public abstract class ActorsContractHelpers<T extends Actors> {
         void onSecondaryEvent();
     }
 
-    public interface NoEventizerForThisListener {
-    }
-
 
     public interface DummyListener {
         void onSomething(String parameter);

@@ -79,8 +79,8 @@ TODO NEXT:
 		OK - refactor tests to use just one DynamicListenerFactory, use generated factories only in Main
 		OK - make Actors(EventizerLocator) the only constructor, to make the design clearer, reduce code and avoid mistaking DynamicEventizer for DynamicEventizerLocator
 		OK - rename EventizerLocator to EventizerProvider?
-		- ComposedEventizerLocator: move the last test from ActorsContract to ComposedEventizerLocatorTest
-		- ComposedEventizerLocator: use a HashMap
+		OK - ComposedEventizerLocator: move the last test from ActorsContract to ComposedEventizerLocatorTest
+		OK - ComposedEventizerLocator: use a HashMap
 		- DynamicEventizer: check that the parameter is an interface (write tests)
 		- DynamicEventizerLocator: cache the eventizers to avoid re-checking the same types, or premature?
 			- write a benchmark first: http://code.google.com/p/caliper/

@@ -5,24 +5,28 @@
 package fi.jumi.actors.eventizers;
 
 import javax.annotation.concurrent.Immutable;
+import java.util.*;
 
 @Immutable
 public class ComposedEventizerProvider implements EventizerProvider {
 
-    private final Eventizer<?>[] eventizers;
+    private final Map<Class<?>, Eventizer<?>> eventizers;
 
     public ComposedEventizerProvider(Eventizer<?>... eventizers) {
-        this.eventizers = eventizers;
+        HashMap<Class<?>, Eventizer<?>> map = new HashMap<Class<?>, Eventizer<?>>();
+        for (Eventizer<?> eventizer : eventizers) {
+            map.put(eventizer.getType(), eventizer);
+        }
+        this.eventizers = Collections.unmodifiableMap(map);
     }
 
     @SuppressWarnings({"unchecked"})
     @Override
     public <T> Eventizer<T> getEventizerForType(Class<T> type) {
-        for (Eventizer<?> eventizer : eventizers) {
-            if (eventizer.getType().equals(type)) {
-                return (Eventizer<T>) eventizer;
-            }
+        Eventizer<?> eventizer = eventizers.get(type);
+        if (eventizer == null) {
+            throw new IllegalArgumentException("unsupported type: " + type);
         }
-        throw new IllegalArgumentException("unsupported type: " + type);
+        return (Eventizer<T>) eventizer;
     }
 }

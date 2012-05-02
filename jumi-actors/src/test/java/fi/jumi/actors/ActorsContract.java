@@ -122,20 +122,4 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
         assertThat("actor2 actor was called", actor2.eventThread, is(notNullValue()));
         assertThat("both actors were processed in the same thread", actor1.eventThread, is(actor2.eventThread));
     }
-
-
-    // setup
-
-    @Test
-    public void eventizers_must_be_registered_for_them_to_be_usable() {
-        ActorThread actorThread = actors.startActorThread("ActorThread");
-        NoEventizerForThisListener listener = new NoEventizerForThisListener() {
-        };
-
-        thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("unsupported type");
-        thrown.expectMessage(NoEventizerForThisListener.class.getName());
-
-        actorThread.bindActor(NoEventizerForThisListener.class, listener);
-    }
 }
