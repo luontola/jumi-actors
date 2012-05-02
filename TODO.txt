@@ -73,7 +73,7 @@ TODO NEXT:
 	OK - refactor actor tests
 		OK - some tests might be outdated; update or remove them
 		OK - rename any remaining "factories" variables and methods to "eventizers"
-	!! - make DynamicListenerFactory support all types without having to declare them
+	OK - make DynamicListenerFactory support all types without having to declare them
 		OK - move the type comparison in Actors.getFactoryForType to ListenerFactory.supportsType
 		SKIP - need to give type as parameter to DynamicListenerFactory.newFrontend/newBackend?
 		OK - refactor tests to use just one DynamicListenerFactory, use generated factories only in Main
@@ -82,7 +82,7 @@ TODO NEXT:
 		OK - ComposedEventizerLocator: move the last test from ActorsContract to ComposedEventizerLocatorTest
 		OK - ComposedEventizerLocator: use a HashMap
 		OK - DynamicEventizer: check that the parameter is an interface (write tests)
-		- DynamicEventizerLocator: cache the eventizers to avoid re-checking the same types, or premature?
+		OK - DynamicEventizerLocator: cache the eventizers to avoid re-checking the same types, or premature?
 			OK - write a benchmark first: http://code.google.com/p/caliper/
 				- micro-benchmark creating a single actor
 				- create lots of short-lived actors and send to each of them only one message

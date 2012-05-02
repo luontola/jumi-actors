@@ -7,12 +7,21 @@ package fi.jumi.actors.dynamic;
 import fi.jumi.actors.eventizers.*;
 
 import javax.annotation.concurrent.Immutable;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Immutable
 public class DynamicEventizerProvider implements EventizerProvider {
 
+    private final ConcurrentHashMap<Class<?>, Eventizer<?>> cache = new ConcurrentHashMap<Class<?>, Eventizer<?>>();
+
+    @SuppressWarnings("unchecked")
     @Override
     public <T> Eventizer<T> getEventizerForType(Class<T> type) {
-        return new DynamicEventizer<T>(type);
+        Eventizer<T> eventizer = (Eventizer<T>) cache.get(type);
+        if (eventizer == null) {
+            eventizer = new DynamicEventizer<T>(type);
+            cache.put(type, eventizer);
+        }
+        return eventizer;
     }
 }
