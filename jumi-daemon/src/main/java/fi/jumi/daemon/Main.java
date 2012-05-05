@@ -6,7 +6,7 @@ package fi.jumi.daemon;
 
 import fi.jumi.actors.*;
 import fi.jumi.actors.eventizers.ComposedEventizerProvider;
-import fi.jumi.actors.logging.SilentMessageLogger;
+import fi.jumi.actors.logging.*;
 import fi.jumi.core.*;
 import fi.jumi.core.events.*;
 import fi.jumi.core.util.PrefixedThreadFactory;
@@ -14,8 +14,6 @@ import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.socket.oio.OioClientSocketChannelFactory;
 import org.jboss.netty.handler.codec.serialization.*;
-import org.jboss.netty.handler.logging.LoggingHandler;
-import org.jboss.netty.logging.InternalLogLevel;
 
 import javax.annotation.concurrent.*;
 import java.net.InetSocketAddress;
@@ -43,7 +41,7 @@ public class Main {
                         new CommandListenerEventizer(),
                         new TestClassListenerEventizer()
                 ),
-                new SilentMessageLogger() // TODO: system property for enabling logging?
+                createMessageLogger()
         );
 
         ActorThread actorThread = actors.startActorThread();
@@ -51,6 +49,13 @@ public class Main {
                 new TestRunCoordinator(actorThread, testsThreadPool));
 
         connectToLauncher(launcherPort, coordinator);
+    }
+
+    private static MessageLogger createMessageLogger() {
+        if (SystemProperties.logActorMessages()) {
+            return new PrintStreamMessageLogger(System.out);
+        }
+        return new SilentMessageLogger();
     }
 
     private static void connectToLauncher(int launcherPort, final ActorRef<CommandListener> coordinator) {
@@ -64,7 +69,7 @@ public class Main {
                 return Channels.pipeline(
                         new ObjectEncoder(),
                         new ObjectDecoder(ClassResolvers.softCachingResolver(Main.class.getClassLoader())),
-                        new LoggingHandler(InternalLogLevel.INFO), // TODO: remove this debug code
+                        //new LoggingHandler(InternalLogLevel.INFO), // TODO: remove this debug code
                         new JumiDaemonHandler(coordinator));
             }
         }

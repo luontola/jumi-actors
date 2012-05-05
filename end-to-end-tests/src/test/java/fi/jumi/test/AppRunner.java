@@ -114,10 +114,12 @@ public class AppRunner implements TestRule {
         printProcessOutput(launcher);
         launcher.setJumiHome(sandboxDir);
 
-        if (System.getProperty("jumi.useThreadSafetyAgent", "false").equals("true")) {
+        if (TestSystemProperties.useThreadSafetyAgent()) {
             String threadSafetyAgent = TestEnvironment.getProjectJar("thread-safety-agent").getAbsolutePath();
-            launcher.setJvmOptions("-javaagent:" + threadSafetyAgent);
+            launcher.addJvmOptions("-javaagent:" + threadSafetyAgent);
         }
+
+        launcher.enableMessageLogging();
     }
 
     private void tearDown() {

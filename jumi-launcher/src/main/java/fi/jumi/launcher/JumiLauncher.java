@@ -34,7 +34,7 @@ public class JumiLauncher {
     private final JumiLauncherHandler handler;
     private final List<File> classPath = new ArrayList<File>();
     private String testsToIncludePattern;
-    private String[] jvmOptions = new String[0];
+    private List<String> jvmOptions = new ArrayList<String>();
 
     public JumiLauncher(MessageSender<Event<SuiteListener>> eventTarget) {
         handler = new JumiLauncherHandler(eventTarget);
@@ -103,7 +103,7 @@ public class JumiLauncher {
 
         List<String> command = new ArrayList<String>();
         command.add(javaExecutable.getAbsolutePath());
-        Collections.addAll(command, jvmOptions);
+        command.addAll(jvmOptions);
         command.add("-jar");
         command.add(extractedJar.getAbsolutePath());
         command.add(String.valueOf(launcherPort));
@@ -164,7 +164,12 @@ public class JumiLauncher {
         testsToIncludePattern = pattern;
     }
 
-    public void setJvmOptions(String... jvmOptions) {
-        this.jvmOptions = jvmOptions;
+    public void addJvmOptions(String... jvmOptions) {
+        this.jvmOptions.addAll(Arrays.asList(jvmOptions));
+    }
+
+    public void enableMessageLogging() {
+        // TODO: write a test
+        addJvmOptions("-D" + SystemProperties.LOG_ACTOR_MESSAGES + "=true");
     }
 }
