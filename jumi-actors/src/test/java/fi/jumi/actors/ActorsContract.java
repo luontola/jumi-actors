@@ -9,6 +9,7 @@ import fi.jumi.actors.eventizers.*;
 import fi.jumi.actors.logging.*;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
+import org.mockito.InOrder;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -137,8 +138,9 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
         sendSyncEvent(actorThread);                 // we must wait for onProcessingFinished to be called
         awaitEvents(1);
 
-        verify(logger).onMessageSent(new OnSomethingEvent("parameter"));
-        verify(logger).onProcessingStarted(rawActor, new OnSomethingEvent("parameter"));
-        verify(logger, times(2)).onProcessingFinished(); // once for the event we are interested in, plus once for the sync event
+        InOrder inOrder = inOrder(logger);
+        inOrder.verify(logger).onMessageSent(new OnSomethingEvent("parameter"));
+        inOrder.verify(logger).onProcessingStarted(rawActor, new OnSomethingEvent("parameter"));
+        inOrder.verify(logger).onProcessingFinished();
     }
 }
