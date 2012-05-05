@@ -6,6 +6,7 @@ package fi.jumi.daemon;
 
 import fi.jumi.actors.*;
 import fi.jumi.actors.eventizers.ComposedEventizerProvider;
+import fi.jumi.actors.logging.SilentMessageLogger;
 import fi.jumi.core.*;
 import fi.jumi.core.events.*;
 import fi.jumi.core.util.PrefixedThreadFactory;
@@ -33,6 +34,7 @@ public class Main {
         Executor testsThreadPool = Executors.newCachedThreadPool(new PrefixedThreadFactory("jumi-tests-"));
 
         MultiThreadedActors actors = new MultiThreadedActors(
+                actorsThreadPool,
                 new ComposedEventizerProvider(
                         new StartableEventizer(),
                         new RunnableEventizer(),
@@ -41,7 +43,7 @@ public class Main {
                         new CommandListenerEventizer(),
                         new TestClassListenerEventizer()
                 ),
-                actorsThreadPool
+                new SilentMessageLogger() // TODO: system property for enabling logging?
         );
 
         ActorThread actorThread = actors.startActorThread();

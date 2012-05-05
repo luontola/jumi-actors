@@ -5,6 +5,7 @@
 package fi.jumi.actors;
 
 import fi.jumi.actors.eventizers.*;
+import fi.jumi.actors.logging.MessageLogger;
 import fi.jumi.actors.mq.*;
 
 import javax.annotation.concurrent.*;
@@ -16,9 +17,11 @@ public abstract class Actors {
     private final ThreadLocal<ActorThread> currentActorThread = new ThreadLocal<ActorThread>(); // TODO: remove?
 
     private final EventizerProvider eventizerProvider;
+    private final MessageLogger logger;
 
-    public Actors(EventizerProvider eventizerProvider) {
+    public Actors(EventizerProvider eventizerProvider, MessageLogger logger) {
         this.eventizerProvider = eventizerProvider;
+        this.logger = logger;
     }
 
     public ActorThread startActorThread() {
@@ -81,7 +84,7 @@ public abstract class Actors {
     }
 
     @ThreadSafe
-    private static class MessageToActorSender<T> implements MessageSender<Event<T>> {
+    private class MessageToActorSender<T> implements MessageSender<Event<T>> {
         private final Executor actorThread;
         private final T rawActor;
 
@@ -92,13 +95,14 @@ public abstract class Actors {
 
         @Override
         public void send(final Event<T> message) {
+            logger.onMessageSent(message);
             actorThread.execute(new MessageToActor<T>(rawActor, message));
         }
     }
 
     @NotThreadSafe
-    private static class MessageToActor<T> implements Runnable {
-        private T rawActor;
+    private class MessageToActor<T> implements Runnable {
+        private final T rawActor;
         private final Event<T> message;
 
         public MessageToActor(T rawActor, Event<T> message) {
@@ -108,7 +112,12 @@ public abstract class Actors {
 
         @Override
         public void run() {
-            message.fireOn(rawActor);
+            logger.onProcessingStarted(rawActor, message);
+            try {
+                message.fireOn(rawActor);
+            } finally {
+                logger.onProcessingFinished();
+            }
         }
 
         @Override

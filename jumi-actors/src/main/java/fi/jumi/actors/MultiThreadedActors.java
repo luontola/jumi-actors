@@ -5,6 +5,7 @@
 package fi.jumi.actors;
 
 import fi.jumi.actors.eventizers.EventizerProvider;
+import fi.jumi.actors.logging.MessageLogger;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.concurrent.Executor;
@@ -14,8 +15,8 @@ public class MultiThreadedActors extends Actors {
 
     private final Executor executor;
 
-    public MultiThreadedActors(EventizerProvider eventizerProvider, Executor executor) {
-        super(eventizerProvider);
+    public MultiThreadedActors(Executor executor, EventizerProvider eventizerProvider, MessageLogger logger) {
+        super(eventizerProvider, logger);
         this.executor = executor;
     }
 

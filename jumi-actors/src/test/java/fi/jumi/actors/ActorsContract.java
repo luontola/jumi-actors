@@ -4,8 +4,9 @@
 
 package fi.jumi.actors;
 
-import fi.jumi.actors.dynamic.DynamicEventizerProvider;
+import fi.jumi.actors.dynamic.*;
 import fi.jumi.actors.eventizers.*;
+import fi.jumi.actors.logging.*;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 
@@ -13,21 +14,22 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.*;
 
 public abstract class ActorsContract<T extends Actors> extends ActorsContractHelpers<T> {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
+    protected final SilentMessageLogger defaultLogger = new SilentMessageLogger();
+
     @Before
     public void initActors() {
-        actors = newActors(new ComposedEventizerProvider(new DummyListenerEventizer()));
+        actors = newActors(new ComposedEventizerProvider(new DummyListenerEventizer()), defaultLogger);
     }
 
-    protected abstract T newActors(EventizerProvider eventizerProvider);
+    protected abstract T newActors(EventizerProvider eventizerProvider, MessageLogger logger);
 
-
-    // actors
 
     @Test
     public void method_calls_on_ActorRef_are_forwarded_to_the_actor() throws InterruptedException {
@@ -85,7 +87,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
 
     @Test
     public void actors_bound_to_the_same_actor_thread_are_processed_in_the_same_thread() {
-        actors = newActors(new DynamicEventizerProvider());
+        actors = newActors(new DynamicEventizerProvider(), defaultLogger);
         ActorThread actorThread = actors.startActorThread();
 
         class Actor1 implements PrimaryInterface {
@@ -121,5 +123,22 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
         assertThat("actor1 actor was called", actor1.eventThread, is(notNullValue()));
         assertThat("actor2 actor was called", actor2.eventThread, is(notNullValue()));
         assertThat("both actors were processed in the same thread", actor1.eventThread, is(actor2.eventThread));
+    }
+
+    @Test
+    public void sending_and_processing_messages_is_logged() {
+        MessageLogger logger = mock(MessageLogger.class);
+        actors = newActors(new ComposedEventizerProvider(new DummyListenerEventizer(), new DynamicEventizer<Runnable>(Runnable.class)), logger);
+        ActorThread actorThread = actors.startActorThread();
+        DummyListener rawActor = mock(DummyListener.class);
+        ActorRef<DummyListener> actor = actorThread.bindActor(DummyListener.class, rawActor);
+
+        actor.tell().onSomething("parameter");
+        sendSyncEvent(actorThread);                 // we must wait for onProcessingFinished to be called
+        awaitEvents(1);
+
+        verify(logger).onMessageSent(new OnSomethingEvent("parameter"));
+        verify(logger).onProcessingStarted(rawActor, new OnSomethingEvent("parameter"));
+        verify(logger, times(2)).onProcessingFinished(); // once for the event we are interested in, plus once for the sync event
     }
 }

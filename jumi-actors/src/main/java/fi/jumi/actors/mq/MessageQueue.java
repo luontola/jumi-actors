@@ -6,36 +6,28 @@ package fi.jumi.actors.mq;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.concurrent.*;
-import java.util.logging.*;
 
 @ThreadSafe
 public class MessageQueue<T> implements MessageSender<T>, MessageReceiver<T> {
-
-    private static final Logger logger = Logger.getLogger(MessageQueue.class.getName());
 
     private final BlockingQueue<T> queue = new LinkedBlockingQueue<T>();
 
     @Override
     public void send(T message) {
-        logger.log(Level.FINE, "SEND {0}", message);
         try {
             queue.put(message);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e); // TODO: use Thread.currentThread().interrupt()
         }
     }
 
     @Override
     public T take() throws InterruptedException {
-        T message = queue.take();
-        logger.log(Level.FINE, "TAKE {0}", message);
-        return message;
+        return queue.take();
     }
 
     @Override
     public T poll() {
-        T message = queue.poll();
-        logger.log(Level.FINE, "POLL {0}", message);
-        return message;
+        return queue.poll();
     }
 }

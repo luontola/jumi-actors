@@ -96,11 +96,12 @@ TODO NEXT:
 			OK - remove shutdown method (use ExecutorService.shutdownNow/awaitTermination directly in tests)
 		OK - create PrefixedThreadFactory, e.g. "foo-" -> "foo-1", "foo-2" etc.
 		OK - use it in Main, prefixes: "jumi-actors-", "jumi-tests-"
-	- pluggable logger
-		- create interface MessageLogger, class NullMessageLogger
-		- replace logging in MessageQueue with it
+	!! - pluggable logger
+		OK - create interface MessageLogger, class NullMessageLogger
+		OK - replace logging in MessageQueue with it
 		- create class SimpleMessageLogger to core tests, use in SuiteRunnerIntegrationHelper
 		- write a test for the information shown in Actors.MessageToActor.toString()
+		- make sure that toString of reflective and generated messages are the same
 	- support for stopping actors?
 		- create ActorThread.stop()
 		- create ActorThread.isAlive()
@@ -108,6 +109,7 @@ TODO NEXT:
 			- implement commands as actors which are stopped immediately after executing them?
 			- have only one actor thread? might not be possible when supporting stopping?
 		- consider removing fi.jumi.actors.Actors#currentActorThread because now resources can be released
+		- use Thread.currentThread().interrupt() in fi.jumi.actors.mq.MessageQueue#send
 	- handle exceptions from actors (in general, not just in single-threaded actors)
 		- use UncaughtExceptionCollector in ActorsContract
 	- write user documentation for jumi-actors

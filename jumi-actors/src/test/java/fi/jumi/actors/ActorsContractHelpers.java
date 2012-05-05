@@ -30,6 +30,16 @@ public abstract class ActorsContractHelpers<T extends Actors> {
         events.assertContains(expected);
     }
 
+    public void sendSyncEvent(ActorThread actorThread) {
+        ActorRef<Runnable> actor = actorThread.bindActor(Runnable.class, new Runnable() {
+            @Override
+            public void run() {
+                logEvent("sync event");
+            }
+        });
+        actor.tell().run();
+    }
+
 
     // test doubles
 
@@ -59,7 +69,7 @@ public abstract class ActorsContractHelpers<T extends Actors> {
         void onSomething(String parameter);
     }
 
-    public class DummyListenerEventizer implements Eventizer<DummyListener> {
+    public static class DummyListenerEventizer implements Eventizer<DummyListener> {
 
         @Override
         public Class<DummyListener> getType() {
@@ -77,7 +87,7 @@ public abstract class ActorsContractHelpers<T extends Actors> {
         }
     }
 
-    public class OnSomethingEvent implements Event<DummyListener> {
+    public static class OnSomethingEvent implements Event<DummyListener> {
         private final String parameter;
 
         public OnSomethingEvent(String parameter) {
@@ -88,9 +98,18 @@ public abstract class ActorsContractHelpers<T extends Actors> {
         public void fireOn(DummyListener target) {
             target.onSomething(parameter);
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof OnSomethingEvent)) {
+                return false;
+            }
+            OnSomethingEvent that = (OnSomethingEvent) obj;
+            return this.parameter.equals(that.parameter);
+        }
     }
 
-    public class DummyListenerToEvent implements DummyListener {
+    public static class DummyListenerToEvent implements DummyListener {
         private final MessageSender<Event<DummyListener>> sender;
 
         public DummyListenerToEvent(MessageSender<Event<DummyListener>> sender) {
@@ -103,7 +122,7 @@ public abstract class ActorsContractHelpers<T extends Actors> {
         }
     }
 
-    public class EventToDummyListener implements MessageSender<Event<DummyListener>> {
+    public static class EventToDummyListener implements MessageSender<Event<DummyListener>> {
         private final DummyListener listener;
 
         public EventToDummyListener(DummyListener listener) {

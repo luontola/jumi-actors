@@ -5,6 +5,7 @@
 package fi.jumi.actors;
 
 import fi.jumi.actors.eventizers.*;
+import fi.jumi.actors.logging.MessageLogger;
 import org.junit.Test;
 
 import java.util.*;
@@ -18,8 +19,8 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
     private final List<SingleThreadedActors> createdActors = new ArrayList<SingleThreadedActors>();
 
     @Override
-    protected SingleThreadedActors newActors(EventizerProvider eventizerProvider) {
-        SingleThreadedActors actors = new SingleThreadedActors(eventizerProvider);
+    protected SingleThreadedActors newActors(EventizerProvider eventizerProvider, MessageLogger logger) {
+        SingleThreadedActors actors = new SingleThreadedActors(eventizerProvider, logger);
         createdActors.add(actors);
         return actors;
     }
@@ -31,9 +32,10 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
         }
     }
 
+
     @Test
     public void uncaught_exceptions_from_actors_will_be_rethrown_to_the_caller_by_default() {
-        SingleThreadedActors actors = new SingleThreadedActors(new ComposedEventizerProvider(new DummyListenerEventizer()));
+        SingleThreadedActors actors = new SingleThreadedActors(new ComposedEventizerProvider(new DummyListenerEventizer()), defaultLogger);
 
         ActorThread actorThread = actors.startActorThread();
         ActorRef<DummyListener> actor = actorThread.bindActor(DummyListener.class, new DummyListener() {
@@ -52,7 +54,7 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
     @Test
     public void will_keep_on_processing_messages_when_uncaught_exceptions_from_actors_are_suppressed() {
         final List<Throwable> uncaughtExceptions = new ArrayList<Throwable>();
-        SingleThreadedActors actors = new SingleThreadedActors(new ComposedEventizerProvider(new DummyListenerEventizer())) {
+        SingleThreadedActors actors = new SingleThreadedActors(new ComposedEventizerProvider(new DummyListenerEventizer()), defaultLogger) {
             @Override
             protected void handleUncaughtException(Object source, Throwable uncaughtException) {
                 uncaughtExceptions.add(uncaughtException);
@@ -76,7 +78,7 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
     @Test
     public void provides_an_asynchronous_executor() {
         final StringBuilder spy = new StringBuilder();
-        SingleThreadedActors actors = new SingleThreadedActors(new ComposedEventizerProvider(new DummyListenerEventizer()));
+        SingleThreadedActors actors = new SingleThreadedActors(new ComposedEventizerProvider(new DummyListenerEventizer()), defaultLogger);
 
         Executor executor = actors.getExecutor();
         executor.execute(new Runnable() {
