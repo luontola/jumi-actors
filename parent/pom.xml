@@ -363,7 +363,7 @@
                 <plugin>
                     <groupId>org.pitest</groupId>
                     <artifactId>pitest-maven</artifactId>
-                    <version>0.25</version>
+                    <version>0.27</version>
                 </plugin>
 
             </plugins>
@@ -387,19 +387,16 @@
                         </executions>
                         <configuration>
                             <threads>4</threads>
-                            <inScopeClasses>
-                                <pattern>fi.jumi.*</pattern>
-                            </inScopeClasses>
                             <targetClasses>
                                 <pattern>fi.jumi.*</pattern>
                             </targetClasses>
+                            <targetTests>
+                                <pattern>fi.jumi.*</pattern>
+                            </targetTests>
                             <failWhenNoMutations>false</failWhenNoMutations>
-
                             <mutators>
                                 <mutator>ALL</mutator>
                             </mutators>
-                            <!-- NOTE: Causes false warnings about <clinit> when a class contains assertions,
-                                       e.g. "removed call to java/lang/Class::desiredAssertionStatus : SURVIVED" -->
                             <mutateStaticInitializers>true</mutateStaticInitializers>
                         </configuration>
                     </plugin>
