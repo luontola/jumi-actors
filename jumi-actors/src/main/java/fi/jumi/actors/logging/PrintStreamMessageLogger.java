@@ -10,6 +10,9 @@ import java.io.PrintStream;
 @ThreadSafe
 public class PrintStreamMessageLogger implements MessageLogger {
 
+    private static final String OUTGOING_MESSAGE = "->";
+    private static final String INCOMING_MESSAGE = "<-";
+
     private final PrintStream out;
     private final ThreadLocal<Object> currentActor = new ThreadLocal<Object>();
 
@@ -19,7 +22,20 @@ public class PrintStreamMessageLogger implements MessageLogger {
 
     @Override
     public void onMessageSent(Object message) {
-        out.println(currentActorFormatted() + " -> " + message);
+        logMessage(OUTGOING_MESSAGE, message);
+    }
+
+    @Override
+    public void onProcessingStarted(Object actor, Object message) {
+        currentActor.set(actor);
+        logMessage(INCOMING_MESSAGE, message);
+    }
+
+    private void logMessage(String messageDirection, Object message) {
+        String threadName = Thread.currentThread().getName();
+        int messageId = System.identityHashCode(message);
+        out.println(String.format("[%s] %s %s 0x%08x %s",
+                threadName, currentActorFormatted(), messageDirection, messageId, message));
     }
 
     private String currentActorFormatted() {
@@ -28,12 +44,6 @@ public class PrintStreamMessageLogger implements MessageLogger {
             return "<external>";
         }
         return currentActor.toString();
-    }
-
-    @Override
-    public void onProcessingStarted(Object actor, Object message) {
-        currentActor.set(actor);
-        out.println(currentActorFormatted() + " <- " + message);
     }
 
     @Override

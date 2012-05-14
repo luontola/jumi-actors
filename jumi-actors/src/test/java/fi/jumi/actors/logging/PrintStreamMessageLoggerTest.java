@@ -9,6 +9,8 @@ import org.junit.Test;
 import java.io.*;
 import java.util.concurrent.*;
 
+import static fi.jumi.actors.logging.Matchers.containsLineWithWords;
+import static org.fest.assertions.Assertions.assertThat;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 
@@ -23,14 +25,14 @@ public class PrintStreamMessageLoggerTest {
     public void processing_messages_logs_both_the_actor_and_the_message() {
         logger.onProcessingStarted("actor1", "message1");
 
-        assertThat(output.toString(), containsString("actor1 <- message1"));
+        assertThat(output.toString(), containsLineWithWords("actor1 <-", "message1"));
     }
 
     @Test
     public void sending_messages_outside_an_actor_logs_only_the_message() {
         logger.onMessageSent("message1");
 
-        assertThat(output.toString(), containsString("<external> -> message1"));
+        assertThat(output.toString(), containsLineWithWords("<external> ->", "message1"));
     }
 
     @Test
@@ -39,7 +41,7 @@ public class PrintStreamMessageLoggerTest {
 
         logger.onMessageSent("message1");
 
-        assertThat(output.toString(), containsString("actor1 -> message1"));
+        assertThat(output.toString(), containsLineWithWords("actor1 ->", "message1"));
     }
 
     @Test
@@ -67,8 +69,8 @@ public class PrintStreamMessageLoggerTest {
                 }
         );
 
-        assertThat(output.toString(), containsString("actor1 -> message1"));
-        assertThat(output.toString(), containsString("actor2 -> message2"));
+        assertThat(output.toString(), containsLineWithWords("actor1 ->", "message1"));
+        assertThat(output.toString(), containsLineWithWords("actor2 ->", "message2"));
     }
 
     private static void executeConcurrently(Runnable... tasks) throws InterruptedException {
@@ -98,11 +100,29 @@ public class PrintStreamMessageLoggerTest {
 
         logger.onMessageSent("message2");
 
-        assertThat(output.toString(), containsString("<external> -> message2"));
+        assertThat(output.toString(), containsLineWithWords("<external> ->", "message2"));
     }
 
-    // TODO: unique id for messages
-    // TODO: current thread
+    @Test
+    public void the_current_thread_is_logged() {
+        logger.onMessageSent("message1");
+
+        assertThat(output.toString(), containsString(Thread.currentThread().getName()));
+    }
+
+    @Test
+    public void unique_id_for_each_message_is_logged() {
+        String message = "message1";
+        int messageId = System.identityHashCode(message);
+
+        logger.onMessageSent(message);
+
+        String output = this.output.toString();
+        assertThat(output, containsString(Integer.toHexString(messageId)));
+        assertThat(output).matches("(?s).* 0x[0-9a-f]{8} .*");
+    }
+
+
     // TODO: timestamps
     // TODO: by default use System.out
 }

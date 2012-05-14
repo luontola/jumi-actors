@@ -99,12 +99,13 @@ TODO NEXT:
 	!! - pluggable logger
 		OK - create interface MessageLogger, class NullMessageLogger
 		OK - replace logging in MessageQueue with it
-		- create class SimpleMessageLogger to core tests, use in SuiteRunnerIntegrationHelper
+		!! - create class SimpleMessageLogger to core tests, use in SuiteRunnerIntegrationHelper
 		- write a test for the information shown in Actors.MessageToActor.toString()
 		- make sure that toString of reflective and generated messages are the same
+		- add logging to Executors, to see which actor started which worker thread?
 	- support for stopping actors?
 		- create ActorThread.stop()
-		- create ActorThread.isAlive()
+		- create ActorThread.isAlive(), or is it unnecessary? or useful for testing?
 		- SingleThreadedActors: unifying actors and the Executor
 			- implement commands as actors which are stopped immediately after executing them?
 			- have only one actor thread? might not be possible when supporting stopping?
