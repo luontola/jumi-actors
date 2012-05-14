@@ -7,6 +7,7 @@ package fi.jumi.actors.logging;
 import org.junit.Test;
 
 import java.io.*;
+import java.util.*;
 import java.util.concurrent.*;
 
 import static fi.jumi.actors.logging.Matchers.containsLineWithWords;
@@ -122,7 +123,20 @@ public class PrintStreamMessageLoggerTest {
         assertThat(output).matches("(?s).* 0x[0-9a-f]{8} .*");
     }
 
+    @Test
+    public void timestamps_are_shown_as_seconds_since_start_with_microsecond_precision() {
+        final Queue<Long> fakeNanoTime = new LinkedList<Long>();
+        fakeNanoTime.add(1000000L);
+        fakeNanoTime.add(1234567L);
+        PrintStreamMessageLogger logger = new PrintStreamMessageLogger(new PrintStream(output)) {
+            @Override
+            protected long nanoTime() {
+                return fakeNanoTime.poll();
+            }
+        };
 
-    // TODO: timestamps
-    // TODO: by default use System.out
+        logger.onMessageSent("message1");
+
+        assertThat(output.toString(), containsString("[   0.000235]"));
+    }
 }

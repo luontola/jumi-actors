@@ -6,6 +6,7 @@ package fi.jumi.actors.logging;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.PrintStream;
+import java.util.Locale;
 
 @ThreadSafe
 public class PrintStreamMessageLogger implements MessageLogger {
@@ -15,9 +16,11 @@ public class PrintStreamMessageLogger implements MessageLogger {
 
     private final PrintStream out;
     private final ThreadLocal<Object> currentActor = new ThreadLocal<Object>();
+    private final long startTime;
 
     public PrintStreamMessageLogger(PrintStream out) {
         this.out = out;
+        this.startTime = nanoTime();
     }
 
     @Override
@@ -34,8 +37,17 @@ public class PrintStreamMessageLogger implements MessageLogger {
     private void logMessage(String messageDirection, Object message) {
         String threadName = Thread.currentThread().getName();
         int messageId = System.identityHashCode(message);
-        out.println(String.format("[%s] %s %s 0x%08x %s",
-                threadName, currentActorFormatted(), messageDirection, messageId, message));
+        out.println(String.format(Locale.ENGLISH, "[%11.6f] [%s] %s %s 0x%08x %s",
+                secondsSinceStart(), threadName, currentActorFormatted(), messageDirection, messageId, message));
+    }
+
+    private double secondsSinceStart() {
+        long nanosSinceStart = nanoTime() - startTime;
+        return nanosSinceStart / 1000000000.0;
+    }
+
+    protected long nanoTime() { // protected to allow overriding in tests
+        return System.nanoTime();
     }
 
     private String currentActorFormatted() {
