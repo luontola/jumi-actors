@@ -54,8 +54,15 @@ public class DynamicEvent<T> implements Event<T>, Serializable {
 
     @Override
     public String toString() {
-        String args = Arrays.toString(this.args);
+        String args = Arrays.toString(nonNull(this.args));
         args = args.substring(1, args.length() - 1);
         return method.getDeclaringClass().getSimpleName() + "." + method.getName() + "(" + args + ")";
+    }
+
+    private static Object[] nonNull(Object[] args) {
+        if (args == null) {
+            return new Object[0];
+        }
+        return args;
     }
 }

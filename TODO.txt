@@ -99,9 +99,9 @@ TODO NEXT:
 	!! - pluggable logger
 		OK - create interface MessageLogger, class NullMessageLogger
 		OK - replace logging in MessageQueue with it
-		!! - create class SimpleMessageLogger to core tests, use in SuiteRunnerIntegrationHelper
-		- write a test for the information shown in Actors.MessageToActor.toString()
-		- make sure that toString of reflective and generated messages are the same
+		OK - create class SimpleMessageLogger to core tests, use in SuiteRunnerIntegrationHelper
+		OK - write a test for the information shown in Actors.MessageToActor.toString()
+		OK - make sure that toString of reflective and generated messages are the same
 		- add logging to Executors, to see which actor started which worker thread?
 	- support for stopping actors?
 		- create ActorThread.stop()

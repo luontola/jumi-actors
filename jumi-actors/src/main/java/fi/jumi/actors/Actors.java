@@ -119,11 +119,5 @@ public abstract class Actors {
                 logger.onProcessingFinished();
             }
         }
-
-        @Override
-        public String toString() {
-            // TODO: write a test
-            return "MessageToActor@" + hashCode() + "(" + rawActor.getClass().getName() + ", " + message + ")";
-        }
     }
 }

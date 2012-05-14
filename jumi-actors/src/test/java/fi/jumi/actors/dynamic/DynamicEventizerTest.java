@@ -63,6 +63,9 @@ public class DynamicEventizerTest {
 
         frontend.multipleArguments(1, 2);
         assertThat(queue.poll().toString(), is("DummyListener.multipleArguments(1, 2)"));
+
+        frontend.zeroArguments();
+        assertThat(queue.poll().toString(), is("DummyListener.zeroArguments()"));
     }
 
     @Test
@@ -104,6 +107,8 @@ public class DynamicEventizerTest {
         void onSomething(String parameter);
 
         void multipleArguments(int one, int two);
+
+        void zeroArguments();
     }
 
     private interface ListenerWithNonVoidMethods {

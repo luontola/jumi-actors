@@ -5,6 +5,7 @@
 package fi.jumi.actors.maven;
 
 import fi.jumi.actors.Event;
+import fi.jumi.actors.dynamic.DynamicEventizer;
 import fi.jumi.actors.maven.codegen.GeneratedClass;
 import fi.jumi.actors.maven.reference.DummyListenerEventizer;
 import fi.jumi.actors.mq.*;
@@ -78,6 +79,22 @@ public class EventStubGeneratorTest {
 
         assertThat(spy.poll().toString(), is("DummyListener.onSomething(foo, bar)"));
         assertThat(spy.poll().toString(), is("DummyListener.onOther()"));
+    }
+
+    @Test
+    public void the_generated_events_and_DynamicEvent_have_the_same_toString_format() {
+        MessageQueue<Event<DummyListener>> spy = new MessageQueue<Event<DummyListener>>();
+        DummyListener generated = new DummyListenerEventizer().newFrontend(spy);
+        DummyListener dynamic = new DynamicEventizer<DummyListener>(DummyListener.class).newFrontend(spy);
+
+        generated.onSomething("foo", "bar");
+        dynamic.onSomething("foo", "bar");
+
+        generated.onOther();
+        dynamic.onOther();
+
+        assertThat(spy.poll().toString(), is(spy.poll().toString()));
+        assertThat(spy.poll().toString(), is(spy.poll().toString()));
     }
 
     @Test
