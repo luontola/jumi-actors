@@ -102,7 +102,7 @@ TODO NEXT:
 		OK - create class SimpleMessageLogger to core tests, use in SuiteRunnerIntegrationHelper
 		OK - write a test for the information shown in Actors.MessageToActor.toString()
 		OK - make sure that toString of reflective and generated messages are the same
-		- add logging to Executors, to see which actor started which worker thread?
+		!! - add logging to Executors, to see which actor started which worker thread?
 	- support for stopping actors?
 		- create ActorThread.stop()
 		- create ActorThread.isAlive(), or is it unnecessary? or useful for testing?
@@ -161,7 +161,8 @@ TODO NEXT:
 			suite
 			classes
 			runs
-	- try using FEST asserts in BuildTest, it should help with generics
+	FAIL - try using FEST asserts in BuildTest, it should help with generics
+	- BuildTest: try creating a non-generic assertThat method
 	- kill daemon before removing temp files: fi.jumi.test.AppRunner#tearDown
 	- SuiteRunner has a cyclic dependency with TestRunCoordinator
 	- put end-to-end tests in their own package (test.fi.jumi?), separate them from unit tests
@@ -182,6 +183,7 @@ TODO NEXT:
 		http://sonatype.github.com/jarjar-maven-plugin/
 		http://pyx4me.com/pyx4me-maven-plugins/proguard-maven-plugin/
 	- seems that Eventizer.newBackend is not used; keep it for symmetry or remove it?
+	- consider logging with http://code.google.com/p/minlog/
 
 - improving TextUI
 	OK - spacing between test runs (empty line or horizontal bar?)
@@ -215,6 +217,33 @@ TODO NEXT:
 - refactor jumi-actors-maven-plugin
 	- DummyListenerToEvent: rename sender to target
 	- EventToDummyListener: rename listener to target
+	- switch to using Eclipse JDT DOM for code generation, create an internal DSL as necessary (factory methods to avoid setter hell)
+		http://blog.cedarsoft.com/2010/08/code-generation-done-right/
+		http://www.eclipse.org/jdt/core/index.php
+		http://help.eclipse.org/indigo/topic/org.eclipse.jdt.doc.isv/reference/api/org/eclipse/jdt/core/dom/package-summary.html
+		- walking skeleton
+			1. take the old generator's output
+			2. parse it to AST
+				example: http://help.eclipse.org/indigo/topic/org.eclipse.jdt.doc.isv/reference/api/org/eclipse/jdt/core/dom/AST.html
+				http://help.eclipse.org/indigo/topic/org.eclipse.jdt.doc.isv/reference/api/org/eclipse/jdt/core/dom/ASTParser.html
+			3. convert AST to string
+				example: http://help.eclipse.org/indigo/topic/org.eclipse.jdt.doc.isv/reference/api/org/eclipse/jdt/core/dom/AST.html
+				http://help.eclipse.org/indigo/topic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/jface/text/Document.html
+				http://help.eclipse.org/indigo/topic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/jface/text/IDocument.html#get()
+			4. format using Eclipse Formatter
+				http://help.eclipse.org/indigo/topic/org.eclipse.jdt.doc.isv/reference/api/org/eclipse/jdt/core/ToolFactory.html#createCodeFormatter
+				http://help.eclipse.org/indigo/topic/org.eclipse.jdt.doc.isv/reference/api/org/eclipse/jdt/core/formatter/package-summary.html
+				http://www.eclipse.org/jdt/core/codecoverage/B01/org.eclipse.jdt.core/org.eclipse.jdt.core.formatter/CodeFormatterApplication.java.html#L204
+			5. use the Organize Imports operation, unless formatter already adds imports
+				? http://help.eclipse.org/indigo/topic/org.eclipse.jdt.doc.isv/reference/api/org/eclipse/jdt/ui/actions/OrganizeImportsAction.html
+				? http://plugins.intellij.net/plugin/?idea&id=6546
+				http://stackoverflow.com/questions/2644440/simplifying-fully-qualified-names-in-eclipse
+				- might need to transform the AST ourselves?
+		- migrate to generating code with JDT AST
+			- generate code with fully qualified names, rely on the formatter for imports
+			- migrate to AST one method at a time, if possible
+				- try using AST.newMethodDeclaration or AST.newBlock instead of AST.newCompilationUnit
+			- delete the old code generator
 	- @Generated annotation, example: @Generated(value = "fi.jumi.codegenerator.EventStubGenerator", comments = "Generated based on fi.jumi.codegenerator.DummyListener", date = "2000-01-01")
 	- @Override annotation to all methods
 	- annotation to suppress unchecked warnings due to type erasure?
