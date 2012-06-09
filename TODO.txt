@@ -113,6 +113,7 @@ TODO NEXT:
 		- use Thread.currentThread().interrupt() in fi.jumi.actors.mq.MessageQueue#send
 	- handle exceptions from actors (in general, not just in single-threaded actors)
 		- use UncaughtExceptionCollector in ActorsContract
+	- DynamicEventizer should not forward calls to equals/hashCode/toString (i.e. any methods not declared on the interface)
 	- write user documentation for jumi-actors
 
 - end-to-end tests: running multiple test classes
@@ -140,9 +141,9 @@ TODO NEXT:
 	- consider a command for stopping actors (Thread.interrupt(), DeathPill)
 
 - deployment pipeline
-	- install Go
-	- configure CI build
-	- generate unique version number for each build
+	OK - install Go
+	OK - configure CI build
+	OK - generate unique version number for each build
 		http://www.thoughtworks-studios.com/docs/go/current/help/dev_use_current_revision_in_build.html
 		- pass GO_PIPELINE_COUNTER to update-to-release-version.rb
 	- include Git revision in pom.properties
