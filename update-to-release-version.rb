@@ -28,7 +28,7 @@ def update_version(pom, old_version, new_version)
   puts
 end
 
-BUILD_NUMBER = Integer(ENV['BUILD_NUMBER'])
+BUILD_NUMBER = Integer(ENV['GO_PIPELINE_COUNTER'])
 
 root_pom = REXML::Document.new(File.new("pom.xml"))
 old_version = root_pom.elements["/project/version"].text
