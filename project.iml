@@ -3,7 +3,7 @@
   <component name="FacetManager">
     <facet type="JRUBY" name="JRuby">
       <configuration>
-        <JRUBY_FACET_CONFIG_ID NAME="JRUBY_SDK_NAME" VALUE="jruby-1.6.5.1-p136" />
+        <JRUBY_FACET_CONFIG_ID NAME="JRUBY_SDK_NAME" VALUE="jruby-1.6.7.2-p312" />
         <LOAD_PATH number="0" />
         <I18N_FOLDERS number="0" />
       </configuration>
@@ -17,7 +17,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" scope="PROVIDED" name="jruby-1.6.5.1-p136 facet library" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="jruby-1.6.7.2-p312 facet library" level="application" />
   </component>
 </module>
 

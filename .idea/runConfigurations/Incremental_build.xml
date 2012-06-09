@@ -8,6 +8,7 @@
           <option name="localRepository" value="" />
           <option name="mavenHome" value="" />
           <option name="nonRecursive" value="false" />
+          <option name="outputLevel" value="INFO" />
           <option name="pluginUpdatePolicy" value="DO_NOT_UPDATE" />
           <option name="printErrorStackTraces" value="true" />
           <option name="snapshotUpdatePolicy" value="ALWAYS_UPDATE" />
