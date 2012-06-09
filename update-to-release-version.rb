@@ -28,8 +28,7 @@ def update_version(pom, old_version, new_version)
   puts
 end
 
-# TODO: get from command line
-BUILD_NUMBER = 42
+BUILD_NUMBER = Integer(ENV['BUILD_NUMBER'])
 
 root_pom = REXML::Document.new(File.new("pom.xml"))
 old_version = root_pom.elements["/project/version"].text
