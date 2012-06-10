@@ -157,7 +157,20 @@ TODO NEXT:
 			http://www.thoughtworks-studios.com/docs/go/current/help/dev_use_current_revision_in_build.html
 			- in build tests check that it's filtered when version is not snapshot (skip test when built locally, but run it in CI)
 	- automatic deployment to staging
-	- approved deployment to Maven Central
+		- activate sonatype-oss-release profile when building
+		- configure GPG signing
+			https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide
+			https://docs.sonatype.org/display/Repository/How+To+Generate+PGP+Signatures+With+Maven
+			http://maven.apache.org/plugins/maven-gpg-plugin/
+		- automate the staging process
+			http://www.sonatype.com/books/nexus-book/reference/staging-sect-managing-plugin.html
+	- push-button releasing the staging repository
+	- publish the first release (after jumi-actors is in a good shape)
+	- activate sync to Maven Central
+		https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide
+		https://issues.sonatype.org/browse/OSSRH-3707
+	- advertise the release
+	- write a blog post: Continuous Delivery with Maven, Go and Nexus into Maven Central
 
 - misc refactoring
 	- unit tests for fi.jumi.core.results
