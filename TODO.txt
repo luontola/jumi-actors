@@ -138,6 +138,12 @@ TODO NEXT:
 			- might break in future Java versions, if more methods are added to PrintStream, so beware of it
 			! - or just use a CGLIB proxy (net.sf.cglib.proxy.MethodInterceptor which synchronizes and delegates to real PrintStream, except net.sf.cglib.proxy.NoOp for Object's methods)
 
+- proper daemon shutdown
+	- expose the Process instance from launcher, use it to write e2e-tests
+	- send shutdown command from launcher after receiving the last suite event
+	- exit after a timeout if no client connects to daemon or the client disconnects
+	- remove the hack in fi.jumi.daemon.Main#exitWhenNotAnymoreInUse
+
 - end-to-end tests: failures outside tests (in drivers and core)
 	- actor tests print dummy exceptions; solve by having a custom pluggable exception handler which doesn't print stack traces of a DummyException class
 	- consider a supervisor pattern for actors (like in Akka)
