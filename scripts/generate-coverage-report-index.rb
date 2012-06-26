@@ -16,7 +16,7 @@ end
 
 OUTPUT_FILE = ARGV.shift or raise 'Missing argument: OUTPUT_FILE'
 
-module_list_items = Dir.glob('*/target/pit-reports/*/index.html').
+module_list_items = Dir.glob('*/target/pit-reports/*/index.html').sort.
         map { |module_index| module_list_item(module_index) }.
         join("\n")
 
