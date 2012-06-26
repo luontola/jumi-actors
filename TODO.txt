@@ -103,8 +103,8 @@ TODO NEXT:
 		OK - write a test for the information shown in Actors.MessageToActor.toString()
 		OK - make sure that toString of reflective and generated messages are the same
 		OK - add logging to Executors, to see which actor started which worker thread?
-	!! - improve log readability
-		!! - toString for fi.jumi.actors.workers.WorkerCountingExecutor.Worker
+	OK - improve log readability
+		OK - toString for fi.jumi.actors.workers.WorkerCountingExecutor.Worker
 	- support for stopping actors?
 		- create ActorThread.stop()
 		- create ActorThread.isAlive(), or is it unnecessary? or useful for testing?
@@ -179,6 +179,7 @@ TODO NEXT:
 	- unit tests for fi.jumi.core.results
 	- combine DuplicateOnTestFoundEventFilter and SuiteListenerAdapter, rename to SuiteEventNormalizer/RunEventNormalizer
 	- logging actor messages could benefit from seeing that from which actor a messages was sent; a trace of intermediate actors
+	- logging WorkerCounter's onFinished events could benefit from using a custom interface; now "Runnable.run()" shows up in logs and requires interpreting
 	- refactor SimpleUnit
 		- simplity the tests by creating helper which runs using SuiteRunner, collects the results and provides assert methods
 		- move to its own module, simpleunit

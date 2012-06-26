@@ -27,19 +27,24 @@ public class WorkerCountingExecutor implements Executor {
 
     @ThreadSafe
     private class Worker implements Runnable {
-        private final Runnable command;
+        private final Runnable realCommand;
 
-        public Worker(Runnable command) {
-            this.command = command;
+        public Worker(Runnable realCommand) {
+            this.realCommand = realCommand;
         }
 
         @Override
         public void run() {
             try {
-                command.run();
+                realCommand.run();
             } finally {
                 workerCounter.fireWorkerFinished();
             }
+        }
+
+        @Override
+        public String toString() {
+            return realCommand.toString();
         }
     }
 }

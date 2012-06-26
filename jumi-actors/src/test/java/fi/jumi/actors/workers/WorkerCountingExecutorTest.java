@@ -9,6 +9,10 @@ import org.junit.*;
 
 import java.util.concurrent.*;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.mockito.Mockito.mock;
+
 public class WorkerCountingExecutorTest {
 
     private static final long TIMEOUT = 1000;
@@ -110,6 +114,23 @@ public class WorkerCountingExecutorTest {
 
         events.await(2, TIMEOUT);
         events.assertContains("thrower", "callback");
+    }
+
+    @Test
+    public void toString_of_commands_is_good_for_logging() {
+        final StringBuilder logger = new StringBuilder();
+        class LoggingExecutor implements Executor {
+            @Override
+            public void execute(Runnable command) {
+                logger.append(command.toString());
+            }
+        }
+        Executor executor = new WorkerCountingExecutor(new LoggingExecutor(), workerCounter);
+        Runnable originalCommand = mock(Runnable.class, "<the command's original toString>");
+
+        executor.execute(originalCommand);
+
+        assertThat(logger.toString(), containsString(originalCommand.toString()));
     }
 
 
