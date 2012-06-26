@@ -5,6 +5,7 @@
 package fi.jumi.actors.logging;
 
 import javax.annotation.concurrent.Immutable;
+import java.util.concurrent.Executor;
 
 @Immutable
 public class SilentMessageLogger implements MessageLogger {
@@ -19,5 +20,10 @@ public class SilentMessageLogger implements MessageLogger {
 
     @Override
     public void onProcessingFinished() {
+    }
+
+    @Override
+    public Executor getLoggedExecutor(Executor realExecutor) {
+        return realExecutor;
     }
 }

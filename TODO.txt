@@ -96,13 +96,15 @@ TODO NEXT:
 			OK - remove shutdown method (use ExecutorService.shutdownNow/awaitTermination directly in tests)
 		OK - create PrefixedThreadFactory, e.g. "foo-" -> "foo-1", "foo-2" etc.
 		OK - use it in Main, prefixes: "jumi-actors-", "jumi-tests-"
-	!! - pluggable logger
+	OK - pluggable logger
 		OK - create interface MessageLogger, class NullMessageLogger
 		OK - replace logging in MessageQueue with it
 		OK - create class SimpleMessageLogger to core tests, use in SuiteRunnerIntegrationHelper
 		OK - write a test for the information shown in Actors.MessageToActor.toString()
 		OK - make sure that toString of reflective and generated messages are the same
-		!! - add logging to Executors, to see which actor started which worker thread?
+		OK - add logging to Executors, to see which actor started which worker thread?
+	!! - improve log readability
+		!! - toString for fi.jumi.actors.workers.MonitoredExecutor.Worker
 	- support for stopping actors?
 		- create ActorThread.stop()
 		- create ActorThread.isAlive(), or is it unnecessary? or useful for testing?
@@ -114,6 +116,7 @@ TODO NEXT:
 	- handle exceptions from actors (in general, not just in single-threaded actors)
 		- use UncaughtExceptionCollector in ActorsContract
 	- DynamicEventizer should not forward calls to equals/hashCode/toString (i.e. any methods not declared on the interface)
+	- publish a build (only jumi-actors, jumi-actors-maven-plugin, parent?)
 	- write user documentation for jumi-actors
 
 - end-to-end tests: running multiple test classes

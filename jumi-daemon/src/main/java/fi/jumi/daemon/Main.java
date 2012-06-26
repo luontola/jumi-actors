@@ -27,9 +27,12 @@ public class Main {
 
         int launcherPort = Integer.parseInt(args[0]);
 
-        Executor actorsThreadPool = Executors.newCachedThreadPool(new PrefixedThreadFactory("jumi-actors-"));
+        MessageLogger messageLogger = createMessageLogger();
+        Executor actorsThreadPool = // messages already logged by the Actors implementation
+                Executors.newCachedThreadPool(new PrefixedThreadFactory("jumi-actors-"));
         // TODO: do not create unlimited numbers of threads; make it by default CPUs+1 or something
-        Executor testsThreadPool = Executors.newCachedThreadPool(new PrefixedThreadFactory("jumi-tests-"));
+        Executor testsThreadPool = messageLogger.getLoggedExecutor(
+                Executors.newCachedThreadPool(new PrefixedThreadFactory("jumi-tests-")));
 
         MultiThreadedActors actors = new MultiThreadedActors(
                 actorsThreadPool,
@@ -41,7 +44,7 @@ public class Main {
                         new CommandListenerEventizer(),
                         new TestClassListenerEventizer()
                 ),
-                createMessageLogger()
+                messageLogger
         );
 
         ActorThread actorThread = actors.startActorThread();

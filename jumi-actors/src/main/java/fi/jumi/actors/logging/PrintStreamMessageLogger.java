@@ -7,6 +7,7 @@ package fi.jumi.actors.logging;
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.PrintStream;
 import java.util.Locale;
+import java.util.concurrent.Executor;
 
 @ThreadSafe
 public class PrintStreamMessageLogger implements MessageLogger {
@@ -61,5 +62,47 @@ public class PrintStreamMessageLogger implements MessageLogger {
     @Override
     public void onProcessingFinished() {
         currentActor.remove();
+    }
+
+    @Override
+    public Executor getLoggedExecutor(Executor realExecutor) {
+        return new LoggedExecutor(realExecutor);
+    }
+
+
+    @ThreadSafe
+    private class LoggedExecutor implements Executor {
+        private final Executor realExecutor;
+
+        public LoggedExecutor(Executor realExecutor) {
+            this.realExecutor = realExecutor;
+        }
+
+        @Override
+        public void execute(Runnable realCommand) {
+            onMessageSent(realCommand);
+            realExecutor.execute(new LoggedRunnable(realExecutor, realCommand));
+        }
+    }
+
+    @ThreadSafe
+    private class LoggedRunnable implements Runnable {
+        private final Executor realExecutor;
+        private final Runnable realCommand;
+
+        public LoggedRunnable(Executor realExecutor, Runnable realCommand) {
+            this.realExecutor = realExecutor;
+            this.realCommand = realCommand;
+        }
+
+        @Override
+        public void run() {
+            onProcessingStarted(realExecutor, realCommand);
+            try {
+                realCommand.run();
+            } finally {
+                onProcessingFinished();
+            }
+        }
     }
 }

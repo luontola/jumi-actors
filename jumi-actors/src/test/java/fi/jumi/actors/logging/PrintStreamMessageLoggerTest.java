@@ -14,6 +14,7 @@ import static fi.jumi.actors.logging.Matchers.containsLineWithWords;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.mockito.Mockito.*;
 
 public class PrintStreamMessageLoggerTest {
 
@@ -21,6 +22,9 @@ public class PrintStreamMessageLoggerTest {
 
     private final ByteArrayOutputStream output = new ByteArrayOutputStream();
     private final PrintStreamMessageLogger logger = new PrintStreamMessageLogger(new PrintStream(output));
+
+
+    // logging actor messages
 
     @Test
     public void processing_messages_logs_both_the_actor_and_the_message() {
@@ -44,6 +48,49 @@ public class PrintStreamMessageLoggerTest {
 
         assertThat(output.toString(), containsLineWithWords("actor1 ->", "message1"));
     }
+
+
+    // logging executor commands
+
+    @Test
+    public void logs_it_when_an_actors_sends_a_commands_to_an_Executor() {
+        Executor realExecutor = mock(Executor.class);
+        Executor loggedExecutor = logger.getLoggedExecutor(realExecutor);
+        logger.onProcessingStarted("actor1", "unimportant message");
+        Runnable command = mock(Runnable.class, "DummyCommand");
+
+        loggedExecutor.execute(command);
+
+        assertThat(output.toString(), containsLineWithWords("actor1 ->", command.toString()));
+    }
+
+    @Test
+    public void logs_it_when_the_Executor_starts_executing_the_command() {
+        FakeExecutor realExecutor = new FakeExecutor();
+        Executor loggedExecutor = logger.getLoggedExecutor(realExecutor);
+        logger.onProcessingStarted("actor1", "unimportant message");
+        Runnable command = mock(Runnable.class, "DummyCommand");
+
+        loggedExecutor.execute(command);
+        realExecutor.processCommands();
+
+        assertThat(output.toString(), containsLineWithWords("FakeExecutor", "<-", command.toString()));
+    }
+
+    @Test
+    public void the_logged_executor_executes_the_command() {
+        FakeExecutor realExecutor = new FakeExecutor();
+        Executor loggedExecutor = logger.getLoggedExecutor(realExecutor);
+        Runnable command = mock(Runnable.class, "DummyCommand");
+
+        loggedExecutor.execute(command);
+        realExecutor.processCommands();
+
+        verify(command).run();
+    }
+
+
+    // thread context management
 
     @Test
     public void the_logged_actor_when_sending_messages_is_a_per_thread_property() throws InterruptedException {
@@ -74,28 +121,11 @@ public class PrintStreamMessageLoggerTest {
         assertThat(output.toString(), containsLineWithWords("actor2 ->", "message2"));
     }
 
-    private static void executeConcurrently(Runnable... tasks) throws InterruptedException {
-        Thread[] threads = new Thread[tasks.length];
-        for (int i = 0; i < tasks.length; i++) {
-            Thread thread = new Thread(tasks[i]);
-            thread.start();
-            threads[i] = thread;
-        }
-        for (Thread thread : threads) {
-            thread.join(TIMEOUT);
-        }
-    }
-
-    private static int sync(CyclicBarrier barrier) {
-        try {
-            return barrier.await(TIMEOUT, TimeUnit.MILLISECONDS);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
+    /**
+     * Makes sure that {@link MessageLogger#onProcessingFinished()} is called.
+     */
     @Test
-    public void the_actor_of_the_current_thread_is_cleared_after_processing_the_message_is_finished() {
+    public void the_thread_context_is_cleared_after_the_message_has_been_processed() {
         logger.onProcessingStarted("actor1", "message1");
         logger.onProcessingFinished();
 
@@ -103,6 +133,25 @@ public class PrintStreamMessageLoggerTest {
 
         assertThat(output.toString(), containsLineWithWords("<external> ->", "message2"));
     }
+
+    /**
+     * Makes sure that {@link MessageLogger#onProcessingFinished()} is called.
+     */
+    @Test
+    public void the_thread_context_is_cleared_after_the_command_has_been_executed() {
+        FakeExecutor realExecutor = new FakeExecutor();
+        Executor loggedExecutor = logger.getLoggedExecutor(realExecutor);
+        Runnable command = mock(Runnable.class, "DummyCommand");
+        loggedExecutor.execute(command);
+        realExecutor.processCommands(); // executes in the current thread
+
+        logger.onMessageSent("message2");
+
+        assertThat(output.toString(), containsLineWithWords("<external> ->", "message2"));
+    }
+
+
+    // additional debug information
 
     @Test
     public void the_current_thread_is_logged() {
@@ -138,5 +187,45 @@ public class PrintStreamMessageLoggerTest {
         logger.onMessageSent("message1");
 
         assertThat(output.toString(), containsString("[   0.000235]"));
+    }
+
+
+    // helpers
+
+    private static void executeConcurrently(Runnable... tasks) throws InterruptedException {
+        Thread[] threads = new Thread[tasks.length];
+        for (int i = 0; i < tasks.length; i++) {
+            Thread thread = new Thread(tasks[i]);
+            thread.start();
+            threads[i] = thread;
+        }
+        for (Thread thread : threads) {
+            thread.join(TIMEOUT);
+        }
+    }
+
+    private static int sync(CyclicBarrier barrier) {
+        try {
+            return barrier.await(TIMEOUT, TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static class FakeExecutor implements Executor {
+
+        private final Queue<Runnable> commands = new LinkedList<Runnable>();
+
+        @Override
+        public void execute(Runnable command) {
+            commands.add(command);
+        }
+
+        public void processCommands() {
+            Runnable command;
+            while ((command = commands.poll()) != null) {
+                command.run();
+            }
+        }
     }
 }
