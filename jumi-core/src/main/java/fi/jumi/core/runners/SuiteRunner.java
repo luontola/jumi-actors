@@ -43,7 +43,7 @@ public class SuiteRunner implements Startable, TestClassFinderListener {
     public void start() {
         suiteListener.onSuiteStarted();
 
-        MonitoredExecutor executor = createChildRunnerExecutor();
+        WorkerCountingExecutor executor = createChildRunnerExecutor();
         executor.execute(new TestClassFinderRunner(
                 testClassFinder,
                 actorThread.bindActor(TestClassFinderListener.class, this)
@@ -61,11 +61,11 @@ public class SuiteRunner implements Startable, TestClassFinderListener {
                 runIdSequence
         );
 
-        MonitoredExecutor executor = createChildRunnerExecutor();
+        WorkerCountingExecutor executor = createChildRunnerExecutor();
         executor.execute(new DriverRunner(driver, testClass, suiteNotifier, executor));
     }
 
-    private MonitoredExecutor createChildRunnerExecutor() {
+    private WorkerCountingExecutor createChildRunnerExecutor() {
         childRunners++;
 
         @NotThreadSafe
@@ -79,6 +79,6 @@ public class SuiteRunner implements Startable, TestClassFinderListener {
             }
         }
         ActorRef<Runnable> callback = actorThread.bindActor(Runnable.class, new OnRunnerFinished());
-        return new MonitoredExecutor(testExecutor, new WorkerCounter(callback));
+        return new WorkerCountingExecutor(testExecutor, new WorkerCounter(callback));
     }
 }

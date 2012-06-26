@@ -8,12 +8,12 @@ import javax.annotation.concurrent.ThreadSafe;
 import java.util.concurrent.Executor;
 
 @ThreadSafe
-public class MonitoredExecutor implements Executor {
+public class WorkerCountingExecutor implements Executor {
 
     private final Executor realExecutor;
     private final WorkerCounter workerCounter;
 
-    public MonitoredExecutor(Executor realExecutor, WorkerCounter workerCounter) {
+    public WorkerCountingExecutor(Executor realExecutor, WorkerCounter workerCounter) {
         this.realExecutor = realExecutor;
         this.workerCounter = workerCounter;
     }

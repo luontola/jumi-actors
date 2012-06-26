@@ -19,7 +19,7 @@ public class WorkerCounter {
         this.onFinished = onFinished;
     }
 
-    // The following methods should be called only from the MonitoredExecutor class
+    // The following methods should be called only from the WorkerCountingExecutor class
 
     void fireWorkerStarted() {
         activeWorkers.incrementAndGet();

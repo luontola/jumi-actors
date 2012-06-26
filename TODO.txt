@@ -104,7 +104,7 @@ TODO NEXT:
 		OK - make sure that toString of reflective and generated messages are the same
 		OK - add logging to Executors, to see which actor started which worker thread?
 	!! - improve log readability
-		!! - toString for fi.jumi.actors.workers.MonitoredExecutor.Worker
+		!! - toString for fi.jumi.actors.workers.WorkerCountingExecutor.Worker
 	- support for stopping actors?
 		- create ActorThread.stop()
 		- create ActorThread.isAlive(), or is it unnecessary? or useful for testing?

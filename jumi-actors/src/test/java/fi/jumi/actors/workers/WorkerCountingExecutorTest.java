@@ -9,7 +9,7 @@ import org.junit.*;
 
 import java.util.concurrent.*;
 
-public class MonitoredExecutorTest {
+public class WorkerCountingExecutorTest {
 
     private static final long TIMEOUT = 1000;
 
@@ -47,7 +47,7 @@ public class MonitoredExecutorTest {
 
     @Test(timeout = TIMEOUT)
     public void the_callback_is_fired_after_all_commands_are_finished() throws InterruptedException {
-        Executor executor = new MonitoredExecutor(realExecutor, workerCounter);
+        Executor executor = new WorkerCountingExecutor(realExecutor, workerCounter);
 
         executor.execute(new Command("command"));
 
@@ -57,7 +57,7 @@ public class MonitoredExecutorTest {
 
     @Test(timeout = TIMEOUT)
     public void works_for_concurrent_commands() throws InterruptedException {
-        Executor executor = new MonitoredExecutor(realExecutor, workerCounter);
+        Executor executor = new WorkerCountingExecutor(realExecutor, workerCounter);
 
         CyclicBarrier barrier = new CyclicBarrier(2);
         executor.execute(new SyncedCommand1(barrier));
@@ -69,7 +69,7 @@ public class MonitoredExecutorTest {
 
     @Test(timeout = TIMEOUT)
     public void works_for_commands_which_launch_other_commands() throws InterruptedException {
-        final Executor executor = new MonitoredExecutor(realExecutor, workerCounter);
+        final Executor executor = new WorkerCountingExecutor(realExecutor, workerCounter);
 
         executor.execute(new Runnable() {
             @Override
@@ -85,8 +85,8 @@ public class MonitoredExecutorTest {
 
     @Test(timeout = TIMEOUT)
     public void multiple_executors_can_share_the_same_callback() throws InterruptedException {
-        Executor executor1 = new MonitoredExecutor(realExecutor, workerCounter);
-        Executor executor2 = new MonitoredExecutor(realExecutor, workerCounter);
+        Executor executor1 = new WorkerCountingExecutor(realExecutor, workerCounter);
+        Executor executor2 = new WorkerCountingExecutor(realExecutor, workerCounter);
 
         CyclicBarrier barrier = new CyclicBarrier(2);
         executor1.execute(new SyncedCommand1(barrier));
@@ -98,7 +98,7 @@ public class MonitoredExecutorTest {
 
     @Test(timeout = TIMEOUT)
     public void the_callback_is_called_even_when_commands_throw_exceptions() throws InterruptedException {
-        Executor executor = new MonitoredExecutor(realExecutor, workerCounter);
+        Executor executor = new WorkerCountingExecutor(realExecutor, workerCounter);
 
         executor.execute(new Runnable() {
             @Override
