@@ -22,8 +22,6 @@ import java.net.InetSocketAddress;
 import java.util.*;
 import java.util.concurrent.Executors;
 
-// TODO: annotate all classes
-
 @ThreadSafe
 public class JumiLauncher {
     private File jumiHome; // TODO: default to "~/.jumi"
