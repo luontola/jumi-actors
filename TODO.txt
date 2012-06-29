@@ -105,14 +105,19 @@ TODO NEXT:
 		OK - add logging to Executors, to see which actor started which worker thread?
 	OK - improve log readability
 		OK - toString for fi.jumi.actors.workers.WorkerCountingExecutor.Worker
-	- support for stopping actors?
-		- create ActorThread.stop()
-		- create ActorThread.isAlive(), or is it unnecessary? or useful for testing?
+	!! - SingleThreadedActors.getExecutor() should use MessageLogger
+	- support for stopping actors
+		- interrupting stops after current message
+		- ActorThread.stop() stops after processing all previous messages
+		SKIP - create ActorThread.isAlive(), or is it unnecessary? or useful for testing?
 		- SingleThreadedActors: unifying actors and the Executor
 			- implement commands as actors which are stopped immediately after executing them?
 			- have only one actor thread? might not be possible when supporting stopping?
 		- consider removing fi.jumi.actors.Actors#currentActorThread because now resources can be released
 		- use Thread.currentThread().interrupt() in fi.jumi.actors.mq.MessageQueue#send
+			- test: keeps interrupt status of the current thread
+			- test: enqueues even when interrupted
+			- consider using the add() method
 	- handle exceptions from actors (in general, not just in single-threaded actors)
 		- use UncaughtExceptionCollector in ActorsContract
 	- DynamicEventizer should not forward calls to equals/hashCode/toString (i.e. any methods not declared on the interface)
@@ -165,15 +170,17 @@ TODO NEXT:
 		(2) or use ${env.GO_REVISION}
 			http://www.thoughtworks-studios.com/docs/go/current/help/dev_use_current_revision_in_build.html
 			- in build tests check that it's filtered when version is not snapshot (skip test when built locally, but run it in CI)
-	- automatic deployment to staging
+	- push-button releasing the staging repository
+		OK - upload script: upload-to-maven-central.rb
+		- begin using the OSSRH repository
 		- activate sonatype-oss-release profile when building
+			- scripts for all build steps, instead of keeping them in Go?
 		- configure GPG signing
 			https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide
 			https://docs.sonatype.org/display/Repository/How+To+Generate+PGP+Signatures+With+Maven
 			http://maven.apache.org/plugins/maven-gpg-plugin/
-		- automate the staging process
+		- add commands for closing and promoting the OSSRH repository
 			http://www.sonatype.com/books/nexus-book/reference/staging-sect-managing-plugin.html
-	- push-button releasing the staging repository
 	- publish the first release (after jumi-actors is in a good shape)
 	- activate sync to Maven Central
 		https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide
