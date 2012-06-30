@@ -199,7 +199,7 @@ TODO NEXT:
 		OK - output of "set -x" goes to stderr and gets interleaved with stdout
 		OK - check in the beginning of each .sh that all required env vars are present
 			http://stackoverflow.com/questions/307503/whats-the-best-way-to-check-that-environment-variables-are-set-in-unix-shellscr
-		!! - create GPG keys for Go, parameterize with GPG_KEYNAME
+		OK - create GPG keys for Go, parameterize with GPG_KEYNAME
 			http://maven.apache.org/plugins/maven-gpg-plugin/sign-mojo.html#keyname
 			http://www.spywarewarrior.com/uiuc/gpg/gpg-com-0.htm
 		- begin using the OSSRH repository
