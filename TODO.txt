@@ -155,6 +155,24 @@ TODO NEXT:
 	- consider a command for stopping actors (Thread.interrupt(), DeathPill)
 
 - deployment pipeline
+	jumi:
+		build
+			build-release
+		analyze
+			coverage-report
+	jumi-integration:
+		test
+			integration-test
+	jumi-publish:
+		publish [M]
+			promote-staging
+			smoke-test
+			promote-central
+			create-tags
+			prepare-changelog
+		announce [M]
+			publish-changelog
+			send-emails
 	OK - install Go
 	OK - configure CI build
 	OK - generate unique version number for each build
