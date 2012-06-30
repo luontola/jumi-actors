@@ -39,10 +39,9 @@ def http_put(file, target_url, username, password)
   ) or raise "Failed to upload #{target_url}"
 end
 
-go_server_url = get_env_var('GO_SERVER_URL')
 go_dependency_locator = get_env_var('GO_DEPENDENCY_LOCATOR_JUMI')
 
-staging_url = "#{go_server_url}files/#{go_dependency_locator}/build-release/staging"
+staging_url = "http://omega.orfjackal.net:8153/go/files/#{go_dependency_locator}/build-release/staging"
 staging_username = get_env_var('STAGING_USERNAME')
 staging_password = get_env_var('STAGING_PASSWORD')
 
