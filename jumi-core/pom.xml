@@ -68,7 +68,6 @@
                         </goals>
                         <configuration>
                             <targetPackage>fi.jumi.core.events</targetPackage>
-                            <createSubPackages>true</createSubPackages>
                             <eventInterfaces>
                                 <interface>java.lang.Runnable</interface>
                                 <interface>java.util.concurrent.Executor</interface>
