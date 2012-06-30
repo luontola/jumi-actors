@@ -47,6 +47,14 @@
         <plugins>
 
             <plugin>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <!-- TODO: remove me when ready for release (until then release only jumi-actors) -->
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+
+            <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
                 <executions>
                     <execution>

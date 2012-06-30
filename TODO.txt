@@ -206,10 +206,10 @@ TODO NEXT:
 		- add commands for closing and promoting the OSSRH repository
 			http://www.sonatype.com/books/nexus-book/reference/staging-sect-managing-plugin.html
 	- publish the first release (after jumi-actors is in a good shape)
-		- disable deployment of non-actor modules
+		OK - disable deployment of non-actor modules
 			http://maven.apache.org/plugins/maven-deploy-plugin/deploy-mojo.html#skip
 		- publish jumi-actors
-		- enable deployment for all except end-to-end tests
+		- enable deployment for all except end-to-end tests and the aggregate pom: jumi-api, jumi-core, jumi-daemon, jumi-launcher
 	- activate sync to Maven Central
 		https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide
 		https://issues.sonatype.org/browse/OSSRH-3707
