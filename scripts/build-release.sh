@@ -1,5 +1,8 @@
 #!/bin/sh
-set -ex
+set -e
+: ${GO_PIPELINE_COUNTER:?}
+: ${GPG_PASSPHRASE:?}
+set -x
 
 ruby scripts/update-to-release-version.rb
 
@@ -8,4 +11,4 @@ mvn clean deploy \
     --errors \
     -Psonatype-oss-release \
     -Dgpg.passphrase=$GPG_PASSPHRASE \
-    -DaltDeploymentRepository=staging::default::file://$PWD/staging
+    -DaltDeploymentRepository=staging::default::file://`pwd`/staging
