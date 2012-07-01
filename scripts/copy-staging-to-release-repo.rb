@@ -41,24 +41,23 @@ end
 
 go_dependency_locator = get_env_var('GO_DEPENDENCY_LOCATOR_JUMI')
 
-staging_url = "http://omega.orfjackal.net:8153/go/files/#{go_dependency_locator}/build-release/staging"
+staging_repo_url = "http://omega.orfjackal.net:8153/go/files/#{go_dependency_locator}/build-release/staging"
 staging_username = get_env_var('STAGING_USERNAME')
 staging_password = get_env_var('STAGING_PASSWORD')
 
-# TODO: use to OSSRH repo, add steps for closing and publishing the repo
-release_url = "http://omega.orfjackal.net:8081/nexus/content/repositories/releases"
+release_repo_url = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
 release_username = get_env_var('RELEASE_USERNAME')
 release_password = get_env_var('RELEASE_PASSWORD')
 
 index_file = 'index.tmp'
-http_get(index_file, "#{staging_url}.json", staging_username, staging_password)
+http_get(index_file, "#{staging_repo_url}.json", staging_username, staging_password)
 index_json = IO.read(index_file)
 FileUtils.rm_f(index_file)
 
 source_urls = get_file_urls(JSON.parse(index_json))
 source_urls.each do |source_url|
-  relative_path = source_url.sub(staging_url, '').sub(/^\//, '')
-  target_url = source_url.sub(staging_url, release_url)
+  relative_path = source_url.sub(staging_repo_url, '').sub(/^\//, '')
+  target_url = source_url.sub(staging_repo_url, release_repo_url)
   temp_file = 'artifact.tmp'
   begin
     puts "\nCopy #{relative_path}"

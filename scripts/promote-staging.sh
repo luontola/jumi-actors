@@ -7,4 +7,4 @@ set -e
 : ${RELEASE_PASSWORD:?}
 set -x
 
-ruby scripts/upload-to-maven-central.rb
+ruby scripts/copy-staging-to-release-repo.rb

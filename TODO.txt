@@ -178,7 +178,7 @@ TODO NEXT:
 	OK - generate unique version number for each build
 		http://www.thoughtworks-studios.com/docs/go/current/help/dev_use_current_revision_in_build.html
 		- pass GO_PIPELINE_COUNTER to update-to-release-version.rb
-	- include Git revision in pom.properties
+	!! - include Git revision in pom.properties
 		http://stackoverflow.com/questions/10102818/custom-values-in-maven-pom-properties-file
 		<archive> element: http://maven.apache.org/plugins/maven-jar-plugin/jar-mojo.html
 		<pomPropertiesFile> element: http://maven.apache.org/shared/maven-archiver/index.html
@@ -203,6 +203,8 @@ TODO NEXT:
 			http://maven.apache.org/plugins/maven-gpg-plugin/sign-mojo.html#keyname
 			http://www.spywarewarrior.com/uiuc/gpg/gpg-com-0.htm
 		- begin using the OSSRH repository
+			OK - change the url in upload-to-maven-central.rb
+			- create a production jumi-publish pipeline to Go
 		- add commands for closing and promoting the OSSRH repository
 			http://www.sonatype.com/books/nexus-book/reference/staging-sect-managing-plugin.html
 	- publish the first release (after jumi-actors is in a good shape)
