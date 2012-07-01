@@ -19,6 +19,17 @@ def get_file_urls(index)
   end
 end
 
+def list_go_artifacts(base_url, username, password)
+  index_file = 'index.tmp'
+  begin
+    http_get(index_file, "#{base_url}.json", username, password)
+    index_json = IO.read(index_file)
+    get_file_urls(JSON.parse(index_json))
+  ensure
+    FileUtils.rm_f(index_file)
+  end
+end
+
 def http_get(file, source_url, username, password)
   puts "GET #{source_url}"
   system('curl',
@@ -49,12 +60,8 @@ release_repo_url = "https://oss.sonatype.org/service/local/staging/deploy/maven2
 release_username = get_env_var('RELEASE_USERNAME')
 release_password = get_env_var('RELEASE_PASSWORD')
 
-index_file = 'index.tmp'
-http_get(index_file, "#{staging_repo_url}.json", staging_username, staging_password)
-index_json = IO.read(index_file)
-FileUtils.rm_f(index_file)
+source_urls = list_go_artifacts(staging_repo_url, staging_username, staging_password)
 
-source_urls = get_file_urls(JSON.parse(index_json))
 source_urls.each do |source_url|
   relative_path = source_url.sub(staging_repo_url, '').sub(/^\//, '')
   target_url = source_url.sub(staging_repo_url, release_repo_url)
