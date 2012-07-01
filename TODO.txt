@@ -148,6 +148,7 @@ TODO NEXT:
 	- send shutdown command from launcher after receiving the last suite event
 	- exit after a timeout if no client connects to daemon or the client disconnects
 	- remove the hack in fi.jumi.daemon.Main#exitWhenNotAnymoreInUse
+	- print a message on daemon startup and shutdown; makes it easier to see from logs that when the JVM was restarted
 
 - end-to-end tests: failures outside tests (in drivers and core)
 	- actor tests print dummy exceptions; solve by having a custom pluggable exception handler which doesn't print stack traces of a DummyException class
@@ -202,11 +203,15 @@ TODO NEXT:
 		OK - create GPG keys for Go, parameterize with GPG_KEYNAME
 			http://maven.apache.org/plugins/maven-gpg-plugin/sign-mojo.html#keyname
 			http://www.spywarewarrior.com/uiuc/gpg/gpg-com-0.htm
-		- begin using the OSSRH repository
+		OK - begin using the OSSRH repository
 			OK - change the url in upload-to-maven-central.rb
-			- create a production jumi-publish pipeline to Go
+			OK - create a production jumi-publish pipeline to Go
 		- add commands for closing and promoting the OSSRH repository
+			OK - close automatically
+			- run smoke tests before promoting
+			- promote automatically
 			http://www.sonatype.com/books/nexus-book/reference/staging-sect-managing-plugin.html
+			https://repository.sonatype.org/content/sites/maven-sites/nexus-maven-plugin/
 	- publish the first release (after jumi-actors is in a good shape)
 		OK - disable deployment of non-actor modules
 			http://maven.apache.org/plugins/maven-deploy-plugin/deploy-mojo.html#skip
