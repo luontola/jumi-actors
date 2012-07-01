@@ -91,11 +91,14 @@ public class Main {
         class DelayedSystemExit implements Runnable {
             @Override
             public void run() {
+                int delayMillis = 2 * 1000;
                 try {
-                    Thread.sleep(2 * 1000);
+                    Thread.sleep(delayMillis);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                System.out.println(getClass().getName()
+                        + ": the system has been running " + delayMillis + " ms; exiting the JVM now");
                 System.exit(0);
             }
         }
@@ -103,5 +106,4 @@ public class Main {
         t.setDaemon(true);
         t.start();
     }
-
 }
