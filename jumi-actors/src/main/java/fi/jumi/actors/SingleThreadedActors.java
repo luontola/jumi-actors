@@ -18,9 +18,11 @@ public class SingleThreadedActors extends Actors {
 
     private final List<NonBlockingActorProcessor> pollers = new ArrayList<NonBlockingActorProcessor>();
     private final List<Runnable> commandsToExecute = new ArrayList<Runnable>();
+    private final MessageLogger logger;
 
     public SingleThreadedActors(EventizerProvider eventizerProvider, MessageLogger logger) {
         super(eventizerProvider, logger);
+        this.logger = logger;
     }
 
     @Override
@@ -65,7 +67,7 @@ public class SingleThreadedActors extends Actors {
     }
 
     public Executor getExecutor() {
-        return new AsynchronousExecutor();
+        return logger.getLoggedExecutor(new AsynchronousExecutor());
     }
 
 

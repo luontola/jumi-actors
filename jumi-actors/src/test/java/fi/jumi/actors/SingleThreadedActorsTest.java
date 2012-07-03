@@ -7,12 +7,14 @@ package fi.jumi.actors;
 import fi.jumi.actors.eventizers.*;
 import fi.jumi.actors.logging.MessageLogger;
 import org.junit.Test;
+import org.mockito.Matchers;
 
 import java.util.*;
 import java.util.concurrent.Executor;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.*;
 
 public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActors> {
 
@@ -97,5 +99,17 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
         assertThat("should not have executed synchronously", spy.toString(), is(""));
         actors.processEventsUntilIdle();
         assertThat("should have executed all Runnables", spy.toString(), is("ab"));
+    }
+
+    @Test
+    public void the_asynchronous_executor_is_logged_using_the_same_MessageLogger_as_the_actors() {
+        Executor loggedExecutor = mock(Executor.class, "loggedExecutor");
+        MessageLogger messageLogger = mock(MessageLogger.class);
+        stub(messageLogger.getLoggedExecutor(Matchers.<Executor>any())).toReturn(loggedExecutor);
+
+        SingleThreadedActors actors = new SingleThreadedActors(new ComposedEventizerProvider(new DummyListenerEventizer()), messageLogger);
+        Executor asynchronousExecutor = actors.getExecutor();
+
+        assertThat(asynchronousExecutor, is(loggedExecutor));
     }
 }
