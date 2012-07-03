@@ -54,13 +54,13 @@ public abstract class Actors {
         }
 
         @Override
-        public void processNextMessage() throws InterruptedException {
+        public void processNextMessage() throws Throwable {
             Runnable task = taskQueue.take();
             process(task);
         }
 
         @Override
-        public boolean processNextMessageIfAny() {
+        public boolean processNextMessageIfAny() throws Throwable {
             Runnable task = taskQueue.poll();
             if (task == null) {
                 return false;
@@ -69,7 +69,7 @@ public abstract class Actors {
             return true;
         }
 
-        private void process(Runnable task) {
+        private void process(Runnable task) throws Throwable {
             task.run();
         }
     }

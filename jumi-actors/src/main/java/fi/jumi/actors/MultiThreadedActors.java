@@ -36,12 +36,15 @@ public class MultiThreadedActors extends Actors {
 
         @Override
         public void run() {
+            // TODO: simplify by moving exception handling logic into processNextMessage()
             try {
                 while (!Thread.interrupted()) {
                     actorThread.processNextMessage();
                 }
             } catch (InterruptedException e) {
                 // actor was told to exit
+            } catch (Throwable t) {
+                throw new RuntimeException(t);
             }
         }
     }

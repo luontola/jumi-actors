@@ -6,7 +6,7 @@ package fi.jumi.actors;
 
 interface MessageProcessor {
 
-    void processNextMessage() throws InterruptedException;
+    void processNextMessage() throws Throwable;
 
-    boolean processNextMessageIfAny();
+    boolean processNextMessageIfAny() throws Throwable;
 }

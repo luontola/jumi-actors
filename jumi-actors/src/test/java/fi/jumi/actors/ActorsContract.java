@@ -131,6 +131,28 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
     }
 
     @Test
+    public void an_actor_can_interrupt_itself_also_by_throwing_InterruptedException() {
+        ActorThread actorThread = actors.startActorThread();
+        ActorRef<DummyListener> actor = actorThread.bindActor(DummyListener.class, new SpyDummyListener() {
+            @Override
+            public void onSomething(String parameter) {
+                super.onSomething(parameter);
+                if (parameter.equals("interrupt")) {
+                    throw SneakyThrow.rethrow(new InterruptedException());
+                }
+            }
+        });
+
+        actor.tell().onSomething("before");
+        actor.tell().onSomething("interrupt");
+        actor.tell().onSomething("after");
+
+        awaitEvents(2);
+        expectNoMoreEvents();
+        assertEvents("before", "interrupt");
+    }
+
+    @Test
     public void when_actor_thread_is_stopped_then_it_stops_after_processing_previously_sent_events() {
         ActorThread actorThread = actors.startActorThread();
         ActorRef<DummyListener> actor = actorThread.bindActor(DummyListener.class, new SpyDummyListener());

@@ -37,11 +37,14 @@ public class SingleThreadedActors extends Actors {
                     if (actorThread.processNextMessageIfAny()) {
                         idle = false;
                     }
+                } catch (InterruptedException e) {
+                    idle = false; // XXX: line not tested
+                    Thread.currentThread().interrupt();
                 } catch (Throwable t) {
                     idle = false;
                     handleUncaughtException(actorThread, t);
                 }
-                // TODO: handle java.lang.InterruptedException
+
                 if (Thread.interrupted()) {
                     actorThreads.remove(actorThread);
                 }
