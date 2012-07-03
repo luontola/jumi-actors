@@ -119,10 +119,14 @@ TODO NEXT:
 			OK - test: keeps interrupt status of the current thread
 			OK - test: enqueues even when interrupted
 			OK - consider using the add() method
-	- handle exceptions from actors (in general, not just in single-threaded actors)
-		- use UncaughtExceptionCollector in ActorsContract
-		- move exception handling from SingleThreadedActors#processEventsUntilIdle into ActorThreadImpl#process
-		- move exception handling from MultiThreadedActors.BlockingActorProcessor#run into ActorThreadImpl#process
+	!! - handle exceptions from actors (in general, not just in single-threaded actors)
+		OK - move exception handling from SingleThreadedActors#processEventsUntilIdle into ActorThreadImpl#process
+		OK - move exception handling from MultiThreadedActors.BlockingActorProcessor#run into ActorThreadImpl#process
+		OK - remove fi.jumi.actors.SingleThreadedActors#handleUncaughtException
+		OK - create fail-early version of failure handler, use it in fi.jumi.core.runners.SuiteRunnerIntegrationHelper
+		!! - use UncaughtExceptionCollector in ActorsContract
+		- dynamic events won't rethrow InterruptedException and thus stop the actor; remove support for the feature?
+	- rename fi.jumi.actors.logging.MessageLogger to some listener?
 	- DynamicEventizer should not forward calls to equals/hashCode/toString (i.e. any methods not declared on the interface)
 	- publish a build (only jumi-actors, jumi-actors-maven-plugin, parent?)
 	- write user documentation for jumi-actors

@@ -5,6 +5,7 @@
 package fi.jumi.actors;
 
 import fi.jumi.actors.eventizers.EventizerProvider;
+import fi.jumi.actors.failures.FailureHandler;
 import fi.jumi.actors.logging.MessageLogger;
 
 import javax.annotation.concurrent.ThreadSafe;
@@ -15,8 +16,8 @@ public class MultiThreadedActors extends Actors {
 
     private final Executor executor;
 
-    public MultiThreadedActors(Executor executor, EventizerProvider eventizerProvider, MessageLogger logger) {
-        super(eventizerProvider, logger);
+    public MultiThreadedActors(Executor executor, EventizerProvider eventizerProvider, FailureHandler failureHandler, MessageLogger logger) {
+        super(eventizerProvider, failureHandler, logger);
         this.executor = executor;
     }
 
@@ -36,15 +37,12 @@ public class MultiThreadedActors extends Actors {
 
         @Override
         public void run() {
-            // TODO: simplify by moving exception handling logic into processNextMessage()
             try {
                 while (!Thread.interrupted()) {
                     actorThread.processNextMessage();
                 }
             } catch (InterruptedException e) {
                 // actor was told to exit
-            } catch (Throwable t) {
-                throw new RuntimeException(t);
             }
         }
     }

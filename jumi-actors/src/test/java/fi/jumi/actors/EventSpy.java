@@ -22,7 +22,7 @@ public class EventSpy {
         long limit = System.currentTimeMillis() + timeout;
         while (events.size() < expectedCount) {
             if (System.currentTimeMillis() > limit) {
-                throw new AssertionError("timed out; received events " + this + " but expected " + expectedCount);
+                throw new AssertionError("timed out; expected " + expectedCount + " or more events but got " + events);
             }
             Thread.yield();
         }

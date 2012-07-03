@@ -6,6 +6,7 @@ package fi.jumi.actors;
 
 import fi.jumi.actors.dynamic.*;
 import fi.jumi.actors.eventizers.*;
+import fi.jumi.actors.failures.*;
 import fi.jumi.actors.logging.*;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
@@ -21,10 +22,15 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
     public ExpectedException thrown = ExpectedException.none();
 
     protected final SilentMessageLogger defaultLogger = new SilentMessageLogger();
+    protected final SilentFailureHandler defaultFailureHandler = new SilentFailureHandler();
+    protected final ComposedEventizerProvider defaultEventizerProvider =
+            new ComposedEventizerProvider(
+                    new DummyListenerEventizer(),
+                    new DynamicEventizer<Runnable>(Runnable.class));
 
     @Before
     public void initActors() {
-        actors = newActors(new ComposedEventizerProvider(new DummyListenerEventizer()), defaultLogger);
+        actors = newActors(defaultEventizerProvider, defaultFailureHandler, defaultLogger);
     }
 
     /**
@@ -36,7 +42,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
         Thread.interrupted();
     }
 
-    protected abstract T newActors(EventizerProvider eventizerProvider, MessageLogger logger);
+    protected abstract T newActors(EventizerProvider eventizerProvider, FailureHandler failureHandler, MessageLogger logger);
 
 
     // event processing
@@ -70,7 +76,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
 
     @Test
     public void actors_bound_to_the_same_actor_thread_are_processed_in_the_same_thread() {
-        actors = newActors(new DynamicEventizerProvider(), defaultLogger);
+        actors = newActors(new DynamicEventizerProvider(), defaultFailureHandler, defaultLogger);
         ActorThread actorThread = actors.startActorThread();
 
         class Actor1 implements PrimaryInterface {
@@ -180,18 +186,56 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
     }
 
 
+    // failure handling
+
+    @Test
+    public void exceptions_thrown_by_actors_are_given_to_the_FailureHandler() {
+        SpyFailureHandler failureHandler = new SpyFailureHandler();
+        DummyExceptionThrowingActor throwerActor = new DummyExceptionThrowingActor();
+        ActorRef<DummyListener> actor = bindActorWithFailureHandler(failureHandler, throwerActor);
+
+        actor.tell().onSomething("");
+        awaitEvents(1);
+
+        assertThat(failureHandler.lastActor, is((Object) throwerActor));
+        assertThat(failureHandler.lastException, is(throwerActor.thrownException));
+    }
+
+    @Test
+    public void also_InterruptedExceptions_are_given_to_the_FailureHandler() {
+        SpyFailureHandler failureHandler = new SpyFailureHandler();
+        DummyExceptionThrowingActor throwerActor = new DummyExceptionThrowingActor(InterruptedException.class, "dummy InterruptedException");
+        ActorRef<DummyListener> actor = bindActorWithFailureHandler(failureHandler, throwerActor);
+
+        actor.tell().onSomething("");
+        awaitEvents(1);
+
+        assertThat(failureHandler.lastException, is(instanceOf(InterruptedException.class)));
+        assertThat(failureHandler.lastException, is(throwerActor.thrownException));
+    }
+
+    private ActorRef<DummyListener> bindActorWithFailureHandler(FailureHandler failureHandler, DummyListener rawActor) {
+        T actors = newActors(defaultEventizerProvider, failureHandler, defaultLogger);
+        ActorThread actorThread = actors.startActorThread();
+        return actorThread.bindActor(DummyListener.class, rawActor);
+    }
+
+    // TODO: actor should stay alive, process following messages
+    // TODO: how to stop actors which throw exceptions
+
+
     // message logging
 
     @Test
     public void sending_and_processing_messages_is_logged() {
         MessageLogger logger = mock(MessageLogger.class);
-        actors = newActors(new ComposedEventizerProvider(new DummyListenerEventizer(), new DynamicEventizer<Runnable>(Runnable.class)), logger);
+        actors = newActors(defaultEventizerProvider, defaultFailureHandler, logger);
         ActorThread actorThread = actors.startActorThread();
         DummyListener rawActor = mock(DummyListener.class);
         ActorRef<DummyListener> actor = actorThread.bindActor(DummyListener.class, rawActor);
 
         actor.tell().onSomething("parameter");
-        sendSyncEvent(actorThread);                 // we must wait for onProcessingFinished to be called
+        sendSyncEvent(actorThread);                 // wait for onProcessingFinished to be called
         awaitEvents(1);
 
         InOrder inOrder = inOrder(logger);

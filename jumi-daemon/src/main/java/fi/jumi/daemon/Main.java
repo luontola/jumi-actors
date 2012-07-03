@@ -6,6 +6,7 @@ package fi.jumi.daemon;
 
 import fi.jumi.actors.*;
 import fi.jumi.actors.eventizers.ComposedEventizerProvider;
+import fi.jumi.actors.failures.CrashEarlyFailureHandler;
 import fi.jumi.actors.logging.*;
 import fi.jumi.core.*;
 import fi.jumi.core.events.*;
@@ -44,6 +45,7 @@ public class Main {
                         new CommandListenerEventizer(),
                         new TestClassListenerEventizer()
                 ),
+                new CrashEarlyFailureHandler(),
                 messageLogger
         );
 

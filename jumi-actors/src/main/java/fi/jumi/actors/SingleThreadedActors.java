@@ -5,6 +5,7 @@
 package fi.jumi.actors;
 
 import fi.jumi.actors.eventizers.EventizerProvider;
+import fi.jumi.actors.failures.FailureHandler;
 import fi.jumi.actors.logging.MessageLogger;
 
 import javax.annotation.concurrent.*;
@@ -17,8 +18,8 @@ public class SingleThreadedActors extends Actors {
     private final List<MessageProcessor> actorThreads = new CopyOnWriteArrayList<MessageProcessor>();
     private final MessageLogger logger;
 
-    public SingleThreadedActors(EventizerProvider eventizerProvider, MessageLogger logger) {
-        super(eventizerProvider, logger);
+    public SingleThreadedActors(EventizerProvider eventizerProvider, FailureHandler failureHandler, MessageLogger logger) {
+        super(eventizerProvider, failureHandler, logger);
         this.logger = logger;
     }
 
@@ -28,32 +29,18 @@ public class SingleThreadedActors extends Actors {
     }
 
     public void processEventsUntilIdle() {
-        // TODO: simplify by moving exception handling logic into processNextMessageIfAny()
         boolean idle;
         do {
             idle = true;
             for (MessageProcessor actorThread : actorThreads) {
-                try {
-                    if (actorThread.processNextMessageIfAny()) {
-                        idle = false;
-                    }
-                } catch (InterruptedException e) {
-                    idle = false; // XXX: line not tested
-                    Thread.currentThread().interrupt();
-                } catch (Throwable t) {
+                if (actorThread.processNextMessageIfAny()) {
                     idle = false;
-                    handleUncaughtException(actorThread, t);
                 }
-
                 if (Thread.interrupted()) {
                     actorThreads.remove(actorThread);
                 }
             }
         } while (!idle);
-    }
-
-    protected void handleUncaughtException(Object source, Throwable uncaughtException) {
-        throw new Error("uncaught exception from " + source, uncaughtException);
     }
 
     public Executor getExecutor() {

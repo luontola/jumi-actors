@@ -5,6 +5,7 @@
 package fi.jumi.actors;
 
 import fi.jumi.actors.eventizers.EventizerProvider;
+import fi.jumi.actors.failures.FailureHandler;
 import fi.jumi.actors.logging.MessageLogger;
 import org.junit.*;
 
@@ -18,8 +19,8 @@ public class MultiThreadedActorsTest extends ActorsContract<MultiThreadedActors>
     private final ExecutorService executor = Executors.newCachedThreadPool();
 
     @Override
-    protected MultiThreadedActors newActors(EventizerProvider eventizerProvider, MessageLogger logger) {
-        return new MultiThreadedActors(executor, eventizerProvider, logger);
+    protected MultiThreadedActors newActors(EventizerProvider eventizerProvider, FailureHandler failureHandler, MessageLogger logger) {
+        return new MultiThreadedActors(executor, eventizerProvider, failureHandler, logger);
     }
 
     @Override

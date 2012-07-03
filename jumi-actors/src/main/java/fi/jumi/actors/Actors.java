@@ -5,6 +5,7 @@
 package fi.jumi.actors;
 
 import fi.jumi.actors.eventizers.*;
+import fi.jumi.actors.failures.FailureHandler;
 import fi.jumi.actors.logging.MessageLogger;
 import fi.jumi.actors.mq.*;
 
@@ -15,10 +16,12 @@ import java.util.concurrent.Executor;
 public abstract class Actors {
 
     private final EventizerProvider eventizerProvider;
+    private final FailureHandler failureHandler;
     private final MessageLogger logger;
 
-    public Actors(EventizerProvider eventizerProvider, MessageLogger logger) {
+    public Actors(EventizerProvider eventizerProvider, FailureHandler failureHandler, MessageLogger logger) {
         this.eventizerProvider = eventizerProvider;
+        this.failureHandler = failureHandler;
         this.logger = logger;
     }
 
@@ -54,13 +57,13 @@ public abstract class Actors {
         }
 
         @Override
-        public void processNextMessage() throws Throwable {
+        public void processNextMessage() throws InterruptedException {
             Runnable task = taskQueue.take();
             process(task);
         }
 
         @Override
-        public boolean processNextMessageIfAny() throws Throwable {
+        public boolean processNextMessageIfAny() {
             Runnable task = taskQueue.poll();
             if (task == null) {
                 return false;
@@ -69,7 +72,12 @@ public abstract class Actors {
             return true;
         }
 
-        private void process(Runnable task) throws Throwable {
+        private void process(Runnable task) {
+            assert task instanceof MessageToActor
+                    || task instanceof DeathPill
+                    : "unexpected type of task: " + task;
+            // MessageToActor should already take care of handling uncaught exceptions,
+            // so we don't need to do it here.
             task.run();
         }
     }
@@ -106,6 +114,11 @@ public abstract class Actors {
             logger.onProcessingStarted(rawActor, message);
             try {
                 message.fireOn(rawActor);
+            } catch (Throwable t) {
+                if (t instanceof InterruptedException) {
+                    Thread.currentThread().interrupt();
+                }
+                failureHandler.uncaughtException(rawActor, t);
             } finally {
                 logger.onProcessingFinished();
             }

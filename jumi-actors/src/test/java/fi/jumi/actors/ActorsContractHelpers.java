@@ -5,6 +5,7 @@
 package fi.jumi.actors;
 
 import fi.jumi.actors.eventizers.Eventizer;
+import fi.jumi.actors.failures.FailureHandler;
 import fi.jumi.actors.mq.MessageSender;
 
 public abstract class ActorsContractHelpers<T extends Actors> {
@@ -54,6 +55,48 @@ public abstract class ActorsContractHelpers<T extends Actors> {
         public void onSomething(String parameter) {
             thread = Thread.currentThread();
             logEvent(parameter);
+        }
+    }
+
+    public class SpyFailureHandler implements FailureHandler {
+        public volatile Object lastActor;
+        public volatile Throwable lastException;
+
+        @Override
+        public void uncaughtException(Object actor, Throwable exception) {
+            this.lastActor = actor;
+            this.lastException = exception;
+            logEvent("handled " + exception.getMessage());
+        }
+    }
+
+    public class DummyExceptionThrowingActor implements DummyListener {
+        private final Class<? extends Throwable> exceptionType;
+        private final String exceptionMessage;
+
+        public volatile Throwable thrownException;
+
+        public DummyExceptionThrowingActor() {
+            this(RuntimeException.class, "dummy exception");
+        }
+
+        public DummyExceptionThrowingActor(Class<? extends Throwable> exceptionType, String exceptionMessage) {
+            this.exceptionType = exceptionType;
+            this.exceptionMessage = exceptionMessage;
+        }
+
+        @Override
+        public void onSomething(String parameter) {
+            thrownException = createDummyException();
+            throw SneakyThrow.rethrow(thrownException);
+        }
+
+        private Throwable createDummyException() {
+            try {
+                return exceptionType.getConstructor(String.class).newInstance(exceptionMessage);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

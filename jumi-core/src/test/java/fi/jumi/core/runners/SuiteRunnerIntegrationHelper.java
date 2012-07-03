@@ -6,6 +6,7 @@ package fi.jumi.core.runners;
 
 import fi.jumi.actors.*;
 import fi.jumi.actors.dynamic.DynamicEventizerProvider;
+import fi.jumi.actors.failures.*;
 import fi.jumi.actors.logging.*;
 import fi.jumi.api.drivers.Driver;
 import fi.jumi.core.*;
@@ -20,8 +21,9 @@ public abstract class SuiteRunnerIntegrationHelper {
     private final SpyListener<SuiteListener> spy = new SpyListener<SuiteListener>(SuiteListener.class);
     protected final SuiteListener expect = spy.getListener();
 
+    private final FailureHandler failureHandler = new CrashEarlyFailureHandler();
     private final MessageLogger logger = new SilentMessageLogger();
-    private final SingleThreadedActors actors = new SingleThreadedActors(new DynamicEventizerProvider(), logger);
+    private final SingleThreadedActors actors = new SingleThreadedActors(new DynamicEventizerProvider(), failureHandler, logger);
     private final Executor executor = actors.getExecutor();
 
     protected void runAndCheckExpectations(Driver driver, Class<?>... testClasses) {
