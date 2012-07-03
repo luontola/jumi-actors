@@ -106,7 +106,7 @@ TODO NEXT:
 	OK - improve log readability
 		OK - toString for fi.jumi.actors.workers.WorkerCountingExecutor.Worker
 	OK - SingleThreadedActors.getExecutor() should use MessageLogger
-	!! - support for stopping actors
+	OK - support for stopping actors
 		OK - interrupting stops after current message
 		OK - ActorThread.stop() stops after processing all previous messages
 		SKIP - create ActorThread.isAlive(), or is it unnecessary? or useful for testing?
@@ -115,10 +115,10 @@ TODO NEXT:
 			- implement commands as actors which are stopped immediately after executing them?
 			- have only one actor thread? might not be possible when supporting stopping?
 		OK - stopping actor threads: handle java.lang.InterruptedException
-		- use Thread.currentThread().interrupt() in fi.jumi.actors.mq.MessageQueue#send
-			- test: keeps interrupt status of the current thread
-			- test: enqueues even when interrupted
-			- consider using the add() method
+		OK - use Thread.currentThread().interrupt() in fi.jumi.actors.mq.MessageQueue#send
+			OK - test: keeps interrupt status of the current thread
+			OK - test: enqueues even when interrupted
+			OK - consider using the add() method
 	- handle exceptions from actors (in general, not just in single-threaded actors)
 		- use UncaughtExceptionCollector in ActorsContract
 		- move exception handling from SingleThreadedActors#processEventsUntilIdle into ActorThreadImpl#process

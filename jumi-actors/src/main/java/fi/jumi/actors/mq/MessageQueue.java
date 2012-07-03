@@ -14,11 +14,7 @@ public class MessageQueue<T> implements MessageSender<T>, MessageReceiver<T> {
 
     @Override
     public void send(T message) {
-        try {
-            queue.put(message);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e); // TODO: use Thread.currentThread().interrupt()
-        }
+        queue.add(message);
     }
 
     @Override
