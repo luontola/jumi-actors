@@ -71,32 +71,17 @@ public abstract class ActorsContractHelpers<T extends Actors> {
     }
 
     public class DummyExceptionThrowingActor implements DummyListener {
-        private final Class<? extends Throwable> exceptionType;
-        private final String exceptionMessage;
+        private final String message;
+        public volatile RuntimeException thrownException;
 
-        public volatile Throwable thrownException;
-
-        public DummyExceptionThrowingActor() {
-            this(RuntimeException.class, "dummy exception");
-        }
-
-        public DummyExceptionThrowingActor(Class<? extends Throwable> exceptionType, String exceptionMessage) {
-            this.exceptionType = exceptionType;
-            this.exceptionMessage = exceptionMessage;
+        public DummyExceptionThrowingActor(String message) {
+            this.message = message;
         }
 
         @Override
         public void onSomething(String parameter) {
-            thrownException = createDummyException();
-            throw SneakyThrow.rethrow(thrownException);
-        }
-
-        private Throwable createDummyException() {
-            try {
-                return exceptionType.getConstructor(String.class).newInstance(exceptionMessage);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            thrownException = new RuntimeException(message);
+            throw thrownException;
         }
     }
 

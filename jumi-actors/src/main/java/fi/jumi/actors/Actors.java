@@ -115,9 +115,6 @@ public abstract class Actors {
             try {
                 message.fireOn(rawActor);
             } catch (Throwable t) {
-                if (t instanceof InterruptedException) {
-                    Thread.currentThread().interrupt();
-                }
                 failureHandler.uncaughtException(rawActor, t);
             } finally {
                 logger.onProcessingFinished();

@@ -142,28 +142,6 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
     }
 
     @Test
-    public void an_actor_can_interrupt_itself_also_by_throwing_InterruptedException() {
-        ActorThread actorThread = actors.startActorThread();
-        ActorRef<DummyListener> actor = actorThread.bindActor(DummyListener.class, new SpyDummyListener() {
-            @Override
-            public void onSomething(String parameter) {
-                super.onSomething(parameter);
-                if (parameter.equals("interrupt")) {
-                    throw SneakyThrow.rethrow(new InterruptedException(UncaughtExceptionCollector.DUMMY_EXCEPTION));
-                }
-            }
-        });
-
-        actor.tell().onSomething("before");
-        actor.tell().onSomething("interrupt");
-        actor.tell().onSomething("after");
-
-        awaitEvents(2);
-        expectNoMoreEvents();
-        assertEvents("before", "interrupt");
-    }
-
-    @Test
     public void when_actor_thread_is_stopped_then_it_stops_after_processing_previously_sent_events() {
         ActorThread actorThread = actors.startActorThread();
         ActorRef<DummyListener> actor = actorThread.bindActor(DummyListener.class, new SpyDummyListener());
@@ -196,27 +174,14 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
     @Test
     public void exceptions_thrown_by_actors_are_given_to_the_FailureHandler() {
         SpyFailureHandler failureHandler = new SpyFailureHandler();
-        DummyExceptionThrowingActor throwerActor = new DummyExceptionThrowingActor();
+        DummyExceptionThrowingActor throwerActor = new DummyExceptionThrowingActor("dummy exception");
         ActorRef<DummyListener> actor = bindActorWithFailureHandler(failureHandler, throwerActor);
 
         actor.tell().onSomething("");
         awaitEvents(1);
 
         assertThat(failureHandler.lastActor, is((Object) throwerActor));
-        assertThat(failureHandler.lastException, is(throwerActor.thrownException));
-    }
-
-    @Test
-    public void also_InterruptedExceptions_are_given_to_the_FailureHandler() {
-        SpyFailureHandler failureHandler = new SpyFailureHandler();
-        DummyExceptionThrowingActor throwerActor = new DummyExceptionThrowingActor(InterruptedException.class, "dummy InterruptedException");
-        ActorRef<DummyListener> actor = bindActorWithFailureHandler(failureHandler, throwerActor);
-
-        actor.tell().onSomething("");
-        awaitEvents(1);
-
-        assertThat(failureHandler.lastException, is(instanceOf(InterruptedException.class)));
-        assertThat(failureHandler.lastException, is(throwerActor.thrownException));
+        assertThat(failureHandler.lastException, is((Throwable) throwerActor.thrownException));
     }
 
     private ActorRef<DummyListener> bindActorWithFailureHandler(FailureHandler failureHandler, DummyListener rawActor) {

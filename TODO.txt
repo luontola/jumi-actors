@@ -125,7 +125,9 @@ TODO NEXT:
 		OK - remove fi.jumi.actors.SingleThreadedActors#handleUncaughtException
 		OK - create fail-early version of failure handler, use it in fi.jumi.core.runners.SuiteRunnerIntegrationHelper
 		OK - use UncaughtExceptionCollector in ActorsContract
-		- dynamic events won't rethrow InterruptedException and thus stop the actor; remove support for the feature?
+		OK - dynamic events won't rethrow InterruptedException and thus stop the actor; remove support for the feature?
+		!! - test: actor should stay alive, process following messages
+		- test: how to stop actors which throw exceptions
 	- rename fi.jumi.actors.logging.MessageLogger to some listener?
 	- DynamicEventizer should not forward calls to equals/hashCode/toString (i.e. any methods not declared on the interface)
 	- publish a build (only jumi-actors, jumi-actors-maven-plugin, parent?)
