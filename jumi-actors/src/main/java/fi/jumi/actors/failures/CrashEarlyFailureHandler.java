@@ -4,6 +4,9 @@
 
 package fi.jumi.actors.failures;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public class CrashEarlyFailureHandler implements FailureHandler {
 
     @Override
