@@ -110,10 +110,10 @@ TODO NEXT:
 		OK - interrupting stops after current message
 		OK - ActorThread.stop() stops after processing all previous messages
 		SKIP - create ActorThread.isAlive(), or is it unnecessary? or useful for testing?
+		OK - consider removing fi.jumi.actors.Actors#currentActorThread because now resources can be released
 		- SingleThreadedActors: unifying actors and the Executor
 			- implement commands as actors which are stopped immediately after executing them?
 			- have only one actor thread? might not be possible when supporting stopping?
-		- consider removing fi.jumi.actors.Actors#currentActorThread because now resources can be released
 		- use Thread.currentThread().interrupt() in fi.jumi.actors.mq.MessageQueue#send
 			- test: keeps interrupt status of the current thread
 			- test: enqueues even when interrupted

@@ -11,8 +11,6 @@ import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.mockito.InOrder;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -65,36 +63,6 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
         awaitEvents(3);
 
         assertEvents("event 1", "event 2", "event 3");
-    }
-
-    /**
-     * This is to prevent resource leaks, because each event poller uses one thread, and as of writing
-     * the system does not try to release the threads.
-     */
-    @Test
-    public void actor_threads_cannot_be_started_inside_other_actor_threads() {
-        final AtomicReference<Throwable> thrown = new AtomicReference<Throwable>();
-
-        ActorThread actorThread = actors.startActorThread();
-        ActorRef<DummyListener> actor = actorThread.bindActor(DummyListener.class, new DummyListener() {
-            @Override
-            public void onSomething(String parameter) {
-                try {
-                    actors.startActorThread();
-                } catch (Throwable t) {
-                    thrown.set(t);
-                } finally {
-                    logEvent("test finished");
-                }
-            }
-        });
-        actor.tell().onSomething("");
-
-        awaitEvents(1);
-
-        Throwable t = thrown.get();
-        assertThat(t, is(instanceOf(IllegalStateException.class)));
-        assertThat(t.getMessage(), containsString("already inside an actor thread"));
     }
 
 

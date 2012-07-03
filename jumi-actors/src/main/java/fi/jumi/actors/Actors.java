@@ -14,8 +14,6 @@ import java.util.concurrent.Executor;
 @ThreadSafe
 public abstract class Actors {
 
-    private final ThreadLocal<ActorThread> currentActorThread = new ThreadLocal<ActorThread>(); // TODO: remove?
-
     private final EventizerProvider eventizerProvider;
     private final MessageLogger logger;
 
@@ -25,16 +23,9 @@ public abstract class Actors {
     }
 
     public ActorThread startActorThread() {
-        checkNotInsideAnActor();
         ActorThreadImpl actorThread = new ActorThreadImpl();
         startActorThread(actorThread);
         return actorThread;
-    }
-
-    private void checkNotInsideAnActor() {
-        if (currentActorThread.get() != null) {
-            throw new IllegalStateException("already inside an actor thread");
-        }
     }
 
     protected abstract void startActorThread(MessageProcessor actorThread);
@@ -79,12 +70,7 @@ public abstract class Actors {
         }
 
         private void process(Runnable task) {
-            currentActorThread.set(this);
-            try {
-                task.run();
-            } finally {
-                currentActorThread.remove();
-            }
+            task.run();
         }
     }
 
