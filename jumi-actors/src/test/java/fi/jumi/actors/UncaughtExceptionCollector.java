@@ -2,15 +2,17 @@
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
-package fi.jumi.actors.workers;
+package fi.jumi.actors;
+
+import fi.jumi.actors.failures.FailureHandler;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.*;
 
 @ThreadSafe
-public class UncaughtExceptionCollector implements Thread.UncaughtExceptionHandler {
+public class UncaughtExceptionCollector implements Thread.UncaughtExceptionHandler, FailureHandler {
 
-    private static final String DUMMY_EXCEPTION = "dummy exception";
+    public static final String DUMMY_EXCEPTION = "dummy exception";
 
     private final List<Throwable> uncaughtExceptions = Collections.synchronizedList(new ArrayList<Throwable>());
 
@@ -19,14 +21,19 @@ public class UncaughtExceptionCollector implements Thread.UncaughtExceptionHandl
         uncaughtExceptions.add(e);
     }
 
+    @Override
+    public void uncaughtException(Object actor, Throwable exception) {
+        uncaughtExceptions.add(exception);
+    }
+
     public RuntimeException throwDummyException() {
         throw new RuntimeException(DUMMY_EXCEPTION);
     }
 
-    public void failIfNotEmpty() throws Throwable {
+    public void failIfNotEmpty() {
         for (Throwable uncaughtException : uncaughtExceptions) {
             if (!isDummyException(uncaughtException)) {
-                throw new AssertionError("there were exceptions in a background thread").initCause(uncaughtException);
+                throw (AssertionError) new AssertionError("there were exceptions in a background thread").initCause(uncaughtException);
             }
         }
     }

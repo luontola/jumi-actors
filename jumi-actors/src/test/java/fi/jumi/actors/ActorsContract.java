@@ -6,7 +6,7 @@ package fi.jumi.actors;
 
 import fi.jumi.actors.dynamic.*;
 import fi.jumi.actors.eventizers.*;
-import fi.jumi.actors.failures.*;
+import fi.jumi.actors.failures.FailureHandler;
 import fi.jumi.actors.logging.*;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
@@ -22,7 +22,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
     public ExpectedException thrown = ExpectedException.none();
 
     protected final SilentMessageLogger defaultLogger = new SilentMessageLogger();
-    protected final SilentFailureHandler defaultFailureHandler = new SilentFailureHandler();
+    protected final UncaughtExceptionCollector defaultFailureHandler = new UncaughtExceptionCollector();
     protected final ComposedEventizerProvider defaultEventizerProvider =
             new ComposedEventizerProvider(
                     new DummyListenerEventizer(),
@@ -40,6 +40,11 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
     @After
     public void clearThreadInterruptedStatus() {
         Thread.interrupted();
+    }
+
+    @After
+    public void checkNoUncaughtExceptions() {
+        defaultFailureHandler.failIfNotEmpty();
     }
 
     protected abstract T newActors(EventizerProvider eventizerProvider, FailureHandler failureHandler, MessageLogger logger);
@@ -144,7 +149,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
             public void onSomething(String parameter) {
                 super.onSomething(parameter);
                 if (parameter.equals("interrupt")) {
-                    throw SneakyThrow.rethrow(new InterruptedException());
+                    throw SneakyThrow.rethrow(new InterruptedException(UncaughtExceptionCollector.DUMMY_EXCEPTION));
                 }
             }
         });
