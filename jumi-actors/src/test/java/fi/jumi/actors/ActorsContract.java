@@ -29,8 +29,19 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
         actors = newActors(new ComposedEventizerProvider(new DummyListenerEventizer()), defaultLogger);
     }
 
+    /**
+     * Avoid the thread interrupted status from leaking from one test to another,
+     * since some tests in this class do interrupt threads.
+     */
+    @After
+    public void clearThreadInterruptedStatus() {
+        Thread.interrupted();
+    }
+
     protected abstract T newActors(EventizerProvider eventizerProvider, MessageLogger logger);
 
+
+    // event processing
 
     @Test
     public void method_calls_on_ActorRef_are_forwarded_to_the_actor() throws InterruptedException {
@@ -86,6 +97,9 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
         assertThat(t.getMessage(), containsString("already inside an actor thread"));
     }
 
+
+    // threads
+
     @Test
     public void actors_bound_to_the_same_actor_thread_are_processed_in_the_same_thread() {
         actors = newActors(new DynamicEventizerProvider(), defaultLogger);
@@ -125,6 +139,58 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
         assertThat("actor2 actor was called", actor2.eventThread, is(notNullValue()));
         assertThat("both actors were processed in the same thread", actor1.eventThread, is(actor2.eventThread));
     }
+
+    @Test
+    public void when_an_actor_interrupts_itself_then_the_actor_thread_stops_immediately() {
+        ActorThread actorThread = actors.startActorThread();
+        ActorRef<DummyListener> actor = actorThread.bindActor(DummyListener.class, new SpyDummyListener() {
+            @Override
+            public void onSomething(String parameter) {
+                super.onSomething(parameter);
+                if (parameter.equals("interrupt")) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        });
+
+        actor.tell().onSomething("before");
+        actor.tell().onSomething("interrupt");
+        actor.tell().onSomething("after");
+
+        awaitEvents(2);
+        expectNoMoreEvents();
+        assertEvents("before", "interrupt");
+    }
+
+    @Test
+    public void when_actor_thread_is_stopped_then_it_stops_after_processing_previously_sent_events() {
+        ActorThread actorThread = actors.startActorThread();
+        ActorRef<DummyListener> actor = actorThread.bindActor(DummyListener.class, new SpyDummyListener());
+
+        actor.tell().onSomething("before");
+        actorThread.stop();
+        actor.tell().onSomething("after");
+
+        awaitEvents(1);
+        expectNoMoreEvents();
+        assertEvents("before");
+    }
+
+    @Test
+    public void stopping_one_actor_thread_does_not_affect_unrelated_actor_threads() {
+        ActorThread stoppedThread = actors.startActorThread();
+        ActorThread unrelatedThread = actors.startActorThread();
+        ActorRef<DummyListener> unrelatedActor = unrelatedThread.bindActor(DummyListener.class, new SpyDummyListener());
+
+        stoppedThread.stop();
+        unrelatedActor.tell().onSomething("unrelated message");
+
+        awaitEvents(1);
+        assertEvents("unrelated message");
+    }
+
+
+    // message logging
 
     @Test
     public void sending_and_processing_messages_is_logged() {

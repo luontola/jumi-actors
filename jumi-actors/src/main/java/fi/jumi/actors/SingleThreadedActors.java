@@ -34,7 +34,15 @@ public class SingleThreadedActors extends Actors {
         boolean idle;
         do {
             idle = true;
-            for (Processable processable : getProcessableEvents()) {
+
+            List<Processable> processableEvents = new ArrayList<Processable>();
+            processableEvents.addAll(pollers);
+            for (Runnable runnable : takeAll(commandsToExecute)) {
+                processableEvents.add(new ProcessableRunnable(runnable));
+            }
+
+
+            for (Processable processable : processableEvents) {
                 try {
                     if (processable.processedSomething()) {
                         idle = false;
@@ -43,17 +51,11 @@ public class SingleThreadedActors extends Actors {
                     idle = false;
                     handleUncaughtException(processable, t);
                 }
+                if (Thread.interrupted()) {
+                    pollers.remove(processable);
+                }
             }
         } while (!idle);
-    }
-
-    private List<Processable> getProcessableEvents() {
-        List<Processable> results = new ArrayList<Processable>();
-        results.addAll(pollers);
-        for (Runnable runnable : takeAll(commandsToExecute)) {
-            results.add(new ProcessableRunnable(runnable));
-        }
-        return results;
     }
 
     private static ArrayList<Runnable> takeAll(List<Runnable> list) {

@@ -32,4 +32,15 @@ public class EventSpy {
         List<String> actual = new ArrayList<String>(events);
         assertThat("events", actual, is(Arrays.asList(expected)));
     }
+
+    public void expectNoMoreEvents() {
+        int before = events.size();
+        try {
+            Thread.sleep(1);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        int after = events.size();
+        assertThat("expected no more events, but still got some more", after, is(before));
+    }
 }

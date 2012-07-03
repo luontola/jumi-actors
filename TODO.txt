@@ -105,10 +105,10 @@ TODO NEXT:
 		OK - add logging to Executors, to see which actor started which worker thread?
 	OK - improve log readability
 		OK - toString for fi.jumi.actors.workers.WorkerCountingExecutor.Worker
-	!! - SingleThreadedActors.getExecutor() should use MessageLogger
-	- support for stopping actors
-		- interrupting stops after current message
-		- ActorThread.stop() stops after processing all previous messages
+	OK - SingleThreadedActors.getExecutor() should use MessageLogger
+	!! - support for stopping actors
+		OK - interrupting stops after current message
+		OK - ActorThread.stop() stops after processing all previous messages
 		SKIP - create ActorThread.isAlive(), or is it unnecessary? or useful for testing?
 		- SingleThreadedActors: unifying actors and the Executor
 			- implement commands as actors which are stopped immediately after executing them?

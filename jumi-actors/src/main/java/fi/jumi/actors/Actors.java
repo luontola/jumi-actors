@@ -53,6 +53,11 @@ public abstract class Actors {
         }
 
         @Override
+        public void stop() {
+            execute(new DeathPill());
+        }
+
+        @Override
         public void execute(Runnable task) {
             taskQueue.send(task);
         }
@@ -118,6 +123,15 @@ public abstract class Actors {
             } finally {
                 logger.onProcessingFinished();
             }
+        }
+    }
+
+    @Immutable
+    private static class DeathPill implements Runnable {
+
+        @Override
+        public void run() {
+            Thread.currentThread().interrupt();
         }
     }
 }

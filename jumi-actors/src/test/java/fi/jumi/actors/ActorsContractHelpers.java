@@ -30,6 +30,10 @@ public abstract class ActorsContractHelpers<T extends Actors> {
         events.assertContains(expected);
     }
 
+    public void expectNoMoreEvents() {
+        events.expectNoMoreEvents();
+    }
+
     public void sendSyncEvent(ActorThread actorThread) {
         ActorRef<Runnable> actor = actorThread.bindActor(Runnable.class, new Runnable() {
             @Override
