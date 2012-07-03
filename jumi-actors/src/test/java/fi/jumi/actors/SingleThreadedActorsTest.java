@@ -4,6 +4,7 @@
 
 package fi.jumi.actors;
 
+import fi.jumi.actors.dynamic.DynamicEventizerProvider;
 import fi.jumi.actors.eventizers.*;
 import fi.jumi.actors.logging.MessageLogger;
 import org.junit.Test;
@@ -80,7 +81,7 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
     @Test
     public void provides_an_asynchronous_executor() {
         final StringBuilder spy = new StringBuilder();
-        SingleThreadedActors actors = new SingleThreadedActors(new ComposedEventizerProvider(new DummyListenerEventizer()), defaultLogger);
+        SingleThreadedActors actors = new SingleThreadedActors(new DynamicEventizerProvider(), defaultLogger);
 
         Executor executor = actors.getExecutor();
         executor.execute(new Runnable() {

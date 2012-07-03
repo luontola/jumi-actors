@@ -111,15 +111,17 @@ TODO NEXT:
 		OK - ActorThread.stop() stops after processing all previous messages
 		SKIP - create ActorThread.isAlive(), or is it unnecessary? or useful for testing?
 		OK - consider removing fi.jumi.actors.Actors#currentActorThread because now resources can be released
-		- SingleThreadedActors: unifying actors and the Executor
+		OK - SingleThreadedActors: unifying actors and the Executor
 			- implement commands as actors which are stopped immediately after executing them?
 			- have only one actor thread? might not be possible when supporting stopping?
+		- stopping actor threads: handle java.lang.InterruptedException
 		- use Thread.currentThread().interrupt() in fi.jumi.actors.mq.MessageQueue#send
 			- test: keeps interrupt status of the current thread
 			- test: enqueues even when interrupted
 			- consider using the add() method
 	- handle exceptions from actors (in general, not just in single-threaded actors)
 		- use UncaughtExceptionCollector in ActorsContract
+		- move exception handling from SingleThreadedActors#processEventsUntilIdle into ActorThreadImpl#process
 	- DynamicEventizer should not forward calls to equals/hashCode/toString (i.e. any methods not declared on the interface)
 	- publish a build (only jumi-actors, jumi-actors-maven-plugin, parent?)
 	- write user documentation for jumi-actors

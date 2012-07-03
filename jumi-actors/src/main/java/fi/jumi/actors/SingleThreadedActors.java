@@ -7,17 +7,14 @@ package fi.jumi.actors;
 import fi.jumi.actors.eventizers.EventizerProvider;
 import fi.jumi.actors.logging.MessageLogger;
 
-import javax.annotation.concurrent.NotThreadSafe;
-import java.util.*;
-import java.util.concurrent.Executor;
+import javax.annotation.concurrent.*;
+import java.util.List;
+import java.util.concurrent.*;
 
 @NotThreadSafe
 public class SingleThreadedActors extends Actors {
 
-    // TODO: consider unifying actors and the Executor so that we have only one actor thread
-
-    private final List<NonBlockingActorProcessor> pollers = new ArrayList<NonBlockingActorProcessor>();
-    private final List<Runnable> commandsToExecute = new ArrayList<Runnable>();
+    private final List<MessageProcessor> actorThreads = new CopyOnWriteArrayList<MessageProcessor>();
     private final MessageLogger logger;
 
     public SingleThreadedActors(EventizerProvider eventizerProvider, MessageLogger logger) {
@@ -27,41 +24,29 @@ public class SingleThreadedActors extends Actors {
 
     @Override
     protected void startActorThread(MessageProcessor actorThread) {
-        pollers.add(new NonBlockingActorProcessor(actorThread));
+        actorThreads.add(actorThread);
     }
 
     public void processEventsUntilIdle() {
+        // TODO: simplify by moving exception handling logic into processNextMessageIfAny()
         boolean idle;
         do {
             idle = true;
-
-            List<Processable> processableEvents = new ArrayList<Processable>();
-            processableEvents.addAll(pollers);
-            for (Runnable runnable : takeAll(commandsToExecute)) {
-                processableEvents.add(new ProcessableRunnable(runnable));
-            }
-
-
-            for (Processable processable : processableEvents) {
+            for (MessageProcessor actorThread : actorThreads) {
                 try {
-                    if (processable.processedSomething()) {
+                    if (actorThread.processNextMessageIfAny()) {
                         idle = false;
                     }
                 } catch (Throwable t) {
                     idle = false;
-                    handleUncaughtException(processable, t);
+                    handleUncaughtException(actorThread, t);
                 }
+                // TODO: handle java.lang.InterruptedException
                 if (Thread.interrupted()) {
-                    pollers.remove(processable);
+                    actorThreads.remove(actorThread);
                 }
             }
         } while (!idle);
-    }
-
-    private static ArrayList<Runnable> takeAll(List<Runnable> list) {
-        ArrayList<Runnable> copy = new ArrayList<Runnable>(list);
-        list.clear();
-        return copy;
     }
 
     protected void handleUncaughtException(Object source, Throwable uncaughtException) {
@@ -73,45 +58,16 @@ public class SingleThreadedActors extends Actors {
     }
 
 
-    private interface Processable {
-
-        boolean processedSomething();
-    }
-
-    @NotThreadSafe
-    private static class ProcessableRunnable implements Processable {
-        private final Runnable runnable;
-
-        public ProcessableRunnable(Runnable runnable) {
-            this.runnable = runnable;
-        }
-
-        @Override
-        public boolean processedSomething() {
-            runnable.run();
-            return true;
-        }
-    }
-
-    @NotThreadSafe
-    private static class NonBlockingActorProcessor implements Processable {
-        private final MessageProcessor actorThread;
-
-        public NonBlockingActorProcessor(MessageProcessor actorThread) {
-            this.actorThread = actorThread;
-        }
-
-        @Override
-        public boolean processedSomething() {
-            return actorThread.processNextMessageIfAny();
-        }
-    }
-
-    @NotThreadSafe
+    @ThreadSafe
     private class AsynchronousExecutor implements Executor {
         @Override
-        public void execute(Runnable command) {
-            commandsToExecute.add(command);
+        public void execute(final Runnable command) {
+            // To unify the concepts of an executor and actors,
+            // we implement the executor as one-time actor threads.
+            ActorThread actorThread = startActorThread();
+            ActorRef<Runnable> actor = actorThread.bindActor(Runnable.class, command);
+            actor.tell().run();
+            actorThread.stop();
         }
     }
 }
