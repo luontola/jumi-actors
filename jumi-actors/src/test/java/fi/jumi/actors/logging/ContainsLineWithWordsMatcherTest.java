@@ -6,7 +6,7 @@ package fi.jumi.actors.logging;
 
 import org.junit.Test;
 
-import static fi.jumi.actors.logging.Matchers.containsLineWithWords;
+import static fi.jumi.actors.Matchers.containsLineWithWords;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ContainsLineWithWordsMatcherTest {

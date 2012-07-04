@@ -119,7 +119,7 @@ TODO NEXT:
 			OK - test: keeps interrupt status of the current thread
 			OK - test: enqueues even when interrupted
 			OK - consider using the add() method
-	!! - handle exceptions from actors (in general, not just in single-threaded actors)
+	OK - handle exceptions from actors (in general, not just in single-threaded actors)
 		OK - move exception handling from SingleThreadedActors#processEventsUntilIdle into ActorThreadImpl#process
 		OK - move exception handling from MultiThreadedActors.BlockingActorProcessor#run into ActorThreadImpl#process
 		OK - remove fi.jumi.actors.SingleThreadedActors#handleUncaughtException
@@ -128,7 +128,7 @@ TODO NEXT:
 		OK - dynamic events won't rethrow InterruptedException and thus stop the actor; remove support for the feature?
 		OK - test: actor should stay alive, process following messages (unless handler throws exception?)
 		OK - test: how to stop actors which throw exceptions
-		- pass also the message to uncaughtException()
+		OK - pass also the message to uncaughtException()
 	- misc refactoring
 		- ActorThreadImpl: change execute(Runnable) to send(MessageToActor), then could get rid of asserts in process()
 		- rename DeathPill to PoisonPill; more common word, also used in Akka

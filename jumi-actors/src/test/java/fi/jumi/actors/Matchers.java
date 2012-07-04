@@ -2,7 +2,7 @@
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
-package fi.jumi.actors.logging;
+package fi.jumi.actors;
 
 import org.hamcrest.*;
 
@@ -35,6 +35,21 @@ public class Matchers {
             @Override
             public void describeTo(Description description) {
                 description.appendText("contains line with words ").appendValueList("", ", ", "", expectedWords);
+            }
+        };
+    }
+
+    public static Matcher<Throwable> hasCause(final Matcher<?> causeMatcher) {
+        return new TypeSafeMatcher<Throwable>() {
+            @Override
+            protected boolean matchesSafely(Throwable item) {
+                return causeMatcher.matches(item.getCause());
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("has cause ")
+                        .appendDescriptionOf(causeMatcher);
             }
         };
     }

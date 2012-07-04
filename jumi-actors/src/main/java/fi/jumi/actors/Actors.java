@@ -115,7 +115,7 @@ public abstract class Actors {
             try {
                 message.fireOn(rawActor);
             } catch (Throwable t) {
-                failureHandler.uncaughtException(rawActor, t);
+                failureHandler.uncaughtException(rawActor, message, t);
             } finally {
                 logger.onProcessingFinished();
             }

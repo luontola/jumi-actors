@@ -20,7 +20,7 @@ public class UncaughtExceptionCollector implements Thread.UncaughtExceptionHandl
     }
 
     @Override
-    public void uncaughtException(Object actor, Throwable exception) {
+    public void uncaughtException(Object actor, Object message, Throwable exception) {
         uncaughtExceptions.add(exception);
     }
 

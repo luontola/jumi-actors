@@ -6,11 +6,15 @@ package fi.jumi.actors.failures;
 
 import javax.annotation.concurrent.Immutable;
 
+/**
+ * Mean to be used with {@link fi.jumi.actors.SingleThreadedActors}
+ * so that tests would crash early when an actor has problems.
+ */
 @Immutable
 public class CrashEarlyFailureHandler implements FailureHandler {
 
     @Override
-    public void uncaughtException(Object actor, Throwable exception) {
-        throw new RuntimeException("uncaught exception from " + actor, exception);
+    public void uncaughtException(Object actor, Object message, Throwable exception) {
+        throw new RuntimeException("uncaught exception from " + actor + " when processing message " + message, exception);
     }
 }

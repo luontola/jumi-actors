@@ -60,11 +60,13 @@ public abstract class ActorsContractHelpers<T extends Actors> {
 
     public class SpyFailureHandler implements FailureHandler {
         public volatile Object lastActor;
+        public volatile Object lastMessage;
         public volatile Throwable lastException;
 
         @Override
-        public void uncaughtException(Object actor, Throwable exception) {
+        public void uncaughtException(Object actor, Object message, Throwable exception) {
             this.lastActor = actor;
+            this.lastMessage = message;
             this.lastException = exception;
             logEvent("handled " + exception.getMessage());
         }
@@ -138,6 +140,11 @@ public abstract class ActorsContractHelpers<T extends Actors> {
             }
             OnSomethingEvent that = (OnSomethingEvent) obj;
             return this.parameter.equals(that.parameter);
+        }
+
+        @Override
+        public String toString() {
+            return "DummyListener.onSomething(" + parameter + ")";
         }
     }
 

@@ -10,7 +10,7 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
 
-import static fi.jumi.actors.logging.Matchers.containsLineWithWords;
+import static fi.jumi.actors.Matchers.containsLineWithWords;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;

@@ -177,10 +177,11 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
         DummyExceptionThrowingActor throwerActor = new DummyExceptionThrowingActor("dummy exception");
         ActorRef<DummyListener> actor = bindActorWithFailureHandler(failureHandler, throwerActor);
 
-        actor.tell().onSomething("");
+        actor.tell().onSomething("the message");
         awaitEvents(1);
 
         assertThat(failureHandler.lastActor, is((Object) throwerActor));
+        assertThat(failureHandler.lastMessage, is((Object) new OnSomethingEvent("the message")));
         assertThat(failureHandler.lastException, is((Throwable) throwerActor.thrownException));
     }
 
@@ -188,7 +189,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
     public void with_a_graceful_failure_handler_the_actor_thread_will_continue_processing_messages() {
         FailureHandler gracefulFailureHandler = new FailureHandler() {
             @Override
-            public void uncaughtException(Object actor, Throwable exception) {
+            public void uncaughtException(Object actor, Object message, Throwable exception) {
                 // just log the exception or stuff like that
             }
         };
@@ -214,7 +215,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
     public void with_an_interrupting_failure_handler_the_actor_thread_will_stop_processing_messages() {
         FailureHandler interruptingFailureHandler = new FailureHandler() {
             @Override
-            public void uncaughtException(Object actor, Throwable exception) {
+            public void uncaughtException(Object actor, Object message, Throwable exception) {
                 // log the exception, then stop the actor thread by interrupting it
                 Thread.currentThread().interrupt();
             }

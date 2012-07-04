@@ -14,9 +14,9 @@ import org.mockito.Matchers;
 import java.util.*;
 import java.util.concurrent.Executor;
 
+import static fi.jumi.actors.Matchers.hasCause;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
 public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActors> {
@@ -51,15 +51,13 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
             }
         };
         ActorRef<DummyListener> actor = actorThread.bindActor(DummyListener.class, exceptionThrowingActor);
-        actor.tell().onSomething("");
+        actor.tell().onSomething("the message being processed");
 
-        try {
-            actors.processEventsUntilIdle();
-            fail("should have thrown an exception");
-        } catch (Exception e) {
-            assertThat(e.getMessage(), is("uncaught exception from " + exceptionThrowingActor));
-            assertThat(e.getCause(), is(instanceOf(DummyException.class)));
-        }
+        thrown.expect(hasCause(instanceOf(DummyException.class)));
+        thrown.expectMessage("uncaught exception");
+        thrown.expectMessage(exceptionThrowingActor.toString());
+        thrown.expectMessage("the message being processed");
+        actors.processEventsUntilIdle();
     }
 
     @Test
