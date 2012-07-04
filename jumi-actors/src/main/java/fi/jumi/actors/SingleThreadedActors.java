@@ -6,7 +6,7 @@ package fi.jumi.actors;
 
 import fi.jumi.actors.eventizers.EventizerProvider;
 import fi.jumi.actors.failures.FailureHandler;
-import fi.jumi.actors.logging.MessageLogger;
+import fi.jumi.actors.logging.MessageListener;
 
 import javax.annotation.concurrent.*;
 import java.util.List;
@@ -16,11 +16,11 @@ import java.util.concurrent.*;
 public class SingleThreadedActors extends Actors {
 
     private final List<MessageProcessor> actorThreads = new CopyOnWriteArrayList<MessageProcessor>();
-    private final MessageLogger logger;
+    private final MessageListener messageListener;
 
-    public SingleThreadedActors(EventizerProvider eventizerProvider, FailureHandler failureHandler, MessageLogger logger) {
-        super(eventizerProvider, failureHandler, logger);
-        this.logger = logger;
+    public SingleThreadedActors(EventizerProvider eventizerProvider, FailureHandler failureHandler, MessageListener messageListener) {
+        super(eventizerProvider, failureHandler, messageListener);
+        this.messageListener = messageListener;
     }
 
     @Override
@@ -44,7 +44,7 @@ public class SingleThreadedActors extends Actors {
     }
 
     public Executor getExecutor() {
-        return logger.getLoggedExecutor(new AsynchronousExecutor());
+        return messageListener.getListenedExecutor(new AsynchronousExecutor());
     }
 
 

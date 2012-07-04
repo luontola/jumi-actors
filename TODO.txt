@@ -132,7 +132,7 @@ TODO NEXT:
 	!! - misc refactoring
 		OK - ActorThreadImpl: change execute(Runnable) to send(MessageToActor), then could get rid of asserts in process()
 		OK - rename DeathPill to PoisonPill; more common word, also used in Akka
-		- rename fi.jumi.actors.logging.MessageLogger to MessageListener? also getLoggedExecutor to getListenedExecutor, and use full name in Actors field
+		OK - rename fi.jumi.actors.logging.MessageLogger to MessageListener? also getLoggedExecutor to getListenedExecutor, and use full name in Actors field
 		- rename fi.jumi.actors.failures.FailureHandler to UncaughtExceptionHandler?
 		- rename packages: logging & failures -> listeners, mq -> queue?
 	- SilentFailureHandler is not used, create PrintStreamFailureHandler?

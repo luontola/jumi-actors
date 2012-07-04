@@ -7,7 +7,7 @@ package fi.jumi.actors;
 import fi.jumi.actors.dynamic.DynamicEventizerProvider;
 import fi.jumi.actors.eventizers.EventizerProvider;
 import fi.jumi.actors.failures.*;
-import fi.jumi.actors.logging.MessageLogger;
+import fi.jumi.actors.logging.MessageListener;
 import org.junit.Test;
 import org.mockito.Matchers;
 
@@ -24,8 +24,8 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
     private final List<SingleThreadedActors> createdActors = new ArrayList<SingleThreadedActors>();
 
     @Override
-    protected SingleThreadedActors newActors(EventizerProvider eventizerProvider, FailureHandler failureHandler, MessageLogger logger) {
-        SingleThreadedActors actors = new SingleThreadedActors(eventizerProvider, failureHandler, logger);
+    protected SingleThreadedActors newActors(EventizerProvider eventizerProvider, FailureHandler failureHandler, MessageListener messageListener) {
+        SingleThreadedActors actors = new SingleThreadedActors(eventizerProvider, failureHandler, messageListener);
         createdActors.add(actors);
         return actors;
     }
@@ -85,14 +85,14 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
     }
 
     @Test
-    public void the_asynchronous_executor_is_logged_using_the_same_MessageLogger_as_the_actors() {
-        Executor loggedExecutor = mock(Executor.class, "loggedExecutor");
-        MessageLogger messageLogger = mock(MessageLogger.class);
-        stub(messageLogger.getLoggedExecutor(Matchers.<Executor>any())).toReturn(loggedExecutor);
+    public void the_asynchronous_executor_hooked_into_the_same_MessageListener_as_the_actors_use() {
+        Executor listenedExecutor = mock(Executor.class, "listenedExecutor");
+        MessageListener messageListener = mock(MessageListener.class);
+        stub(messageListener.getListenedExecutor(Matchers.<Executor>any())).toReturn(listenedExecutor);
 
-        SingleThreadedActors actors = new SingleThreadedActors(defaultEventizerProvider, defaultFailureHandler, messageLogger);
+        SingleThreadedActors actors = new SingleThreadedActors(defaultEventizerProvider, defaultFailureHandler, messageListener);
         Executor asynchronousExecutor = actors.getExecutor();
 
-        assertThat(asynchronousExecutor, is(loggedExecutor));
+        assertThat(asynchronousExecutor, is(listenedExecutor));
     }
 }

@@ -47,7 +47,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
         defaultFailureHandler.failIfNotEmpty();
     }
 
-    protected abstract T newActors(EventizerProvider eventizerProvider, FailureHandler failureHandler, MessageLogger logger);
+    protected abstract T newActors(EventizerProvider eventizerProvider, FailureHandler failureHandler, MessageListener messageListener);
 
 
     // event processing
@@ -250,8 +250,8 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
 
     @Test
     public void sending_and_processing_messages_is_logged() {
-        MessageLogger logger = mock(MessageLogger.class);
-        actors = newActors(defaultEventizerProvider, defaultFailureHandler, logger);
+        MessageListener messageListener = mock(MessageListener.class);
+        actors = newActors(defaultEventizerProvider, defaultFailureHandler, messageListener);
         ActorThread actorThread = actors.startActorThread();
         DummyListener rawActor = mock(DummyListener.class);
         ActorRef<DummyListener> actor = actorThread.bindActor(DummyListener.class, rawActor);
@@ -260,9 +260,9 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
         sendSyncEvent(actorThread);                 // wait for onProcessingFinished to be called
         awaitEvents(1);
 
-        InOrder inOrder = inOrder(logger);
-        inOrder.verify(logger).onMessageSent(new OnSomethingEvent("parameter"));
-        inOrder.verify(logger).onProcessingStarted(rawActor, new OnSomethingEvent("parameter"));
-        inOrder.verify(logger).onProcessingFinished();
+        InOrder inOrder = inOrder(messageListener);
+        inOrder.verify(messageListener).onMessageSent(new OnSomethingEvent("parameter"));
+        inOrder.verify(messageListener).onProcessingStarted(rawActor, new OnSomethingEvent("parameter"));
+        inOrder.verify(messageListener).onProcessingFinished();
     }
 }

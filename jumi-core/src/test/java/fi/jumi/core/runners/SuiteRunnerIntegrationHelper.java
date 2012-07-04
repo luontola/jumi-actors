@@ -22,8 +22,8 @@ public abstract class SuiteRunnerIntegrationHelper {
     protected final SuiteListener expect = spy.getListener();
 
     private final FailureHandler failureHandler = new CrashEarlyFailureHandler();
-    private final MessageLogger logger = new SilentMessageLogger();
-    private final SingleThreadedActors actors = new SingleThreadedActors(new DynamicEventizerProvider(), failureHandler, logger);
+    private final MessageListener messageListener = new SilentMessageLogger();
+    private final SingleThreadedActors actors = new SingleThreadedActors(new DynamicEventizerProvider(), failureHandler, messageListener);
     private final Executor executor = actors.getExecutor();
 
     protected void runAndCheckExpectations(Driver driver, Class<?>... testClasses) {

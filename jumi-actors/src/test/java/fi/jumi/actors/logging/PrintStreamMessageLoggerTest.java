@@ -55,11 +55,11 @@ public class PrintStreamMessageLoggerTest {
     @Test
     public void logs_it_when_an_actors_sends_a_commands_to_an_Executor() {
         Executor realExecutor = mock(Executor.class);
-        Executor loggedExecutor = logger.getLoggedExecutor(realExecutor);
+        Executor listenedExecutor = logger.getListenedExecutor(realExecutor);
         logger.onProcessingStarted("actor1", "unimportant message");
         Runnable command = mock(Runnable.class, "DummyCommand");
 
-        loggedExecutor.execute(command);
+        listenedExecutor.execute(command);
 
         assertThat(output.toString(), containsLineWithWords("actor1 ->", command.toString()));
     }
@@ -67,11 +67,11 @@ public class PrintStreamMessageLoggerTest {
     @Test
     public void logs_it_when_the_Executor_starts_executing_the_command() {
         FakeExecutor realExecutor = new FakeExecutor();
-        Executor loggedExecutor = logger.getLoggedExecutor(realExecutor);
+        Executor listenedExecutor = logger.getListenedExecutor(realExecutor);
         logger.onProcessingStarted("actor1", "unimportant message");
         Runnable command = mock(Runnable.class, "DummyCommand");
 
-        loggedExecutor.execute(command);
+        listenedExecutor.execute(command);
         realExecutor.processCommands();
 
         assertThat(output.toString(), containsLineWithWords("FakeExecutor", "<-", command.toString()));
@@ -80,10 +80,10 @@ public class PrintStreamMessageLoggerTest {
     @Test
     public void the_logged_executor_executes_the_command() {
         FakeExecutor realExecutor = new FakeExecutor();
-        Executor loggedExecutor = logger.getLoggedExecutor(realExecutor);
+        Executor listenedExecutor = logger.getListenedExecutor(realExecutor);
         Runnable command = mock(Runnable.class, "DummyCommand");
 
-        loggedExecutor.execute(command);
+        listenedExecutor.execute(command);
         realExecutor.processCommands();
 
         verify(command).run();
@@ -122,7 +122,7 @@ public class PrintStreamMessageLoggerTest {
     }
 
     /**
-     * Makes sure that {@link MessageLogger#onProcessingFinished()} is called.
+     * Makes sure that {@link MessageListener#onProcessingFinished()} is called.
      */
     @Test
     public void the_thread_context_is_cleared_after_the_message_has_been_processed() {
@@ -135,14 +135,14 @@ public class PrintStreamMessageLoggerTest {
     }
 
     /**
-     * Makes sure that {@link MessageLogger#onProcessingFinished()} is called.
+     * Makes sure that {@link MessageListener#onProcessingFinished()} is called.
      */
     @Test
     public void the_thread_context_is_cleared_after_the_command_has_been_executed() {
         FakeExecutor realExecutor = new FakeExecutor();
-        Executor loggedExecutor = logger.getLoggedExecutor(realExecutor);
+        Executor listenedExecutor = logger.getListenedExecutor(realExecutor);
         Runnable command = mock(Runnable.class, "DummyCommand");
-        loggedExecutor.execute(command);
+        listenedExecutor.execute(command);
         realExecutor.processCommands(); // executes in the current thread
 
         logger.onMessageSent("message2");

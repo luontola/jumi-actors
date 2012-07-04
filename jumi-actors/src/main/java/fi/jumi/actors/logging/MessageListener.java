@@ -6,7 +6,7 @@ package fi.jumi.actors.logging;
 
 import java.util.concurrent.Executor;
 
-public interface MessageLogger {
+public interface MessageListener {
 
     void onMessageSent(Object message);
 
@@ -14,5 +14,5 @@ public interface MessageLogger {
 
     void onProcessingFinished();
 
-    Executor getLoggedExecutor(Executor realExecutor);
+    Executor getListenedExecutor(Executor realExecutor);
 }

@@ -8,7 +8,7 @@ import javax.annotation.concurrent.Immutable;
 import java.util.concurrent.Executor;
 
 @Immutable
-public class SilentMessageLogger implements MessageLogger {
+public class SilentMessageLogger implements MessageListener {
 
     @Override
     public void onMessageSent(Object message) {
@@ -23,7 +23,7 @@ public class SilentMessageLogger implements MessageLogger {
     }
 
     @Override
-    public Executor getLoggedExecutor(Executor realExecutor) {
+    public Executor getListenedExecutor(Executor realExecutor) {
         return realExecutor;
     }
 }

@@ -28,11 +28,11 @@ public class Main {
 
         int launcherPort = Integer.parseInt(args[0]);
 
-        MessageLogger messageLogger = createMessageLogger();
+        MessageListener messageListener = createMessageLogger();
         Executor actorsThreadPool = // messages already logged by the Actors implementation
                 Executors.newCachedThreadPool(new PrefixedThreadFactory("jumi-actors-"));
         // TODO: do not create unlimited numbers of threads; make it by default CPUs+1 or something
-        Executor testsThreadPool = messageLogger.getLoggedExecutor(
+        Executor testsThreadPool = messageListener.getListenedExecutor(
                 Executors.newCachedThreadPool(new PrefixedThreadFactory("jumi-tests-")));
 
         MultiThreadedActors actors = new MultiThreadedActors(
@@ -46,7 +46,7 @@ public class Main {
                         new TestClassListenerEventizer()
                 ),
                 new CrashEarlyFailureHandler(),
-                messageLogger
+                messageListener
         );
 
         ActorThread actorThread = actors.startActorThread();
@@ -56,7 +56,7 @@ public class Main {
         connectToLauncher(launcherPort, coordinator);
     }
 
-    private static MessageLogger createMessageLogger() {
+    private static MessageListener createMessageLogger() {
         if (SystemProperties.logActorMessages()) {
             return new PrintStreamMessageLogger(System.out);
         }

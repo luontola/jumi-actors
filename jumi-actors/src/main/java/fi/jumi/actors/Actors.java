@@ -6,7 +6,7 @@ package fi.jumi.actors;
 
 import fi.jumi.actors.eventizers.*;
 import fi.jumi.actors.failures.FailureHandler;
-import fi.jumi.actors.logging.MessageLogger;
+import fi.jumi.actors.logging.MessageListener;
 import fi.jumi.actors.mq.*;
 
 import javax.annotation.concurrent.*;
@@ -16,12 +16,12 @@ public abstract class Actors {
 
     private final EventizerProvider eventizerProvider;
     private final FailureHandler failureHandler;
-    private final MessageLogger logger;
+    private final MessageListener messageListener;
 
-    public Actors(EventizerProvider eventizerProvider, FailureHandler failureHandler, MessageLogger logger) {
+    public Actors(EventizerProvider eventizerProvider, FailureHandler failureHandler, MessageListener messageListener) {
         this.eventizerProvider = eventizerProvider;
         this.failureHandler = failureHandler;
-        this.logger = logger;
+        this.messageListener = messageListener;
     }
 
     public ActorThread startActorThread() {
@@ -89,7 +89,7 @@ public abstract class Actors {
 
         @Override
         public void send(final Event<T> message) {
-            logger.onMessageSent(message);
+            messageListener.onMessageSent(message);
             actorThread.send(new MessageToActor<T>(rawActor, message));
         }
     }
@@ -106,13 +106,13 @@ public abstract class Actors {
 
         @Override
         public void run() {
-            logger.onProcessingStarted(rawActor, message);
+            messageListener.onProcessingStarted(rawActor, message);
             try {
                 message.fireOn(rawActor);
             } catch (Throwable t) {
                 failureHandler.uncaughtException(rawActor, message, t);
             } finally {
-                logger.onProcessingFinished();
+                messageListener.onProcessingFinished();
             }
         }
     }

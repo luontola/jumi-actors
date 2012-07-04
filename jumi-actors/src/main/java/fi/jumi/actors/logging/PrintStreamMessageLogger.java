@@ -10,7 +10,7 @@ import java.util.Locale;
 import java.util.concurrent.Executor;
 
 @ThreadSafe
-public class PrintStreamMessageLogger implements MessageLogger {
+public class PrintStreamMessageLogger implements MessageListener {
 
     private static final String OUTGOING_MESSAGE = "->";
     private static final String INCOMING_MESSAGE = "<-";
@@ -65,7 +65,7 @@ public class PrintStreamMessageLogger implements MessageLogger {
     }
 
     @Override
-    public Executor getLoggedExecutor(Executor realExecutor) {
+    public Executor getListenedExecutor(Executor realExecutor) {
         return new LoggedExecutor(realExecutor);
     }
 
