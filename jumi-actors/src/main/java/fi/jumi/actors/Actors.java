@@ -10,7 +10,6 @@ import fi.jumi.actors.logging.MessageLogger;
 import fi.jumi.actors.mq.*;
 
 import javax.annotation.concurrent.*;
-import java.util.concurrent.Executor;
 
 @ThreadSafe
 public abstract class Actors {
@@ -35,7 +34,7 @@ public abstract class Actors {
 
 
     @ThreadSafe
-    private class ActorThreadImpl implements ActorThread, Executor, MessageProcessor {
+    private class ActorThreadImpl implements ActorThread, MessageProcessor {
 
         private final MessageQueue<Runnable> taskQueue = new MessageQueue<Runnable>();
 
@@ -48,11 +47,10 @@ public abstract class Actors {
 
         @Override
         public void stop() {
-            execute(new DeathPill());
+            taskQueue.send(new PoisonPill());
         }
 
-        @Override
-        public void execute(Runnable task) {
+        public void send(MessageToActor<?> task) {
             taskQueue.send(task);
         }
 
@@ -73,9 +71,6 @@ public abstract class Actors {
         }
 
         private void process(Runnable task) {
-            assert task instanceof MessageToActor
-                    || task instanceof DeathPill
-                    : "unexpected type of task: " + task;
             // MessageToActor should already take care of handling uncaught exceptions,
             // so we don't need to do it here.
             task.run();
@@ -84,10 +79,10 @@ public abstract class Actors {
 
     @ThreadSafe
     private class MessageToActorSender<T> implements MessageSender<Event<T>> {
-        private final Executor actorThread;
+        private final ActorThreadImpl actorThread;
         private final T rawActor;
 
-        public MessageToActorSender(Executor actorThread, T rawActor) {
+        public MessageToActorSender(ActorThreadImpl actorThread, T rawActor) {
             this.actorThread = actorThread;
             this.rawActor = rawActor;
         }
@@ -95,7 +90,7 @@ public abstract class Actors {
         @Override
         public void send(final Event<T> message) {
             logger.onMessageSent(message);
-            actorThread.execute(new MessageToActor<T>(rawActor, message));
+            actorThread.send(new MessageToActor<T>(rawActor, message));
         }
     }
 
@@ -123,7 +118,7 @@ public abstract class Actors {
     }
 
     @Immutable
-    private static class DeathPill implements Runnable {
+    private static class PoisonPill implements Runnable {
 
         @Override
         public void run() {
