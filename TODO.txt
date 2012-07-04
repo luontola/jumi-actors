@@ -167,6 +167,15 @@ TODO NEXT:
 	- remove the hack in fi.jumi.daemon.Main#exitWhenNotAnymoreInUse
 	- print a message on daemon startup and shutdown; makes it easier to see from logs that when the JVM was restarted
 
+- SuiteListener#onFailure cannot rely on the exception class from existing in the caller's class loader
+	- introduce ExceptionSafetyGloves?
+		- implementable as an exception with custom toString and that copies the StackTraceElements
+		- provide getExceptionClassName: String
+	- test: same toString as the original exception
+	- test: same StackTraceElements
+	- test: same toString & StackTraceElements also for cause
+	- test: same output of printStackTrace
+
 - end-to-end tests: failures outside tests (in drivers and core)
 	- actor tests print dummy exceptions; solve by having a custom pluggable exception handler which doesn't print stack traces of a DummyException class
 	- consider a supervisor pattern for actors (like in Akka)
