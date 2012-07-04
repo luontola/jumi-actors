@@ -13,6 +13,7 @@ import java.util.concurrent.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertTrue;
 
 public class MultiThreadedActorsTest extends ActorsContract<MultiThreadedActors> {
 
@@ -29,8 +30,9 @@ public class MultiThreadedActorsTest extends ActorsContract<MultiThreadedActors>
     }
 
     @After
-    public void shutdown() {
+    public void stopExecutor() throws InterruptedException {
         executor.shutdownNow();
+        assertTrue(executor.awaitTermination(TIMEOUT, TimeUnit.MILLISECONDS));
     }
 
 
