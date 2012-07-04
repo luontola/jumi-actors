@@ -135,7 +135,7 @@ TODO NEXT:
 		OK - rename fi.jumi.actors.logging.MessageLogger to MessageListener? also getLoggedExecutor to getListenedExecutor, and use full name in Actors field
 		SKIP - rename fi.jumi.actors.failures.FailureHandler to UncaughtExceptionHandler?
 		OK - rename packages: logging & failures -> listeners, mq -> queue?
-	- SilentFailureHandler is not used, create PrintStreamFailureHandler?
+	OK - SilentFailureHandler is not used, create PrintStreamFailureHandler?
 	- DynamicEventizer should not forward calls to equals/hashCode/toString (i.e. any methods not declared on the interface)
 	- publish a build (only jumi-actors, jumi-actors-maven-plugin, parent?)
 		- See below: include Git revision in pom.properties

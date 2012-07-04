@@ -16,6 +16,7 @@ import org.jboss.netty.channel.socket.oio.OioClientSocketChannelFactory;
 import org.jboss.netty.handler.codec.serialization.*;
 
 import javax.annotation.concurrent.*;
+import java.io.PrintStream;
 import java.net.InetSocketAddress;
 import java.util.concurrent.*;
 
@@ -25,15 +26,24 @@ public class Main {
     public static void main(String[] args) {
         exitWhenNotAnymoreInUse();
 
+        // program parameters
         int launcherPort = Integer.parseInt(args[0]);
 
-        MessageListener messageListener = createMessageLogger();
+        // logging configuration
+        PrintStream logOutput = System.out;
+        FailureHandler failureHandler = new PrintStreamFailureHandler(logOutput);
+        MessageListener messageListener = SystemProperties.logActorMessages()
+                ? new PrintStreamMessageLogger(logOutput)
+                : new SilentMessageLogger();
+
+        // thread pool configuration
         Executor actorsThreadPool = // messages already logged by the Actors implementation
                 Executors.newCachedThreadPool(new PrefixedThreadFactory("jumi-actors-"));
         // TODO: do not create unlimited numbers of threads; make it by default CPUs+1 or something
         Executor testsThreadPool = messageListener.getListenedExecutor(
                 Executors.newCachedThreadPool(new PrefixedThreadFactory("jumi-tests-")));
 
+        // actors configuration
         MultiThreadedActors actors = new MultiThreadedActors(
                 actorsThreadPool,
                 new ComposedEventizerProvider(
@@ -44,22 +54,15 @@ public class Main {
                         new CommandListenerEventizer(),
                         new TestClassListenerEventizer()
                 ),
-                new CrashEarlyFailureHandler(),
+                failureHandler,
                 messageListener
         );
 
+        // bootstrap the system
         ActorThread actorThread = actors.startActorThread();
-        ActorRef<CommandListener> coordinator = actorThread.bindActor(CommandListener.class,
-                new TestRunCoordinator(actorThread, testsThreadPool));
-
+        ActorRef<CommandListener> coordinator =
+                actorThread.bindActor(CommandListener.class, new TestRunCoordinator(actorThread, testsThreadPool));
         connectToLauncher(launcherPort, coordinator);
-    }
-
-    private static MessageListener createMessageLogger() {
-        if (SystemProperties.logActorMessages()) {
-            return new PrintStreamMessageLogger(System.out);
-        }
-        return new SilentMessageLogger();
     }
 
     private static void connectToLauncher(int launcherPort, final ActorRef<CommandListener> coordinator) {
