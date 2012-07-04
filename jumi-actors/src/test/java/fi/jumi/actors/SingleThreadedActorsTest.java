@@ -6,8 +6,7 @@ package fi.jumi.actors;
 
 import fi.jumi.actors.dynamic.DynamicEventizerProvider;
 import fi.jumi.actors.eventizers.EventizerProvider;
-import fi.jumi.actors.failures.*;
-import fi.jumi.actors.logging.MessageListener;
+import fi.jumi.actors.listeners.*;
 import org.junit.Test;
 import org.mockito.Matchers;
 

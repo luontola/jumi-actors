@@ -2,7 +2,7 @@
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
-package fi.jumi.actors.mq;
+package fi.jumi.actors.queue;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.concurrent.*;

@@ -6,8 +6,7 @@ package fi.jumi.actors;
 
 import fi.jumi.actors.dynamic.*;
 import fi.jumi.actors.eventizers.*;
-import fi.jumi.actors.failures.FailureHandler;
-import fi.jumi.actors.logging.*;
+import fi.jumi.actors.listeners.*;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.mockito.InOrder;

@@ -6,8 +6,7 @@ package fi.jumi.daemon;
 
 import fi.jumi.actors.*;
 import fi.jumi.actors.eventizers.ComposedEventizerProvider;
-import fi.jumi.actors.failures.CrashEarlyFailureHandler;
-import fi.jumi.actors.logging.*;
+import fi.jumi.actors.listeners.*;
 import fi.jumi.core.*;
 import fi.jumi.core.events.*;
 import fi.jumi.core.util.PrefixedThreadFactory;

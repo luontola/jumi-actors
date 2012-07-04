@@ -5,9 +5,8 @@
 package fi.jumi.actors;
 
 import fi.jumi.actors.eventizers.*;
-import fi.jumi.actors.failures.FailureHandler;
-import fi.jumi.actors.logging.MessageListener;
-import fi.jumi.actors.mq.*;
+import fi.jumi.actors.listeners.*;
+import fi.jumi.actors.queue.*;
 
 import javax.annotation.concurrent.*;
 

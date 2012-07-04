@@ -8,7 +8,7 @@ import fi.jumi.actors.Event;
 import fi.jumi.actors.dynamic.DynamicEventizer;
 import fi.jumi.actors.maven.codegen.GeneratedClass;
 import fi.jumi.actors.maven.reference.DummyListenerEventizer;
-import fi.jumi.actors.mq.*;
+import fi.jumi.actors.queue.*;
 import org.apache.commons.io.IOUtils;
 import org.junit.*;
 

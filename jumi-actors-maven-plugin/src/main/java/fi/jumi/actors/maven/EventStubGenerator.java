@@ -7,7 +7,7 @@ package fi.jumi.actors.maven;
 import fi.jumi.actors.Event;
 import fi.jumi.actors.eventizers.Eventizer;
 import fi.jumi.actors.maven.codegen.*;
-import fi.jumi.actors.mq.MessageSender;
+import fi.jumi.actors.queue.MessageSender;
 import org.codehaus.plexus.util.StringUtils;
 
 import java.io.Serializable;

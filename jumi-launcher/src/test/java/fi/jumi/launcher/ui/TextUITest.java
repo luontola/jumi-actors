@@ -5,7 +5,7 @@
 package fi.jumi.launcher.ui;
 
 import fi.jumi.actors.Event;
-import fi.jumi.actors.mq.MessageQueue;
+import fi.jumi.actors.queue.MessageQueue;
 import fi.jumi.api.drivers.TestId;
 import fi.jumi.core.*;
 import fi.jumi.core.events.suiteListener.SuiteListenerToEvent;

@@ -5,7 +5,7 @@
 package fi.jumi.actors.dynamic;
 
 import fi.jumi.actors.Event;
-import fi.jumi.actors.mq.*;
+import fi.jumi.actors.queue.*;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 

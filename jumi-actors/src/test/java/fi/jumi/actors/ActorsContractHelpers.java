@@ -5,8 +5,8 @@
 package fi.jumi.actors;
 
 import fi.jumi.actors.eventizers.Eventizer;
-import fi.jumi.actors.failures.FailureHandler;
-import fi.jumi.actors.mq.MessageSender;
+import fi.jumi.actors.listeners.FailureHandler;
+import fi.jumi.actors.queue.MessageSender;
 
 public abstract class ActorsContractHelpers<T extends Actors> {
 
