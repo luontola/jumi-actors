@@ -126,8 +126,8 @@ TODO NEXT:
 		OK - create fail-early version of failure handler, use it in fi.jumi.core.runners.SuiteRunnerIntegrationHelper
 		OK - use UncaughtExceptionCollector in ActorsContract
 		OK - dynamic events won't rethrow InterruptedException and thus stop the actor; remove support for the feature?
-		!! - test: actor should stay alive, process following messages (unless handler throws exception?)
-		- test: how to stop actors which throw exceptions
+		OK - test: actor should stay alive, process following messages (unless handler throws exception?)
+		OK - test: how to stop actors which throw exceptions
 		- pass also the message to uncaughtException()
 	- misc refactoring
 		- ActorThreadImpl: change execute(Runnable) to send(MessageToActor), then could get rid of asserts in process()
@@ -177,9 +177,10 @@ TODO NEXT:
 	- test: same output of printStackTrace
 
 - end-to-end tests: failures outside tests (in drivers and core)
-	- actor tests print dummy exceptions; solve by having a custom pluggable exception handler which doesn't print stack traces of a DummyException class
+	OK - actor tests print dummy exceptions; solve by having a custom pluggable exception handler which doesn't print stack traces of a DummyException class
+	OK - consider a command for stopping actors (Thread.interrupt(), DeathPill)
 	- consider a supervisor pattern for actors (like in Akka)
-	- consider a command for stopping actors (Thread.interrupt(), DeathPill)
+	- maybe testable by throwing exceptions from a driver or by producing non-valid .class files
 
 - deployment pipeline
 	jumi:

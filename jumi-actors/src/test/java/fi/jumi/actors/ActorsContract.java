@@ -184,14 +184,65 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
         assertThat(failureHandler.lastException, is((Throwable) throwerActor.thrownException));
     }
 
+    @Test
+    public void with_a_graceful_failure_handler_the_actor_thread_will_continue_processing_messages() {
+        FailureHandler gracefulFailureHandler = new FailureHandler() {
+            @Override
+            public void uncaughtException(Object actor, Throwable exception) {
+                // just log the exception or stuff like that
+            }
+        };
+        DummyListener throwOnFirstCall = new DummyListener() {
+            @Override
+            public void onSomething(String parameter) {
+                logEvent(parameter);
+                if (parameter.equals("first")) {
+                    throw new DummyException();
+                }
+            }
+        };
+        ActorRef<DummyListener> actor = bindActorWithFailureHandler(gracefulFailureHandler, throwOnFirstCall);
+
+        actor.tell().onSomething("first");
+        actor.tell().onSomething("second");
+        awaitEvents(2);
+
+        assertEvents("first", "second");
+    }
+
+    @Test
+    public void with_an_interrupting_failure_handler_the_actor_thread_will_stop_processing_messages() {
+        FailureHandler interruptingFailureHandler = new FailureHandler() {
+            @Override
+            public void uncaughtException(Object actor, Throwable exception) {
+                // log the exception, then stop the actor thread by interrupting it
+                Thread.currentThread().interrupt();
+            }
+        };
+        DummyListener throwOnFirstCall = new DummyListener() {
+            @Override
+            public void onSomething(String parameter) {
+                logEvent(parameter);
+                if (parameter.equals("first")) {
+                    throw new DummyException();
+                }
+            }
+        };
+        ActorRef<DummyListener> actor = bindActorWithFailureHandler(interruptingFailureHandler, throwOnFirstCall);
+
+        actor.tell().onSomething("first");
+        actor.tell().onSomething("second");
+        awaitEvents(1);
+        expectNoMoreEvents();
+
+        assertEvents("first");
+    }
+
     private ActorRef<DummyListener> bindActorWithFailureHandler(FailureHandler failureHandler, DummyListener rawActor) {
         T actors = newActors(defaultEventizerProvider, failureHandler, defaultLogger);
         ActorThread actorThread = actors.startActorThread();
         return actorThread.bindActor(DummyListener.class, rawActor);
     }
-
-    // TODO: actor should stay alive, process following messages
-    // TODO: how to stop actors which throw exceptions
 
 
     // message logging

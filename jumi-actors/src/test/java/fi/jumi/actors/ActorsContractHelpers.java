@@ -80,7 +80,7 @@ public abstract class ActorsContractHelpers<T extends Actors> {
 
         @Override
         public void onSomething(String parameter) {
-            thrownException = new RuntimeException(message);
+            thrownException = new DummyException(message);
             throw thrownException;
         }
     }

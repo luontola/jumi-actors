@@ -41,6 +41,6 @@ public class EventSpy {
             Thread.currentThread().interrupt();
         }
         int after = events.size();
-        assertThat("expected no more events, but still got some more", after, is(before));
+        assertThat("expected no more events, but still got some more: " + events, after, is(before));
     }
 }

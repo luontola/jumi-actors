@@ -15,7 +15,7 @@ import java.util.*;
 import java.util.concurrent.Executor;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
@@ -44,21 +44,21 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
         SingleThreadedActors actors = new SingleThreadedActors(defaultEventizerProvider, failureHandler, defaultLogger);
 
         ActorThread actorThread = actors.startActorThread();
-        DummyListener rawActor = new DummyListener() {
+        DummyListener exceptionThrowingActor = new DummyListener() {
             @Override
             public void onSomething(String parameter) {
-                throw new RuntimeException("dummy exception");
+                throw new DummyException();
             }
         };
-        ActorRef<DummyListener> actor = actorThread.bindActor(DummyListener.class, rawActor);
+        ActorRef<DummyListener> actor = actorThread.bindActor(DummyListener.class, exceptionThrowingActor);
         actor.tell().onSomething("");
 
         try {
             actors.processEventsUntilIdle();
             fail("should have thrown an exception");
         } catch (Exception e) {
-            assertThat(e.getMessage(), is("uncaught exception from " + rawActor));
-            assertThat(e.getCause().getMessage(), is("dummy exception"));
+            assertThat(e.getMessage(), is("uncaught exception from " + exceptionThrowingActor));
+            assertThat(e.getCause(), is(instanceOf(DummyException.class)));
         }
     }
 

@@ -12,8 +12,6 @@ import java.util.*;
 @ThreadSafe
 public class UncaughtExceptionCollector implements Thread.UncaughtExceptionHandler, FailureHandler {
 
-    public static final String DUMMY_EXCEPTION = "dummy exception";
-
     private final List<Throwable> uncaughtExceptions = Collections.synchronizedList(new ArrayList<Throwable>());
 
     @Override
@@ -27,18 +25,20 @@ public class UncaughtExceptionCollector implements Thread.UncaughtExceptionHandl
     }
 
     public RuntimeException throwDummyException() {
-        throw new RuntimeException(DUMMY_EXCEPTION);
+        throw new DummyException();
     }
 
     public void failIfNotEmpty() {
         for (Throwable uncaughtException : uncaughtExceptions) {
             if (!isDummyException(uncaughtException)) {
-                throw (AssertionError) new AssertionError("there were exceptions in a background thread").initCause(uncaughtException);
+                throw (AssertionError)
+                        new AssertionError("there were exceptions in a background thread")
+                                .initCause(uncaughtException);
             }
         }
     }
 
     private static boolean isDummyException(Throwable t) {
-        return DUMMY_EXCEPTION.equals(t.getMessage());
+        return t instanceof DummyException;
     }
 }
