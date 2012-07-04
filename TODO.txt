@@ -126,14 +126,19 @@ TODO NEXT:
 		OK - create fail-early version of failure handler, use it in fi.jumi.core.runners.SuiteRunnerIntegrationHelper
 		OK - use UncaughtExceptionCollector in ActorsContract
 		OK - dynamic events won't rethrow InterruptedException and thus stop the actor; remove support for the feature?
-		!! - test: actor should stay alive, process following messages
+		!! - test: actor should stay alive, process following messages (unless handler throws exception?)
 		- test: how to stop actors which throw exceptions
+		- pass also the message to uncaughtException()
+	- misc refactoring
+		- ActorThreadImpl: change execute(Runnable) to send(MessageToActor), then could get rid of asserts in process()
+		- rename DeathPill to PoisonPill; more common word, also used in Akka
+		- rename fi.jumi.actors.logging.MessageLogger to MessageListener? also getLoggedExecutor to getListenedExecutor, and use full name in Actors field
+		- rename fi.jumi.actors.failures.FailureHandler to UncaughtExceptionHandler?
+		- rename packages: logging & failures -> listeners, mq -> queue?
 	- SilentFailureHandler is not used, create PrintStreamFailureHandler?
-	- rename fi.jumi.actors.logging.MessageLogger to MessageListener? also getLoggedExecutor to getListenedExecutor
-	- rename fi.jumi.actors.failures.FailureHandler to UncaughtExceptionHandler?
-	- rename packages: logging & failures -> listeners, mq -> queue?
 	- DynamicEventizer should not forward calls to equals/hashCode/toString (i.e. any methods not declared on the interface)
 	- publish a build (only jumi-actors, jumi-actors-maven-plugin, parent?)
+		- See below: include Git revision in pom.properties
 	- write user documentation for jumi-actors
 
 - end-to-end tests: running multiple test classes
@@ -233,7 +238,7 @@ TODO NEXT:
 		https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide
 		https://issues.sonatype.org/browse/OSSRH-3707
 	- advertise the release
-	- write a blog post: Continuous Delivery with Maven, Go and Nexus into Maven Central
+	- write a blog post: Continuous Delivery with Maven and Go into Maven Central
 
 - misc refactoring
 	- unit tests for fi.jumi.core.results
