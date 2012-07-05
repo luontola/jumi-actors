@@ -24,9 +24,11 @@ import java.util.jar.*;
 
 import static fi.jumi.test.util.AsmUtils.*;
 import static java.util.Arrays.asList;
+import static org.fest.assertions.Assertions.assertThat;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
+import static org.junit.Assume.assumeTrue;
 
 @RunWith(PartiallyParameterized.class)
 public class BuildTest {
@@ -119,17 +121,29 @@ public class BuildTest {
 
     @Test
     public void jar_contains_a_pom_properties_with_the_maven_artifact_identifiers() throws IOException {
-        File jarFile = TestEnvironment.getProjectJar(artifactId);
-
-        Properties p = readPropertiesFromJar(jarFile, POM_FILES + artifactId + "/pom.properties");
-
+        Properties p = getPomProperties();
         assertThat("groupId", p.getProperty("groupId"), is("fi.jumi"));
         assertThat("artifactId", p.getProperty("artifactId"), is(artifactId));
-        assertReleaseOrSnapshotVersion(p.getProperty("version"));
+
+        String version = p.getProperty("version");
+        assertTrue("should be either release or snapshot: " + version, isRelease(version) != isSnapshot(version));
     }
 
-    private static void assertReleaseOrSnapshotVersion(String version) {
-        assertTrue("neither release nor snapshot version: " + version, isRelease(version) || isSnapshot(version));
+    @Test
+    public void release_jar_contains_build_properties_with_the_Git_revision_ID() throws IOException {
+        String version = getPomProperties().getProperty("version");
+        assumeTrue(isRelease(version));
+
+        Properties p = getBuildProperties();
+        assertThat(p.getProperty("revision")).as("revision").matches("[0-9a-f]{40}");
+    }
+
+    private Properties getBuildProperties() throws IOException {
+        return getMavenArtifactProperties("build.properties");
+    }
+
+    private Properties getPomProperties() throws IOException {
+        return getMavenArtifactProperties("pom.properties");
     }
 
     private static boolean isRelease(String version) {
@@ -138,6 +152,11 @@ public class BuildTest {
 
     private static boolean isSnapshot(String version) {
         return version.matches("\\d+\\.\\d+-SNAPSHOT");
+    }
+
+    private Properties getMavenArtifactProperties(String filename) throws IOException {
+        File jarFile = TestEnvironment.getProjectJar(artifactId);
+        return readPropertiesFromJar(jarFile, POM_FILES + artifactId + "/" + filename);
     }
 
     @Test
