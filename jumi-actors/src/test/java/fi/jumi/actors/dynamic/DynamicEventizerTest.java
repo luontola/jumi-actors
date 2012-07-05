@@ -4,7 +4,7 @@
 
 package fi.jumi.actors.dynamic;
 
-import fi.jumi.actors.Event;
+import fi.jumi.actors.*;
 import fi.jumi.actors.queue.*;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
@@ -79,19 +79,10 @@ public class DynamicEventizerTest {
     }
 
     @Test
-    public void listeners_must_contain_only_void_methods() {
+    public void rejects_invalid_actor_interfaces() {
         thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("listeners may contain only void methods, but onSomething had return type java.lang.String");
 
-        new DynamicEventizer<ListenerWithNonVoidMethods>(ListenerWithNonVoidMethods.class);
-    }
-
-    @Test
-    public void listeners_must_be_interfaces() {
-        thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("listeners must be interfaces, but got class");
-
-        new DynamicEventizer<ListenerWhichIsNotAnInterface>(ListenerWhichIsNotAnInterface.class);
+        new DynamicEventizer<ActorInterfaceContractsTest.HasNonVoidMethods>(ActorInterfaceContractsTest.INVALID_ACTOR_INTERFACE);
     }
 
 
@@ -119,13 +110,5 @@ public class DynamicEventizerTest {
         void multipleArguments(int one, int two);
 
         void zeroArguments();
-    }
-
-    private interface ListenerWithNonVoidMethods {
-        @SuppressWarnings({"UnusedDeclaration"})
-        String onSomething(String parameter);
-    }
-
-    private static abstract class ListenerWhichIsNotAnInterface {
     }
 }
