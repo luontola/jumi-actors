@@ -44,6 +44,16 @@ public class DynamicEventizerTest {
     }
 
     @Test
+    @SuppressWarnings({"ResultOfMethodCallIgnored", "ObjectEqualsNull"})
+    public void only_methods_of_the_actor_interface_are_converted_into_events() {
+        frontend.toString();
+        frontend.equals(null);
+        frontend.hashCode();
+
+        assertThat(queue.poll(), is(nullValue()));
+    }
+
+    @Test
     public void event_objects_are_serializable() throws Exception {
         DummyListener target = mock(DummyListener.class);
         MessageSender<Event<DummyListener>> backend = eventizer.newBackend(target);

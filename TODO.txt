@@ -140,11 +140,11 @@ TODO NEXT:
 		OK - SilentMessageLogger -> NullMessageListener
 		OK - PrintStreamFailureHandler -> PrintStreamLoggingFailureHandler / PrintStreamFailureLogger
 		OK - PrintStreamMessageLogger -> PrintStreamLoggingMessageListener / PrintStreamMessageLogger
-	- DynamicEventizer should not forward calls to equals/hashCode/toString (i.e. any methods not declared on the interface)
+	OK - DynamicEventizer should not forward calls to equals/hashCode/toString (i.e. any methods not declared on the interface)
 	- actor interface contracts
 		- extract eventizer contract checks from DynamicEventizer to Eventizers.validateActorInterface(Class)
 		- use also from the maven plugin
-		- create ActorInterfacesTest
+		- create ActorInterfacesTest, move related tests from DynamicEventizerTest
 		- make it explicit that events cannot throw exceptions
 	- publish a build (only jumi-actors, jumi-actors-maven-plugin, parent?)
 		- See below: include Git revision in pom.properties
