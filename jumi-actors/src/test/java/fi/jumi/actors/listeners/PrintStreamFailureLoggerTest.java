@@ -12,10 +12,10 @@ import java.io.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 
-public class PrintStreamFailureHandlerTest {
+public class PrintStreamFailureLoggerTest {
 
     private final ByteArrayOutputStream output = new ByteArrayOutputStream();
-    private final PrintStreamFailureHandler failureHandler = new PrintStreamFailureHandler(new PrintStream(output));
+    private final PrintStreamFailureLogger failureHandler = new PrintStreamFailureLogger(new PrintStream(output));
 
     @Test
     public void logs_uncaught_exceptions() {

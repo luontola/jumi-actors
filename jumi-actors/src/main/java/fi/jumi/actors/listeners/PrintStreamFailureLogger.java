@@ -8,11 +8,11 @@ import javax.annotation.concurrent.Immutable;
 import java.io.PrintStream;
 
 @Immutable
-public class PrintStreamFailureHandler implements FailureHandler {
+public class PrintStreamFailureLogger implements FailureHandler {
 
     private final PrintStream out;
 
-    public PrintStreamFailureHandler(PrintStream out) {
+    public PrintStreamFailureLogger(PrintStream out) {
         this.out = out;
     }
 

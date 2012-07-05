@@ -31,7 +31,7 @@ public class Main {
 
         // logging configuration
         PrintStream logOutput = System.out;
-        FailureHandler failureHandler = new PrintStreamFailureHandler(logOutput);
+        FailureHandler failureHandler = new PrintStreamFailureLogger(logOutput);
         MessageListener messageListener = SystemProperties.logActorMessages()
                 ? new PrintStreamMessageLogger(logOutput)
                 : new NullMessageListener();

@@ -136,10 +136,10 @@ TODO NEXT:
 		SKIP - rename fi.jumi.actors.failures.FailureHandler to UncaughtExceptionHandler?
 		OK - rename packages: logging & failures -> listeners, mq -> queue?
 	OK - SilentFailureHandler is not used, create PrintStreamFailureHandler?
-	!! - rename:
+	OK - rename:
 		OK - SilentMessageLogger -> NullMessageListener
-		- PrintStreamFailureHandler -> PrintStreamLoggingFailureHandler / PrintStreamFailureLogger
-		- PrintStreamMessageLogger -> PrintStreamLoggingMessageListener / PrintStreamMessageLogger
+		OK - PrintStreamFailureHandler -> PrintStreamLoggingFailureHandler / PrintStreamFailureLogger
+		OK - PrintStreamMessageLogger -> PrintStreamLoggingMessageListener / PrintStreamMessageLogger
 	- DynamicEventizer should not forward calls to equals/hashCode/toString (i.e. any methods not declared on the interface)
 	- actor interface contracts
 		- extract eventizer contract checks from DynamicEventizer to Eventizers.validateActorInterface(Class)
