@@ -18,7 +18,8 @@ public class ActorInterfaceContractsTest {
     @Test
     public void must_be_interfaces() {
         thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("actor interfaces must be interfaces, but got class " + NotAnInterface.class.getName());
+        thrown.expectMessage("actor interfaces must be interfaces, " +
+                "but got class fi.jumi.actors.ActorInterfaceContractsTest$NotAnInterface");
 
         Eventizers.validateActorInterface(NotAnInterface.class);
     }
@@ -26,7 +27,9 @@ public class ActorInterfaceContractsTest {
     @Test
     public void must_contain_only_void_methods() {
         thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("actor interface methods must be void, but onSomething had return type java.lang.String");
+        thrown.expectMessage("actor interface methods must be void, " +
+                "but method onSomething of interface fi.jumi.actors.ActorInterfaceContractsTest$HasNonVoidMethods " +
+                "had return type java.lang.String");
 
         Eventizers.validateActorInterface(HasNonVoidMethods.class);
     }
@@ -34,7 +37,9 @@ public class ActorInterfaceContractsTest {
     @Test
     public void must_not_throw_exceptions() {
         thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("actor interface methods may not throw exceptions, but onSomething throws java.lang.Exception");
+        thrown.expectMessage("actor interface methods may not throw exceptions, " +
+                "but method onSomething of interface fi.jumi.actors.ActorInterfaceContractsTest$HasExceptionThrowingMethods " +
+                "throws java.lang.Exception");
 
         Eventizers.validateActorInterface(HasExceptionThrowingMethods.class);
     }

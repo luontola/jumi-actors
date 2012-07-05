@@ -18,8 +18,8 @@ public class Eventizers {
     public static void validateActorInterface(Class<?> type) {
         checkIsInterface(type);
         for (Method method : type.getMethods()) {
-            checkReturnTypeIsVoid(method);
-            checkDoesNotThrowExceptions(method);
+            checkReturnTypeIsVoid(type, method);
+            checkDoesNotThrowExceptions(type, method);
         }
     }
 
@@ -29,19 +29,19 @@ public class Eventizers {
         }
     }
 
-    private static void checkReturnTypeIsVoid(Method method) {
+    private static void checkReturnTypeIsVoid(Class<?> type, Method method) {
         Class<?> returnType = method.getReturnType();
         if (!returnType.equals(Void.TYPE)) {
-            throw new IllegalArgumentException("actor interface methods must be void, but " +
-                    method.getName() + " had return type " + returnType.getName());
+            throw new IllegalArgumentException("actor interface methods must be void, " +
+                    "but method " + method.getName() + " of " + type + " had return type " + returnType.getName());
         }
     }
 
-    private static void checkDoesNotThrowExceptions(Method method) {
+    private static void checkDoesNotThrowExceptions(Class<?> type, Method method) {
         Class<?>[] exceptionTypes = method.getExceptionTypes();
         if (exceptionTypes.length > 0) {
-            throw new IllegalArgumentException("actor interface methods may not throw exceptions, but " +
-                    method.getName() + " throws " + format(exceptionTypes));
+            throw new IllegalArgumentException("actor interface methods may not throw exceptions, " +
+                    "but method " + method.getName() + " of " + type + " throws " + format(exceptionTypes));
         }
     }
 
