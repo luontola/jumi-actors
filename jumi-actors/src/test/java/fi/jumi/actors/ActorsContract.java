@@ -20,7 +20,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    protected final SilentMessageLogger defaultLogger = new SilentMessageLogger();
+    protected final NullMessageListener defaultMessageListener = new NullMessageListener();
     protected final UncaughtExceptionCollector defaultFailureHandler = new UncaughtExceptionCollector();
     protected final ComposedEventizerProvider defaultEventizerProvider =
             new ComposedEventizerProvider(
@@ -29,7 +29,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
 
     @Before
     public void initActors() {
-        actors = newActors(defaultEventizerProvider, defaultFailureHandler, defaultLogger);
+        actors = newActors(defaultEventizerProvider, defaultFailureHandler, defaultMessageListener);
     }
 
     /**
@@ -80,7 +80,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
 
     @Test
     public void actors_bound_to_the_same_actor_thread_are_processed_in_the_same_thread() {
-        actors = newActors(new DynamicEventizerProvider(), defaultFailureHandler, defaultLogger);
+        actors = newActors(new DynamicEventizerProvider(), defaultFailureHandler, defaultMessageListener);
         ActorThread actorThread = actors.startActorThread();
 
         class Actor1 implements PrimaryInterface {
@@ -239,7 +239,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
     }
 
     private ActorRef<DummyListener> bindActorWithFailureHandler(FailureHandler failureHandler, DummyListener rawActor) {
-        T actors = newActors(defaultEventizerProvider, failureHandler, defaultLogger);
+        T actors = newActors(defaultEventizerProvider, failureHandler, defaultMessageListener);
         ActorThread actorThread = actors.startActorThread();
         return actorThread.bindActor(DummyListener.class, rawActor);
     }

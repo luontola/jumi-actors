@@ -8,7 +8,7 @@ import javax.annotation.concurrent.Immutable;
 import java.util.concurrent.Executor;
 
 @Immutable
-public class SilentMessageLogger implements MessageListener {
+public class NullMessageListener implements MessageListener {
 
     @Override
     public void onMessageSent(Object message) {

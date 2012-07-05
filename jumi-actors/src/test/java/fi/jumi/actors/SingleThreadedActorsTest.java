@@ -40,7 +40,7 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
     @Test
     public void with_CrashEarlyFailureHandler_will_rethrow_uncaught_exceptions_to_the_caller() {
         CrashEarlyFailureHandler failureHandler = new CrashEarlyFailureHandler();
-        SingleThreadedActors actors = new SingleThreadedActors(defaultEventizerProvider, failureHandler, defaultLogger);
+        SingleThreadedActors actors = new SingleThreadedActors(defaultEventizerProvider, failureHandler, defaultMessageListener);
 
         ActorThread actorThread = actors.startActorThread();
         DummyListener exceptionThrowingActor = new DummyListener() {
@@ -62,7 +62,7 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
     @Test
     public void provides_an_asynchronous_executor() {
         final StringBuilder spy = new StringBuilder();
-        SingleThreadedActors actors = new SingleThreadedActors(new DynamicEventizerProvider(), defaultFailureHandler, defaultLogger);
+        SingleThreadedActors actors = new SingleThreadedActors(new DynamicEventizerProvider(), defaultFailureHandler, defaultMessageListener);
 
         Executor executor = actors.getExecutor();
         executor.execute(new Runnable() {

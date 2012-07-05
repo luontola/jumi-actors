@@ -34,7 +34,7 @@ public class Main {
         FailureHandler failureHandler = new PrintStreamFailureHandler(logOutput);
         MessageListener messageListener = SystemProperties.logActorMessages()
                 ? new PrintStreamMessageLogger(logOutput)
-                : new SilentMessageLogger();
+                : new NullMessageListener();
 
         // thread pool configuration
         Executor actorsThreadPool = // messages already logged by the Actors implementation
