@@ -18,6 +18,7 @@ import org.w3c.dom.*;
 import javax.annotation.concurrent.*;
 import javax.xml.xpath.*;
 import java.io.*;
+import java.net.*;
 import java.util.*;
 import java.util.jar.*;
 
@@ -25,7 +26,7 @@ import static fi.jumi.test.util.AsmUtils.*;
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @RunWith(PartiallyParameterized.class)
 public class BuildTest {
@@ -117,6 +118,29 @@ public class BuildTest {
     }
 
     @Test
+    public void jar_contains_a_pom_properties_with_the_maven_artifact_identifiers() throws IOException {
+        File jarFile = TestEnvironment.getProjectJar(artifactId);
+
+        Properties p = readPropertiesFromJar(jarFile, POM_FILES + artifactId + "/pom.properties");
+
+        assertThat("groupId", p.getProperty("groupId"), is("fi.jumi"));
+        assertThat("artifactId", p.getProperty("artifactId"), is(artifactId));
+        assertReleaseOrSnapshotVersion(p.getProperty("version"));
+    }
+
+    private static void assertReleaseOrSnapshotVersion(String version) {
+        assertTrue("neither release nor snapshot version: " + version, isRelease(version) || isSnapshot(version));
+    }
+
+    private static boolean isRelease(String version) {
+        return version.matches("\\d+\\.\\d+\\.\\d+");
+    }
+
+    private static boolean isSnapshot(String version) {
+        return version.matches("\\d+\\.\\d+-SNAPSHOT");
+    }
+
+    @Test
     @NonParameterized
     public void embedded_daemon_jar_contains_only_jumi_classes() throws IOException {
         assertJarContainsOnly(Daemon.getDaemonJarAsStream(), asList(
@@ -190,6 +214,19 @@ public class BuildTest {
 
 
     // helper methods
+
+    private static Properties readPropertiesFromJar(File jarFile, String resource) throws IOException {
+        URLClassLoader cl = new URLClassLoader(new URL[]{jarFile.toURI().toURL()});
+        InputStream in = cl.getResourceAsStream(resource);
+        assertNotNull("resource not found: " + resource, in);
+        try {
+            Properties p = new Properties();
+            p.load(in);
+            return p;
+        } finally {
+            in.close();
+        }
+    }
 
     private static void assertJarContainsOnly(File jar, List<String> whitelist) throws IOException {
         try {

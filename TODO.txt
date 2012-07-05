@@ -147,8 +147,8 @@ TODO NEXT:
 		OK - make it explicit that events cannot throw exceptions
 		OK - use also from the maven plugin
 		OK - show the class name in all failure messages
-	- publish a build (only jumi-actors, jumi-actors-maven-plugin, parent?)
-		- See below: include Git revision in pom.properties
+	!! - publish a build (only jumi-actors, jumi-actors-maven-plugin, parent?)
+		!! - See below: include Git revision in pom.properties
 		- push the button, check the OSSRH repo, release
 		- active sync to Maven Central
 	- write user documentation for jumi-actors
@@ -222,6 +222,7 @@ TODO NEXT:
 		http://stackoverflow.com/questions/10102818/custom-values-in-maven-pom-properties-file
 		<archive> element: http://maven.apache.org/plugins/maven-jar-plugin/jar-mojo.html
 		<pomPropertiesFile> element: http://maven.apache.org/shared/maven-archiver/index.html
+			- does not work, see http://jira.codehaus.org/browse/MSHARED-154
 		use a template directory, maybe in parent: http://stackoverflow.com/questions/2469922/generate-a-version-java-file-in-maven/7161303#7161303
 			- in build tests check that the values are filtered, i.e. don't contain "$" or even better use a regexp of allowed values
 		(1) create with buildnumber plugin: http://mojo.codehaus.org/buildnumber-maven-plugin/usage.html
