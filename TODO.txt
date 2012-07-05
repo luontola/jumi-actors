@@ -136,9 +136,20 @@ TODO NEXT:
 		SKIP - rename fi.jumi.actors.failures.FailureHandler to UncaughtExceptionHandler?
 		OK - rename packages: logging & failures -> listeners, mq -> queue?
 	OK - SilentFailureHandler is not used, create PrintStreamFailureHandler?
+	!! - rename:
+		SilentMessageLogger -> NullMessageListener
+		PrintStreamFailureHandler -> PrintStreamLoggingFailureHandler / PrintStreamFailureLogger
+		PrintStreamMessageLogger -> PrintStreamLoggingMessageListener / PrintStreamMessageLogger
 	- DynamicEventizer should not forward calls to equals/hashCode/toString (i.e. any methods not declared on the interface)
+	- actor interface contracts
+		- extract eventizer contract checks from DynamicEventizer to Eventizers.validateActorInterface(Class)
+		- use also from the maven plugin
+		- create ActorInterfacesTest
+		- make it explicit that events cannot throw exceptions
 	- publish a build (only jumi-actors, jumi-actors-maven-plugin, parent?)
 		- See below: include Git revision in pom.properties
+		- push the button, check the OSSRH repo, release
+		- active sync to Maven Central
 	- write user documentation for jumi-actors
 
 - end-to-end tests: running multiple test classes
