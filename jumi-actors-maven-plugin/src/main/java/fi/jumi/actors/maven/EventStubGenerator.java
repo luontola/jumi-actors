@@ -5,7 +5,7 @@
 package fi.jumi.actors.maven;
 
 import fi.jumi.actors.Event;
-import fi.jumi.actors.eventizers.Eventizer;
+import fi.jumi.actors.eventizers.*;
 import fi.jumi.actors.maven.codegen.*;
 import fi.jumi.actors.queue.MessageSender;
 import org.codehaus.plexus.util.StringUtils;
@@ -27,6 +27,7 @@ public class EventStubGenerator {
     private final String stubsPackage;
 
     public EventStubGenerator(Class<?> listenerType, TargetPackageResolver targetPackageResolver) {
+        Eventizers.validateActorInterface(listenerType);
         listenerInterface = JavaType.of(listenerType);
         listenerMethods = listenerType.getMethods();
         Arrays.sort(listenerMethods, new Comparator<Method>() {

@@ -11,6 +11,7 @@ import fi.jumi.actors.maven.reference.DummyListenerEventizer;
 import fi.jumi.actors.queue.*;
 import org.apache.commons.io.IOUtils;
 import org.junit.*;
+import org.junit.rules.ExpectedException;
 
 import java.io.*;
 import java.util.*;
@@ -25,6 +26,9 @@ public class EventStubGeneratorTest {
 
     private static final String TARGET_PACKAGE = "fi.jumi.actors.maven.reference";
 
+    @Rule
+    public final ExpectedException thrown = ExpectedException.none();
+
     private TargetPackageResolver targetPackageResolver;
     private EventStubGenerator generator;
 
@@ -35,7 +39,7 @@ public class EventStubGeneratorTest {
     }
 
     @Test
-    public void eventizer_advertises_its_listener_type() {
+    public void eventizer_advertises_its_actor_interface_type() {
         DummyListenerEventizer eventizer = new DummyListenerEventizer();
 
         assertEquals(DummyListener.class, eventizer.getType());
@@ -175,6 +179,14 @@ public class EventStubGeneratorTest {
         assertThat(frontend.source, containsString("void methodInParent()"));
     }
 
+    @Test
+    public void rejects_invalid_actor_interfaces() {
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("actor interface methods must be void");
+
+        new EventStubGenerator(InvalidActorInterface.class, targetPackageResolver);
+    }
+
 
     private static void assertClassEquals(String expectedPath, GeneratedClass actual) throws IOException {
         assertEquals("file path", expectedPath, actual.path);
@@ -214,5 +226,10 @@ public class EventStubGeneratorTest {
     @SuppressWarnings({"UnusedDeclaration"})
     private interface ChildInterface extends ParentInterface {
         void methodInChild();
+    }
+
+    @SuppressWarnings({"UnusedDeclaration"})
+    private interface InvalidActorInterface {
+        String nonVoidMethod();
     }
 }

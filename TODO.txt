@@ -145,7 +145,8 @@ TODO NEXT:
 		OK - create ActorInterfacesTest, move related tests from DynamicEventizerTest
 		OK - extract eventizer contract checks from DynamicEventizer to Eventizers.validateActorInterface(Class)
 		OK - make it explicit that events cannot throw exceptions
-		- use also from the maven plugin
+		OK - use also from the maven plugin
+		- show the class name in all failure messages
 	- publish a build (only jumi-actors, jumi-actors-maven-plugin, parent?)
 		- See below: include Git revision in pom.properties
 		- push the button, check the OSSRH repo, release
