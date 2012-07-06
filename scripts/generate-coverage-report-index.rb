@@ -14,7 +14,11 @@ def write(file, content)
   File.open(file, 'wb') { |f| f.write(content) }
 end
 
-OUTPUT_FILE = ARGV.shift or raise 'Missing argument: OUTPUT_FILE'
+unless ARGV.length == 1
+  puts "Usage: #{$0} OUTPUT_FILE"
+  exit 1
+end
+OUTPUT_FILE = ARGV.shift
 
 module_list_items = Dir.glob('*/target/pit-reports/*/index.html').sort.
         map { |module_index| module_list_item(module_index) }.
