@@ -12,7 +12,11 @@ def get_release_version(snapshot_version, build_number)
   snapshot_version.gsub(snapshot_suffix, ".#{build_number}")
 end
 
-BUILD_NUMBER = Integer(ENV['GO_PIPELINE_COUNTER'])
+unless ARGV.length == 1
+  puts "Usage: #{$0} BUILD_NUMBER"
+  exit 1
+end
+BUILD_NUMBER = Integer(ARGV.shift)
 
 root_pom = REXML::Document.new(File.new("pom.xml"))
 old_version = root_pom.elements["/project/version"].text

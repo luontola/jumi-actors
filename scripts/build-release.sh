@@ -6,7 +6,7 @@ set -e
 : ${PWD:?}
 set -x
 
-RELEASE_VERSION=`ruby scripts/get-release-version.rb`
+RELEASE_VERSION=`ruby scripts/get-release-version.rb $GO_PIPELINE_COUNTER`
 
 echo "$RELEASE_VERSION" > version
 
