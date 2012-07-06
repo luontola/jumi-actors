@@ -147,11 +147,16 @@ TODO NEXT:
 		OK - make it explicit that events cannot throw exceptions
 		OK - use also from the maven plugin
 		OK - show the class name in all failure messages
-	!! - publish a build (only jumi-actors, jumi-actors-maven-plugin, parent?)
+	!! - logging WorkerCounter's onFinished events could benefit from using a custom interface; now "Runnable.run()" shows up in logs and requires interpreting
+		- create WorkerListener.onAllWorkersFinished() and migrate away from Runnable
+	- publish a build (only jumi-actors, jumi-actors-maven-plugin, parent?)
 		OK - See below: include Git revision in pom.properties
 		- push the button, check the OSSRH repo, release
 		- active sync to Maven Central
 	- write user documentation for jumi-actors
+		- example: hello world (put on front page)
+		- example: pi (put in wiki), adapted from http://doc.akka.io/docs/akka/2.0.2/intro/getting-started-first-java.html
+		- www: maven dependency xml, latest version number, link to http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22fi.jumi%22
 
 - end-to-end tests: running multiple test classes
 	- it's not sure whether SuiteRunner works correctly when there are many test classes
@@ -255,7 +260,7 @@ TODO NEXT:
 	!! - publish the first release (after jumi-actors is in a good shape)
 		OK - disable deployment of non-actor modules
 			http://maven.apache.org/plugins/maven-deploy-plugin/deploy-mojo.html#skip
-		- publish jumi-actors
+		!! - publish jumi-actors
 		- enable deployment for all except end-to-end tests and the aggregate pom: jumi-api, jumi-core, jumi-daemon, jumi-launcher
 	- activate sync to Maven Central
 		https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide
@@ -272,7 +277,6 @@ TODO NEXT:
 	- unit tests for fi.jumi.core.results
 	- combine DuplicateOnTestFoundEventFilter and SuiteListenerAdapter, rename to SuiteEventNormalizer/RunEventNormalizer
 	- logging actor messages could benefit from seeing that from which actor a messages was sent; a trace of intermediate actors
-	- logging WorkerCounter's onFinished events could benefit from using a custom interface; now "Runnable.run()" shows up in logs and requires interpreting
 	- refactor SimpleUnit
 		- simplity the tests by creating helper which runs using SuiteRunner, collects the results and provides assert methods
 		- move to its own module, simpleunit
@@ -288,8 +292,10 @@ TODO NEXT:
 	- BuildTest: try creating a non-generic assertThat method
 	- kill daemon before removing temp files: fi.jumi.test.AppRunner#tearDown
 	- SuiteRunner has a cyclic dependency with TestRunCoordinator
-	- put end-to-end tests in their own package (test.fi.jumi?), separate them from unit tests
+	- organize the project so that it's possible to run unit tests separate from end-to-end tests
+		- put end-to-end tests in their own package, test.fi.jumi?
 		- or use JUnit categories, maybe with a custom runner?
+		- or use ClasspathSuite?
 	- test execution might be best implemented using regular thread pools instead of actors
 		- CPU bound threads should use an optimal number of threads per core
 		- they take no input when running, so no actor handle needs to be created for them
@@ -300,8 +306,6 @@ TODO NEXT:
 		- disallow TestNotifier.fireFailure and fireTestFinished after test is finished
 		- log all incorrect usages to some internal log and make the suite fail?
 		- TestClassListener: consider eliminating redundant parameters
-	- duplicate method signatures in TestClassListener and TestClassRunnerListener
-	- should SuiteRunner or TestClassRunner be responsible for filtering duplicate onTestFound events?
 	- evaluate JarJar or ProGuard, maybe it could minimize the jars better than the shade plugin by removing also unused methods
 		http://sonatype.github.com/jarjar-maven-plugin/
 		http://pyx4me.com/pyx4me-maven-plugins/proguard-maven-plugin/
@@ -371,12 +375,9 @@ TODO NEXT:
 	- @Override annotation to all methods
 	- annotation to suppress unchecked warnings due to type erasure?
 	- toString?
-	- Externalizable? should give overall best performance without additional dependencies: https://github.com/eishay/jvm-serializers/wiki/
+	- hand-written serialization using bare DataOutput/DataInput? should give overall best performance without additional dependencies: https://github.com/eishay/jvm-serializers/wiki/
 	- plugin pom: add-source with http://mojo.codehaus.org/build-helper-maven-plugin/
 	- install plugin to local repository to avoid false alarms in jumi-core pom
-
-- organize the project so that it's possible to run unit tests separate from end-to-end tests
-	- maybe using ClasspathSuite?
 
 - write performance tests
 	- test: suite with a hundred test classes, each with a hundred tests, some of which also do printing; measure total time of running the suite
