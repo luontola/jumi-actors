@@ -14,4 +14,7 @@ mvn org.sonatype.plugins:nexus-maven-plugin:2.0.6:staging-close \
     -Dnexus.url=https://oss.sonatype.org/ \
     -Dnexus.username="$DEPLOY_USERNAME" \
     -Dnexus.password="$DEPLOY_PASSWORD" \
+    -Dnexus.groupId=fi.jumi \
+    -Dnexus.artifactId=parent \
+    -Dnexus.version="$VERSION" \
     -Dnexus.description="Jumi $VERSION"
