@@ -13,8 +13,6 @@
     <artifactId>jumi-daemon</artifactId>
     <packaging>jar</packaging>
 
-    <name>jumi-daemon</name>
-
     <properties>
         <shadedPrefix>fi.jumi.daemon.INTERNAL</shadedPrefix>
     </properties>

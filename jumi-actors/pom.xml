@@ -13,8 +13,6 @@
     <artifactId>jumi-actors</artifactId>
     <packaging>jar</packaging>
 
-    <name>jumi-actors</name>
-
     <dependencies>
 
         <dependency>

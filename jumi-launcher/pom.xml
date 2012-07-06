@@ -13,8 +13,6 @@
     <artifactId>jumi-launcher</artifactId>
     <packaging>jar</packaging>
 
-    <name>jumi-launcher</name>
-
     <properties>
         <daemonJarDir>${project.build.outputDirectory}/fi/jumi/launcher/daemon</daemonJarDir>
         <daemonJarName>jumi-daemon-${project.version}.jar</daemonJarName>

@@ -13,8 +13,6 @@
     <artifactId>jumi-actors-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
 
-    <name>jumi-actors-maven-plugin</name>
-
     <dependencies>
 
         <dependency>

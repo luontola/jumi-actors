@@ -13,8 +13,6 @@
     <artifactId>jumi-api</artifactId>
     <packaging>jar</packaging>
 
-    <name>jumi-api</name>
-
     <dependencies>
 
         <dependency>

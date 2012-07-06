@@ -13,8 +13,6 @@
     <artifactId>thread-safety-agent</artifactId>
     <packaging>jar</packaging>
 
-    <name>thread-safety-agent</name>
-
     <properties>
         <shadedPrefix>fi.jumi.threadsafetyagent.INTERNAL</shadedPrefix>
     </properties>

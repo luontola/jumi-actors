@@ -13,8 +13,6 @@
     <artifactId>jumi-core</artifactId>
     <packaging>jar</packaging>
 
-    <name>jumi-core</name>
-
     <properties>
         <shadedPrefix>fi.jumi.core.INTERNAL</shadedPrefix>
     </properties>

@@ -13,8 +13,6 @@
     <artifactId>end-to-end-tests</artifactId>
     <packaging>jar</packaging>
 
-    <name>end-to-end-tests</name>
-
     <properties>
         <test.projectArtifactsDir>${project.build.directory}/project-artifacts</test.projectArtifactsDir>
         <test.sandbox>${project.build.directory}/sandbox</test.sandbox>
