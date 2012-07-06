@@ -8,6 +8,8 @@ set -x
 
 RELEASE_VERSION=`ruby scripts/get-release-version.rb`
 
+echo "$RELEASE_VERSION" > version
+
 mvn org.codehaus.mojo:versions-maven-plugin:1.3.1:set \
     --batch-mode \
     --errors \
