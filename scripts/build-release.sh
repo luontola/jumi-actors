@@ -15,13 +15,6 @@ mvn org.codehaus.mojo:versions-maven-plugin:1.3.1:set \
     --errors \
     -DgenerateBackupPoms=false \
     -DnewVersion="$RELEASE_VERSION" \
-    --file pom.xml
-
-mvn org.codehaus.mojo:versions-maven-plugin:1.3.1:set \
-    --batch-mode \
-    --errors \
-    -DgenerateBackupPoms=false \
-    -DnewVersion="$RELEASE_VERSION" \
     --file parent/pom.xml
 
 mvn clean deploy \

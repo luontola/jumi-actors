@@ -274,6 +274,7 @@ TODO NEXT:
 		http://stackoverflow.com/questions/10102818/custom-values-in-maven-pom-properties-file
 		<archive> element: http://maven.apache.org/plugins/maven-jar-plugin/jar-mojo.html
 		<pomPropertiesFile> element: http://maven.apache.org/shared/maven-archiver/index.html
+	- improve JUnit's test timeouts to show a stack trace of the timed out test, to help debugging sporadic timeouts in RunningTestsTest
 	- unit tests for fi.jumi.core.results
 	- combine DuplicateOnTestFoundEventFilter and SuiteListenerAdapter, rename to SuiteEventNormalizer/RunEventNormalizer
 	- logging actor messages could benefit from seeing that from which actor a messages was sent; a trace of intermediate actors

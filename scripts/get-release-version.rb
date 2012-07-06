@@ -18,8 +18,8 @@ unless ARGV.length == 1
 end
 BUILD_NUMBER = Integer(ARGV.shift)
 
-root_pom = REXML::Document.new(File.new("pom.xml"))
-old_version = root_pom.elements["/project/version"].text
+pom = REXML::Document.new(File.new("parent/pom.xml"))
+old_version = pom.elements["/project/version"].text
 new_version = get_release_version(old_version, BUILD_NUMBER)
 
 puts new_version
