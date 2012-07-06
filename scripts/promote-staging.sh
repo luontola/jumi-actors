@@ -10,7 +10,7 @@ set -x
 
 ruby scripts/copy-staging-to-release-repo.rb
 
-mvn org.sonatype.plugins:nexus-maven-plugin:staging-close \
+mvn org.sonatype.plugins:nexus-maven-plugin:2.0.6:staging-close \
     --batch-mode \
     --errors \
     -Dnexus.url=https://oss.sonatype.org/ \
