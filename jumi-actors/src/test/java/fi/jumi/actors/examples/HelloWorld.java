@@ -15,13 +15,13 @@ public class HelloWorld {
     public static void main(String[] args) {
 
         // Configure the actors implementation and its dependencies:
-        // - Executor for the multi-threaded implementation
+        // - Executor for running the actors (when using MultiThreadedActors)
         // - Eventizers for converting method calls to event objects and back again
         // - Handler for uncaught exceptions from actors
         // - Logging of all messages for debug purposes (here disabled)
-        ExecutorService executor = Executors.newCachedThreadPool();
+        ExecutorService actorsThreadPool = Executors.newCachedThreadPool();
         Actors actors = new MultiThreadedActors(
-                executor,
+                actorsThreadPool,
                 new DynamicEventizerProvider(),
                 new CrashEarlyFailureHandler(),
                 new NullMessageListener()
@@ -33,7 +33,7 @@ public class HelloWorld {
         // Create an actor to be executed in this actor thread. Some guidelines:
         // - Never pass around a direct reference to an actor, but always use ActorRef
         // - To avoid confusion, also avoid passing around the proxy returned by ActorRef.tell()
-        ActorRef<Greeter> helloSayer = actorThread.bindActor(Greeter.class, new Greeter() {
+        ActorRef<Greeter> helloGreeter = actorThread.bindActor(Greeter.class, new Greeter() {
             @Override
             public void sayGreeting(String name) {
                 System.out.println("Hello " + name + " from " + Thread.currentThread().getName());
@@ -41,7 +41,7 @@ public class HelloWorld {
         });
 
         // The pattern for sending messages to actors
-        helloSayer.tell().sayGreeting("World");
+        helloGreeter.tell().sayGreeting("World");
 
         // "Wazzup" should be printed before "Hello World" and the thread name will be different
         System.out.println("Wazzup from " + Thread.currentThread().getName());
@@ -53,7 +53,7 @@ public class HelloWorld {
         // Finally do an orderly shutdown of the executor.
         // Calling shutdownNow() on the executor would interrupt and stop all
         // actor threads immediately without waiting for messages to be processed.
-        executor.shutdown();
+        actorsThreadPool.shutdown();
     }
 
     public interface Greeter {

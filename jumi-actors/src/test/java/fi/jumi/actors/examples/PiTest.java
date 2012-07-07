@@ -20,7 +20,7 @@ public class PiTest {
 
     /**
      * An example of a unit test. We don't need to create the actors container, we just
-     * need to wrap our test double into an ActorRef (never to this in production code!)
+     * need to wrap our test double into an ActorRef (never do this in production code!)
      */
     @Test
     public void each_worker_calculates_one_part_of_the_pi_approximation() {
@@ -64,10 +64,10 @@ public class PiTest {
                 new CrashEarlyFailureHandler(),
                 new NullMessageListener()
         );
-        Executor workerPool = actors.getExecutor(); // Also single-threaded, runs in this same test thread
+        Executor workersThreadPool = actors.getExecutor(); // Also single-threaded, runs in this same test thread
         ActorThread thread = actors.startActorThread();
 
-        ActorRef<Calculator> master = thread.bindActor(Calculator.class, new Master(thread, workerPool, 10, 10));
+        ActorRef<Calculator> master = thread.bindActor(Calculator.class, new Master(thread, workersThreadPool, 10, 10));
         ActorRef<ResultListener> listener = thread.bindActor(ResultListener.class, spy);
         master.tell().approximatePi(listener);
 

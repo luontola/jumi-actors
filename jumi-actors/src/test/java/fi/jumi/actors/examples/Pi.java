@@ -33,21 +33,21 @@ public class Pi {
         // *** CONFIGURE THE ACTORS CONTAINER ***
 
         // Executors for creating actor threads and executing the Pi calculating workers
-        final ExecutorService actorPool = Executors.newCachedThreadPool();
-        final ExecutorService realWorkerPool = Executors.newFixedThreadPool(NR_OF_WORKERS);
+        final ExecutorService actorsThreadPool = Executors.newCachedThreadPool();
+        final ExecutorService realWorkersThreadPool = Executors.newFixedThreadPool(NR_OF_WORKERS);
 
         MessageListener messageListener;
-        Executor workerPool;
+        Executor workersThreadPool;
         if (LOGGING) {
             // Log all messages to show how the system works
             messageListener = new PrintStreamMessageLogger(System.out);
 
             // Also log what commands the actors execute using this executor
-            workerPool = messageListener.getListenedExecutor(realWorkerPool);
+            workersThreadPool = messageListener.getListenedExecutor(realWorkersThreadPool);
         } else {
             // No logging; makes everything much faster
             messageListener = new NullMessageListener();
-            workerPool = realWorkerPool;
+            workersThreadPool = realWorkersThreadPool;
         }
 
         // On failure, log the error and keep on processing more messages
@@ -57,7 +57,7 @@ public class Pi {
         EventizerProvider eventizerProvider = new DynamicEventizerProvider();
 
         // Multi-threaded actors implementation for production use
-        MultiThreadedActors actors = new MultiThreadedActors(actorPool, eventizerProvider, failureHandler, messageListener);
+        MultiThreadedActors actors = new MultiThreadedActors(actorsThreadPool, eventizerProvider, failureHandler, messageListener);
 
 
         // *** START UP THE APPLICATION ***
@@ -65,7 +65,7 @@ public class Pi {
         ActorThread actorThread = actors.startActorThread();
 
         ActorRef<Calculator> master = actorThread.bindActor(Calculator.class,
-                new Master(actorThread, workerPool, NR_OF_MESSAGES, NR_OF_ELEMENTS));
+                new Master(actorThread, workersThreadPool, NR_OF_MESSAGES, NR_OF_ELEMENTS));
 
         ActorRef<ResultListener> listener = actorThread.bindActor(ResultListener.class, new ResultListener() {
             private final long start = System.currentTimeMillis();
@@ -78,8 +78,8 @@ public class Pi {
                 System.out.println("Calculation time: " + duration + " ms");
 
                 // Stop all actor threads and workers immediately
-                actorPool.shutdownNow();
-                realWorkerPool.shutdownNow();
+                actorsThreadPool.shutdownNow();
+                realWorkersThreadPool.shutdownNow();
             }
         });
 
@@ -90,14 +90,14 @@ public class Pi {
     public static class Master implements Calculator {
 
         private final ActorThread currentThread;
-        private final Executor workerPool;
+        private final Executor workersThreadPool;
 
         private final int nrOfMessages;
         private final int nrOfElements;
 
-        public Master(ActorThread currentThread, Executor workerPool, int nrOfMessages, int nrOfElements) {
+        public Master(ActorThread currentThread, Executor workersThreadPool, int nrOfMessages, int nrOfElements) {
             this.currentThread = currentThread;
-            this.workerPool = workerPool;
+            this.workersThreadPool = workersThreadPool;
             this.nrOfMessages = nrOfMessages;
             this.nrOfElements = nrOfElements;
         }
@@ -121,7 +121,7 @@ public class Pi {
             ActorRef<ResultListener> reducer = currentThread.bindActor(ResultListener.class, new Reducer());
 
             for (int start = 0; start < nrOfMessages; start++) {
-                workerPool.execute(new Worker(start, nrOfElements, reducer));
+                workersThreadPool.execute(new Worker(start, nrOfElements, reducer));
             }
         }
     }
