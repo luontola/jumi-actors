@@ -4,7 +4,7 @@
 
 package fi.jumi.actors;
 
-import fi.jumi.actors.dynamic.DynamicEventizerProvider;
+import fi.jumi.actors.eventizers.dynamic.DynamicEventizerProvider;
 import fi.jumi.actors.eventizers.EventizerProvider;
 import fi.jumi.actors.listeners.*;
 import org.junit.Test;

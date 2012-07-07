@@ -4,7 +4,6 @@
 
 package fi.jumi.actors.eventizers;
 
-import fi.jumi.actors.Event;
 import fi.jumi.actors.queue.MessageSender;
 
 public interface Eventizer<T> {

@@ -4,7 +4,7 @@
 
 package fi.jumi.actors.maven;
 
-import fi.jumi.actors.Event;
+import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.eventizers.*;
 import fi.jumi.actors.maven.codegen.*;
 import fi.jumi.actors.queue.MessageSender;

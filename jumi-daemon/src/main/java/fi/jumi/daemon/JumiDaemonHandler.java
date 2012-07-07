@@ -5,6 +5,7 @@
 package fi.jumi.daemon;
 
 import fi.jumi.actors.*;
+import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.MessageSender;
 import fi.jumi.core.*;
 import fi.jumi.core.events.SuiteListenerEventizer;

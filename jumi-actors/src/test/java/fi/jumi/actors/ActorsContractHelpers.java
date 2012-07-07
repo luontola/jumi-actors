@@ -4,7 +4,7 @@
 
 package fi.jumi.actors;
 
-import fi.jumi.actors.eventizers.Eventizer;
+import fi.jumi.actors.eventizers.*;
 import fi.jumi.actors.listeners.FailureHandler;
 import fi.jumi.actors.queue.MessageSender;
 

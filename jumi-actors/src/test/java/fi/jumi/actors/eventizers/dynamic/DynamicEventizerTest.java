@@ -2,9 +2,10 @@
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
-package fi.jumi.actors.dynamic;
+package fi.jumi.actors.eventizers.dynamic;
 
 import fi.jumi.actors.*;
+import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.*;
 import org.junit.*;
 import org.junit.rules.ExpectedException;

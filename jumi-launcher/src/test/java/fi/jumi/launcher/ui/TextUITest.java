@@ -4,7 +4,7 @@
 
 package fi.jumi.launcher.ui;
 
-import fi.jumi.actors.Event;
+import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.MessageQueue;
 import fi.jumi.api.drivers.TestId;
 import fi.jumi.core.*;

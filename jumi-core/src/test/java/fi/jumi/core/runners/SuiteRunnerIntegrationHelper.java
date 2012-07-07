@@ -5,7 +5,7 @@
 package fi.jumi.core.runners;
 
 import fi.jumi.actors.*;
-import fi.jumi.actors.dynamic.DynamicEventizerProvider;
+import fi.jumi.actors.eventizers.dynamic.DynamicEventizerProvider;
 import fi.jumi.actors.listeners.*;
 import fi.jumi.api.drivers.Driver;
 import fi.jumi.core.*;

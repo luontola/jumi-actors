@@ -4,7 +4,7 @@
 
 package fi.jumi.test;
 
-import fi.jumi.actors.Event;
+import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.MessageQueue;
 import fi.jumi.core.*;
 import fi.jumi.core.events.suiteListener.SuiteListenerToEvent;

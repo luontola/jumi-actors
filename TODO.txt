@@ -149,9 +149,9 @@ TODO NEXT:
 		OK - show the class name in all failure messages
 	OK - logging WorkerCounter's onFinished events could benefit from using a custom interface; now "Runnable.run()" shows up in logs and requires interpreting
 		OK - create WorkerListener.onAllWorkersFinished() and migrate away from Runnable
-	- analyze dependency matrix
-		- package cycle in fi.jumi.actors.eventizers.Eventizer -> fi.jumi.actors.Event (move to f.j.a.eventizers)
-		- move f.j.a.dynamic to be a sub package of f.j.a.eventizers?
+	OK - analyze dependency matrix
+		OK - package cycle in fi.jumi.actors.eventizers.Eventizer -> fi.jumi.actors.Event (move to f.j.a.eventizers)
+		OK - move f.j.a.dynamic to be a sub package of f.j.a.eventizers?
 	- publish a build (only jumi-actors, jumi-actors-maven-plugin, parent?)
 		OK - See below: include Git revision in pom.properties
 		- push the button, check the OSSRH repo, release

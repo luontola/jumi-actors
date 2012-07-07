@@ -4,7 +4,7 @@
 
 package fi.jumi.launcher;
 
-import fi.jumi.actors.Event;
+import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.MessageSender;
 import fi.jumi.core.*;
 import org.jboss.netty.channel.*;

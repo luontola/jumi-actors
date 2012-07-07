@@ -4,8 +4,8 @@
 
 package fi.jumi.actors.maven;
 
-import fi.jumi.actors.Event;
-import fi.jumi.actors.dynamic.DynamicEventizer;
+import fi.jumi.actors.eventizers.Event;
+import fi.jumi.actors.eventizers.dynamic.DynamicEventizer;
 import fi.jumi.actors.maven.codegen.GeneratedClass;
 import fi.jumi.actors.maven.reference.DummyListenerEventizer;
 import fi.jumi.actors.queue.*;

@@ -1,6 +1,6 @@
 package fi.jumi.actors.maven.reference.dummyListener;
 
-import fi.jumi.actors.Event;
+import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.maven.DummyListener;
 import java.io.Serializable;
 

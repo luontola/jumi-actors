@@ -4,7 +4,7 @@
 
 package fi.jumi.actors;
 
-import fi.jumi.actors.dynamic.*;
+import fi.jumi.actors.eventizers.dynamic.*;
 import fi.jumi.actors.eventizers.*;
 import fi.jumi.actors.listeners.*;
 import org.junit.*;
