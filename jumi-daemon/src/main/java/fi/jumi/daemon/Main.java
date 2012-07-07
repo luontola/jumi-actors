@@ -44,11 +44,13 @@ public class Main {
                 Executors.newCachedThreadPool(new PrefixedThreadFactory("jumi-tests-")));
 
         // actors configuration
+        // TODO: not all of these eventizers might be needed - create a statistics gathering EventizerProvider
         MultiThreadedActors actors = new MultiThreadedActors(
                 actorsThreadPool,
                 new ComposedEventizerProvider(
                         new StartableEventizer(),
                         new RunnableEventizer(),
+                        new WorkerListenerEventizer(),
                         new TestClassFinderListenerEventizer(),
                         new SuiteListenerEventizer(),
                         new CommandListenerEventizer(),

@@ -147,8 +147,11 @@ TODO NEXT:
 		OK - make it explicit that events cannot throw exceptions
 		OK - use also from the maven plugin
 		OK - show the class name in all failure messages
-	!! - logging WorkerCounter's onFinished events could benefit from using a custom interface; now "Runnable.run()" shows up in logs and requires interpreting
-		- create WorkerListener.onAllWorkersFinished() and migrate away from Runnable
+	OK - logging WorkerCounter's onFinished events could benefit from using a custom interface; now "Runnable.run()" shows up in logs and requires interpreting
+		OK - create WorkerListener.onAllWorkersFinished() and migrate away from Runnable
+	- analyze dependency matrix
+		- package cycle in fi.jumi.actors.eventizers.Eventizer -> fi.jumi.actors.Event (move to f.j.a.eventizers)
+		- move f.j.a.dynamic to be a sub package of f.j.a.eventizers?
 	- publish a build (only jumi-actors, jumi-actors-maven-plugin, parent?)
 		OK - See below: include Git revision in pom.properties
 		- push the button, check the OSSRH repo, release
@@ -277,6 +280,8 @@ TODO NEXT:
 	- improve JUnit's test timeouts to show a stack trace of the timed out test, to help debugging sporadic timeouts in RunningTestsTest
 	- unit tests for fi.jumi.core.results
 	- combine DuplicateOnTestFoundEventFilter and SuiteListenerAdapter, rename to SuiteEventNormalizer/RunEventNormalizer
+	- there might be unnecessary eventizers in fi.jumi.daemon.Main and /jumi-core/pom.xml
+		- create EventizerUsageStatistics (extends EventizerProvider), print usage statistics when program exits
 	- logging actor messages could benefit from seeing that from which actor a messages was sent; a trace of intermediate actors
 	- refactor SimpleUnit
 		- simplity the tests by creating helper which runs using SuiteRunner, collects the results and provides assert methods

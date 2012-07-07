@@ -22,9 +22,9 @@ public class WorkerCountingExecutorTest {
     private final UncaughtExceptionCollector uncaughtExceptions = new UncaughtExceptionCollector();
     private ExecutorService realExecutor;
 
-    private final ActorRef<Runnable> callback = ActorRef.<Runnable>wrap(new Runnable() {
+    private final ActorRef<WorkerListener> callback = ActorRef.<WorkerListener>wrap(new WorkerListener() {
         @Override
-        public void run() {
+        public void onAllWorkersFinished() {
             events.log("callback");
         }
     });

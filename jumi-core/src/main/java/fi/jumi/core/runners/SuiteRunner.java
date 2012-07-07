@@ -69,16 +69,16 @@ public class SuiteRunner implements Startable, TestClassFinderListener {
         childRunners++;
 
         @NotThreadSafe
-        class OnRunnerFinished implements Runnable {
+        class OnRunnerFinished implements WorkerListener {
             @Override
-            public void run() {
+            public void onAllWorkersFinished() {
                 childRunners--;
                 if (childRunners == 0) {
                     suiteListener.onSuiteFinished();
                 }
             }
         }
-        ActorRef<Runnable> callback = actorThread.bindActor(Runnable.class, new OnRunnerFinished());
+        ActorRef<WorkerListener> callback = actorThread.bindActor(WorkerListener.class, new OnRunnerFinished());
         return new WorkerCountingExecutor(testExecutor, new WorkerCounter(callback));
     }
 }

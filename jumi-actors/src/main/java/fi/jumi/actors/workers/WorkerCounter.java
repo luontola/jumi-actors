@@ -13,9 +13,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class WorkerCounter {
 
     private final AtomicInteger activeWorkers = new AtomicInteger(0);
-    private final ActorRef<Runnable> onFinished;
+    private final ActorRef<WorkerListener> onFinished;
 
-    public WorkerCounter(ActorRef<Runnable> onFinished) {
+    public WorkerCounter(ActorRef<WorkerListener> onFinished) {
         this.onFinished = onFinished;
     }
 
@@ -28,7 +28,7 @@ public class WorkerCounter {
     void fireWorkerFinished() {
         int workers = activeWorkers.decrementAndGet();
         if (workers == 0) {
-            onFinished.tell().run();
+            onFinished.tell().onAllWorkersFinished();
         }
     }
 }
