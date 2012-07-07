@@ -152,12 +152,12 @@ TODO NEXT:
 	OK - analyze dependency matrix
 		OK - package cycle in fi.jumi.actors.eventizers.Eventizer -> fi.jumi.actors.Event (move to f.j.a.eventizers)
 		OK - move f.j.a.dynamic to be a sub package of f.j.a.eventizers?
-	- publish a build (only jumi-actors, jumi-actors-maven-plugin, parent?)
+	OK - publish a build (only jumi-actors, jumi-actors-maven-plugin, parent?)
 		OK - See below: include Git revision in pom.properties
-		- push the button, check the OSSRH repo, release
-		- active sync to Maven Central
-	- write user documentation for jumi-actors
-		- example: hello world (put on front page)
+		OK - push the button, check the OSSRH repo, release
+		OK - active sync to Maven Central
+	!! - write user documentation for jumi-actors
+		!! - example: hello world (put on front page)
 		- example: pi (put in wiki), adapted from http://doc.akka.io/docs/akka/2.0.2/intro/getting-started-first-java.html
 		- www: maven dependency xml, latest version number, link to http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22fi.jumi%22
 
@@ -260,14 +260,14 @@ TODO NEXT:
 			- promote automatically
 			http://www.sonatype.com/books/nexus-book/reference/staging-sect-managing-plugin.html
 			https://repository.sonatype.org/content/sites/maven-sites/nexus-maven-plugin/
-	!! - publish the first release (after jumi-actors is in a good shape)
+	OK - publish the first release (after jumi-actors is in a good shape)
 		OK - disable deployment of non-actor modules
 			http://maven.apache.org/plugins/maven-deploy-plugin/deploy-mojo.html#skip
-		!! - publish jumi-actors
-		- enable deployment for all except end-to-end tests and the aggregate pom: jumi-api, jumi-core, jumi-daemon, jumi-launcher
-	- activate sync to Maven Central
+		OK - publish jumi-actors
+	OK - activate sync to Maven Central
 		https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide
 		https://issues.sonatype.org/browse/OSSRH-3707
+	- enable deployment for all except end-to-end tests and the aggregate pom: jumi-api, jumi-core, jumi-daemon, jumi-launcher
 	- advertise the release
 	- write a blog post: Continuous Delivery with Maven and Go into Maven Central
 
