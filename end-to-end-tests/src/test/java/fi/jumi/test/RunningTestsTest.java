@@ -9,7 +9,7 @@ import sample.*;
 
 public class RunningTestsTest {
 
-    private static final int TIMEOUT = 2000;
+    private static final int TIMEOUT = 3000;
 
     @Rule
     public final AppRunner app = new AppRunner();

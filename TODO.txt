@@ -7,6 +7,11 @@ TODO NEXT:
 	- advertise the release
 	- write a blog post: Continuous Delivery with Maven and Go into Maven Central
 
+- investigate sporadic timeouts in RunningTestsTest
+	- improve the logging: now does not show messages that SuiteRunner sends to clients
+	- keep an eye on what happens
+	- consider implemeting proper daemon shutdown sooner
+
 - end-to-end tests: running multiple test classes
 	- it's not sure whether SuiteRunner works correctly when there are many test classes
 	- test class inclusion patterns (*Test, Test*, some.package.*, some.package.** etc.)
