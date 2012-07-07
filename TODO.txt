@@ -2,7 +2,7 @@
 TODO NEXT:
 !! - write user documentation for jumi-actors
 	OK - example: hello world (put on front page)
-	- example: pi (put in wiki), adapted from http://doc.akka.io/docs/akka/2.0.2/intro/getting-started-first-java.html
+	OK - example: pi (put in wiki), adapted from http://doc.akka.io/docs/akka/2.0.2/intro/getting-started-first-java.html
 	- www: maven dependency xml, latest version number, link to http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22fi.jumi%22
 	- advertise the release
 	- write a blog post: Continuous Delivery with Maven and Go into Maven Central
