@@ -14,12 +14,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 @ThreadSafe
 public class WorkerCounter implements Executor {
 
-    private final AtomicInteger activeWorkers = new AtomicInteger(0);
+    private final Executor realExecutor;
     private final ActorRef<WorkerListener> onFinished;
 
-    private final Executor realExecutor;
+    private final AtomicInteger activeWorkers = new AtomicInteger(0);
     private final List<Worker> initialWorkers = new ArrayList<Worker>();
-    private volatile boolean initialWorkersStarted = false;
+    private boolean initialWorkersStarted = false;
 
     public WorkerCounter(Executor realExecutor, ActorRef<WorkerListener> onFinished) {
         this.realExecutor = realExecutor;
@@ -32,7 +32,6 @@ public class WorkerCounter implements Executor {
     }
 
     private synchronized void startWorker(Worker worker) {
-        fireWorkerCreated();
         if (!initialWorkersStarted) {
             initialWorkers.add(worker);
         } else {
@@ -48,7 +47,11 @@ public class WorkerCounter implements Executor {
         for (Worker initialWorker : initialWorkers) {
             realExecutor.execute(initialWorker);
         }
+        initialWorkers.clear(); // let the worker instances be garbage collected
     }
+
+
+    // Used only from the Worker class, to make sure that they are always called
 
     private void fireWorkerCreated() {
         activeWorkers.incrementAndGet();
@@ -66,6 +69,7 @@ public class WorkerCounter implements Executor {
         private final Runnable realCommand;
 
         public Worker(Runnable realCommand) {
+            fireWorkerCreated();
             this.realCommand = realCommand;
         }
 
