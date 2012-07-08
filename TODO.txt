@@ -1,5 +1,16 @@
 
 TODO NEXT:
+- WorkerCounter: instead of startInitialWorkers() have afterPreviousWorkersFinished(ActorRef<WorkerListener>) and remove the callback after use?
+	- must check activeWorkers==0 on setting the trigger and on a worker finishing
+	- avoid firing twice and unnecessary synchronization:
+	    private volatile ActorRef<WorkerListener> onFinished = null;
+	    private synchronized void fireAllWorkersFinished() {
+	        if (onFinished != null) {
+	            onFinished.tell().onAllWorkersFinished();
+	            onFinished = null;
+	        }
+	    }
+
 - write user documentation for jumi-actors
 	OK - example: hello world (put on front page)
 	OK - example: pi (put in wiki), adapted from http://doc.akka.io/docs/akka/2.0.2/intro/getting-started-first-java.html
