@@ -1,11 +1,24 @@
 
 TODO NEXT:
-!! - write user documentation for jumi-actors
+- WorkerCounter might cause duplicate events if the Executor is really fast, even synchronous
+
+- write user documentation for jumi-actors
 	OK - example: hello world (put on front page)
 	OK - example: pi (put in wiki), adapted from http://doc.akka.io/docs/akka/2.0.2/intro/getting-started-first-java.html
+	- user guide: also intro to thread-safety-checker and jumi-actors-maven-plugin
+	- write better javadocs for the published API
 	- www: maven dependency xml, latest version number, link to http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22fi.jumi%22
 	- advertise the release
 	- write a blog post: Continuous Delivery with Maven and Go into Maven Central
+
+- web site improvements
+	- javadocs for jumi-actors
+	- site for jumi-actors-maven-plugin
+		http://www.vineetmanohar.com/2009/04/how-to-auto-generate-maven-plugin-documentation/
+		http://stackoverflow.com/questions/2912665/maven-plugin-site
+		http://maven.apache.org/guides/mini/guide-site.html
+	- aggregated javadoc of all modules?
+		http://maven.apache.org/plugins/maven-javadoc-plugin/aggregate-mojo.html
 
 - investigate sporadic timeouts in RunningTestsTest
 	- improve the logging: now does not show messages that SuiteRunner sends to clients
@@ -198,6 +211,8 @@ TODO NEXT:
 		- if smoke tests pass, promote automatically from OSSRH to Central
 			http://www.sonatype.com/books/nexus-book/reference/staging-sect-managing-plugin.html
 			https://repository.sonatype.org/content/sites/maven-sites/nexus-maven-plugin/
+	- update the version number of latest release to the web site
+	- update javadocs to the web site
 
 - write performance tests
 	- test: suite with a hundred test classes, each with a hundred tests, some of which also do printing; measure total time of running the suite
