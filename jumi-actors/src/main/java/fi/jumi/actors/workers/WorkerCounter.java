@@ -7,28 +7,80 @@ package fi.jumi.actors.workers;
 import fi.jumi.actors.ActorRef;
 
 import javax.annotation.concurrent.ThreadSafe;
+import java.util.*;
+import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @ThreadSafe
-public class WorkerCounter {
+public class WorkerCounter implements Executor {
 
     private final AtomicInteger activeWorkers = new AtomicInteger(0);
     private final ActorRef<WorkerListener> onFinished;
 
-    public WorkerCounter(ActorRef<WorkerListener> onFinished) {
+    private final Executor realExecutor;
+    private final List<Worker> initialWorkers = new ArrayList<Worker>();
+    private volatile boolean initialWorkersStarted = false;
+
+    public WorkerCounter(Executor realExecutor, ActorRef<WorkerListener> onFinished) {
+        this.realExecutor = realExecutor;
         this.onFinished = onFinished;
     }
 
-    // The following methods should be called only from the WorkerCountingExecutor class
+    @Override
+    public void execute(Runnable realCommand) {
+        startWorker(new Worker(realCommand));
+    }
 
-    void fireWorkerStarted() {
+    private synchronized void startWorker(Worker worker) {
+        fireWorkerCreated();
+        if (!initialWorkersStarted) {
+            initialWorkers.add(worker);
+        } else {
+            realExecutor.execute(worker);
+        }
+    }
+
+    public synchronized void startInitialWorkers() {
+        if (initialWorkersStarted) {
+            throw new IllegalStateException("initial workers have already been started");
+        }
+        initialWorkersStarted = true;
+        for (Worker initialWorker : initialWorkers) {
+            realExecutor.execute(initialWorker);
+        }
+    }
+
+    private void fireWorkerCreated() {
         activeWorkers.incrementAndGet();
     }
 
-    void fireWorkerFinished() {
+    private void fireWorkerFinished() {
         int workers = activeWorkers.decrementAndGet();
         if (workers == 0) {
             onFinished.tell().onAllWorkersFinished();
+        }
+    }
+
+    @ThreadSafe
+    private class Worker implements Runnable {
+        private final Runnable realCommand;
+
+        public Worker(Runnable realCommand) {
+            this.realCommand = realCommand;
+        }
+
+        @Override
+        public void run() {
+            try {
+                realCommand.run();
+            } finally {
+                fireWorkerFinished();
+            }
+        }
+
+        @Override
+        public String toString() {
+            return realCommand.toString();
         }
     }
 }

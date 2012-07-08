@@ -43,11 +43,12 @@ public class SuiteRunner implements Startable, TestClassFinderListener {
     public void start() {
         suiteListener.onSuiteStarted();
 
-        WorkerCountingExecutor executor = createChildRunnerExecutor();
+        WorkerCounter executor = createChildRunnerExecutor();
         executor.execute(new TestClassFinderRunner(
                 testClassFinder,
                 actorThread.bindActor(TestClassFinderListener.class, this)
         ));
+        executor.startInitialWorkers();
     }
 
     @Override
@@ -61,11 +62,12 @@ public class SuiteRunner implements Startable, TestClassFinderListener {
                 runIdSequence
         );
 
-        WorkerCountingExecutor executor = createChildRunnerExecutor();
+        WorkerCounter executor = createChildRunnerExecutor();
         executor.execute(new DriverRunner(driver, testClass, suiteNotifier, executor));
+        executor.startInitialWorkers();
     }
 
-    private WorkerCountingExecutor createChildRunnerExecutor() {
+    private WorkerCounter createChildRunnerExecutor() {
         childRunners++;
 
         @NotThreadSafe
@@ -79,6 +81,6 @@ public class SuiteRunner implements Startable, TestClassFinderListener {
             }
         }
         ActorRef<WorkerListener> callback = actorThread.bindActor(WorkerListener.class, new OnRunnerFinished());
-        return new WorkerCountingExecutor(testExecutor, new WorkerCounter(callback));
+        return new WorkerCounter(testExecutor, callback);
     }
 }

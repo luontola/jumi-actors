@@ -1,7 +1,5 @@
 
 TODO NEXT:
-- WorkerCounter might cause duplicate events if the Executor is really fast, even synchronous
-
 - write user documentation for jumi-actors
 	OK - example: hello world (put on front page)
 	OK - example: pi (put in wiki), adapted from http://doc.akka.io/docs/akka/2.0.2/intro/getting-started-first-java.html
