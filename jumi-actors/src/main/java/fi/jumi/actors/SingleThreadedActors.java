@@ -27,7 +27,7 @@ public class SingleThreadedActors extends Actors {
     }
 
     @Override
-    protected void startActorThread(MessageProcessor actorThread) {
+    void startActorThread(MessageProcessor actorThread) {
         actorThreads.add(actorThread);
     }
 

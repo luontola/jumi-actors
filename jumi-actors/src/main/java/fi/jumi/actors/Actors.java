@@ -39,7 +39,9 @@ public abstract class Actors {
         return actorThread;
     }
 
-    protected abstract void startActorThread(MessageProcessor actorThread);
+    // Package-private to avoid showing up in Javadocs and creating confusion with the overloaded version.
+    // Also MessageProcessor is package-private, so anyways third parties cannot extend this class.
+    abstract void startActorThread(MessageProcessor actorThread);
 
 
     @ThreadSafe
