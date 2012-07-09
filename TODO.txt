@@ -1,17 +1,5 @@
 
 TODO NEXT:
-OK - WorkerCounter: instead of startInitialWorkers() have afterPreviousWorkersFinished(ActorRef<WorkerListener>) and remove the callback after use?
-	OK - must check activeWorkers==0 on setting the trigger and on a worker finishing
-	OK - avoid firing twice and unnecessary synchronization:
-	    @GuardedBy("this") private volatile ActorRef<WorkerListener> onFinished = null; // or not volatile?
-	    private synchronized void fireAllWorkersFinished() {
-	        if (onFinished != null) {
-	            onFinished.tell().onAllWorkersFinished();
-	            onFinished = null;
-	        }
-	    }
-	OK - update jumi-core
-
 - write user documentation for jumi-actors
 	OK - example: hello world (put on front page)
 	OK - example: pi (put in wiki), adapted from http://doc.akka.io/docs/akka/2.0.2/intro/getting-started-first-java.html
@@ -31,9 +19,16 @@ OK - WorkerCounter: instead of startInitialWorkers() have afterPreviousWorkersFi
 		http://maven.apache.org/plugins/maven-javadoc-plugin/aggregate-mojo.html
 
 - investigate sporadic timeouts in RunningTestsTest
-	- improve the logging: now does not show messages that SuiteRunner sends to clients
-	- keep an eye on what happens
-	- consider implemeting proper daemon shutdown sooner
+	OK - improve the logging: now does not show messages that SuiteRunner sends to clients
+	OK - consider implemeting proper daemon shutdown sooner
+	... - keep an eye on what happens
+
+- proper daemon shutdown
+	- expose the Process instance from launcher, use it to write e2e-tests
+	- send shutdown command from launcher after receiving the last suite event
+	- exit after a timeout if no client connects to daemon or the client disconnects
+	- remove the hack in fi.jumi.daemon.Main#exitWhenNotAnymoreInUse
+	- print a message on daemon startup and shutdown; makes it easier to see from logs that when the JVM was restarted
 
 - end-to-end tests: running multiple test classes
 	- it's not sure whether SuiteRunner works correctly when there are many test classes
@@ -53,13 +48,6 @@ OK - WorkerCounter: instead of startInitialWorkers() have afterPreviousWorkersFi
 			- note: can't override just selected methods, because the print's delegate to a private method, and anyways it would couple to PrintStream's implementation details
 			- might break in future Java versions, if more methods are added to PrintStream, so beware of it
 			! - or just use a CGLIB proxy (net.sf.cglib.proxy.MethodInterceptor which synchronizes and delegates to real PrintStream, except net.sf.cglib.proxy.NoOp for Object's methods)
-
-- proper daemon shutdown
-	- expose the Process instance from launcher, use it to write e2e-tests
-	- send shutdown command from launcher after receiving the last suite event
-	- exit after a timeout if no client connects to daemon or the client disconnects
-	- remove the hack in fi.jumi.daemon.Main#exitWhenNotAnymoreInUse
-	- print a message on daemon startup and shutdown; makes it easier to see from logs that when the JVM was restarted
 
 - SuiteListener#onFailure cannot rely on the exception class from existing in the caller's class loader
 	- introduce ExceptionSafetyGloves?
