@@ -15,7 +15,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public class WorkerCountingExecutorTest {
+public class WorkerCounterTest {
 
     private static final long TIMEOUT = 1000;
 
@@ -36,13 +36,6 @@ public class WorkerCountingExecutorTest {
         }
     });
 
-    private final ActorRef<WorkerListener> callback = ActorRef.<WorkerListener>wrap(new WorkerListener() {
-        @Override
-        public void onAllWorkersFinished() {
-            events.log("callback");
-        }
-    });
-
     @After
     public void stopExecutor() throws Throwable {
         realExecutor.shutdownNow();
@@ -53,23 +46,56 @@ public class WorkerCountingExecutorTest {
 
     @Test(timeout = TIMEOUT)
     public void the_callback_is_fired_after_all_commands_are_finished() throws InterruptedException {
-        WorkerCounter counter = new WorkerCounter(realExecutor, callback);
+        WorkerCounter counter = new WorkerCounter(realExecutor);
 
         counter.execute(new Command("command"));
-        counter.startInitialWorkers();
+        counter.afterPreviousWorkersFinished(log("callback"));
 
         events.await(2, TIMEOUT);
         events.assertContains("command", "callback");
     }
 
     @Test(timeout = TIMEOUT)
+    public void the_callback_is_fired_immediately_if_there_were_no_commands() throws InterruptedException {
+        WorkerCounter counter = new WorkerCounter(realExecutor);
+
+        counter.afterPreviousWorkersFinished(log("callback"));
+
+        events.await(1, TIMEOUT);
+        events.assertContains("callback");
+    }
+
+    @Test(timeout = TIMEOUT)
+    public void a_new_callback_can_be_set_after_workers_are_finished() {
+        WorkerCounter counter = new WorkerCounter(realExecutor);
+        counter.afterPreviousWorkersFinished(log("callback 1"));
+
+        counter.afterPreviousWorkersFinished(log("callback 2"));
+
+        events.assertContains("callback 1", "callback 2");
+    }
+
+    @Test(timeout = TIMEOUT)
+    public void a_new_callback_cannot_be_set_before_workers_are_finished() {
+        WorkerCounter counter = new WorkerCounter(realExecutor);
+
+        CyclicBarrier barrier = new CyclicBarrier(2);
+        counter.execute(new SyncedCommand1(barrier)); // will not finish before the end of this test
+        counter.afterPreviousWorkersFinished(log("callback 1"));
+
+        thrown.expect(IllegalStateException.class);
+        thrown.expectMessage("a callback already exists");
+        counter.afterPreviousWorkersFinished(log("callback 2"));
+    }
+
+    @Test(timeout = TIMEOUT)
     public void works_for_concurrent_commands() throws InterruptedException {
-        WorkerCounter counter = new WorkerCounter(realExecutor, callback);
+        WorkerCounter counter = new WorkerCounter(realExecutor);
 
         CyclicBarrier barrier = new CyclicBarrier(2);
         counter.execute(new SyncedCommand1(barrier));
         counter.execute(new SyncedCommand2(barrier));
-        counter.startInitialWorkers();
+        counter.afterPreviousWorkersFinished(log("callback"));
 
         events.await(3, TIMEOUT);
         events.assertContains("command 1", "command 2", "callback");
@@ -77,7 +103,7 @@ public class WorkerCountingExecutorTest {
 
     @Test(timeout = TIMEOUT)
     public void works_for_commands_which_launch_other_commands() throws InterruptedException {
-        final WorkerCounter counter = new WorkerCounter(realExecutor, callback);
+        final WorkerCounter counter = new WorkerCounter(realExecutor);
 
         counter.execute(new Runnable() {
             @Override
@@ -86,7 +112,7 @@ public class WorkerCountingExecutorTest {
                 counter.execute(new Command("command 2"));
             }
         });
-        counter.startInitialWorkers();
+        counter.afterPreviousWorkersFinished(log("callback"));
 
         events.await(3, TIMEOUT);
         events.assertContains("command 1", "command 2", "callback");
@@ -104,11 +130,11 @@ public class WorkerCountingExecutorTest {
                 command.run();
             }
         };
-        WorkerCounter counter = new WorkerCounter(synchronousExecutor, callback);
+        WorkerCounter counter = new WorkerCounter(synchronousExecutor);
 
         counter.execute(new Command("command 1"));
         counter.execute(new Command("command 2"));
-        counter.startInitialWorkers();
+        counter.afterPreviousWorkersFinished(log("callback"));
 
         events.await(3, TIMEOUT);
         events.assertContains("command 1", "command 2", "callback");
@@ -116,7 +142,7 @@ public class WorkerCountingExecutorTest {
 
     @Test(timeout = TIMEOUT)
     public void the_callback_is_called_even_when_commands_throw_exceptions() throws InterruptedException {
-        WorkerCounter counter = new WorkerCounter(realExecutor, callback);
+        WorkerCounter counter = new WorkerCounter(realExecutor);
         Runnable throwerCommand = new Runnable() {
             @Override
             public void run() {
@@ -126,20 +152,10 @@ public class WorkerCountingExecutorTest {
         };
 
         counter.execute(throwerCommand);
-        counter.startInitialWorkers();
+        counter.afterPreviousWorkersFinished(log("callback"));
 
         events.await(2, TIMEOUT);
         events.assertContains("thrower", "callback");
-    }
-
-    @Test(timeout = TIMEOUT)
-    public void startInitialWorkers_cannot_be_called_twice() {
-        WorkerCounter counter = new WorkerCounter(realExecutor, callback);
-        counter.startInitialWorkers();
-
-        thrown.expect(IllegalStateException.class);
-        thrown.expectMessage("initial workers have already been started");
-        counter.startInitialWorkers();
     }
 
     @Test(timeout = TIMEOUT)
@@ -151,11 +167,11 @@ public class WorkerCountingExecutorTest {
                 loggerOutput.append(command.toString());
             }
         };
-        WorkerCounter counter = new WorkerCounter(loggingExecutor, callback);
+        WorkerCounter counter = new WorkerCounter(loggingExecutor);
         Runnable originalCommand = mock(Runnable.class, "<the command's original toString>");
 
         counter.execute(originalCommand);
-        counter.startInitialWorkers();
+        counter.afterPreviousWorkersFinished(log("callback"));
 
         assertThat(loggerOutput.toString(), containsString(originalCommand.toString()));
     }
@@ -163,9 +179,20 @@ public class WorkerCountingExecutorTest {
 
     // helpers
 
+    private ActorRef<WorkerListener> log(final String message) {
+        return ActorRef.<WorkerListener>wrap(new WorkerListener() {
+            @Override
+            public void onAllWorkersFinished() {
+                events.log(message);
+            }
+        });
+    }
+
     private void await(CyclicBarrier barrier) {
         try {
             barrier.await(TIMEOUT, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -43,12 +43,14 @@ public class SuiteRunner implements Startable, TestClassFinderListener {
     public void start() {
         suiteListener.onSuiteStarted();
 
-        WorkerCounter executor = createChildRunnerExecutor();
-        executor.execute(new TestClassFinderRunner(
+        TestClassFinderRunner runner = new TestClassFinderRunner(
                 testClassFinder,
                 actorThread.bindActor(TestClassFinderListener.class, this)
-        ));
-        executor.startInitialWorkers();
+        );
+
+        WorkerCounter executor = new WorkerCounter(testExecutor);
+        executor.execute(runner);
+        executor.afterPreviousWorkersFinished(childRunnerListener());
     }
 
     @Override
@@ -62,25 +64,32 @@ public class SuiteRunner implements Startable, TestClassFinderListener {
                 runIdSequence
         );
 
-        WorkerCounter executor = createChildRunnerExecutor();
+        WorkerCounter executor = new WorkerCounter(testExecutor);
         executor.execute(new DriverRunner(driver, testClass, suiteNotifier, executor));
-        executor.startInitialWorkers();
+        executor.afterPreviousWorkersFinished(childRunnerListener());
     }
 
-    private WorkerCounter createChildRunnerExecutor() {
-        childRunners++;
+    private ActorRef<WorkerListener> childRunnerListener() {
+        fireChildRunnerStarted();
 
         @NotThreadSafe
         class OnRunnerFinished implements WorkerListener {
             @Override
             public void onAllWorkersFinished() {
-                childRunners--;
-                if (childRunners == 0) {
-                    suiteListener.onSuiteFinished();
-                }
+                fireChildRunnerFinished();
             }
         }
-        ActorRef<WorkerListener> callback = actorThread.bindActor(WorkerListener.class, new OnRunnerFinished());
-        return new WorkerCounter(testExecutor, callback);
+        return actorThread.bindActor(WorkerListener.class, new OnRunnerFinished());
+    }
+
+    private void fireChildRunnerStarted() {
+        childRunners++;
+    }
+
+    private void fireChildRunnerFinished() {
+        childRunners--;
+        if (childRunners == 0) {
+            suiteListener.onSuiteFinished();
+        }
     }
 }

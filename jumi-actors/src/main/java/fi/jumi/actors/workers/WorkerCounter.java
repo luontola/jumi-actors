@@ -6,8 +6,7 @@ package fi.jumi.actors.workers;
 
 import fi.jumi.actors.ActorRef;
 
-import javax.annotation.concurrent.ThreadSafe;
-import java.util.*;
+import javax.annotation.concurrent.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -15,39 +14,35 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class WorkerCounter implements Executor {
 
     private final Executor realExecutor;
-    private final ActorRef<WorkerListener> onFinished;
-
     private final AtomicInteger activeWorkers = new AtomicInteger(0);
-    private final List<Worker> initialWorkers = new ArrayList<Worker>();
-    private boolean initialWorkersStarted = false;
 
-    public WorkerCounter(Executor realExecutor, ActorRef<WorkerListener> onFinished) {
+    @GuardedBy("this")
+    private ActorRef<WorkerListener> onFinished;
+
+    public WorkerCounter(Executor realExecutor) {
         this.realExecutor = realExecutor;
-        this.onFinished = onFinished;
     }
 
     @Override
-    public void execute(Runnable realCommand) {
-        startWorker(new Worker(realCommand));
+    public void execute(Runnable command) {
+        realExecutor.execute(new Worker(command));
     }
 
-    private synchronized void startWorker(Worker worker) {
-        if (!initialWorkersStarted) {
-            initialWorkers.add(worker);
-        } else {
-            realExecutor.execute(worker);
+    public synchronized void afterPreviousWorkersFinished(ActorRef<WorkerListener> onFinished) {
+        if (this.onFinished != null) {
+            throw new IllegalStateException("a callback already exists; wait for the workers to finish before setting a new callback");
+        }
+        this.onFinished = onFinished;
+        if (activeWorkers.get() == 0) {
+            fireAllWorkersFinished();
         }
     }
 
-    public synchronized void startInitialWorkers() {
-        if (initialWorkersStarted) {
-            throw new IllegalStateException("initial workers have already been started");
+    private synchronized void fireAllWorkersFinished() {
+        if (onFinished != null) {
+            onFinished.tell().onAllWorkersFinished();
+            onFinished = null;
         }
-        initialWorkersStarted = true;
-        for (Worker initialWorker : initialWorkers) {
-            realExecutor.execute(initialWorker);
-        }
-        initialWorkers.clear(); // let the worker instances be garbage collected
     }
 
 
@@ -60,23 +55,23 @@ public class WorkerCounter implements Executor {
     private void fireWorkerFinished() {
         int workers = activeWorkers.decrementAndGet();
         if (workers == 0) {
-            onFinished.tell().onAllWorkersFinished();
+            fireAllWorkersFinished();
         }
     }
 
     @ThreadSafe
     private class Worker implements Runnable {
-        private final Runnable realCommand;
+        private final Runnable command;
 
-        public Worker(Runnable realCommand) {
+        public Worker(Runnable command) {
             fireWorkerCreated();
-            this.realCommand = realCommand;
+            this.command = command;
         }
 
         @Override
         public void run() {
             try {
-                realCommand.run();
+                command.run();
             } finally {
                 fireWorkerFinished();
             }
@@ -84,7 +79,7 @@ public class WorkerCounter implements Executor {
 
         @Override
         public String toString() {
-            return realCommand.toString();
+            return command.toString();
         }
     }
 }
