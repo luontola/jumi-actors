@@ -31,6 +31,12 @@ public class WorkerCounter implements Executor {
         realExecutor.execute(new Worker(command));
     }
 
+    /**
+     * Calls {@link WorkerListener#onAllWorkersFinished()} on the specified callback
+     * after all commands previously submitted to {@link #execute(Runnable)}, and
+     * recursively all commands which they submitted to {@link #execute(Runnable)},
+     * have finished executing.
+     */
     public synchronized void afterPreviousWorkersFinished(ActorRef<WorkerListener> onFinished) {
         if (this.onFinished != null) {
             throw new IllegalStateException("a callback already exists; wait for the workers to finish before setting a new callback");

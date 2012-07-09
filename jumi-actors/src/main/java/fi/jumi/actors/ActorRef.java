@@ -15,10 +15,10 @@ public class ActorRef<T> {
     private final T proxy;
 
     /**
-     * Can be used to wrap test doubles into ActorRefs for unit testing purposes.
+     * Can be used to wrap test doubles into {@code ActorRef}s for unit testing purposes.
      * <p/>
      * <span style="color: Red">Warning: Never use this method in production code!
-     * This method is meant to be used <em>only</em> from the {@link Actors} class.</span>
+     * This method is meant to be used <em>only</em> by the {@link Actors} class.</span>
      */
     public static <T> ActorRef<T> wrap(T proxy) {
         return new ActorRef<T>(proxy);

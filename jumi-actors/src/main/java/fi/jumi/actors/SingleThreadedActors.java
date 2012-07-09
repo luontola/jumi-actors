@@ -13,7 +13,7 @@ import java.util.concurrent.*;
 
 /**
  * Single-threaded actors container for testing. The {@link ActorThread}s are
- * <em>not</em> backed by real threads, but they will process messages when
+ * <em>not</em> backed by real threads - instead they will process messages when
  * the {@link #processEventsUntilIdle()} method is called.
  */
 @NotThreadSafe

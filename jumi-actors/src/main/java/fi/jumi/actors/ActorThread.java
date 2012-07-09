@@ -12,14 +12,17 @@ public interface ActorThread {
     /**
      * Binds an actor to this {@code ActorThread} and returns an {@link ActorRef}
      * for sending messages to it. The recommended pattern for creating actors is
-     * {@code ActorRef<TheActorInterface> theActor = actorThread.bindActor(TheActorInterface.class, new TheActor(theParameters))}.
+     * {@code ActorRef<TheActorInterface> theActor = actorThread.bindActor(TheActorInterface.class, new TheActor(theParameters));}
+     * all in one line.
      * <p/>
      * Extra care should be taken to never pass around the raw actor instance.
-     * It should always be used through an {@link ActorRef}.
+     * It should always be used through an {@link ActorRef}. Use the convention that
+     * when passing an actor as a method/constructor parameter to another class,
+     * the type of the parameter is {@code ActorRef<TheActorInterface>}.
      * <p/>
      * All actors bound to the same {@code ActorThread} will be executed in the
      * same {@link Thread}, so it is OK for them to share some mutable state when
-     * it is known into that thread the actor are bound to the same thread.
+     * it is known that all the actors are bound to the same thread.
      * A common pattern is to pass an actor its own {@code ActorThread}, so that
      * it can create short-lived actors for callbacks, or a reference to itself,
      * when communicating with other actors.
