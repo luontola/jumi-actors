@@ -7,6 +7,9 @@ package fi.jumi.actors.listeners;
 import javax.annotation.concurrent.Immutable;
 import java.util.concurrent.Executor;
 
+/**
+ * Does nothing. Meant for production use.
+ */
 @Immutable
 public class NullMessageListener implements MessageListener {
 

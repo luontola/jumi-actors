@@ -10,6 +10,9 @@ import javax.annotation.concurrent.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Fires a callback after a transitive bunch of worker threads are finished.
+ */
 @ThreadSafe
 public class WorkerCounter implements Executor {
 

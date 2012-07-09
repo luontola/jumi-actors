@@ -9,6 +9,9 @@ import fi.jumi.actors.eventizers.*;
 import javax.annotation.concurrent.Immutable;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Supports all actor interfaces using reflection.
+ */
 @Immutable
 public class DynamicEventizerProvider implements EventizerProvider {
 

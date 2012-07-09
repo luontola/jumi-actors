@@ -11,6 +11,11 @@ import javax.annotation.concurrent.*;
 import java.util.List;
 import java.util.concurrent.*;
 
+/**
+ * Single-threaded actors container for testing. The {@link ActorThread}s are
+ * <em>not</em> backed by real threads, but they will process messages when
+ * the {@link #processEventsUntilIdle()} method is called.
+ */
 @NotThreadSafe
 public class SingleThreadedActors extends Actors {
 
@@ -27,6 +32,14 @@ public class SingleThreadedActors extends Actors {
         actorThreads.add(actorThread);
     }
 
+    /**
+     * Processes in the current thread all messages which were sent to actors.
+     * The order of processing messages is deterministic. Will block until all
+     * messages have been processed and nobody is sending more messages.
+     * <p/>
+     * When using {@link fi.jumi.actors.listeners.CrashEarlyFailureHandler},
+     * will rethrow uncaught exceptions from actors to the caller of this method.
+     */
     public void processEventsUntilIdle() {
         boolean idle;
         do {
@@ -42,6 +55,13 @@ public class SingleThreadedActors extends Actors {
         } while (!idle);
     }
 
+    /**
+     * Returns an asynchronous {@link Executor} which works the same way as all
+     * the actors in this container. Useful in tests to have asynchrony without
+     * the non-determinism of real threads.
+     *
+     * @see #processEventsUntilIdle()
+     */
     public Executor getExecutor() {
         return messageListener.getListenedExecutor(new AsynchronousExecutor());
     }

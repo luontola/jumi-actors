@@ -10,6 +10,12 @@ import fi.jumi.actors.listeners.*;
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.concurrent.Executor;
 
+
+/**
+ * Multi-threaded actors container for production use. Each {@link ActorThread}
+ * will be backed by a thread from the {@link Executor} which is given to
+ * the constructor of this class.
+ */
 @ThreadSafe
 public class MultiThreadedActors extends Actors {
 

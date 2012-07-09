@@ -6,6 +6,9 @@ package fi.jumi.actors.listeners;
 
 /**
  * Gets notified about uncaught exceptions thrown by actors.
+ *
+ * @see PrintStreamFailureLogger
+ * @see CrashEarlyFailureHandler
  */
 public interface FailureHandler {
 
@@ -15,7 +18,7 @@ public interface FailureHandler {
      * May stop the actor thread by interrupting the current thread. Otherwise
      * the actor thread (and all actors in it) will keep on processing messages.
      * <p/>
-     * Must not throw any exceptions - that would result in implementation specific behaviour.
+     * Should not throw any exceptions - that would result in implementation specific behaviour.
      */
     void uncaughtException(Object actor, Object message, Throwable exception);
 }

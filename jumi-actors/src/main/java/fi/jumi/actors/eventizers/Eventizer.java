@@ -6,6 +6,9 @@ package fi.jumi.actors.eventizers;
 
 import fi.jumi.actors.queue.MessageSender;
 
+/**
+ * Converts method calls to event objects, and those event objects back to method calls.
+ */
 public interface Eventizer<T> {
 
     Class<T> getType();

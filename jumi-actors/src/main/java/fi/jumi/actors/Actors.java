@@ -10,6 +10,13 @@ import fi.jumi.actors.queue.*;
 
 import javax.annotation.concurrent.*;
 
+/**
+ * Entry point to this actors library. The actors container which coordinates
+ * communication between individual actors. Use one of the implementations of this class.
+ *
+ * @see MultiThreadedActors
+ * @see SingleThreadedActors
+ */
 @ThreadSafe
 public abstract class Actors {
 
@@ -23,6 +30,9 @@ public abstract class Actors {
         this.messageListener = messageListener;
     }
 
+    /**
+     * Creates a new {@link ActorThread} for running actors.
+     */
     public ActorThread startActorThread() {
         ActorThreadImpl actorThread = new ActorThreadImpl();
         startActorThread(actorThread);

@@ -7,6 +7,9 @@ package fi.jumi.actors.eventizers;
 import javax.annotation.concurrent.Immutable;
 import java.util.*;
 
+/**
+ * To be used with generated or hand-written {@link Eventizer}s.
+ */
 @Immutable
 public class ComposedEventizerProvider implements EventizerProvider {
 

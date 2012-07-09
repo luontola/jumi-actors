@@ -7,6 +7,9 @@ package fi.jumi.actors.listeners;
 import javax.annotation.concurrent.Immutable;
 import java.io.PrintStream;
 
+/**
+ * Prints all uncaught exceptions. Meant for production use (without a logging framework).
+ */
 @Immutable
 public class PrintStreamFailureLogger implements FailureHandler {
 

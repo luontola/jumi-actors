@@ -9,6 +9,9 @@ import java.io.PrintStream;
 import java.util.Locale;
 import java.util.concurrent.Executor;
 
+/**
+ * Prints all messages that actors send and receive. Meant for debugging.
+ */
 @ThreadSafe
 public class PrintStreamMessageLogger implements MessageListener {
 

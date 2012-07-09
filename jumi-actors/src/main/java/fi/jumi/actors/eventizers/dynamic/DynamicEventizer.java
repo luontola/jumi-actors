@@ -10,6 +10,9 @@ import fi.jumi.actors.queue.MessageSender;
 import javax.annotation.concurrent.Immutable;
 import java.lang.reflect.Proxy;
 
+/**
+ * Supports any actor interface using reflection.
+ */
 @Immutable
 public class DynamicEventizer<T> implements Eventizer<T> {
 

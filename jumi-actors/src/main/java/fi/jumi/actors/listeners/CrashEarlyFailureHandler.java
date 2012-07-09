@@ -4,11 +4,13 @@
 
 package fi.jumi.actors.listeners;
 
+import fi.jumi.actors.SingleThreadedActors;
+
 import javax.annotation.concurrent.Immutable;
 
 /**
- * Mean to be used with {@link fi.jumi.actors.SingleThreadedActors}
- * so that tests would crash early when an actor has problems.
+ * Used with {@link SingleThreadedActors} to fail the test when
+ * an actor throws an exception.
  */
 @Immutable
 public class CrashEarlyFailureHandler implements FailureHandler {

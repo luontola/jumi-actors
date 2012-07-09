@@ -7,6 +7,9 @@ package fi.jumi.actors.queue;
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.concurrent.*;
 
+/**
+ * Asynchronous unbounded queue for message passing.
+ */
 @ThreadSafe
 public class MessageQueue<T> implements MessageSender<T>, MessageReceiver<T> {
 
