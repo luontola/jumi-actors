@@ -24,7 +24,7 @@ public abstract class Actors {
     private final FailureHandler failureHandler;
     private final MessageListener messageListener;
 
-    public Actors(EventizerProvider eventizerProvider, FailureHandler failureHandler, MessageListener messageListener) {
+    protected Actors(EventizerProvider eventizerProvider, FailureHandler failureHandler, MessageListener messageListener) {
         this.eventizerProvider = eventizerProvider;
         this.failureHandler = failureHandler;
         this.messageListener = messageListener;
