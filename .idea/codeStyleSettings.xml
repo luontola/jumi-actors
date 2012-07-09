@@ -19,6 +19,7 @@
         <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="2" />
         <option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="2" />
         <option name="HTML_ATTRIBUTE_WRAP" value="0" />
+        <option name="WRAP_COMMENTS" value="true" />
         <option name="IF_BRACE_FORCE" value="3" />
         <option name="DOWHILE_BRACE_FORCE" value="3" />
         <option name="WHILE_BRACE_FORCE" value="3" />

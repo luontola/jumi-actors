@@ -32,10 +32,9 @@ public class WorkerCounter implements Executor {
     }
 
     /**
-     * Calls {@link WorkerListener#onAllWorkersFinished()} on the specified callback
-     * after all commands previously submitted to {@link #execute(Runnable)}, and
-     * recursively all commands which they submitted to {@link #execute(Runnable)},
-     * have finished executing.
+     * Calls {@link WorkerListener#onAllWorkersFinished()} on the specified callback after all commands previously
+     * submitted to {@link #execute(Runnable)}, and recursively all commands which they submitted to {@link
+     * #execute(Runnable)}, have finished executing.
      */
     public synchronized void afterPreviousWorkersFinished(ActorRef<WorkerListener> onFinished) {
         if (this.onFinished != null) {

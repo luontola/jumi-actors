@@ -17,8 +17,8 @@ public class ActorRef<T> {
     /**
      * Can be used to wrap test doubles into {@code ActorRef}s for unit testing purposes.
      * <p/>
-     * <span style="color: Red">Warning: Never use this method in production code!
-     * This method is meant to be used <em>only</em> by the {@link Actors} class.</span>
+     * <span style="color: Red">Warning: Never use this method in production code! This method is meant to be used
+     * <em>only</em> by the {@link Actors} class.</span>
      */
     public static <T> ActorRef<T> wrap(T proxy) {
         return new ActorRef<T>(proxy);
@@ -29,12 +29,12 @@ public class ActorRef<T> {
     }
 
     /**
-     * Used for sending asynchronous messages to an actor. The recommended usage pattern
-     * is {@code actorRef.tell().theMessage(theParameters)}
+     * Used for sending asynchronous messages to an actor. The recommended usage pattern is {@code
+     * actorRef.tell().theMessage(theParameters)}
      * <p/>
-     * To avoid confusion, the proxy returned from this method should never be stored
-     * in a variable or passed as a parameter to a method. Otherwise it can be hard to know
-     * that when you are holding the real actor object and when a proxy to it.
+     * To avoid confusion, the proxy returned from this method should never be stored in a variable or passed as a
+     * parameter to a method. Otherwise it can be hard to know that when you are holding the real actor object and when
+     * a proxy to it.
      */
     public T tell() {
         return proxy;

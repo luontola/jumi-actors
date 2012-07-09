@@ -9,8 +9,7 @@ import fi.jumi.actors.SingleThreadedActors;
 import javax.annotation.concurrent.Immutable;
 
 /**
- * Used with {@link SingleThreadedActors} to fail the test when
- * an actor throws an exception.
+ * Used with {@link SingleThreadedActors} to fail the test when an actor throws an exception.
  */
 @Immutable
 public class CrashEarlyFailureHandler implements FailureHandler {

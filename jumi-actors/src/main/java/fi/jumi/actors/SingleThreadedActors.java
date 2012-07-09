@@ -12,9 +12,8 @@ import java.util.List;
 import java.util.concurrent.*;
 
 /**
- * Single-threaded actors container for testing. The {@link ActorThread}s are
- * <em>not</em> backed by real threads - instead they will process messages when
- * the {@link #processEventsUntilIdle()} method is called.
+ * Single-threaded actors container for testing. The {@link ActorThread}s are <em>not</em> backed by real threads -
+ * instead they will process messages when the {@link #processEventsUntilIdle()} method is called.
  */
 @NotThreadSafe
 public class SingleThreadedActors extends Actors {
@@ -33,12 +32,11 @@ public class SingleThreadedActors extends Actors {
     }
 
     /**
-     * Processes in the current thread all messages which were sent to actors.
-     * The order of processing messages is deterministic. Will block until all
-     * messages have been processed and nobody is sending more messages.
+     * Processes in the current thread all messages which were sent to actors. The order of processing messages is
+     * deterministic. Will block until all messages have been processed and nobody is sending more messages.
      * <p/>
-     * When using {@link fi.jumi.actors.listeners.CrashEarlyFailureHandler},
-     * will rethrow uncaught exceptions from actors to the caller of this method.
+     * When using {@link CrashEarlyFailureHandler}, will rethrow uncaught exceptions from actors to the caller of this
+     * method.
      */
     public void processEventsUntilIdle() {
         boolean idle;
@@ -56,9 +54,8 @@ public class SingleThreadedActors extends Actors {
     }
 
     /**
-     * Returns an asynchronous {@link Executor} which works the same way as all
-     * the actors in this container. Useful in tests to have asynchrony without
-     * the non-determinism of real threads.
+     * Returns an asynchronous {@link Executor} which works the same way as all the actors in this container. Useful in
+     * tests to have asynchrony without the non-determinism of real threads.
      *
      * @see #processEventsUntilIdle()
      */

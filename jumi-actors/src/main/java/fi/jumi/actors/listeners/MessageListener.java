@@ -7,9 +7,8 @@ package fi.jumi.actors.listeners;
 import java.util.concurrent.Executor;
 
 /**
- * Gets notified about all messages that actors send and receive.
- * Can also listen for all commands submitted to an {@link Executor} by
- * wrapping it in {@link #getListenedExecutor}.
+ * Gets notified about all messages that actors send and receive. Can also listen for all commands submitted to an
+ * {@link Executor} by wrapping it in {@link #getListenedExecutor}.
  *
  * @see NullMessageListener
  * @see PrintStreamMessageLogger
