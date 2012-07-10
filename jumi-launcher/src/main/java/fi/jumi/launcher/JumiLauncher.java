@@ -9,6 +9,7 @@ import fi.jumi.actors.queue.*;
 import fi.jumi.core.*;
 import fi.jumi.core.events.CommandListenerEventizer;
 import fi.jumi.launcher.daemon.Daemon;
+import fi.jumi.launcher.process.ProcessLauncher;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.NullWriter;
 import org.jboss.netty.bootstrap.ServerBootstrap;
@@ -26,16 +27,17 @@ import java.util.concurrent.Executors;
 public class JumiLauncher {
     private File jumiHome; // TODO: default to "~/.jumi"
     private Writer outputListener = new NullWriter();
-    private final File javaExecutable = new File(System.getProperty("java.home"), "bin/java");
     private Process process;
 
+    private final ProcessLauncher processLauncher;
     private final JumiLauncherHandler handler;
     private final List<File> classPath = new ArrayList<File>();
     private String testsToIncludePattern;
     private List<String> jvmOptions = new ArrayList<String>();
 
-    public JumiLauncher(MessageSender<Event<SuiteListener>> eventTarget) {
-        handler = new JumiLauncherHandler(eventTarget);
+    public JumiLauncher(ProcessLauncher processLauncher, MessageSender<Event<SuiteListener>> eventTarget) {
+        this.processLauncher = processLauncher;
+        this.handler = new JumiLauncherHandler(eventTarget);
     }
 
     // TODO: this class has multiple responsibilities, split to smaller parts?
@@ -99,18 +101,7 @@ public class JumiLauncher {
         File extractedJar = new File(jumiHome, "lib/" + Daemon.getDaemonJarName());
         copyToFile(embeddedJar, extractedJar);
 
-        List<String> command = new ArrayList<String>();
-        command.add(javaExecutable.getAbsolutePath());
-        command.addAll(jvmOptions);
-        command.add("-jar");
-        command.add(extractedJar.getAbsolutePath());
-        command.add(String.valueOf(launcherPort));
-
-        ProcessBuilder builder = new ProcessBuilder();
-        builder.directory(jumiHome);
-        builder.redirectErrorStream(true);
-        builder.command(command);
-        process = builder.start();
+        process = processLauncher.startJavaProcess(jumiHome, jvmOptions, extractedJar, String.valueOf(launcherPort));
 
         copyInBackground(process.getInputStream(), outputListener);
     }

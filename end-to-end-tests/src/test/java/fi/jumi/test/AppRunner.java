@@ -10,6 +10,7 @@ import fi.jumi.core.SuiteListener;
 import fi.jumi.core.runs.RunId;
 import fi.jumi.core.util.Strings;
 import fi.jumi.launcher.JumiLauncher;
+import fi.jumi.launcher.process.SystemProcessLauncher;
 import fi.jumi.launcher.ui.TextUI;
 import org.apache.commons.io.FileUtils;
 import org.junit.rules.TestRule;
@@ -30,7 +31,7 @@ public class AppRunner implements TestRule {
 
     private final MessageQueue<Event<SuiteListener>> eventStream = new MessageQueue<Event<SuiteListener>>();
 
-    private final JumiLauncher launcher = new JumiLauncher(eventStream);
+    private final JumiLauncher launcher = new JumiLauncher(new SystemProcessLauncher(), eventStream);
     private final ByteArrayOutputStream out = new ByteArrayOutputStream();
 
     private TextUIParser ui;
