@@ -7,6 +7,7 @@ package fi.jumi.test;
 import fi.jumi.core.runs.RunId;
 import fi.jumi.core.util.Strings;
 import fi.jumi.launcher.JumiLauncher;
+import fi.jumi.launcher.daemon.DirBasedHomeManager;
 import fi.jumi.launcher.network.SocketDaemonConnector;
 import fi.jumi.launcher.process.SystemProcessLauncher;
 import fi.jumi.launcher.ui.TextUI;
@@ -28,9 +29,9 @@ public class AppRunner implements TestRule {
     private final File sandboxDir = new File(TestEnvironment.getSandboxDir(), UUID.randomUUID().toString());
 
     private final JumiLauncher launcher = new JumiLauncher(
+            new DirBasedHomeManager(new File(sandboxDir, "jumi-home")),
             new SocketDaemonConnector(),
-            new SystemProcessLauncher(),
-            new File(sandboxDir, "jumi-home")
+            new SystemProcessLauncher() // TODO: create a middle-man proxy which gives the tests access to the Process instance
     );
     private final ByteArrayOutputStream out = new ByteArrayOutputStream();
 

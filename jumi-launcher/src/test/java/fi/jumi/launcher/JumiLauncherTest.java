@@ -8,6 +8,7 @@ import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.MessageSender;
 import fi.jumi.core.SuiteListener;
 import fi.jumi.core.config.Configuration;
+import fi.jumi.launcher.daemon.HomeManager;
 import fi.jumi.launcher.network.DaemonConnector;
 import fi.jumi.launcher.process.ProcessLauncher;
 import org.junit.*;
@@ -30,7 +31,7 @@ public class JumiLauncherTest {
 
     @Before
     public void setup() throws IOException {
-        launcher = new JumiLauncher(daemonConnector, processLauncher, tempDir.newFolder());
+        launcher = new JumiLauncher(new DummyHomeManager(), daemonConnector, processLauncher);
     }
 
     @Test
@@ -81,6 +82,19 @@ public class JumiLauncherTest {
         @Override
         public int listenForDaemonConnection(MessageSender<Event<SuiteListener>> eventTarget, List<File> classPath, String testsToIncludePattern) {
             return port;
+        }
+    }
+
+    private static class DummyHomeManager implements HomeManager {
+
+        @Override
+        public File getSettingsDir() {
+            return new File("dummy-settings-dir");
+        }
+
+        @Override
+        public File getDaemonJar() {
+            return new File("dummy-daemon.jar");
         }
     }
 }

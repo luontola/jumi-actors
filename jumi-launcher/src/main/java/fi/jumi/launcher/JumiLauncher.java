@@ -8,7 +8,7 @@ import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.*;
 import fi.jumi.core.SuiteListener;
 import fi.jumi.core.config.Configuration;
-import fi.jumi.launcher.daemon.Daemon;
+import fi.jumi.launcher.daemon.HomeManager;
 import fi.jumi.launcher.network.DaemonConnector;
 import fi.jumi.launcher.process.ProcessLauncher;
 import org.apache.commons.io.IOUtils;
@@ -22,10 +22,10 @@ import java.util.*;
 public class JumiLauncher {
 
     private final MessageQueue<Event<SuiteListener>> eventQueue = new MessageQueue<Event<SuiteListener>>();
+    private final HomeManager homeManager;
     private final DaemonConnector daemonConnector;
     private final ProcessLauncher processLauncher;
 
-    private final File jumiHome;
     private final List<File> classPath = new ArrayList<File>();
     private final List<String> jvmOptions = new ArrayList<String>();
     private final Properties systemProperties = new Properties();
@@ -33,10 +33,10 @@ public class JumiLauncher {
     private String testsToIncludePattern;
     private Writer outputListener = new NullWriter();
 
-    public JumiLauncher(DaemonConnector daemonConnector, ProcessLauncher processLauncher, File jumiHome) {
+    public JumiLauncher(HomeManager homeManager, DaemonConnector daemonConnector, ProcessLauncher processLauncher) {
+        this.homeManager = homeManager;
         this.daemonConnector = daemonConnector;
         this.processLauncher = processLauncher;
-        this.jumiHome = jumiHome; // TODO: default to "~/.jumi" (create default constructor?)
     }
 
     public MessageReceiver<Event<SuiteListener>> getEventStream() {
@@ -49,13 +49,9 @@ public class JumiLauncher {
     }
 
     private void startProcess(int launcherPort) throws IOException {
-        InputStream embeddedJar = Daemon.getDaemonJarAsStream();
-        File extractedJar = new File(jumiHome, "lib/" + Daemon.getDaemonJarName());
-        copyToFile(embeddedJar, extractedJar);
-
         Process process = processLauncher.startJavaProcess(
-                extractedJar,
-                jumiHome,
+                homeManager.getDaemonJar(),
+                homeManager.getSettingsDir(),
                 jvmOptions,
                 systemProperties,
                 Configuration.LAUNCHER_PORT, String.valueOf(launcherPort)
@@ -80,27 +76,6 @@ public class JumiLauncher {
         Thread t = new Thread(new Copier());
         t.setDaemon(true);
         t.start();
-    }
-
-    private static void copyToFile(InputStream in, File destination) throws IOException {
-        ensureDirExists(destination.getParentFile());
-        OutputStream out = null;
-        try {
-            out = new FileOutputStream(destination);
-            IOUtils.copy(in, out);
-        } finally {
-            IOUtils.closeQuietly(out);
-            IOUtils.closeQuietly(in);
-        }
-    }
-
-    private static void ensureDirExists(File dir) throws IOException {
-        if (dir.isDirectory()) {
-            return;
-        }
-        if (!dir.mkdirs()) {
-            throw new IOException("Unable to create directory: " + dir);
-        }
     }
 
     public void setOutputListener(Writer outputListener) {
