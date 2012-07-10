@@ -5,9 +5,9 @@
 package fi.jumi.launcher.process;
 
 import java.io.*;
-import java.util.List;
+import java.util.*;
 
 public interface ProcessLauncher {
 
-    Process startJavaProcess(File workingDir, List<String> jvmOptions, File executableJar, String... args) throws IOException;
+    Process startJavaProcess(File executableJar, File workingDir, List<String> jvmOptions, Properties systemProperties, String... args) throws IOException;
 }

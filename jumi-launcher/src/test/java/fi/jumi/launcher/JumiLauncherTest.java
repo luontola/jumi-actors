@@ -14,7 +14,7 @@ import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.*;
-import java.util.List;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -42,7 +42,7 @@ public class JumiLauncherTest {
         public String[] lastArgs;
 
         @Override
-        public Process startJavaProcess(File workingDir, List<String> jvmOptions, File executableJar, String... args) throws IOException {
+        public Process startJavaProcess(File executableJar, File workingDir, List<String> jvmOptions, Properties systemProperties, String... args) throws IOException {
             lastArgs = args;
             return new FakeProcess();
         }

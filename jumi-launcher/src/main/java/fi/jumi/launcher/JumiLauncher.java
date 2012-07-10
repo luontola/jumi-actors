@@ -26,10 +26,12 @@ public class JumiLauncher {
     private final ProcessLauncher processLauncher;
 
     private final File jumiHome;
-    private Writer outputListener = new NullWriter();
     private final List<File> classPath = new ArrayList<File>();
+    private final List<String> jvmOptions = new ArrayList<String>();
+    private final Properties systemProperties = new Properties();
+
     private String testsToIncludePattern;
-    private List<String> jvmOptions = new ArrayList<String>();
+    private Writer outputListener = new NullWriter();
 
     public JumiLauncher(DaemonConnector daemonConnector, ProcessLauncher processLauncher, File jumiHome) {
         this.daemonConnector = daemonConnector;
@@ -52,9 +54,10 @@ public class JumiLauncher {
         copyToFile(embeddedJar, extractedJar);
 
         Process process = processLauncher.startJavaProcess(
+                extractedJar,
                 jumiHome,
                 jvmOptions,
-                extractedJar,
+                systemProperties,
                 Configuration.LAUNCHER_PORT, String.valueOf(launcherPort)
         );
 
@@ -118,7 +121,6 @@ public class JumiLauncher {
     }
 
     public void enableMessageLogging() {
-        // TODO: write a test
-        addJvmOptions("-D" + SystemProperties.LOG_ACTOR_MESSAGES + "=true");
+        systemProperties.setProperty(SystemProperties.LOG_ACTOR_MESSAGES, "true");
     }
 }
