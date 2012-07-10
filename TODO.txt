@@ -27,15 +27,15 @@ TODO NEXT:
 	... - keep an eye on what happens
 
 !! - proper configuration parameters
-	!! - parse args
+	OK - parse args
 		OK - read port number
 		OK - require port number
-		!! - launcher must be in sync
+		OK - launcher must be in sync
 			OK - make launcher testable
 				OK - starting processes
 				OK - listening for connections
-			!! - test that Configuration gets the right value
-	- use the parser in Main
+			OK - test that Configuration gets the right value
+	OK - use the parser in Main
 	- parse system properties
 		- read values
 		- default values

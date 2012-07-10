@@ -12,7 +12,7 @@ public class Configuration {
 
     public static final String LAUNCHER_PORT = "--launcher-port";
 
-    public int launcherPort = 0;
+    public int launcherPort;
 
     public static Configuration parse(String[] args) {
         Configuration config = new Configuration();

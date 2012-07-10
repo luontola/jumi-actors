@@ -8,6 +8,7 @@ import fi.jumi.actors.*;
 import fi.jumi.actors.eventizers.ComposedEventizerProvider;
 import fi.jumi.actors.listeners.*;
 import fi.jumi.core.*;
+import fi.jumi.core.config.Configuration;
 import fi.jumi.core.events.*;
 import fi.jumi.core.util.PrefixedThreadFactory;
 import org.jboss.netty.bootstrap.ClientBootstrap;
@@ -28,8 +29,7 @@ public class Main {
     public static void main(String[] args) {
         exitWhenNotAnymoreInUse();
 
-        // program parameters
-        int launcherPort = Integer.parseInt(args[0]);
+        Configuration config = Configuration.parse(args);
 
         // logging configuration
         PrintStream logOutput = System.out;
@@ -66,7 +66,7 @@ public class Main {
         ActorThread actorThread = actors.startActorThread();
         ActorRef<CommandListener> coordinator =
                 actorThread.bindActor(CommandListener.class, new TestRunCoordinator(actorThread, testsThreadPool));
-        connectToLauncher(launcherPort, coordinator);
+        connectToLauncher(config.launcherPort, coordinator);
     }
 
     private static void connectToLauncher(int launcherPort, final ActorRef<CommandListener> coordinator) {

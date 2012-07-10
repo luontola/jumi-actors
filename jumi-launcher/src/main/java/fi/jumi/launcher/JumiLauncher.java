@@ -7,6 +7,7 @@ package fi.jumi.launcher;
 import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.*;
 import fi.jumi.core.*;
+import fi.jumi.core.config.Configuration;
 import fi.jumi.launcher.daemon.Daemon;
 import fi.jumi.launcher.network.DaemonConnector;
 import fi.jumi.launcher.process.ProcessLauncher;
@@ -49,7 +50,12 @@ public class JumiLauncher {
         File extractedJar = new File(jumiHome, "lib/" + Daemon.getDaemonJarName());
         copyToFile(embeddedJar, extractedJar);
 
-        Process process = processLauncher.startJavaProcess(jumiHome, jvmOptions, extractedJar, String.valueOf(launcherPort));
+        Process process = processLauncher.startJavaProcess(
+                jumiHome,
+                jvmOptions,
+                extractedJar,
+                Configuration.LAUNCHER_PORT, String.valueOf(launcherPort)
+        );
 
         // TODO: write the output to a log file using OS pipes, read it from there with AppRunner
         copyInBackground(process.getInputStream(), outputListener);
