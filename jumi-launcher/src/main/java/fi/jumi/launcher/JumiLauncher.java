@@ -6,7 +6,7 @@ package fi.jumi.launcher;
 
 import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.*;
-import fi.jumi.core.*;
+import fi.jumi.core.SuiteListener;
 import fi.jumi.core.config.Configuration;
 import fi.jumi.launcher.daemon.Daemon;
 import fi.jumi.launcher.network.DaemonConnector;
@@ -121,6 +121,6 @@ public class JumiLauncher {
     }
 
     public void enableMessageLogging() {
-        systemProperties.setProperty(SystemProperties.LOG_ACTOR_MESSAGES, "true");
+        systemProperties.setProperty(Configuration.LOG_ACTOR_MESSAGES, "true");
     }
 }

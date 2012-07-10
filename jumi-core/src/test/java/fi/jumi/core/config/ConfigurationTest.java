@@ -7,6 +7,8 @@ package fi.jumi.core.config;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 
+import java.util.*;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -14,6 +16,9 @@ public class ConfigurationTest {
 
     @Rule
     public final ExpectedException thrown = ExpectedException.none();
+
+
+    // command line arguments
 
     @Test
     public void launcher_port_is_configurable() {
@@ -37,9 +42,41 @@ public class ConfigurationTest {
     }
 
 
+    // system properties
+
+    @Test
+    public void logging_actor_messages_can_be_enabled() {
+        Configuration config = parseSystemProperties(Configuration.LOG_ACTOR_MESSAGES, "true");
+
+        assertThat(config.logActorMessages, is(true));
+    }
+
+    @Test
+    public void logging_actor_messages_defaults_to_disabled() {
+        Configuration config = defaultConfig();
+
+        assertThat(config.logActorMessages, is(false));
+    }
+
+
     // helpers
 
     private Configuration parseArgs(String... args) {
-        return Configuration.parse(args);
+        return Configuration.parse(args, new Properties());
+    }
+
+    private Configuration parseSystemProperties(String key, String value) {
+        Properties p = new Properties();
+        p.setProperty(key, value);
+        return Configuration.parse(dummyArgs(), p);
+    }
+
+    private Configuration defaultConfig() {
+        return Configuration.parse(dummyArgs(), new Properties());
+    }
+
+    private static String[] dummyArgs() {
+        int launcherPort = new Random().nextInt(100) + 1;
+        return new String[]{Configuration.LAUNCHER_PORT, "" + launcherPort};
     }
 }

@@ -10,13 +10,21 @@ import java.util.*;
 @NotThreadSafe
 public class Configuration {
 
+    // TODO: a generic way of representing property names and their types?
+
+    // command line arguments
     public static final String LAUNCHER_PORT = "--launcher-port";
 
-    public int launcherPort;
+    // system properties
+    public static final String LOG_ACTOR_MESSAGES = "jumi.logActorMessages";
 
-    public static Configuration parse(String[] args) {
+    public int launcherPort;
+    public boolean logActorMessages;
+
+    public static Configuration parse(String[] args, Properties systemProperties) {
         Configuration config = new Configuration();
         parseCommandLineArguments(config, args);
+        parseSystemProperties(config, systemProperties);
         checkRequiredParameters(config);
         return config;
     }
@@ -37,5 +45,13 @@ public class Configuration {
         if (config.launcherPort <= 0) {
             throw new IllegalArgumentException("missing required parameter: " + Configuration.LAUNCHER_PORT);
         }
+    }
+
+    private static void parseSystemProperties(Configuration config, Properties systemProperties) {
+        config.logActorMessages = getBoolean(LOG_ACTOR_MESSAGES, systemProperties);
+    }
+
+    private static boolean getBoolean(String key, Properties properties) {
+        return Boolean.parseBoolean(properties.getProperty(key));
     }
 }

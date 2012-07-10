@@ -24,37 +24,59 @@ public class JumiLauncherTest {
     @Rule
     public final TemporaryFolder tempDir = new TemporaryFolder();
 
+    private final SpyProcessLauncher processLauncher = new SpyProcessLauncher();
+    private final StubDaemonConnector daemonConnector = new StubDaemonConnector();
+    private JumiLauncher launcher;
+
+    @Before
+    public void setup() throws IOException {
+        launcher = new JumiLauncher(daemonConnector, processLauncher, tempDir.newFolder());
+    }
+
     @Test
     public void tells_daemon_process_the_launcher_port_number() throws IOException {
-        int expectedPort = 123;
-        SpyProcessLauncher processLauncher = new SpyProcessLauncher();
-        JumiLauncher launcher = new JumiLauncher(new StubDaemonConnector(expectedPort), processLauncher, tempDir.newFolder());
+        daemonConnector.port = 123;
 
         launcher.start();
 
-        Configuration config = Configuration.parse(processLauncher.lastArgs);
-        assertThat(config.launcherPort, is(expectedPort));
+        assertThat(daemonConfig().launcherPort, is(123));
     }
 
+    @Test
+    public void can_enable_message_logging() throws IOException {
+        launcher.start();
+
+        assertThat(daemonConfig().logActorMessages, is(false));
+
+        launcher.enableMessageLogging();
+        launcher.start();
+
+        assertThat(daemonConfig().logActorMessages, is(true));
+    }
+
+
+    // helpers
+
+    private Configuration daemonConfig() {
+        return Configuration.parse(processLauncher.lastArgs, processLauncher.lastSystemProperties);
+    }
 
     private static class SpyProcessLauncher implements ProcessLauncher {
 
         public String[] lastArgs;
+        public Properties lastSystemProperties = new Properties();
 
         @Override
         public Process startJavaProcess(File executableJar, File workingDir, List<String> jvmOptions, Properties systemProperties, String... args) throws IOException {
             lastArgs = args;
+            lastSystemProperties = systemProperties;
             return new FakeProcess();
         }
     }
 
     private static class StubDaemonConnector implements DaemonConnector {
 
-        private final int port;
-
-        public StubDaemonConnector(int port) {
-            this.port = port;
-        }
+        public int port = 42;
 
         @Override
         public int listenForDaemonConnection(MessageSender<Event<SuiteListener>> eventTarget, List<File> classPath, String testsToIncludePattern) {

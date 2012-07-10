@@ -26,7 +26,7 @@ TODO NEXT:
 	OK - consider implemeting proper daemon shutdown sooner
 	... - keep an eye on what happens
 
-!! - proper configuration parameters
+OK - proper configuration parameters
 	OK - parse args
 		OK - read port number
 		OK - require port number
@@ -37,11 +37,12 @@ TODO NEXT:
 			OK - test that Configuration gets the right value
 	OK - use the parser in Main
 	OK - investigate which tests created lib dirs in the working directory
-	!! - parse system properties
+	OK - parse system properties
 		OK - pass as Properties to ProcessLauncher
-		!! - read values
-		- default values
-		- launcher must be in sync
+		OK - read values
+		OK - default values
+		OK - launcher must be in sync
+		OK - remove old SystemProperties class
 
 - proper daemon shutdown
 	- expose the Process instance from launcher, use it to write e2e-tests

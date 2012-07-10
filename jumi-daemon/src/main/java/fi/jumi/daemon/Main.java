@@ -29,12 +29,12 @@ public class Main {
     public static void main(String[] args) {
         exitWhenNotAnymoreInUse();
 
-        Configuration config = Configuration.parse(args);
+        Configuration config = Configuration.parse(args, System.getProperties());
 
         // logging configuration
         PrintStream logOutput = System.out;
         FailureHandler failureHandler = new PrintStreamFailureLogger(logOutput);
-        MessageListener messageListener = SystemProperties.logActorMessages()
+        MessageListener messageListener = config.logActorMessages
                 ? new PrintStreamMessageLogger(logOutput)
                 : new NullMessageListener();
 
