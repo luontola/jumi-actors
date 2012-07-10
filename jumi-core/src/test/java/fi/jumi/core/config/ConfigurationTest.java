@@ -17,28 +17,29 @@ public class ConfigurationTest {
 
     @Test
     public void launcher_port_is_configurable() {
-        String[] args = new String[]{Configuration.LAUNCHER_PORT, "123"};
-
-        Configuration config = Configuration.parse(args);
+        Configuration config = parseArgs(Configuration.LAUNCHER_PORT, "123");
 
         assertThat(config.launcherPort, is(123));
     }
 
     @Test
     public void launcher_port_is_required() {
-        String[] args = new String[]{};
-
         thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage("missing required parameter: " + Configuration.LAUNCHER_PORT);
-        Configuration.parse(args);
+        parseArgs();
     }
 
     @Test
     public void rejects_unsupported_command_line_arguments() {
-        String[] args = new String[]{"--foo"};
-
         thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage("unsupported parameter: --foo");
-        Configuration.parse(args);
+        parseArgs("--foo");
+    }
+
+
+    // helpers
+
+    private Configuration parseArgs(String... args) {
+        return Configuration.parse(args);
     }
 }
