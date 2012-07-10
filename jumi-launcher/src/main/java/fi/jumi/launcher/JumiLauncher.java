@@ -25,15 +25,16 @@ public class JumiLauncher {
     private final DaemonConnector daemonConnector;
     private final ProcessLauncher processLauncher;
 
-    private File jumiHome; // TODO: default to "~/.jumi"
+    private final File jumiHome;
     private Writer outputListener = new NullWriter();
     private final List<File> classPath = new ArrayList<File>();
     private String testsToIncludePattern;
     private List<String> jvmOptions = new ArrayList<String>();
 
-    public JumiLauncher(DaemonConnector daemonConnector, ProcessLauncher processLauncher) {
+    public JumiLauncher(DaemonConnector daemonConnector, ProcessLauncher processLauncher, File jumiHome) {
         this.daemonConnector = daemonConnector;
         this.processLauncher = processLauncher;
+        this.jumiHome = jumiHome; // TODO: default to "~/.jumi" (create default constructor?)
     }
 
     public MessageReceiver<Event<SuiteListener>> getEventStream() {
@@ -97,10 +98,6 @@ public class JumiLauncher {
         if (!dir.mkdirs()) {
             throw new IOException("Unable to create directory: " + dir);
         }
-    }
-
-    public void setJumiHome(File jumiHome) {
-        this.jumiHome = jumiHome;
     }
 
     public void setOutputListener(Writer outputListener) {

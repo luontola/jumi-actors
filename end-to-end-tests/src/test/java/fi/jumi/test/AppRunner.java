@@ -27,7 +27,11 @@ public class AppRunner implements TestRule {
     // TODO: use a proper sandbox utility
     private final File sandboxDir = new File(TestEnvironment.getSandboxDir(), UUID.randomUUID().toString());
 
-    private final JumiLauncher launcher = new JumiLauncher(new SocketDaemonConnector(), new SystemProcessLauncher());
+    private final JumiLauncher launcher = new JumiLauncher(
+            new SocketDaemonConnector(),
+            new SystemProcessLauncher(),
+            new File(sandboxDir, "jumi-home")
+    );
     private final ByteArrayOutputStream out = new ByteArrayOutputStream();
 
     private TextUIParser ui;
@@ -109,7 +113,6 @@ public class AppRunner implements TestRule {
         assertTrue("Unable to create " + sandboxDir, sandboxDir.mkdirs());
 
         printProcessOutput(launcher);
-        launcher.setJumiHome(sandboxDir);
 
         if (TestSystemProperties.useThreadSafetyAgent()) {
             String threadSafetyAgent = TestEnvironment.getProjectJar("thread-safety-agent").getAbsolutePath();

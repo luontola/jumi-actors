@@ -10,7 +10,8 @@ import fi.jumi.core.SuiteListener;
 import fi.jumi.core.config.Configuration;
 import fi.jumi.launcher.network.DaemonConnector;
 import fi.jumi.launcher.process.ProcessLauncher;
-import org.junit.Test;
+import org.junit.*;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.*;
 import java.util.List;
@@ -20,11 +21,14 @@ import static org.hamcrest.Matchers.is;
 
 public class JumiLauncherTest {
 
+    @Rule
+    public final TemporaryFolder tempDir = new TemporaryFolder();
+
     @Test
     public void tells_daemon_process_the_launcher_port_number() throws IOException {
         int expectedPort = 123;
-        FakeProcessLauncher processLauncher = new FakeProcessLauncher();
-        JumiLauncher launcher = new JumiLauncher(new StubDaemonConnector(expectedPort), processLauncher);
+        SpyProcessLauncher processLauncher = new SpyProcessLauncher();
+        JumiLauncher launcher = new JumiLauncher(new StubDaemonConnector(expectedPort), processLauncher, tempDir.newFolder());
 
         launcher.start();
 
@@ -33,7 +37,7 @@ public class JumiLauncherTest {
     }
 
 
-    private static class FakeProcessLauncher implements ProcessLauncher {
+    private static class SpyProcessLauncher implements ProcessLauncher {
 
         public String[] lastArgs;
 
