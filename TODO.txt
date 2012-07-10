@@ -26,6 +26,21 @@ TODO NEXT:
 	OK - consider implemeting proper daemon shutdown sooner
 	... - keep an eye on what happens
 
+!! - proper configuration parameters
+	!! - parse args
+		OK - read port number
+		OK - require port number
+		!! - launcher must be in sync
+			!! - make launcher testable
+				OK - starting processes
+				!! - listening for connections
+			- test that Configuration gets the right value
+	- use the parser in Main
+	- parse system properties
+		- read values
+		- default values
+		- launcher must be in sync
+
 - proper daemon shutdown
 	- expose the Process instance from launcher, use it to write e2e-tests
 	- send shutdown command from launcher after receiving the last suite event
