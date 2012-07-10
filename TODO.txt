@@ -31,10 +31,10 @@ TODO NEXT:
 		OK - read port number
 		OK - require port number
 		!! - launcher must be in sync
-			!! - make launcher testable
+			OK - make launcher testable
 				OK - starting processes
-				!! - listening for connections
-			- test that Configuration gets the right value
+				OK - listening for connections
+			!! - test that Configuration gets the right value
 	- use the parser in Main
 	- parse system properties
 		- read values

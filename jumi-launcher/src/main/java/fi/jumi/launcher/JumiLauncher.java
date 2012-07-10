@@ -7,93 +7,41 @@ package fi.jumi.launcher;
 import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.*;
 import fi.jumi.core.*;
-import fi.jumi.core.events.CommandListenerEventizer;
 import fi.jumi.launcher.daemon.Daemon;
+import fi.jumi.launcher.network.DaemonConnector;
 import fi.jumi.launcher.process.ProcessLauncher;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.NullWriter;
-import org.jboss.netty.bootstrap.ServerBootstrap;
-import org.jboss.netty.channel.*;
-import org.jboss.netty.channel.socket.oio.OioServerSocketChannelFactory;
-import org.jboss.netty.handler.codec.serialization.*;
 
 import javax.annotation.concurrent.*;
 import java.io.*;
-import java.net.InetSocketAddress;
 import java.util.*;
-import java.util.concurrent.Executors;
 
 @ThreadSafe
 public class JumiLauncher {
+
+    private final MessageQueue<Event<SuiteListener>> eventQueue = new MessageQueue<Event<SuiteListener>>();
+    private final DaemonConnector daemonConnector;
+    private final ProcessLauncher processLauncher;
+
     private File jumiHome; // TODO: default to "~/.jumi"
     private Writer outputListener = new NullWriter();
-    private Process process;
-
-    private final ProcessLauncher processLauncher;
-    private final JumiLauncherHandler handler;
     private final List<File> classPath = new ArrayList<File>();
     private String testsToIncludePattern;
     private List<String> jvmOptions = new ArrayList<String>();
 
-    public JumiLauncher(ProcessLauncher processLauncher, MessageSender<Event<SuiteListener>> eventTarget) {
+    public JumiLauncher(DaemonConnector daemonConnector, ProcessLauncher processLauncher) {
+        this.daemonConnector = daemonConnector;
         this.processLauncher = processLauncher;
-        this.handler = new JumiLauncherHandler(eventTarget);
     }
 
-    // TODO: this class has multiple responsibilities, split to smaller parts?
-    // - configuring the test run
-    // - starting up the daemon process
-    // - connecting to the daemon over a socket
-    // - sending commands to the daemon
-
-    public void setJumiHome(File jumiHome) {
-        this.jumiHome = jumiHome;
-    }
-
-    public void setOutputListener(Writer outputListener) {
-        this.outputListener = outputListener;
+    public MessageReceiver<Event<SuiteListener>> getEventStream() {
+        return eventQueue;
     }
 
     public void start() throws IOException {
-        // XXX: send startup command properly, using a message queue
-        handler.setStartupCommand(generateStartupCommand());
-
-        int port = listenForDaemonConnection();
+        int port = daemonConnector.listenForDaemonConnection(eventQueue, classPath, testsToIncludePattern);
         startProcess(port);
-    }
-
-    private Event<CommandListener> generateStartupCommand() {
-        MessageQueue<Event<CommandListener>> spy = new MessageQueue<Event<CommandListener>>();
-        new CommandListenerEventizer().newFrontend(spy).runTests(classPath, testsToIncludePattern);
-        return spy.poll();
-    }
-
-    private int listenForDaemonConnection() {
-        ChannelFactory factory =
-                new OioServerSocketChannelFactory(
-                        Executors.newCachedThreadPool(),
-                        Executors.newCachedThreadPool());
-
-        ServerBootstrap bootstrap = new ServerBootstrap(factory);
-
-        @ThreadSafe
-        class MyChannelPipelineFactory implements ChannelPipelineFactory {
-            @Override
-            public ChannelPipeline getPipeline() {
-                return Channels.pipeline(
-                        new ObjectEncoder(),
-                        new ObjectDecoder(ClassResolvers.softCachingResolver(JumiLauncher.class.getClassLoader())),
-                        handler);
-            }
-        }
-        bootstrap.setPipelineFactory(new MyChannelPipelineFactory());
-
-        bootstrap.setOption("child.tcpNoDelay", true);
-        bootstrap.setOption("child.keepAlive", true);
-
-        Channel ch = bootstrap.bind(new InetSocketAddress(0));
-        InetSocketAddress addr = (InetSocketAddress) ch.getLocalAddress();
-        return addr.getPort();
     }
 
     private void startProcess(int launcherPort) throws IOException {
@@ -101,8 +49,9 @@ public class JumiLauncher {
         File extractedJar = new File(jumiHome, "lib/" + Daemon.getDaemonJarName());
         copyToFile(embeddedJar, extractedJar);
 
-        process = processLauncher.startJavaProcess(jumiHome, jvmOptions, extractedJar, String.valueOf(launcherPort));
+        Process process = processLauncher.startJavaProcess(jumiHome, jvmOptions, extractedJar, String.valueOf(launcherPort));
 
+        // TODO: write the output to a log file using OS pipes, read it from there with AppRunner
         copyInBackground(process.getInputStream(), outputListener);
     }
 
@@ -142,6 +91,14 @@ public class JumiLauncher {
         if (!dir.mkdirs()) {
             throw new IOException("Unable to create directory: " + dir);
         }
+    }
+
+    public void setJumiHome(File jumiHome) {
+        this.jumiHome = jumiHome;
+    }
+
+    public void setOutputListener(Writer outputListener) {
+        this.outputListener = outputListener;
     }
 
     public void addToClassPath(File file) {

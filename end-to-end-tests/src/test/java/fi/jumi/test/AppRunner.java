@@ -4,12 +4,10 @@
 
 package fi.jumi.test;
 
-import fi.jumi.actors.eventizers.Event;
-import fi.jumi.actors.queue.MessageQueue;
-import fi.jumi.core.SuiteListener;
 import fi.jumi.core.runs.RunId;
 import fi.jumi.core.util.Strings;
 import fi.jumi.launcher.JumiLauncher;
+import fi.jumi.launcher.network.SocketDaemonConnector;
 import fi.jumi.launcher.process.SystemProcessLauncher;
 import fi.jumi.launcher.ui.TextUI;
 import org.apache.commons.io.FileUtils;
@@ -29,9 +27,7 @@ public class AppRunner implements TestRule {
     // TODO: use a proper sandbox utility
     private final File sandboxDir = new File(TestEnvironment.getSandboxDir(), UUID.randomUUID().toString());
 
-    private final MessageQueue<Event<SuiteListener>> eventStream = new MessageQueue<Event<SuiteListener>>();
-
-    private final JumiLauncher launcher = new JumiLauncher(new SystemProcessLauncher(), eventStream);
+    private final JumiLauncher launcher = new JumiLauncher(new SocketDaemonConnector(), new SystemProcessLauncher());
     private final ByteArrayOutputStream out = new ByteArrayOutputStream();
 
     private TextUIParser ui;
@@ -45,7 +41,7 @@ public class AppRunner implements TestRule {
         launcher.setTestsToInclude(testsToInclude);
         launcher.start();
 
-        TextUI ui = new TextUI(new PrintStream(out), new PrintStream(out), eventStream);
+        TextUI ui = new TextUI(new PrintStream(out), new PrintStream(out), launcher.getEventStream());
         ui.updateUntilFinished();
 
         String output = out.toString();
