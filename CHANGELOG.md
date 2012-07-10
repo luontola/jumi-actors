@@ -4,6 +4,10 @@ Changelog for Jumi
 
 **next release**
 
+- TBD
+
+**Jumi 0.1.64** (released 2012-07-10)
+
 - Javadocs for the public APIs of Jumi Actors
 - Fixed a concurrency bug in WorkerCounter
 
