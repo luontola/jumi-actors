@@ -30,12 +30,12 @@ mvn clean deploy \
     -Dgpg.passphrase="" \
     -DaltDeploymentRepository="staging::default::file://$PWD/staging"
 
-git init --bare staging.git
-
 git tag -u "$GPG_KEYNAME" -m "Jumi $RELEASE_VERSION" -m "$CHANGELOG" "$TAG" "$GO_REVISION_SOURCES"
-git push staging.git "$TAG"
 
 ruby scripts/bump-release-changelog.rb CHANGELOG.md "$RELEASE_VERSION"
 git add CHANGELOG.md
 git commit -m "Updated changelog for Jumi $RELEASE_VERSION release"
+
+git init --bare staging.git
+git push staging.git "$TAG"
 git push staging.git HEAD:master
