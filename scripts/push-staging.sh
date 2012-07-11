@@ -1,6 +1,6 @@
 #!/bin/sh
 set -e
-: ${GPG_KEYNAME:?}
+: ${GIT_REPOSITORY:?}
 set -x
 
 CHANGELOG=`cat build/changelog`
@@ -12,7 +12,7 @@ then
     exit 1
 fi
 
-git clone git@github.com:orfjackal/jumi.git work
+git clone "$GIT_REPOSITORY" work
 cd work
 git remote add staging ../staging.git
 git fetch staging
