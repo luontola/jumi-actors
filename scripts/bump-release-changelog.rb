@@ -15,9 +15,6 @@ release_title_line = "**Jumi #{RELEASE_VERSION}** (released #{Date.today.strftim
 placeholder_line = "- TBD"
 
 old_changelog = IO.read(CHANGELOG_FILE)
-if /^#{placeholder_line}$/ =~ old_changelog
-  raise "Changelog not ready for release, contains '#{placeholder_line}'"
-end
 new_changelog = old_changelog.sub(/^\*\*next release\*\*$/,
                                   "**next release**\n\n#{placeholder_line}\n\n#{release_title_line}")
 
