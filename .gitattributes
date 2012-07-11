@@ -1,4 +1,5 @@
 *.txt           eol=lf
+*.md            eol=lf
 *.java          eol=lf
 *.properties    eol=lf
 *.rb            eol=lf
