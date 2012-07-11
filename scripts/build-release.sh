@@ -8,7 +8,7 @@ set -x
 
 RELEASE_VERSION=`ruby scripts/get-release-version.rb $GO_PIPELINE_COUNTER`
 CHANGELOG=`ruby scripts/get-release-changelog.rb CHANGELOG.md`
-TAG="jumi-$VERSION"
+TAG="jumi-$RELEASE_VERSION"
 
 mkdir build
 echo "$RELEASE_VERSION" > build/version
@@ -37,5 +37,5 @@ git push staging.git "$TAG"
 
 ruby scripts/bump-release-changelog.rb CHANGELOG.md "$RELEASE_VERSION"
 git add CHANGELOG.md
-git commit -m "Updated changelog for Jumi $VERSION release"
+git commit -m "Updated changelog for Jumi $RELEASE_VERSION release"
 git push staging.git HEAD:master
