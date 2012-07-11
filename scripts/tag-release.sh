@@ -1,7 +1,6 @@
 #!/bin/sh
 set -e
 : ${GPG_KEYNAME:?}
-: ${GPG_PASSPHRASE:?}
 set -x
 
 VERSION=`cat build/version`

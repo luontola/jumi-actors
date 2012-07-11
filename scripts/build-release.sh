@@ -3,7 +3,6 @@ set -e
 : ${GO_PIPELINE_COUNTER:?}
 : ${GO_REVISION_SOURCES:?}
 : ${GPG_KEYNAME:?}
-: ${GPG_PASSPHRASE:?}
 : ${PWD:?}
 set -x
 
@@ -27,5 +26,5 @@ mvn clean deploy \
     --errors \
     -Psonatype-oss-release \
     -Dgpg.keyname="$GPG_KEYNAME" \
-    -Dgpg.passphrase="$GPG_PASSPHRASE" \
+    -Dgpg.passphrase="" \
     -DaltDeploymentRepository="staging::default::file://$PWD/staging"
