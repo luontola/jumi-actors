@@ -1,5 +1,5 @@
 #!/bin/sh
-set -e
+set -eu
 : ${GIT_REPOSITORY:?}
 set -x
 

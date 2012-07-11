@@ -1,5 +1,5 @@
 #!/bin/sh
-set -e
+set -eu
 : ${GO_PIPELINE_COUNTER:?}
 : ${GO_REVISION_SOURCES:?}
 : ${GPG_KEYNAME:?}

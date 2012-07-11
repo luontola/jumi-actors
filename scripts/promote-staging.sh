@@ -1,5 +1,5 @@
 #!/bin/sh
-set -e
+set -eu
 : ${DEPLOY_USERNAME:?}
 : ${DEPLOY_PASSWORD:?}
 set -x

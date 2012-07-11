@@ -1,5 +1,6 @@
 #!/bin/sh
-set -ex
+set -eu
+set -x
 
 mvn clean verify \
     --batch-mode \
