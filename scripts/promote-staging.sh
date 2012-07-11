@@ -4,7 +4,7 @@ set -e
 : ${DEPLOY_PASSWORD:?}
 set -x
 
-VERSION=`cat version`
+VERSION=`cat build/version`
 
 ruby scripts/upload-maven-repository.rb staging https://oss.sonatype.org/service/local/staging/deploy/maven2
 

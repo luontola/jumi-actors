@@ -1,6 +1,7 @@
 #!/bin/sh
 set -e
 : ${GO_PIPELINE_COUNTER:?}
+: ${GO_REVISION_SOURCES:?}
 : ${GPG_KEYNAME:?}
 : ${GPG_PASSPHRASE:?}
 : ${PWD:?}
@@ -8,7 +9,9 @@ set -x
 
 RELEASE_VERSION=`ruby scripts/get-release-version.rb $GO_PIPELINE_COUNTER`
 
-echo "$RELEASE_VERSION" > version
+mkdir build
+echo "$RELEASE_VERSION" > build/version
+echo "$GO_REVISION_SOURCES" > build/revision
 
 mvn org.codehaus.mojo:versions-maven-plugin:1.3.1:set \
     --batch-mode \
