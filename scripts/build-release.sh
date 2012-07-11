@@ -8,10 +8,12 @@ set -e
 set -x
 
 RELEASE_VERSION=`ruby scripts/get-release-version.rb $GO_PIPELINE_COUNTER`
+CHANGELOG=`ruby scripts/get-release-changelog.rb CHANGELOG.md`
 
 mkdir build
 echo "$RELEASE_VERSION" > build/version
 echo "$GO_REVISION_SOURCES" > build/revision
+echo "$CHANGELOG" > build/changelog
 
 mvn org.codehaus.mojo:versions-maven-plugin:1.3.1:set \
     --batch-mode \
