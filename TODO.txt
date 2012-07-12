@@ -210,9 +210,9 @@ TODO NEXT:
 		- run an untrusted go-agent in a restricted environment
 		- add it to the pipeline
 	- push-button releasing the staging repository
-		- create signed tags automatically and push them to github
-			- include also changelog into tag comment
-		- update the release to changelog (latest master) and push it to github
+		OK - create signed tags automatically and push them to github
+			OK - include also changelog into tag comment
+		OK - update the release to changelog (latest master) and push it to github
 		- run smoke tests before promoting
 		- if smoke tests pass, promote automatically from OSSRH to Central
 			http://www.sonatype.com/books/nexus-book/reference/staging-sect-managing-plugin.html
