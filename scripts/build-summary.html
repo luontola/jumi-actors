@@ -1,0 +1,32 @@
+<!-- Copyright © 2011-2012, Esko Luontola <www.orfjackal.net> -->
+<!-- This software is released under the Apache License 2.0. -->
+<!-- The license text is at http://www.apache.org/licenses/LICENSE-2.0 -->
+
+<html>
+<head>
+    <title>Build Summary</title>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('.include').each(function (index, element) {
+                $(element).text('Loading...');
+                var path = $(element).attr('path');
+                $.get(path, function (content) {
+                    $(element).text(content);
+                })
+            });
+        });
+    </script>
+</head>
+<body>
+
+<p>Version: <code class="include" path="../build/version"></code></p>
+
+<p>Revision: <code class="include" path="../build/revision"></code></p>
+
+<p>Changelog:</p>
+
+<pre class="include" path="../build/changelog"></pre>
+
+</body>
+</html>
