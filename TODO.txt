@@ -7,8 +7,8 @@ TODO NEXT:
 	OK - check that maven central was synced
 	OK - release the latest jumi-actors
 	OK - www: maven dependency xml, latest version number, link to http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22fi.jumi%22
-	!! - user guide: also intro to thread-safety-checker and jumi-actors-maven-plugin
-	- advertise the release
+	OK - user guide: also intro to thread-safety-checker and jumi-actors-maven-plugin
+	!! - advertise the release
 	- write a blog post: Continuous Delivery with Maven and Go into Maven Central
 
 - web site improvements
