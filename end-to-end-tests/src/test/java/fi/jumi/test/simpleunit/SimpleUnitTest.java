@@ -150,7 +150,7 @@ public class SimpleUnitTest {
     }
 
     private void waitForTestsToExecute() throws InterruptedException {
-        // XXX: for a differnt kind of testing framework, shutdown() won't work, because it prevents new tasks from being added
+        // XXX: for a different kind of testing framework, shutdown() won't work, because it prevents new tasks from being added
         executor.shutdown();
         executor.awaitTermination(TIMEOUT, TimeUnit.MILLISECONDS);
     }

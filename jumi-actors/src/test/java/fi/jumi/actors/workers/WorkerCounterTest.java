@@ -12,7 +12,6 @@ import java.util.concurrent.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public class WorkerCounterTest {
@@ -39,7 +38,6 @@ public class WorkerCounterTest {
     @After
     public void stopExecutor() throws Throwable {
         realExecutor.shutdownNow();
-        assertTrue(realExecutor.awaitTermination(TIMEOUT, TimeUnit.MILLISECONDS));
         uncaughtExceptions.failIfNotEmpty();
     }
 
