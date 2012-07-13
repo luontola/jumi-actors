@@ -114,6 +114,7 @@ TODO NEXT:
 	- evaluate JarJar or ProGuard, maybe it could minimize the jars better than the shade plugin by removing also unused methods
 		http://sonatype.github.com/jarjar-maven-plugin/
 		http://pyx4me.com/pyx4me-maven-plugins/proguard-maven-plugin/
+		https://github.com/wvengen/proguard-maven-plugin (uses newer version of ProGuard)
 	- seems that Eventizer.newBackend is not used; keep it for symmetry or remove it?
 	- consider logging with http://code.google.com/p/minlog/
 
