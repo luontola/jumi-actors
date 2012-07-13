@@ -69,7 +69,7 @@ public class GenerateEventStubsMojo extends AbstractMojo {
     /**
      * The Maven Project Object
      *
-     * @parameter expression="${project}"
+     * @parameter property="project"
      * @required
      * @readonly
      */
