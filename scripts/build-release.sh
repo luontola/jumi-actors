@@ -8,7 +8,7 @@ set -x
 
 RELEASE_VERSION=`ruby scripts/get-release-version.rb $GO_PIPELINE_COUNTER`
 CHANGELOG=`ruby scripts/get-release-changelog.rb CHANGELOG.md`
-TAG="jumi-$RELEASE_VERSION"
+TAG="v$RELEASE_VERSION"
 
 mkdir build
 echo "$RELEASE_VERSION" > build/version
