@@ -11,7 +11,7 @@ end
 CHANGELOG_FILE = ARGV.shift
 RELEASE_VERSION = ARGV.shift
 
-release_title_line = "**Jumi #{RELEASE_VERSION}** (released #{Date.today.strftime('%F')})"
+release_title_line = "**Jumi #{RELEASE_VERSION}** (#{Date.today.strftime('%F')})"
 placeholder_line = "- TBD"
 
 old_changelog = IO.read(CHANGELOG_FILE)
