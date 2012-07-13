@@ -391,6 +391,10 @@
                     <configuration>
                         <!-- TODO: This also minimizes jumi-core when it's included in jumi-daemon. Keep watch whether it causes problems. -->
                         <minimizeJar>true</minimizeJar>
+                        <!-- XXX: 1.7.1 doesn't remove this temporary file after a build, so let's at least move it out of the basedir,
+                             though it might not work in some situations: http://jira.codehaus.org/browse/MSHADE-124 -->
+                        <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml
+                        </dependencyReducedPomLocation>
                     </configuration>
                 </plugin>
 
