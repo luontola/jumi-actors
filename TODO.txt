@@ -36,6 +36,12 @@ TODO NEXT:
 	- remove the hack in fi.jumi.daemon.Main#exitWhenNotAnymoreInUse
 	- print a message on daemon startup and shutdown; makes it easier to see from logs that when the JVM was restarted
 
+- write daemon output to log file
+	- use Process.getInputStream to write the log file in JumiLauncher's process
+	- update e2e tests to read the output from the log file
+	- upgrade to Java 7 (except jumi-actors et al?)
+	- use ProcessBuilder.redirectOutput to write the log file (else the process would hang when the launcher JVM exits)
+
 - end-to-end tests: running multiple test classes
 	- it's not sure whether SuiteRunner works correctly when there are many test classes
 	- test class inclusion patterns (*Test, Test*, some.package.*, some.package.** etc.)
