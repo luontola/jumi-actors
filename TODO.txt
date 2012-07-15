@@ -40,7 +40,21 @@ TODO NEXT:
 	- use Process.getInputStream to write the log file in JumiLauncher's process
 	- update e2e tests to read the output from the log file
 	- upgrade to Java 7 (except jumi-actors et al?)
+		- check bytecode level in BuildTest
+		- update POMs: default language level to parent, override in specific modules
+		- double-check that bytecode manipulation generates stackmap frames when producing Java 7 bytecode
+			http://weblogs.java.net/blog/fabriziogiudici/archive/2012/05/07/understanding-subtle-new-behaviours-jdk-7
+			http://download.forge.objectweb.org/asm/asm4-guide.pdf
+				3.1.5 pages 39-41: stack map frames explained
+				3.2.1 page 44: ClassWriter options for computing them automatically (slower)
 	- use ProcessBuilder.redirectOutput to write the log file (else the process would hang when the launcher JVM exits)
+
+- migrate to Java 7
+	- find usages of File, migrate to Path
+		http://docs.oracle.com/javase/tutorial/essential/io/fileio.html
+		http://docs.oracle.com/javase/tutorial/essential/io/legacy.html
+	- find "new .*<", migrate to diamon operator
+	- find "finally", migrate to try-with-resources
 
 - end-to-end tests: running multiple test classes
 	- it's not sure whether SuiteRunner works correctly when there are many test classes
@@ -190,6 +204,12 @@ TODO NEXT:
 	- hand-written serialization using bare DataOutput/DataInput? should give overall best performance without additional dependencies: https://github.com/eishay/jvm-serializers/wiki/
 	- plugin pom: add-source with http://mojo.codehaus.org/build-helper-maven-plugin/
 	- install plugin to local repository to avoid false alarms in jumi-core pom
+	- evaluate triggering the code generator using JSR 269 (might be hard to generate code for 3rd party classes such as Runnable?)
+		! http://deors.wordpress.com/2011/10/08/annotation-processors/
+		! http://deors.wordpress.com/2011/10/31/annotation-generators/
+		http://weblogs.java.net/blog/tball/archive/2006/09/hacking_javac.html
+		http://code.google.com/p/genftw/
+		http://code.google.com/p/objectify-gwtkey/
 
 - deployment pipeline
 	jumi:
