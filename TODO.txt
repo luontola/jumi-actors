@@ -59,6 +59,9 @@ TODO NEXT:
 - end-to-end tests: running multiple test classes
 	- it's not sure whether SuiteRunner works correctly when there are many test classes
 	- test class inclusion patterns (*Test, Test*, some.package.*, some.package.** etc.)
+		- consider using Java 7's glob/regex patterns
+			http://docs.oracle.com/javase/tutorial/essential/io/fileOps.html#glob
+			http://docs.oracle.com/javase/7/docs/api/java/nio/file/FileSystem.html#getPathMatcher(java.lang.String)
 
 - end-to-end tests: reporting test output
 	- capture System.out/err
