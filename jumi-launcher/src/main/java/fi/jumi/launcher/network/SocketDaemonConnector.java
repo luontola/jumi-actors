@@ -5,9 +5,8 @@
 package fi.jumi.launcher.network;
 
 import fi.jumi.actors.eventizers.Event;
-import fi.jumi.actors.queue.*;
-import fi.jumi.core.*;
-import fi.jumi.core.events.CommandListenerEventizer;
+import fi.jumi.actors.queue.MessageSender;
+import fi.jumi.core.SuiteListener;
 import fi.jumi.launcher.JumiLauncher;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.*;
@@ -15,20 +14,16 @@ import org.jboss.netty.channel.socket.oio.OioServerSocketChannelFactory;
 import org.jboss.netty.handler.codec.serialization.*;
 
 import javax.annotation.concurrent.*;
-import java.io.File;
 import java.net.InetSocketAddress;
-import java.util.List;
 import java.util.concurrent.Executors;
 
 @Immutable
 public class SocketDaemonConnector implements DaemonConnector {
 
     @Override
-    public int listenForDaemonConnection(MessageSender<Event<SuiteListener>> eventTarget, List<File> classPath, String testsToIncludePattern) {
-        // TODO: extract this thing into an actor
-        // XXX: send startup command properly, using a message queue
-        Event<CommandListener> startupCommand = generateStartupCommand(classPath, testsToIncludePattern);
-        final DaemonConnectorHandler handler = new DaemonConnectorHandler(eventTarget, startupCommand);
+    public int listenForDaemonConnection(MessageSender<Event<SuiteListener>> eventTarget,
+                                         FutureValue<Channel> daemonConnection) {
+        final DaemonConnectorHandler handler = new DaemonConnectorHandler(eventTarget, daemonConnection);
 
         ChannelFactory factory =
                 new OioServerSocketChannelFactory(
@@ -57,29 +52,22 @@ public class SocketDaemonConnector implements DaemonConnector {
         return addr.getPort();
     }
 
-    private Event<CommandListener> generateStartupCommand(List<File> classPath, String testsToIncludePattern) {
-        MessageQueue<Event<CommandListener>> spy = new MessageQueue<Event<CommandListener>>();
-        new CommandListenerEventizer().newFrontend(spy).runTests(classPath, testsToIncludePattern);
-        return spy.poll();
-    }
-
 
     @ThreadSafe
     public static class DaemonConnectorHandler extends SimpleChannelHandler {
 
         private final MessageSender<Event<SuiteListener>> target;
-        private final Event<CommandListener> startupCommand;
+        private final FutureValue<Channel> daemonConnection;
 
-        public DaemonConnectorHandler(MessageSender<Event<SuiteListener>> target, Event<CommandListener> startupCommand) {
+        public DaemonConnectorHandler(MessageSender<Event<SuiteListener>> target,
+                                      FutureValue<Channel> daemonConnection) {
             this.target = target;
-            this.startupCommand = startupCommand;
+            this.daemonConnection = daemonConnection;
         }
 
         @Override
         public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
-            // TODO: move the responsibility of sending this command into JumiLauncher (requires actor model?)
-            // TODO: send an event that the we have connected?
-            e.getChannel().write(startupCommand);
+            this.daemonConnection.set(e.getChannel());
         }
 
         @Override

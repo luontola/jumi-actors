@@ -6,17 +6,20 @@ package fi.jumi.launcher;
 
 import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.*;
-import fi.jumi.core.SuiteListener;
+import fi.jumi.core.*;
 import fi.jumi.core.config.Configuration;
+import fi.jumi.core.events.CommandListenerEventizer;
 import fi.jumi.launcher.daemon.HomeManager;
-import fi.jumi.launcher.network.DaemonConnector;
+import fi.jumi.launcher.network.*;
 import fi.jumi.launcher.process.ProcessStarter;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.NullWriter;
+import org.jboss.netty.channel.Channel;
 
 import javax.annotation.concurrent.*;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 @ThreadSafe
 public class JumiLauncher {
@@ -43,12 +46,14 @@ public class JumiLauncher {
         return eventQueue;
     }
 
-    public void start() throws IOException {
-        int port = daemonConnector.listenForDaemonConnection(eventQueue, classPath, testsToIncludePattern);
-        startProcess(port);
+    public void start() throws IOException, ExecutionException, InterruptedException {
+        FutureValue<Channel> daemonConnection = new FutureValue<Channel>();
+        int port = daemonConnector.listenForDaemonConnection(eventQueue, daemonConnection);
+        startDaemonProcess(port);
+        sendRunTestsCommand(daemonConnection);
     }
 
-    private void startProcess(int launcherPort) throws IOException {
+    private void startDaemonProcess(int launcherPort) throws IOException {
         Process process = processStarter.startJavaProcess(
                 homeManager.getDaemonJar(),
                 homeManager.getSettingsDir(),
@@ -76,6 +81,18 @@ public class JumiLauncher {
         Thread t = new Thread(new Copier());
         t.setDaemon(true);
         t.start();
+    }
+
+    private void sendRunTestsCommand(FutureValue<Channel> daemonConnection) throws InterruptedException, ExecutionException {
+        // XXX: send startup command properly, using actors?
+        Channel daemonChannel = daemonConnection.get();
+        daemonChannel.write(generateStartupCommand(classPath, testsToIncludePattern));
+    }
+
+    private static Event<CommandListener> generateStartupCommand(List<File> classPath, String testsToIncludePattern) {
+        MessageQueue<Event<CommandListener>> spy = new MessageQueue<Event<CommandListener>>();
+        new CommandListenerEventizer().newFrontend(spy).runTests(classPath, testsToIncludePattern);
+        return spy.poll();
     }
 
     public void shutdown() {

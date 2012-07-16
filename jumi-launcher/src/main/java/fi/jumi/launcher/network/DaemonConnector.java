@@ -7,11 +7,10 @@ package fi.jumi.launcher.network;
 import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.MessageSender;
 import fi.jumi.core.SuiteListener;
-
-import java.io.File;
-import java.util.List;
+import org.jboss.netty.channel.Channel;
 
 public interface DaemonConnector {
 
-    int listenForDaemonConnection(MessageSender<Event<SuiteListener>> eventTarget, List<File> classPath, String testsToIncludePattern);
+    int listenForDaemonConnection(MessageSender<Event<SuiteListener>> eventTarget,
+                                  FutureValue<Channel> daemonConnection);
 }

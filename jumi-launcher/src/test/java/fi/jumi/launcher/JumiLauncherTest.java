@@ -9,8 +9,9 @@ import fi.jumi.actors.queue.MessageSender;
 import fi.jumi.core.SuiteListener;
 import fi.jumi.core.config.Configuration;
 import fi.jumi.launcher.daemon.HomeManager;
-import fi.jumi.launcher.network.DaemonConnector;
+import fi.jumi.launcher.network.*;
 import fi.jumi.launcher.process.ProcessStarter;
+import org.jboss.netty.channel.Channel;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 
@@ -19,6 +20,7 @@ import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.mock;
 
 public class JumiLauncherTest {
 
@@ -35,7 +37,7 @@ public class JumiLauncherTest {
     }
 
     @Test
-    public void tells_daemon_process_the_launcher_port_number() throws IOException {
+    public void tells_daemon_process_the_launcher_port_number() throws Exception {
         daemonConnector.port = 123;
 
         launcher.start();
@@ -44,7 +46,7 @@ public class JumiLauncherTest {
     }
 
     @Test
-    public void can_enable_message_logging() throws IOException {
+    public void can_enable_message_logging() throws Exception {
         launcher.start();
 
         assertThat(daemonConfig().logActorMessages, is(false));
@@ -80,7 +82,10 @@ public class JumiLauncherTest {
         public int port = 42;
 
         @Override
-        public int listenForDaemonConnection(MessageSender<Event<SuiteListener>> eventTarget, List<File> classPath, String testsToIncludePattern) {
+        public int listenForDaemonConnection(MessageSender<Event<SuiteListener>> eventTarget,
+                                             FutureValue<Channel> daemonConnection) {
+            // XXX: improve the design to make these stubs simpler
+            daemonConnection.set(mock(Channel.class));
             return port;
         }
     }

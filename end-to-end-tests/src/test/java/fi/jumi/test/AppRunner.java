@@ -50,11 +50,11 @@ public class AppRunner implements TestRule {
         return process;
     }
 
-    public void runTests(Class<?> clazz) throws IOException, InterruptedException {
+    public void runTests(Class<?> clazz) throws Exception {
         runTests(clazz.getName());
     }
 
-    public void runTests(String testsToInclude) throws IOException, InterruptedException {
+    public void runTests(String testsToInclude) throws Exception {
         launcher.addToClassPath(TestEnvironment.getSampleClasses());
         launcher.setTestsToInclude(testsToInclude);
         launcher.start();

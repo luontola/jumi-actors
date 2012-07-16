@@ -31,7 +31,15 @@ TODO NEXT:
 		OK - in other tests, wait for the process to close
 	!! - send shutdown command to daemon from launcher
 		OK - DaemonProcessTest
-		!! - decouple DaemonConnector.listenForDaemonConnection and the suite startup command, maybe introduce a launcher-side actor
+		OK - decouple DaemonConnector.listenForDaemonConnection and the suite startup command
+		!! - introduce a launcher-side actor for communicating with the daemon
+			order of events:
+			* startDaemon(system properties, jvm options): Future connected
+				- launcher listens of connection from daemon
+				- launcher starts the daemon process
+				- launcher receives connection from daemon
+			* runTests(tests to run)
+				- launcher sends CommandListener#runTests to daemon
 		- using the above way of sending commands, implement sending the shutdown command
 	- AppRunner: after receiving the last suite event, send the shutdown command
 	- exit after a timeout if no client connects to daemon or the client disconnects
