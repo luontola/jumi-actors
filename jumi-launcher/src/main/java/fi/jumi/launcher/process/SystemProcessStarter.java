@@ -9,7 +9,7 @@ import java.io.*;
 import java.util.*;
 
 @Immutable
-public class SystemProcessLauncher implements ProcessLauncher {
+public class SystemProcessStarter implements ProcessStarter {
 
     private final File javaExecutable = new File(System.getProperty("java.home"), "bin/java");
 

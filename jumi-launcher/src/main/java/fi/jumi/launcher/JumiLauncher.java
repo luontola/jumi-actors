@@ -10,7 +10,7 @@ import fi.jumi.core.SuiteListener;
 import fi.jumi.core.config.Configuration;
 import fi.jumi.launcher.daemon.HomeManager;
 import fi.jumi.launcher.network.DaemonConnector;
-import fi.jumi.launcher.process.ProcessLauncher;
+import fi.jumi.launcher.process.ProcessStarter;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.NullWriter;
 
@@ -24,7 +24,7 @@ public class JumiLauncher {
     private final MessageQueue<Event<SuiteListener>> eventQueue = new MessageQueue<Event<SuiteListener>>();
     private final HomeManager homeManager;
     private final DaemonConnector daemonConnector;
-    private final ProcessLauncher processLauncher;
+    private final ProcessStarter processStarter;
 
     private final List<File> classPath = new ArrayList<File>();
     private final List<String> jvmOptions = new ArrayList<String>();
@@ -33,10 +33,10 @@ public class JumiLauncher {
     private String testsToIncludePattern;
     private Writer outputListener = new NullWriter();
 
-    public JumiLauncher(HomeManager homeManager, DaemonConnector daemonConnector, ProcessLauncher processLauncher) {
+    public JumiLauncher(HomeManager homeManager, DaemonConnector daemonConnector, ProcessStarter processStarter) {
         this.homeManager = homeManager;
         this.daemonConnector = daemonConnector;
-        this.processLauncher = processLauncher;
+        this.processStarter = processStarter;
     }
 
     public MessageReceiver<Event<SuiteListener>> getEventStream() {
@@ -49,7 +49,7 @@ public class JumiLauncher {
     }
 
     private void startProcess(int launcherPort) throws IOException {
-        Process process = processLauncher.startJavaProcess(
+        Process process = processStarter.startJavaProcess(
                 homeManager.getDaemonJar(),
                 homeManager.getSettingsDir(),
                 jvmOptions,

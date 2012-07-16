@@ -9,7 +9,7 @@ import fi.jumi.core.util.Strings;
 import fi.jumi.launcher.JumiLauncher;
 import fi.jumi.launcher.daemon.DirBasedHomeManager;
 import fi.jumi.launcher.network.SocketDaemonConnector;
-import fi.jumi.launcher.process.SystemProcessLauncher;
+import fi.jumi.launcher.process.*;
 import fi.jumi.launcher.ui.TextUI;
 import org.apache.commons.io.FileUtils;
 import org.junit.rules.TestRule;
@@ -28,10 +28,11 @@ public class AppRunner implements TestRule {
     // TODO: use a proper sandbox utility
     private final File sandboxDir = new File(TestEnvironment.getSandboxDir(), UUID.randomUUID().toString());
 
+    private final SpyProcessStarter processStarter = new SpyProcessStarter(new SystemProcessStarter());
     private final JumiLauncher launcher = new JumiLauncher(
             new DirBasedHomeManager(new File(sandboxDir, "jumi-home")),
             new SocketDaemonConnector(),
-            new SystemProcessLauncher() // TODO: create a middle-man proxy which gives the tests access to the Process instance
+            processStarter
     );
     private final ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -149,5 +150,32 @@ public class AppRunner implements TestRule {
                 flush();
             }
         });
+    }
+
+
+    // helpers
+
+    public static class SpyProcessStarter implements ProcessStarter {
+
+        private final ProcessStarter processStarter;
+        private Process lastProcess;
+
+        public SpyProcessStarter(ProcessStarter processStarter) {
+            this.processStarter = processStarter;
+        }
+
+        @Override
+        public Process startJavaProcess(File executableJar, File workingDir, List<String> jvmOptions, Properties systemProperties, String... args) throws IOException {
+            Process process = processStarter.startJavaProcess(executableJar, workingDir, jvmOptions, systemProperties, args);
+            this.lastProcess = process;
+            return process;
+        }
+
+        public Process getLastProcess() {
+            if (lastProcess == null) {
+                throw new IllegalStateException("no process has yet been started");
+            }
+            return lastProcess;
+        }
     }
 }

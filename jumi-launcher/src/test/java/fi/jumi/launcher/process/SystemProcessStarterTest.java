@@ -12,7 +12,7 @@ import java.util.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 
-public class SystemProcessLauncherTest {
+public class SystemProcessStarterTest {
 
     @Test
     public void passes_system_properties_to_the_process() {
@@ -20,7 +20,7 @@ public class SystemProcessLauncherTest {
 
         systemProperties.setProperty("propertyKey", "propertyValue");
 
-        List<String> command = new SystemProcessLauncher().buildCommand(new File("dummy.jar"), new ArrayList<String>(), systemProperties, new String[0]);
+        List<String> command = new SystemProcessStarter().buildCommand(new File("dummy.jar"), new ArrayList<String>(), systemProperties, new String[0]);
 
         assertThat(command, hasItem("-DpropertyKey=propertyValue"));
     }

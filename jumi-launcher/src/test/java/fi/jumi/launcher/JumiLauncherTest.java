@@ -10,7 +10,7 @@ import fi.jumi.core.SuiteListener;
 import fi.jumi.core.config.Configuration;
 import fi.jumi.launcher.daemon.HomeManager;
 import fi.jumi.launcher.network.DaemonConnector;
-import fi.jumi.launcher.process.ProcessLauncher;
+import fi.jumi.launcher.process.ProcessStarter;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 
@@ -25,13 +25,13 @@ public class JumiLauncherTest {
     @Rule
     public final TemporaryFolder tempDir = new TemporaryFolder();
 
-    private final SpyProcessLauncher processLauncher = new SpyProcessLauncher();
+    private final SpyProcessStarter processStarter = new SpyProcessStarter();
     private final StubDaemonConnector daemonConnector = new StubDaemonConnector();
     private JumiLauncher launcher;
 
     @Before
     public void setup() throws IOException {
-        launcher = new JumiLauncher(new DummyHomeManager(), daemonConnector, processLauncher);
+        launcher = new JumiLauncher(new DummyHomeManager(), daemonConnector, processStarter);
     }
 
     @Test
@@ -59,10 +59,10 @@ public class JumiLauncherTest {
     // helpers
 
     private Configuration daemonConfig() {
-        return Configuration.parse(processLauncher.lastArgs, processLauncher.lastSystemProperties);
+        return Configuration.parse(processStarter.lastArgs, processStarter.lastSystemProperties);
     }
 
-    private static class SpyProcessLauncher implements ProcessLauncher {
+    private static class SpyProcessStarter implements ProcessStarter {
 
         public String[] lastArgs;
         public Properties lastSystemProperties = new Properties();
