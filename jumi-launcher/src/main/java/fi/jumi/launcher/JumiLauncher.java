@@ -78,6 +78,10 @@ public class JumiLauncher {
         t.start();
     }
 
+    public void shutdown() {
+        // TODO
+    }
+
     public void setOutputListener(Writer outputListener) {
         this.outputListener = outputListener;
     }

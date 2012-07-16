@@ -38,6 +38,18 @@ public class AppRunner implements TestRule {
 
     private TextUIParser ui;
 
+    public JumiLauncher getLauncher() {
+        return launcher;
+    }
+
+    public Process getDaemonProcess() {
+        Process process = processStarter.lastProcess;
+        if (process == null) {
+            throw new IllegalStateException("daemon not yet started");
+        }
+        return process;
+    }
+
     public void runTests(Class<?> clazz) throws IOException, InterruptedException {
         runTests(clazz.getName());
     }
