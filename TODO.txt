@@ -26,10 +26,10 @@ TODO NEXT:
 	... - keep an eye on what happens
 
 !! - proper daemon shutdown
-	!! - expose the Process instance from launcher, use it to write e2e-tests (can assert that daemon is shut down)
+	OK - expose the Process instance from launcher, use it to write e2e-tests (can assert that daemon is shut down)
 		OK - expose the Process instance to tests (use a proxy ProcessLauncher in AppRunner?)
-		!! - in other tests, wait for the process to close
-	- send shutdown command from launcher after receiving the last suite event
+		OK - in other tests, wait for the process to close
+	!! - send shutdown command from launcher after receiving the last suite event
 		- decouple DaemonConnector.listenForDaemonConnection and the suite startup command, maybe introduce a launcher-side actor
 		- using the above way of sending commands, implement sending the shutdown command
 	- exit after a timeout if no client connects to daemon or the client disconnects

@@ -125,11 +125,24 @@ public class AppRunner implements TestRule {
     }
 
     private void tearDown() {
+        Process process = processStarter.lastProcess;
+        if (process != null) {
+            kill(process);
+        }
         try {
-            // XXX: may fail to delete because the daemon is still running and the JAR is locked
             FileUtils.forceDelete(sandboxDir);
         } catch (IOException e) {
             System.err.println("WARNING: " + e.getMessage());
+        }
+    }
+
+    private static void kill(Process process) {
+        process.destroy();
+        try {
+            process.waitFor();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -158,7 +171,7 @@ public class AppRunner implements TestRule {
     public static class SpyProcessStarter implements ProcessStarter {
 
         private final ProcessStarter processStarter;
-        private Process lastProcess;
+        public Process lastProcess;
 
         public SpyProcessStarter(ProcessStarter processStarter) {
             this.processStarter = processStarter;
@@ -169,13 +182,6 @@ public class AppRunner implements TestRule {
             Process process = processStarter.startJavaProcess(executableJar, workingDir, jvmOptions, systemProperties, args);
             this.lastProcess = process;
             return process;
-        }
-
-        public Process getLastProcess() {
-            if (lastProcess == null) {
-                throw new IllegalStateException("no process has yet been started");
-            }
-            return lastProcess;
         }
     }
 }
