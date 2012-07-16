@@ -84,7 +84,7 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
     }
 
     @Test
-    public void the_asynchronous_executor_hooked_into_the_same_MessageListener_as_the_actors_use() {
+    public void the_asynchronous_executor_is_hooked_into_the_same_MessageListener_as_the_actors_use() {
         Executor listenedExecutor = mock(Executor.class, "listenedExecutor");
         MessageListener messageListener = mock(MessageListener.class);
         stub(messageListener.getListenedExecutor(Matchers.<Executor>any())).toReturn(listenedExecutor);
