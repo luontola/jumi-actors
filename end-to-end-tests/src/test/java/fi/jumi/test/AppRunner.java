@@ -4,8 +4,11 @@
 
 package fi.jumi.test;
 
+import fi.jumi.actors.MultiThreadedActors;
+import fi.jumi.actors.eventizers.dynamic.DynamicEventizerProvider;
+import fi.jumi.actors.listeners.*;
 import fi.jumi.core.runs.RunId;
-import fi.jumi.core.util.Strings;
+import fi.jumi.core.util.*;
 import fi.jumi.launcher.JumiLauncher;
 import fi.jumi.launcher.daemon.DirBasedHomeManager;
 import fi.jumi.launcher.network.SocketDaemonConnector;
@@ -18,6 +21,7 @@ import org.junit.runners.model.Statement;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -28,15 +32,27 @@ public class AppRunner implements TestRule {
     // TODO: use a proper sandbox utility
     private final File sandboxDir = new File(TestEnvironment.getSandboxDir(), UUID.randomUUID().toString());
 
+    private ExecutorService actorsThreadPool;
     private final SpyProcessStarter processStarter = new SpyProcessStarter(new SystemProcessStarter());
-    private final JumiLauncher launcher = new JumiLauncher(
-            new DirBasedHomeManager(new File(sandboxDir, "jumi-home")),
-            new SocketDaemonConnector(),
-            processStarter
-    );
+    private final JumiLauncher launcher;
     private final ByteArrayOutputStream out = new ByteArrayOutputStream();
 
     private TextUIParser ui;
+
+    public AppRunner() {
+        actorsThreadPool = Executors.newCachedThreadPool(new PrefixedThreadFactory("jumi-launcher"));
+        MultiThreadedActors actors = new MultiThreadedActors(
+                actorsThreadPool,
+                new DynamicEventizerProvider(),
+                new PrintStreamFailureLogger(System.out),
+                new NullMessageListener()
+        );
+        launcher = new JumiLauncher(
+                actors, new DirBasedHomeManager(new File(sandboxDir, "jumi-home")),
+                new SocketDaemonConnector(),
+                processStarter
+        );
+    }
 
     public JumiLauncher getLauncher() {
         return launcher;
@@ -146,6 +162,7 @@ public class AppRunner implements TestRule {
         } catch (IOException e) {
             System.err.println("WARNING: " + e.getMessage());
         }
+        actorsThreadPool.shutdownNow();
     }
 
     private static void kill(Process process) {

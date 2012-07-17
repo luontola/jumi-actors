@@ -40,6 +40,11 @@ TODO NEXT:
 				- launcher receives connection from daemon
 			* runTests(tests to run)
 				- launcher sends CommandListener#runTests to daemon
+			OK - put together something works
+			!! - DaemonConnector: don't expose Channel; use DaemonConnection instead? clean up DaemonRemoteImpl.connectToDaemon()
+			- DaemonRemoteImpl: eventQueue should not be here
+			- clean up SuiteRemoteTest
+			- write DaemonRemoteTest
 		- using the above way of sending commands, implement sending the shutdown command
 	- AppRunner: after receiving the last suite event, send the shutdown command
 	- exit after a timeout if no client connects to daemon or the client disconnects

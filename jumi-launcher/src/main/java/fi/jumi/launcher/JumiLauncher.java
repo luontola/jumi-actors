@@ -4,21 +4,20 @@
 
 package fi.jumi.launcher;
 
+import fi.jumi.actors.*;
 import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.*;
-import fi.jumi.core.*;
+import fi.jumi.core.SuiteListener;
 import fi.jumi.core.config.Configuration;
-import fi.jumi.core.events.CommandListenerEventizer;
 import fi.jumi.launcher.daemon.HomeManager;
-import fi.jumi.launcher.network.*;
+import fi.jumi.launcher.network.DaemonConnector;
 import fi.jumi.launcher.process.ProcessStarter;
-import org.apache.commons.io.IOUtils;
+import fi.jumi.launcher.remote.*;
 import org.apache.commons.io.output.NullWriter;
-import org.jboss.netty.channel.Channel;
 
-import javax.annotation.concurrent.*;
+import javax.annotation.concurrent.ThreadSafe;
 import java.io.*;
-import java.util.*;
+import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
 @ThreadSafe
@@ -29,17 +28,22 @@ public class JumiLauncher {
     private final DaemonConnector daemonConnector;
     private final ProcessStarter processStarter;
 
-    private final List<File> classPath = new ArrayList<File>();
-    private final List<String> jvmOptions = new ArrayList<String>();
-    private final Properties systemProperties = new Properties();
+    private final ActorThread actorThread;
 
-    private String testsToIncludePattern;
+    private SuiteOptions suiteOptions = new SuiteOptions();
     private Writer outputListener = new NullWriter();
 
-    public JumiLauncher(HomeManager homeManager, DaemonConnector daemonConnector, ProcessStarter processStarter) {
+    // TODO: create default constructor or helper factory method for default configuration?
+    public JumiLauncher(Actors actors,
+                        HomeManager homeManager,
+                        DaemonConnector daemonConnector,
+                        ProcessStarter processStarter) {
         this.homeManager = homeManager;
         this.daemonConnector = daemonConnector;
         this.processStarter = processStarter;
+
+        // TODO: lazy initialization to avoid work in constructor?
+        this.actorThread = actors.startActorThread();
     }
 
     public MessageReceiver<Event<SuiteListener>> getEventStream() {
@@ -47,52 +51,16 @@ public class JumiLauncher {
     }
 
     public void start() throws IOException, ExecutionException, InterruptedException {
-        FutureValue<Channel> daemonConnection = new FutureValue<Channel>();
-        int port = daemonConnector.listenForDaemonConnection(eventQueue, daemonConnection);
-        startDaemonProcess(port);
-        sendRunTestsCommand(daemonConnection);
-    }
-
-    private void startDaemonProcess(int launcherPort) throws IOException {
-        Process process = processStarter.startJavaProcess(
-                homeManager.getDaemonJar(),
-                homeManager.getSettingsDir(),
-                jvmOptions,
-                systemProperties,
-                Configuration.LAUNCHER_PORT, String.valueOf(launcherPort)
-        );
-
-        // TODO: write the output to a log file using OS pipes, read it from there with AppRunner
-        copyInBackground(process.getInputStream(), outputListener);
-    }
-
-    private void copyInBackground(final InputStream src, final Writer dest) {
-        @NotThreadSafe
-        class Copier implements Runnable {
-            @Override
-            public void run() {
-                try {
-                    IOUtils.copy(src, dest);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        Thread t = new Thread(new Copier());
-        t.setDaemon(true);
-        t.start();
-    }
-
-    private void sendRunTestsCommand(FutureValue<Channel> daemonConnection) throws InterruptedException, ExecutionException {
-        // XXX: send startup command properly, using actors?
-        Channel daemonChannel = daemonConnection.get();
-        daemonChannel.write(generateStartupCommand(classPath, testsToIncludePattern));
-    }
-
-    private static Event<CommandListener> generateStartupCommand(List<File> classPath, String testsToIncludePattern) {
-        MessageQueue<Event<CommandListener>> spy = new MessageQueue<Event<CommandListener>>();
-        new CommandListenerEventizer().newFrontend(spy).runTests(classPath, testsToIncludePattern);
-        return spy.poll();
+        ActorRef<DaemonRemote> daemonRemote = actor(new DaemonRemoteImpl(
+                actorThread,
+                homeManager,
+                processStarter,
+                daemonConnector,
+                eventQueue,
+                outputListener
+        ));
+        ActorRef<SuiteRemote> suiteRemote = actor(new SuiteRemoteImpl(actorThread, daemonRemote));
+        suiteRemote.tell().runTests(suiteOptions, eventQueue);
     }
 
     public void shutdown() {
@@ -104,19 +72,29 @@ public class JumiLauncher {
     }
 
     public void addToClassPath(File file) {
-        classPath.add(file);
-        // TODO: support for main and test class paths
+        suiteOptions.classPath.add(file);
     }
 
     public void setTestsToInclude(String pattern) {
-        testsToIncludePattern = pattern;
+        suiteOptions.testsToIncludePattern = pattern;
     }
 
     public void addJvmOptions(String... jvmOptions) {
-        this.jvmOptions.addAll(Arrays.asList(jvmOptions));
+        suiteOptions.jvmOptions.addAll(Arrays.asList(jvmOptions));
     }
 
     public void enableMessageLogging() {
-        systemProperties.setProperty(Configuration.LOG_ACTOR_MESSAGES, "true");
+        suiteOptions.systemProperties.setProperty(Configuration.LOG_ACTOR_MESSAGES, "true");
+    }
+
+
+    // actor helpers
+
+    private ActorRef<SuiteRemote> actor(SuiteRemote rawActor) {
+        return actorThread.bindActor(SuiteRemote.class, rawActor);
+    }
+
+    private ActorRef<DaemonRemote> actor(DaemonRemote rawActor) {
+        return actorThread.bindActor(DaemonRemote.class, rawActor);
     }
 }

@@ -4,7 +4,10 @@
 
 package fi.jumi.launcher;
 
+import fi.jumi.actors.SingleThreadedActors;
 import fi.jumi.actors.eventizers.Event;
+import fi.jumi.actors.eventizers.dynamic.DynamicEventizerProvider;
+import fi.jumi.actors.listeners.*;
 import fi.jumi.actors.queue.MessageSender;
 import fi.jumi.core.SuiteListener;
 import fi.jumi.core.config.Configuration;
@@ -27,13 +30,18 @@ public class JumiLauncherTest {
     @Rule
     public final TemporaryFolder tempDir = new TemporaryFolder();
 
+    private final SingleThreadedActors actors = new SingleThreadedActors(
+            new DynamicEventizerProvider(),
+            new CrashEarlyFailureHandler(),
+            new NullMessageListener()
+    );
     private final SpyProcessStarter processStarter = new SpyProcessStarter();
     private final StubDaemonConnector daemonConnector = new StubDaemonConnector();
     private JumiLauncher launcher;
 
     @Before
     public void setup() throws IOException {
-        launcher = new JumiLauncher(new DummyHomeManager(), daemonConnector, processStarter);
+        launcher = new JumiLauncher(actors, new DummyHomeManager(), daemonConnector, processStarter);
     }
 
     @Test
@@ -61,6 +69,7 @@ public class JumiLauncherTest {
     // helpers
 
     private Configuration daemonConfig() {
+        actors.processEventsUntilIdle();
         return Configuration.parse(processStarter.lastArgs, processStarter.lastSystemProperties);
     }
 
