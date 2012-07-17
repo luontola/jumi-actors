@@ -26,8 +26,9 @@ public class DirBasedHomeManager implements HomeManager {
     @Override
     public File getDaemonJar() {
         try {
-            InputStream embeddedJar = Daemon.getDaemonJarAsStream();
-            File extractedJar = new File(settingsDir, "lib/" + Daemon.getDaemonJarName());
+            EmbeddedDaemonJar daemonJar = new EmbeddedDaemonJar();
+            InputStream embeddedJar = daemonJar.getDaemonJarAsStream();
+            File extractedJar = new File(settingsDir, "lib/" + daemonJar.getDaemonJarName());
             copyToFile(embeddedJar, extractedJar);
             return extractedJar;
         } catch (IOException e) {

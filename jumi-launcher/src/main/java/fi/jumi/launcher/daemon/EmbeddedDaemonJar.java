@@ -1,4 +1,4 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -11,12 +11,12 @@ import java.io.*;
 import java.util.Properties;
 
 @Immutable
-public class Daemon {
+public class EmbeddedDaemonJar {
 
     private static final String daemonJarName;
 
     static {
-        InputStream in = getResourceAsStream("daemon.properties");
+        InputStream in = getResourceAsStream("EmbeddedDaemonJar.properties");
         try {
             Properties p = new Properties();
             p.load(in);
@@ -28,19 +28,16 @@ public class Daemon {
         }
     }
 
-    private Daemon() {
-    }
-
-    public static String getDaemonJarName() {
+    public String getDaemonJarName() {
         return daemonJarName;
     }
 
-    public static InputStream getDaemonJarAsStream() {
+    public InputStream getDaemonJarAsStream() {
         return getResourceAsStream(daemonJarName);
     }
 
     private static InputStream getResourceAsStream(String resource) {
-        InputStream in = Daemon.class.getResourceAsStream(resource);
+        InputStream in = EmbeddedDaemonJar.class.getResourceAsStream(resource);
         if (in == null) {
             throw new IllegalArgumentException("resource not found: " + resource);
         }

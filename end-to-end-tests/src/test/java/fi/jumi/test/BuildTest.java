@@ -4,7 +4,7 @@
 
 package fi.jumi.test;
 
-import fi.jumi.launcher.daemon.Daemon;
+import fi.jumi.launcher.daemon.EmbeddedDaemonJar;
 import fi.jumi.test.PartiallyParameterized.NonParameterized;
 import fi.jumi.test.util.XmlUtils;
 import org.hamcrest.Matcher;
@@ -162,7 +162,7 @@ public class BuildTest {
     @Test
     @NonParameterized
     public void embedded_daemon_jar_contains_only_jumi_classes() throws IOException {
-        assertJarContainsOnly(Daemon.getDaemonJarAsStream(), asList(
+        assertJarContainsOnly(new EmbeddedDaemonJar().getDaemonJarAsStream(), asList(
                 POM_FILES,
                 BASE_PACKAGE
         ));
