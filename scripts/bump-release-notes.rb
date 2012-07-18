@@ -11,12 +11,12 @@ end
 RELEASE_NOTES_FILE = ARGV.shift
 RELEASE_VERSION = ARGV.shift
 
-release_title_line = "**Jumi #{RELEASE_VERSION}** (#{Date.today.strftime('%F')})"
+release_title_line = "### Jumi #{RELEASE_VERSION} (#{Date.today.strftime('%F')})"
 placeholder_line = "- TBD"
 
 old_release_notes = IO.read(RELEASE_NOTES_FILE)
-new_release_notes = old_release_notes.sub(/^\*\*next release\*\*$/,
-                                          "**next release**\n\n#{placeholder_line}\n\n#{release_title_line}")
+new_release_notes = old_release_notes.sub(/^### next release$/,
+                                          "### next release\n\n#{placeholder_line}\n\n#{release_title_line}")
 
 File.open(RELEASE_NOTES_FILE, 'wb') { |file|
   file.write(new_release_notes)

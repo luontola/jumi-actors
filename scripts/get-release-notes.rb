@@ -9,7 +9,7 @@ end
 RELEASE_NOTES_FILE = ARGV.shift
 
 all_releases = IO.read(RELEASE_NOTES_FILE)
-next_release = /^\*\*next release\*\*$(.+?)^\*\*Jumi/m.match(all_releases)
+next_release = /^### next release$(.+?)^### Jumi/m.match(all_releases)
 unless next_release
   raise "release notes for next release not found in: #{all_releases}"
 end
