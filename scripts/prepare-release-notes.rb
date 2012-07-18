@@ -4,15 +4,16 @@
 
 require 'date'
 
-unless ARGV.length == 1
-  puts "Usage: #{$0} RELEASE_NOTES_FILE"
+unless ARGV.length == 2
+  puts "Usage: #{$0} RELEASE_NOTES_FILE RELEASE_VERSION"
   exit 1
 end
 RELEASE_NOTES_FILE = ARGV.shift
+RELEASE_VERSION = ARGV.shift
 
 old_release_notes = IO.read(RELEASE_NOTES_FILE)
-new_release_notes = old_release_notes.sub(/^(### Jumi)/,
-                                          "### next release\n\n- TBD\n\n\\1")
+new_release_notes = old_release_notes.sub(/^### next release$/,
+                                          "### Jumi #{RELEASE_VERSION} (#{Date.today.strftime('%F')})")
 
 File.open(RELEASE_NOTES_FILE, 'wb') { |file|
   file.write(new_release_notes)
