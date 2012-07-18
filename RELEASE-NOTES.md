@@ -1,6 +1,6 @@
 
-Changelog for Jumi
-==================
+Release Notes
+=============
 
 **next release**
 

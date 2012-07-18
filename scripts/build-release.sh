@@ -7,13 +7,13 @@ set -eu
 set -x
 
 RELEASE_VERSION=`ruby scripts/get-release-version.rb $GO_PIPELINE_COUNTER`
-CHANGELOG=`ruby scripts/get-release-changelog.rb CHANGELOG.md`
+RELEASE_NOTES=`ruby scripts/get-release-notes.rb RELEASE-NOTES.md`
 TAG="v$RELEASE_VERSION"
 
 mkdir build
 echo "$RELEASE_VERSION" > build/version
 echo "$GO_REVISION_SOURCES" > build/revision
-echo "$CHANGELOG" > build/changelog
+echo "$RELEASE_NOTES" > build/release-notes
 
 mvn org.codehaus.mojo:versions-maven-plugin:1.3.1:set \
     --batch-mode \
@@ -30,11 +30,11 @@ mvn clean deploy \
     -Dgpg.passphrase="" \
     -DaltDeploymentRepository="staging::default::file://$PWD/staging"
 
-git tag -u "$GPG_KEYNAME" -m "Jumi $RELEASE_VERSION" -m "$CHANGELOG" "$TAG" "$GO_REVISION_SOURCES"
+git tag -u "$GPG_KEYNAME" -m "Jumi $RELEASE_VERSION" -m "$RELEASE_NOTES" "$TAG" "$GO_REVISION_SOURCES"
 
-ruby scripts/bump-release-changelog.rb CHANGELOG.md "$RELEASE_VERSION"
-git add CHANGELOG.md
-git commit -m "Updated changelog for Jumi $RELEASE_VERSION release"
+ruby scripts/bump-release-notes.rb RELEASE-NOTES.md "$RELEASE_VERSION"
+git add RELEASE-NOTES.md
+git commit -m "Release notes for Jumi $RELEASE_VERSION"
 
 git init --bare staging.git
 git push staging.git "$TAG"

@@ -3,12 +3,12 @@ set -eu
 : ${GIT_REPOSITORY:?}
 set -x
 
-CHANGELOG=`cat build/changelog`
+RELEASE_NOTES=`cat build/release-notes`
 
-# Require the changelog to contain something else than just the TBD placeholder
-if echo "$CHANGELOG" | grep --line-regexp --quiet "\- TBD"
+# Require the release notes to contain something else than just the TBD placeholder
+if echo "$RELEASE_NOTES" | grep --line-regexp --quiet "\- TBD"
 then
-    echo "Changelog not ready for release"
+    echo "Release notes not filled in"
     exit 1
 fi
 
