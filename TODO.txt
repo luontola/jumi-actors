@@ -248,6 +248,10 @@ TODO NEXT:
 		announce [M]
 			publish-changelog
 			send-emails
+	- update release notes before building? tag a commit without "next release" in release notes
+		- get revision using: git rev-parse HEAD
+		- replace GO_REVISION_SOURCES with our own RELEASE_REVISION in scripts and build.properties
+		- prepare release notes, commit, tag, build, bump release notes, commit, stage
 	- enable deployment for all except end-to-end tests and the aggregate pom: jumi-api, jumi-core, jumi-daemon, jumi-launcher
 	- create jumi-integration and add it to the pipeline
 		- integration tests for Specsy
