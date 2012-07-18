@@ -72,6 +72,7 @@ public class SocketDaemonConnector implements DaemonConnector {
 
         @Override
         public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
+            // TODO: don't call MessageSender, call DaemonConnectionListener#onMessageFromDaemon
             target.send((Event<SuiteListener>) e.getMessage());
         }
 

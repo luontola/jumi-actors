@@ -42,9 +42,24 @@ TODO NEXT:
 				- launcher sends CommandListener#runTests to daemon
 			OK - put together something works
 			!! - DaemonConnector: don't expose Channel; use DaemonConnection instead? clean up DaemonRemoteImpl.connectToDaemon()
+				!! - create DaemonConnectionListener#onMessageFromDaemon
+				- pass ActorRef<DaemonConnectionListener> to DaemonConnector#listenForDaemonConnection and SocketDaemonConnector.DaemonConnectorHandler
+				- in DaemonConnectorHandler, call DaemonConnectionListener#onMessageFromDaemon
+				- remove eventQueue from DaemonConnector#listenForDaemonConnection
+				- in DaemonConnectorHandler, call DaemonConnectionListener#onDaemonConnected
+				- remove Future from DaemonConnector#listenForDaemonConnection
 			- DaemonRemoteImpl: eventQueue should not be here
 			- clean up SuiteRemoteTest
 			- write DaemonRemoteTest
+		- ideas for names:
+			DaemonRemote -> DaemonSummoner
+			DaemonRemoteImpl -> DaemonCreatingSummoner, DaemonBreedingSummoner, ProcessStartingDaemonSummoner
+			SuiteRemote -> SuiteLauncher
+			SuiteRemoteImpl -> RemoteSuiteLauncher (vs LocalSuiteLauncher)
+			DaemonConnection -> Daemon
+			DaemonConnectionListener -> DaemonListener
+			NettyDaemonConnection -> SocketDaemon
+			HomeManager -> Steward
 		- using the above way of sending commands, implement sending the shutdown command
 	- AppRunner: after receiving the last suite event, send the shutdown command
 	- exit after a timeout if no client connects to daemon or the client disconnects
@@ -240,19 +255,13 @@ TODO NEXT:
 			integration-test
 	jumi-publish:
 		publish [M]
+			push-staging
 			promote-staging
 			smoke-test
 			promote-central
-			create-tags
-			prepare-changelog
 		announce [M]
-			publish-changelog
+			update-www
 			send-emails
-	OK - update release notes before building? tag a commit without "next release" in release notes
-		OK - new release note scripts
-		OK - get revision using: git rev-parse HEAD
-		OK - replace GO_REVISION_SOURCES with our own RELEASE_REVISION in scripts and build.properties
-		OK - prepare release notes, commit, tag, build, bump release notes, commit, stage
 	- enable deployment for all except end-to-end tests and the aggregate pom: jumi-api, jumi-core, jumi-daemon, jumi-launcher
 	- create jumi-integration and add it to the pipeline
 		- integration tests for Specsy
@@ -260,9 +269,6 @@ TODO NEXT:
 		- run an untrusted go-agent in a restricted environment
 		- add it to the pipeline
 	- push-button releasing the staging repository
-		OK - create signed tags automatically and push them to github
-			OK - include also changelog into tag comment
-		OK - update the release to changelog (latest master) and push it to github
 		- run smoke tests before promoting
 		- if smoke tests pass, promote automatically from OSSRH to Central
 			http://www.sonatype.com/books/nexus-book/reference/staging-sect-managing-plugin.html

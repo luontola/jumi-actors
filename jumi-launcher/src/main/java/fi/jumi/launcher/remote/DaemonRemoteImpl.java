@@ -9,7 +9,7 @@ import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.MessageQueue;
 import fi.jumi.core.SuiteListener;
 import fi.jumi.core.config.Configuration;
-import fi.jumi.launcher.*;
+import fi.jumi.launcher.SuiteOptions;
 import fi.jumi.launcher.daemon.HomeManager;
 import fi.jumi.launcher.network.*;
 import fi.jumi.launcher.process.ProcessStarter;
@@ -49,6 +49,7 @@ public class DaemonRemoteImpl implements DaemonRemote {
         try {
             // XXX: this code is a mess; maybe get rid of the future?
             FutureValue<Channel> f = new FutureValue<Channel>();
+            // TODO: don't pass eventQueue here, replace it with DaemonConnectionListener.onMessageFromDaemon()
             int port = daemonConnector.listenForDaemonConnection(eventQueue, f);
             Process process = processStarter.startJavaProcess(
                     homeManager.getDaemonJar(),
@@ -61,7 +62,7 @@ public class DaemonRemoteImpl implements DaemonRemote {
             copyInBackground(process.getInputStream(), outputListener);
             Channel daemonChannel = f.get();
 
-            // unit tested code:
+            // TODO: pass 'response' to listenForDaemonConnection and let it call onDaemonConnected
             response.tell().onDaemonConnected(actor(new NettyDaemonConnection(daemonChannel)));
 
         } catch (Exception e) {

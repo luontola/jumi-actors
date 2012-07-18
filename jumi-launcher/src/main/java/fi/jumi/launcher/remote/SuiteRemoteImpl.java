@@ -38,6 +38,7 @@ public class SuiteRemoteImpl implements DaemonConnectionListener, SuiteRemote {
     public void onDaemonConnected(ActorRef<DaemonConnection> daemon) {
         assert suiteOptions != null; // TODO: remove me
         assert suiteListener != null; // TODO: remove me
+        // TODO: suiteListener should not be needed here, create onMessageFromDaemon
         daemon.tell().runTests(suiteOptions, suiteListener);
     }
 
