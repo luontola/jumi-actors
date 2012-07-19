@@ -50,9 +50,7 @@ TODO NEXT:
 				OK - remove Future from DaemonConnector#listenForDaemonConnection
 			OK - DaemonRemoteImpl: eventQueue should not be here
 			OK - move creating actors out of JumiLauncher#start?
-			!! - clean up SuiteRemoteTest
-			- write DaemonRemoteTest
-		- ideas for names:
+		!! - ideas for names:
 			DaemonRemote -> DaemonSummoner
 			DaemonRemoteImpl -> DaemonCreatingSummoner, DaemonBreedingSummoner, ProcessStartingDaemonSummoner
 			SuiteRemote -> SuiteLauncher
@@ -61,6 +59,32 @@ TODO NEXT:
 			DaemonConnectionListener -> DaemonListener, FromDaemon
 			NettyDaemonConnection -> SocketDaemon
 			HomeManager -> Steward
+			- check package dependencies and reorder
+		- unit tests
+			- clean up SuiteRemoteTest
+				- enable both tests ("connect to daemon" doesn't need to be mentioned)
+				- no raw actors as fields in test
+				- handle disconnect? or later when having persistent daemons?
+			- write DaemonRemoteTest
+				- tells to daemon the socket to contact
+				- tells to listener what the daemon prints (later through tailing a log file)
+				- extract startJavaProcess's parameters to a JvmArgs? would be unit testable as value object
+			- write SocketDaemonConnectorTest
+				- roundtrip test
+				- extract SocketLauncherConnector from daemon.Main#connectToLauncher
+				- should both connection endpoints be in jumi-core?
+			- write DirBasedHomeManagerTest
+				- copies the embedded daemon JAR to the settings dir
+				- does not copy the daemon JAR if it has already been copied
+			- write SystemProcessStarterTest
+				- starts an executable JAR
+				- passes program arguments as is
+				- passes JVM options as is
+				- passes system properties as JVM options
+				- uses specified working directory
+				- uses specified java home
+				- defaults to current java home
+			- check code coverage
 		- using the above way of sending commands, implement sending the shutdown command
 	- AppRunner: after receiving the last suite event, send the shutdown command
 	- exit after a timeout if no client connects to daemon or the client disconnects
