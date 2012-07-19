@@ -4,9 +4,10 @@
 
 package fi.jumi.launcher;
 
-import fi.jumi.actors.*;
-import fi.jumi.actors.eventizers.dynamic.DynamicEventizerProvider;
-import fi.jumi.actors.listeners.*;
+import fi.jumi.actors.ActorRef;
+import fi.jumi.actors.eventizers.Event;
+import fi.jumi.actors.queue.MessageSender;
+import fi.jumi.core.SuiteListener;
 import fi.jumi.core.config.Configuration;
 import fi.jumi.launcher.daemon.HomeManager;
 import fi.jumi.launcher.network.*;
@@ -21,35 +22,17 @@ import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.mock;
 
-public class JumiLauncherTest {
+public class DaemonParametersTest {
 
     @Rule
     public final TemporaryFolder tempDir = new TemporaryFolder();
 
-    private final SingleThreadedActors actors = new SingleThreadedActors(
-            new DynamicEventizerProvider(),
-            new CrashEarlyFailureHandler(),
-            new NullMessageListener()
-    );
-    private final SpyProcessStarter processStarter = new SpyProcessStarter();
     private final StubDaemonConnector daemonConnector = new StubDaemonConnector();
-    private JumiLauncher launcher;
+    private final SpySuiteRemote suiteRemote = new SpySuiteRemote();
 
-    @Before
-    public void setup() throws IOException {
-        ActorThread actorThread = actors.startActorThread();
-
-        ActorRef<DaemonRemote> daemonRemote = actorThread.bindActor(DaemonRemote.class, new DaemonRemoteImpl(
-                new DummyHomeManager(),
-                processStarter,
-                daemonConnector,
-                new NullWriter()
-        ));
-        ActorRef<SuiteRemote> suiteRemote = actorThread.bindActor(SuiteRemote.class, new SuiteRemoteImpl(actorThread, daemonRemote));
-
-        launcher = new JumiLauncher(suiteRemote);
-    }
+    private final JumiLauncher launcher = new JumiLauncher(ActorRef.<SuiteRemote>wrap(suiteRemote));
 
     @Test
     public void tells_daemon_process_the_launcher_port_number() throws Exception {
@@ -76,7 +59,16 @@ public class JumiLauncherTest {
     // helpers
 
     private Configuration daemonConfig() {
-        actors.processEventsUntilIdle();
+        SpyProcessStarter processStarter = new SpyProcessStarter();
+
+        DaemonRemoteImpl daemonRemote = new DaemonRemoteImpl(
+                mock(HomeManager.class),
+                processStarter,
+                daemonConnector,
+                new NullWriter()
+        );
+        daemonRemote.connectToDaemon(suiteRemote.suiteOptions, null);
+
         return Configuration.parse(processStarter.lastArgs, processStarter.lastSystemProperties);
     }
 
@@ -103,16 +95,14 @@ public class JumiLauncherTest {
         }
     }
 
-    private static class DummyHomeManager implements HomeManager {
+    private static class SpySuiteRemote implements SuiteRemote {
+        public SuiteOptions suiteOptions;
+        public MessageSender<Event<SuiteListener>> suiteListener;
 
         @Override
-        public File getSettingsDir() {
-            return new File("dummy-settings-dir");
-        }
-
-        @Override
-        public File getDaemonJar() {
-            return new File("dummy-daemon.jar");
+        public void runTests(SuiteOptions suiteOptions, MessageSender<Event<SuiteListener>> suiteListener) {
+            this.suiteOptions = suiteOptions;
+            this.suiteListener = suiteListener;
         }
     }
 }
