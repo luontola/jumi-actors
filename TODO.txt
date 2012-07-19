@@ -49,8 +49,8 @@ TODO NEXT:
 				OK - in DaemonConnectorHandler, call DaemonConnectionListener#onDaemonConnected
 				OK - remove Future from DaemonConnector#listenForDaemonConnection
 			OK - DaemonRemoteImpl: eventQueue should not be here
-			!! - move creating actors out of JumiLauncher#start?
-			- clean up SuiteRemoteTest
+			OK - move creating actors out of JumiLauncher#start?
+			!! - clean up SuiteRemoteTest
 			- write DaemonRemoteTest
 		- ideas for names:
 			DaemonRemote -> DaemonSummoner

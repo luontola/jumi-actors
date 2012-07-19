@@ -11,6 +11,8 @@ import fi.jumi.core.config.Configuration;
 import fi.jumi.launcher.daemon.HomeManager;
 import fi.jumi.launcher.network.*;
 import fi.jumi.launcher.process.ProcessStarter;
+import fi.jumi.launcher.remote.*;
+import org.apache.commons.io.output.NullWriter;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 
@@ -36,7 +38,17 @@ public class JumiLauncherTest {
 
     @Before
     public void setup() throws IOException {
-        launcher = new JumiLauncher(actors.startActorThread(), new DummyHomeManager(), daemonConnector, processStarter);
+        ActorThread actorThread = actors.startActorThread();
+
+        ActorRef<DaemonRemote> daemonRemote = actorThread.bindActor(DaemonRemote.class, new DaemonRemoteImpl(
+                new DummyHomeManager(),
+                processStarter,
+                daemonConnector,
+                new NullWriter()
+        ));
+        ActorRef<SuiteRemote> suiteRemote = actorThread.bindActor(SuiteRemote.class, new SuiteRemoteImpl(actorThread, daemonRemote));
+
+        launcher = new JumiLauncher(suiteRemote);
     }
 
     @Test

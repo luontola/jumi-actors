@@ -13,6 +13,7 @@ import fi.jumi.launcher.JumiLauncher;
 import fi.jumi.launcher.daemon.DirBasedHomeManager;
 import fi.jumi.launcher.network.SocketDaemonConnector;
 import fi.jumi.launcher.process.*;
+import fi.jumi.launcher.remote.*;
 import fi.jumi.launcher.ui.TextUI;
 import org.apache.commons.io.FileUtils;
 import org.junit.rules.TestRule;
@@ -48,12 +49,17 @@ public class AppRunner implements TestRule {
                 new NullMessageListener()
         );
         ActorThread actorThread = actors.startActorThread();
-        launcher = new JumiLauncher(
-                actorThread,
+
+        ActorRef<DaemonRemote> daemonRemote = actorThread.bindActor(DaemonRemote.class, new DaemonRemoteImpl(
                 new DirBasedHomeManager(new File(sandboxDir, "jumi-home")),
+                processStarter,
                 new SocketDaemonConnector(actorThread),
-                processStarter
-        );
+                new SystemOutWriter()
+        ));
+        ActorRef<SuiteRemote> suiteRemote = actorThread.bindActor(SuiteRemote.class, new SuiteRemoteImpl(actorThread, daemonRemote));
+
+        // TODO: create default constructor or helper factory method for default configuration?
+        launcher = new JumiLauncher(suiteRemote);
     }
 
     public JumiLauncher getLauncher() {
@@ -144,8 +150,6 @@ public class AppRunner implements TestRule {
     private void setUp() {
         assertTrue("Unable to create " + sandboxDir, sandboxDir.mkdirs());
 
-        printProcessOutput(launcher);
-
         if (TestSystemProperties.useThreadSafetyAgent()) {
             String threadSafetyAgent = TestEnvironment.getProjectJar("thread-safety-agent").getAbsolutePath();
             launcher.addJvmOptions("-javaagent:" + threadSafetyAgent);
@@ -177,25 +181,6 @@ public class AppRunner implements TestRule {
         }
     }
 
-    private static void printProcessOutput(JumiLauncher launcher) {
-        launcher.setOutputListener(new Writer() {
-            @Override
-            public void write(char[] cbuf, int off, int len) {
-                System.out.print(new String(cbuf, off, len));
-            }
-
-            @Override
-            public void flush() {
-                System.out.flush();
-            }
-
-            @Override
-            public void close() {
-                flush();
-            }
-        });
-    }
-
 
     // helpers
 
@@ -213,6 +198,23 @@ public class AppRunner implements TestRule {
             Process process = processStarter.startJavaProcess(executableJar, workingDir, jvmOptions, systemProperties, args);
             this.lastProcess = process;
             return process;
+        }
+    }
+
+    private static class SystemOutWriter extends Writer {
+        @Override
+        public void write(char[] cbuf, int off, int len) {
+            System.out.print(new String(cbuf, off, len));
+        }
+
+        @Override
+        public void flush() {
+            System.out.flush();
+        }
+
+        @Override
+        public void close() {
+            flush();
         }
     }
 }
