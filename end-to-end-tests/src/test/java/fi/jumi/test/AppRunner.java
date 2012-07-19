@@ -4,7 +4,7 @@
 
 package fi.jumi.test;
 
-import fi.jumi.actors.MultiThreadedActors;
+import fi.jumi.actors.*;
 import fi.jumi.actors.eventizers.dynamic.DynamicEventizerProvider;
 import fi.jumi.actors.listeners.*;
 import fi.jumi.core.runs.RunId;
@@ -47,9 +47,11 @@ public class AppRunner implements TestRule {
                 new PrintStreamFailureLogger(System.out),
                 new NullMessageListener()
         );
+        ActorThread actorThread = actors.startActorThread();
         launcher = new JumiLauncher(
-                actors, new DirBasedHomeManager(new File(sandboxDir, "jumi-home")),
-                new SocketDaemonConnector(),
+                actorThread,
+                new DirBasedHomeManager(new File(sandboxDir, "jumi-home")),
+                new SocketDaemonConnector(actorThread),
                 processStarter
         );
     }

@@ -4,8 +4,8 @@
 
 package fi.jumi.launcher.network;
 
+import fi.jumi.actors.*;
 import fi.jumi.actors.eventizers.Event;
-import fi.jumi.actors.queue.MessageSender;
 import fi.jumi.core.SuiteListener;
 import fi.jumi.launcher.JumiLauncher;
 import org.jboss.netty.bootstrap.ServerBootstrap;
@@ -20,10 +20,15 @@ import java.util.concurrent.Executors;
 @Immutable
 public class SocketDaemonConnector implements DaemonConnector {
 
+    private final ActorThread currentThread;
+
+    public SocketDaemonConnector(ActorThread currentThread) {
+        this.currentThread = currentThread;
+    }
+
     @Override
-    public int listenForDaemonConnection(MessageSender<Event<SuiteListener>> eventTarget,
-                                         FutureValue<Channel> daemonConnection) {
-        final DaemonConnectorHandler handler = new DaemonConnectorHandler(eventTarget, daemonConnection);
+    public int listenForDaemonConnection(ActorRef<DaemonConnectionListener> listener) {
+        final DaemonConnectorHandler handler = new DaemonConnectorHandler(listener);
 
         ChannelFactory factory =
                 new OioServerSocketChannelFactory(
@@ -52,28 +57,29 @@ public class SocketDaemonConnector implements DaemonConnector {
         return addr.getPort();
     }
 
+    private ActorRef<DaemonConnection> actor(NettyDaemonConnection rawActor) {
+        return currentThread.bindActor(DaemonConnection.class, rawActor);
+    }
+
 
     @ThreadSafe
-    public static class DaemonConnectorHandler extends SimpleChannelHandler {
+    public class DaemonConnectorHandler extends SimpleChannelHandler {
 
-        private final MessageSender<Event<SuiteListener>> target;
-        private final FutureValue<Channel> daemonConnection;
+        private final ActorRef<DaemonConnectionListener> listener;
 
-        public DaemonConnectorHandler(MessageSender<Event<SuiteListener>> target,
-                                      FutureValue<Channel> daemonConnection) {
-            this.target = target;
-            this.daemonConnection = daemonConnection;
+        public DaemonConnectorHandler(ActorRef<DaemonConnectionListener> listener) {
+            this.listener = listener;
         }
 
         @Override
         public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
-            this.daemonConnection.set(e.getChannel());
+            listener.tell().onDaemonConnected(actor(new NettyDaemonConnection(e.getChannel())));
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-            // TODO: don't call MessageSender, call DaemonConnectionListener#onMessageFromDaemon
-            target.send((Event<SuiteListener>) e.getMessage());
+            listener.tell().onMessageFromDaemon((Event<SuiteListener>) e.getMessage());
         }
 
         @Override

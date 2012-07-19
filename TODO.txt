@@ -41,14 +41,15 @@ TODO NEXT:
 			* runTests(tests to run)
 				- launcher sends CommandListener#runTests to daemon
 			OK - put together something works
-			!! - DaemonConnector: don't expose Channel; use DaemonConnection instead? clean up DaemonRemoteImpl.connectToDaemon()
-				!! - create DaemonConnectionListener#onMessageFromDaemon
-				- pass ActorRef<DaemonConnectionListener> to DaemonConnector#listenForDaemonConnection and SocketDaemonConnector.DaemonConnectorHandler
-				- in DaemonConnectorHandler, call DaemonConnectionListener#onMessageFromDaemon
-				- remove eventQueue from DaemonConnector#listenForDaemonConnection
-				- in DaemonConnectorHandler, call DaemonConnectionListener#onDaemonConnected
-				- remove Future from DaemonConnector#listenForDaemonConnection
-			- DaemonRemoteImpl: eventQueue should not be here
+			OK - DaemonConnector: don't expose Channel; use DaemonConnection instead? clean up DaemonRemoteImpl.connectToDaemon()
+				OK - create DaemonConnectionListener#onMessageFromDaemon
+				OK - pass ActorRef<DaemonConnectionListener> to DaemonConnector#listenForDaemonConnection and SocketDaemonConnector.DaemonConnectorHandler
+				OK - in DaemonConnectorHandler, call DaemonConnectionListener#onMessageFromDaemon
+				OK - remove eventQueue from DaemonConnector#listenForDaemonConnection
+				OK - in DaemonConnectorHandler, call DaemonConnectionListener#onDaemonConnected
+				OK - remove Future from DaemonConnector#listenForDaemonConnection
+			OK - DaemonRemoteImpl: eventQueue should not be here
+			!! - move creating actors out of JumiLauncher#start?
 			- clean up SuiteRemoteTest
 			- write DaemonRemoteTest
 		- ideas for names:
@@ -56,8 +57,8 @@ TODO NEXT:
 			DaemonRemoteImpl -> DaemonCreatingSummoner, DaemonBreedingSummoner, ProcessStartingDaemonSummoner
 			SuiteRemote -> SuiteLauncher
 			SuiteRemoteImpl -> RemoteSuiteLauncher (vs LocalSuiteLauncher)
-			DaemonConnection -> Daemon
-			DaemonConnectionListener -> DaemonListener
+			DaemonConnection -> Daemon, ToDaemon
+			DaemonConnectionListener -> DaemonListener, FromDaemon
 			NettyDaemonConnection -> SocketDaemon
 			HomeManager -> Steward
 		- using the above way of sending commands, implement sending the shutdown command

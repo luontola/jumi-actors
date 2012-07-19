@@ -4,14 +4,9 @@
 
 package fi.jumi.launcher.network;
 
-import fi.jumi.actors.eventizers.Event;
-import fi.jumi.actors.queue.MessageSender;
-import fi.jumi.core.SuiteListener;
-import org.jboss.netty.channel.Channel;
+import fi.jumi.actors.ActorRef;
 
 public interface DaemonConnector {
 
-    // TODO: don't expose Channel; use DaemonConnection instead?
-    int listenForDaemonConnection(MessageSender<Event<SuiteListener>> eventTarget,
-                                  FutureValue<Channel> daemonConnection);
+    int listenForDaemonConnection(ActorRef<DaemonConnectionListener> listener);
 }

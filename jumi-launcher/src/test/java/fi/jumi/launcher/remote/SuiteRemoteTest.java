@@ -41,7 +41,7 @@ public class SuiteRemoteTest {
         suiteRemoteRef.tell().runTests(suiteOptions, suiteListener);
 
         actors.processEventsUntilIdle();
-        verify(daemonConnection).runTests(suiteOptions, suiteListener);
+        verify(daemonConnection).runTests(suiteOptions);
     }
 
     @Ignore("location of the responsibility unsure")

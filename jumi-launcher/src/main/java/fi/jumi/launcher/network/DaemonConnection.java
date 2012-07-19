@@ -4,12 +4,9 @@
 
 package fi.jumi.launcher.network;
 
-import fi.jumi.actors.eventizers.Event;
-import fi.jumi.actors.queue.MessageSender;
-import fi.jumi.core.SuiteListener;
 import fi.jumi.launcher.SuiteOptions;
 
 public interface DaemonConnection {
 
-    void runTests(SuiteOptions suiteOptions, MessageSender<Event<SuiteListener>> suiteListener);
+    void runTests(SuiteOptions suiteOptions);
 }

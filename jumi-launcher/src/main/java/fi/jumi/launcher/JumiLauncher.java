@@ -24,26 +24,23 @@ import java.util.concurrent.ExecutionException;
 public class JumiLauncher {
 
     private final MessageQueue<Event<SuiteListener>> eventQueue = new MessageQueue<Event<SuiteListener>>();
+    private final ActorThread actorThread;
     private final HomeManager homeManager;
     private final DaemonConnector daemonConnector;
     private final ProcessStarter processStarter;
-
-    private final ActorThread actorThread;
 
     private SuiteOptions suiteOptions = new SuiteOptions();
     private Writer outputListener = new NullWriter();
 
     // TODO: create default constructor or helper factory method for default configuration?
-    public JumiLauncher(Actors actors,
+    public JumiLauncher(ActorThread actorThread,
                         HomeManager homeManager,
                         DaemonConnector daemonConnector,
                         ProcessStarter processStarter) {
+        this.actorThread = actorThread;
         this.homeManager = homeManager;
         this.daemonConnector = daemonConnector;
         this.processStarter = processStarter;
-
-        // TODO: lazy initialization to avoid work in constructor?
-        this.actorThread = actors.startActorThread();
     }
 
     public MessageReceiver<Event<SuiteListener>> getEventStream() {
@@ -51,15 +48,15 @@ public class JumiLauncher {
     }
 
     public void start() throws IOException, ExecutionException, InterruptedException {
+        // TODO: move creating the actors outside this class?
         ActorRef<DaemonRemote> daemonRemote = actor(new DaemonRemoteImpl(
-                actorThread,
                 homeManager,
                 processStarter,
                 daemonConnector,
-                eventQueue,
                 outputListener
         ));
         ActorRef<SuiteRemote> suiteRemote = actor(new SuiteRemoteImpl(actorThread, daemonRemote));
+
         suiteRemote.tell().runTests(suiteOptions, eventQueue);
     }
 

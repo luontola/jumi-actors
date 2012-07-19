@@ -5,8 +5,12 @@
 package fi.jumi.launcher.network;
 
 import fi.jumi.actors.ActorRef;
+import fi.jumi.actors.eventizers.Event;
+import fi.jumi.core.SuiteListener;
 
 public interface DaemonConnectionListener {
 
     void onDaemonConnected(ActorRef<DaemonConnection> daemonConnection);
+
+    void onMessageFromDaemon(Event<SuiteListener> message);
 }

@@ -4,17 +4,13 @@
 
 package fi.jumi.launcher;
 
-import fi.jumi.actors.SingleThreadedActors;
-import fi.jumi.actors.eventizers.Event;
+import fi.jumi.actors.*;
 import fi.jumi.actors.eventizers.dynamic.DynamicEventizerProvider;
 import fi.jumi.actors.listeners.*;
-import fi.jumi.actors.queue.MessageSender;
-import fi.jumi.core.SuiteListener;
 import fi.jumi.core.config.Configuration;
 import fi.jumi.launcher.daemon.HomeManager;
 import fi.jumi.launcher.network.*;
 import fi.jumi.launcher.process.ProcessStarter;
-import org.jboss.netty.channel.Channel;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 
@@ -23,7 +19,6 @@ import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.mock;
 
 public class JumiLauncherTest {
 
@@ -41,7 +36,7 @@ public class JumiLauncherTest {
 
     @Before
     public void setup() throws IOException {
-        launcher = new JumiLauncher(actors, new DummyHomeManager(), daemonConnector, processStarter);
+        launcher = new JumiLauncher(actors.startActorThread(), new DummyHomeManager(), daemonConnector, processStarter);
     }
 
     @Test
@@ -91,10 +86,7 @@ public class JumiLauncherTest {
         public int port = 42;
 
         @Override
-        public int listenForDaemonConnection(MessageSender<Event<SuiteListener>> eventTarget,
-                                             FutureValue<Channel> daemonConnection) {
-            // XXX: improve the design to make these stubs simpler
-            daemonConnection.set(mock(Channel.class));
+        public int listenForDaemonConnection(ActorRef<DaemonConnectionListener> listener) {
             return port;
         }
     }

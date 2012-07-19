@@ -5,8 +5,8 @@
 package fi.jumi.launcher.network;
 
 import fi.jumi.actors.eventizers.Event;
-import fi.jumi.actors.queue.*;
-import fi.jumi.core.*;
+import fi.jumi.actors.queue.MessageQueue;
+import fi.jumi.core.CommandListener;
 import fi.jumi.core.events.CommandListenerEventizer;
 import fi.jumi.launcher.SuiteOptions;
 import org.jboss.netty.channel.Channel;
@@ -25,7 +25,7 @@ public class NettyDaemonConnection implements DaemonConnection {
     }
 
     @Override
-    public void runTests(SuiteOptions suiteOptions, MessageSender<Event<SuiteListener>> suiteListener) {
+    public void runTests(SuiteOptions suiteOptions) {
         channel.write(generateStartupCommand(suiteOptions.classPath, suiteOptions.testsToIncludePattern));
     }
 
