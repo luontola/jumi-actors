@@ -8,9 +8,9 @@ import fi.jumi.actors.ActorRef;
 import fi.jumi.actors.eventizers.Event;
 import fi.jumi.core.SuiteListener;
 
-public interface DaemonConnectionListener {
+public interface MessagesFromDaemon {
 
-    void onDaemonConnected(ActorRef<DaemonConnection> daemonConnection);
+    void onDaemonConnected(ActorRef<MessagesToDaemon> daemon);
 
     void onMessageFromDaemon(Event<SuiteListener> message);
 }

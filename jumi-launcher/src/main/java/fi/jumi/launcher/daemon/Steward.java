@@ -2,11 +2,13 @@
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
-package fi.jumi.launcher.network;
+package fi.jumi.launcher.daemon;
 
-import fi.jumi.launcher.SuiteOptions;
+import java.io.File;
 
-public interface DaemonConnection {
+public interface Steward {
 
-    void runTests(SuiteOptions suiteOptions);
+    File getSettingsDir();
+
+    File getDaemonJar();
 }

@@ -10,7 +10,7 @@ import fi.jumi.actors.listeners.*;
 import fi.jumi.core.runs.RunId;
 import fi.jumi.core.util.*;
 import fi.jumi.launcher.JumiLauncher;
-import fi.jumi.launcher.daemon.DirBasedHomeManager;
+import fi.jumi.launcher.daemon.DirBasedSteward;
 import fi.jumi.launcher.network.SocketDaemonConnector;
 import fi.jumi.launcher.process.*;
 import fi.jumi.launcher.remote.*;
@@ -50,16 +50,16 @@ public class AppRunner implements TestRule {
         );
         ActorThread actorThread = actors.startActorThread();
 
-        ActorRef<DaemonRemote> daemonRemote = actorThread.bindActor(DaemonRemote.class, new DaemonRemoteImpl(
-                new DirBasedHomeManager(new File(sandboxDir, "jumi-home")),
+        ActorRef<DaemonSummoner> daemonSummoner = actorThread.bindActor(DaemonSummoner.class, new ProcessStartingDaemonSummoner(
+                new DirBasedSteward(new File(sandboxDir, "jumi-home")),
                 processStarter,
                 new SocketDaemonConnector(actorThread),
                 new SystemOutWriter()
         ));
-        ActorRef<SuiteRemote> suiteRemote = actorThread.bindActor(SuiteRemote.class, new SuiteRemoteImpl(actorThread, daemonRemote));
+        ActorRef<SuiteLauncher> suiteLauncher = actorThread.bindActor(SuiteLauncher.class, new RemoteSuiteLauncher(actorThread, daemonSummoner));
 
         // TODO: create default constructor or helper factory method for default configuration?
-        launcher = new JumiLauncher(suiteRemote);
+        launcher = new JumiLauncher(suiteLauncher);
     }
 
     public JumiLauncher getLauncher() {

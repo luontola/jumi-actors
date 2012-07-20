@@ -8,5 +8,5 @@ import fi.jumi.actors.ActorRef;
 
 public interface DaemonConnector {
 
-    int listenForDaemonConnection(ActorRef<DaemonConnectionListener> listener);
+    int listenForDaemonConnection(ActorRef<MessagesFromDaemon> listener);
 }

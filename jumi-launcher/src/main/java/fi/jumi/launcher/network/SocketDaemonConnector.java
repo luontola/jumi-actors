@@ -6,15 +6,19 @@ package fi.jumi.launcher.network;
 
 import fi.jumi.actors.*;
 import fi.jumi.actors.eventizers.Event;
-import fi.jumi.core.SuiteListener;
-import fi.jumi.launcher.JumiLauncher;
+import fi.jumi.actors.queue.MessageQueue;
+import fi.jumi.core.*;
+import fi.jumi.core.events.CommandListenerEventizer;
+import fi.jumi.launcher.*;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.socket.oio.OioServerSocketChannelFactory;
 import org.jboss.netty.handler.codec.serialization.*;
 
 import javax.annotation.concurrent.*;
+import java.io.File;
 import java.net.InetSocketAddress;
+import java.util.List;
 import java.util.concurrent.Executors;
 
 @Immutable
@@ -27,7 +31,7 @@ public class SocketDaemonConnector implements DaemonConnector {
     }
 
     @Override
-    public int listenForDaemonConnection(ActorRef<DaemonConnectionListener> listener) {
+    public int listenForDaemonConnection(ActorRef<MessagesFromDaemon> listener) {
         final DaemonConnectorHandler handler = new DaemonConnectorHandler(listener);
 
         ChannelFactory factory =
@@ -57,23 +61,23 @@ public class SocketDaemonConnector implements DaemonConnector {
         return addr.getPort();
     }
 
-    private ActorRef<DaemonConnection> actor(NettyDaemonConnection rawActor) {
-        return currentThread.bindActor(DaemonConnection.class, rawActor);
+    private ActorRef<MessagesToDaemon> actor(SocketMessagesToDaemon rawActor) {
+        return currentThread.bindActor(MessagesToDaemon.class, rawActor);
     }
 
 
     @ThreadSafe
     public class DaemonConnectorHandler extends SimpleChannelHandler {
 
-        private final ActorRef<DaemonConnectionListener> listener;
+        private final ActorRef<MessagesFromDaemon> listener;
 
-        public DaemonConnectorHandler(ActorRef<DaemonConnectionListener> listener) {
+        public DaemonConnectorHandler(ActorRef<MessagesFromDaemon> listener) {
             this.listener = listener;
         }
 
         @Override
         public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
-            listener.tell().onDaemonConnected(actor(new NettyDaemonConnection(e.getChannel())));
+            listener.tell().onDaemonConnected(actor(new SocketMessagesToDaemon(e.getChannel())));
         }
 
         @SuppressWarnings("unchecked")
@@ -87,6 +91,27 @@ public class SocketDaemonConnector implements DaemonConnector {
             // TODO: better error handling
             e.getCause().printStackTrace();
             e.getChannel().close();
+        }
+    }
+
+    @ThreadSafe
+    private static class SocketMessagesToDaemon implements MessagesToDaemon {
+
+        private final Channel channel;
+
+        public SocketMessagesToDaemon(Channel channel) {
+            this.channel = channel;
+        }
+
+        @Override
+        public void runTests(SuiteOptions suiteOptions) {
+            channel.write(generateStartupCommand(suiteOptions.classPath, suiteOptions.testsToIncludePattern));
+        }
+
+        private static Event<CommandListener> generateStartupCommand(List<File> classPath, String testsToIncludePattern) {
+            MessageQueue<Event<CommandListener>> spy = new MessageQueue<Event<CommandListener>>();
+            new CommandListenerEventizer().newFrontend(spy).runTests(classPath, testsToIncludePattern);
+            return spy.poll();
         }
     }
 }

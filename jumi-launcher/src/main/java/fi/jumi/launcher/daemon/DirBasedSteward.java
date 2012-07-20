@@ -10,11 +10,11 @@ import javax.annotation.concurrent.NotThreadSafe;
 import java.io.*;
 
 @NotThreadSafe
-public class DirBasedHomeManager implements HomeManager {
+public class DirBasedSteward implements Steward {
 
     private final File settingsDir; // TODO: default to "~/.jumi" (create default constructor?)
 
-    public DirBasedHomeManager(File settingsDir) {
+    public DirBasedSteward(File settingsDir) {
         this.settingsDir = settingsDir;
     }
 

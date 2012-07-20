@@ -32,7 +32,7 @@ TODO NEXT:
 	!! - send shutdown command to daemon from launcher
 		OK - DaemonProcessTest
 		OK - decouple DaemonConnector.listenForDaemonConnection and the suite startup command
-		!! - introduce a launcher-side actor for communicating with the daemon
+		OK - introduce a launcher-side actor for communicating with the daemon
 			order of events:
 			* startDaemon(system properties, jvm options): Future connected
 				- launcher listens of connection from daemon
@@ -50,7 +50,7 @@ TODO NEXT:
 				OK - remove Future from DaemonConnector#listenForDaemonConnection
 			OK - DaemonRemoteImpl: eventQueue should not be here
 			OK - move creating actors out of JumiLauncher#start?
-		!! - ideas for names:
+		OK - ideas for names:
 			DaemonRemote -> DaemonSummoner
 			DaemonRemoteImpl -> DaemonCreatingSummoner, DaemonBreedingSummoner, ProcessStartingDaemonSummoner
 			SuiteRemote -> SuiteLauncher
@@ -61,11 +61,11 @@ TODO NEXT:
 			HomeManager -> Steward
 			- check package dependencies and reorder
 		- unit tests
-			- clean up SuiteRemoteTest
+			- clean up RemoteSuiteLauncherTest
 				- enable both tests ("connect to daemon" doesn't need to be mentioned)
 				- no raw actors as fields in test
 				- handle disconnect? or later when having persistent daemons?
-			- write DaemonRemoteTest
+			- write ProcessStartingDaemonSummonerTest
 				- tells to daemon the socket to contact
 				- tells to listener what the daemon prints (later through tailing a log file)
 				- extract startJavaProcess's parameters to a JvmArgs? would be unit testable as value object
@@ -73,7 +73,7 @@ TODO NEXT:
 				- roundtrip test
 				- extract SocketLauncherConnector from daemon.Main#connectToLauncher
 				- should both connection endpoints be in jumi-core?
-			- write DirBasedHomeManagerTest
+			- write DirBasedStewardTest
 				- copies the embedded daemon JAR to the settings dir
 				- does not copy the daemon JAR if it has already been copied
 			- write SystemProcessStarterTest

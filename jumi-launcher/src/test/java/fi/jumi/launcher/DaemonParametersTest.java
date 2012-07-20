@@ -9,7 +9,7 @@ import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.MessageSender;
 import fi.jumi.core.SuiteListener;
 import fi.jumi.core.config.Configuration;
-import fi.jumi.launcher.daemon.HomeManager;
+import fi.jumi.launcher.daemon.Steward;
 import fi.jumi.launcher.network.*;
 import fi.jumi.launcher.process.ProcessStarter;
 import fi.jumi.launcher.remote.*;
@@ -30,9 +30,9 @@ public class DaemonParametersTest {
     public final TemporaryFolder tempDir = new TemporaryFolder();
 
     private final StubDaemonConnector daemonConnector = new StubDaemonConnector();
-    private final SpySuiteRemote suiteRemote = new SpySuiteRemote();
+    private final SpySuiteLauncher suiteRemote = new SpySuiteLauncher();
 
-    private final JumiLauncher launcher = new JumiLauncher(ActorRef.<SuiteRemote>wrap(suiteRemote));
+    private final JumiLauncher launcher = new JumiLauncher(ActorRef.<SuiteLauncher>wrap(suiteRemote));
 
     @Test
     public void tells_daemon_process_the_launcher_port_number() throws Exception {
@@ -61,8 +61,8 @@ public class DaemonParametersTest {
     private Configuration daemonConfig() {
         SpyProcessStarter processStarter = new SpyProcessStarter();
 
-        DaemonRemoteImpl daemonRemote = new DaemonRemoteImpl(
-                mock(HomeManager.class),
+        ProcessStartingDaemonSummoner daemonRemote = new ProcessStartingDaemonSummoner(
+                mock(Steward.class),
                 processStarter,
                 daemonConnector,
                 new NullWriter()
@@ -90,12 +90,12 @@ public class DaemonParametersTest {
         public int port = 42;
 
         @Override
-        public int listenForDaemonConnection(ActorRef<DaemonConnectionListener> listener) {
+        public int listenForDaemonConnection(ActorRef<MessagesFromDaemon> listener) {
             return port;
         }
     }
 
-    private static class SpySuiteRemote implements SuiteRemote {
+    private static class SpySuiteLauncher implements SuiteLauncher {
         public SuiteOptions suiteOptions;
         public MessageSender<Event<SuiteListener>> suiteListener;
 

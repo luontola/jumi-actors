@@ -14,28 +14,28 @@ import fi.jumi.launcher.network.*;
 import javax.annotation.concurrent.NotThreadSafe;
 
 @NotThreadSafe
-public class SuiteRemoteImpl implements DaemonConnectionListener, SuiteRemote {
+public class RemoteSuiteLauncher implements MessagesFromDaemon, SuiteLauncher {
 
     private final ActorThread currentThread;
-    private final ActorRef<DaemonRemote> daemonRemote;
+    private final ActorRef<DaemonSummoner> daemonSummoner;
 
     private SuiteOptions suiteOptions;
     private MessageSender<Event<SuiteListener>> suiteListener;
 
-    public SuiteRemoteImpl(ActorThread currentThread, ActorRef<DaemonRemote> daemonRemote) {
+    public RemoteSuiteLauncher(ActorThread currentThread, ActorRef<DaemonSummoner> daemonSummoner) {
         this.currentThread = currentThread;
-        this.daemonRemote = daemonRemote;
+        this.daemonSummoner = daemonSummoner;
     }
 
     @Override
     public void runTests(SuiteOptions suiteOptions, MessageSender<Event<SuiteListener>> suiteListener) {
         this.suiteOptions = suiteOptions;
         this.suiteListener = suiteListener;
-        daemonRemote.tell().connectToDaemon(suiteOptions, self());
+        daemonSummoner.tell().connectToDaemon(suiteOptions, self());
     }
 
     @Override
-    public void onDaemonConnected(ActorRef<DaemonConnection> daemon) {
+    public void onDaemonConnected(ActorRef<MessagesToDaemon> daemon) {
         assert suiteOptions != null; // TODO: remove me
         daemon.tell().runTests(suiteOptions);
     }
@@ -48,7 +48,7 @@ public class SuiteRemoteImpl implements DaemonConnectionListener, SuiteRemote {
 
     // actor helpers
 
-    private ActorRef<DaemonConnectionListener> self() {
-        return currentThread.bindActor(DaemonConnectionListener.class, this);
+    private ActorRef<MessagesFromDaemon> self() {
+        return currentThread.bindActor(MessagesFromDaemon.class, this);
     }
 }

@@ -4,12 +4,11 @@
 
 package fi.jumi.launcher.remote;
 
-import fi.jumi.actors.eventizers.Event;
-import fi.jumi.actors.queue.MessageSender;
-import fi.jumi.core.SuiteListener;
+import fi.jumi.actors.ActorRef;
 import fi.jumi.launcher.SuiteOptions;
+import fi.jumi.launcher.network.MessagesFromDaemon;
 
-public interface SuiteRemote {
+public interface DaemonSummoner {
 
-    void runTests(SuiteOptions suiteOptions, MessageSender<Event<SuiteListener>> suiteListener);
+    void connectToDaemon(SuiteOptions suiteOptions, ActorRef<MessagesFromDaemon> listener);
 }

@@ -9,7 +9,7 @@ import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.*;
 import fi.jumi.core.SuiteListener;
 import fi.jumi.core.config.Configuration;
-import fi.jumi.launcher.remote.SuiteRemote;
+import fi.jumi.launcher.remote.SuiteLauncher;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.*;
@@ -22,10 +22,10 @@ public class JumiLauncher {
     private final MessageQueue<Event<SuiteListener>> eventQueue = new MessageQueue<Event<SuiteListener>>();
 
     private final SuiteOptions suiteOptions = new SuiteOptions();
-    private final ActorRef<SuiteRemote> suiteRemote;
+    private final ActorRef<SuiteLauncher> suiteLauncher;
 
-    public JumiLauncher(ActorRef<SuiteRemote> suiteRemote) {
-        this.suiteRemote = suiteRemote;
+    public JumiLauncher(ActorRef<SuiteLauncher> suiteLauncher) {
+        this.suiteLauncher = suiteLauncher;
     }
 
     public MessageReceiver<Event<SuiteListener>> getEventStream() {
@@ -33,7 +33,7 @@ public class JumiLauncher {
     }
 
     public void start() throws IOException, ExecutionException, InterruptedException {
-        suiteRemote.tell().runTests(suiteOptions, eventQueue);
+        suiteLauncher.tell().runTests(suiteOptions, eventQueue);
     }
 
     public void shutdown() {

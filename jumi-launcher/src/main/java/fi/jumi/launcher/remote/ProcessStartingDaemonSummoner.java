@@ -7,7 +7,7 @@ package fi.jumi.launcher.remote;
 import fi.jumi.actors.ActorRef;
 import fi.jumi.core.config.Configuration;
 import fi.jumi.launcher.SuiteOptions;
-import fi.jumi.launcher.daemon.HomeManager;
+import fi.jumi.launcher.daemon.Steward;
 import fi.jumi.launcher.network.*;
 import fi.jumi.launcher.process.ProcessStarter;
 import org.apache.commons.io.IOUtils;
@@ -16,32 +16,32 @@ import javax.annotation.concurrent.NotThreadSafe;
 import java.io.*;
 
 @NotThreadSafe
-public class DaemonRemoteImpl implements DaemonRemote {
+public class ProcessStartingDaemonSummoner implements DaemonSummoner {
 
-    private final HomeManager homeManager;
+    private final Steward steward;
     private final ProcessStarter processStarter;
     private final DaemonConnector daemonConnector;
 
     private final Writer outputListener; // TODO: remove me
 
-    public DaemonRemoteImpl(HomeManager homeManager,
-                            ProcessStarter processStarter,
-                            DaemonConnector daemonConnector,
-                            Writer outputListener) {
-        this.homeManager = homeManager;
+    public ProcessStartingDaemonSummoner(Steward steward,
+                                         ProcessStarter processStarter,
+                                         DaemonConnector daemonConnector,
+                                         Writer outputListener) {
+        this.steward = steward;
+        this.processStarter = processStarter;
         this.daemonConnector = daemonConnector;
         this.outputListener = outputListener;
-        this.processStarter = processStarter;
     }
 
     @Override
-    public void connectToDaemon(SuiteOptions suiteOptions, ActorRef<DaemonConnectionListener> response) {
-        int port = daemonConnector.listenForDaemonConnection(response);
+    public void connectToDaemon(SuiteOptions suiteOptions, ActorRef<MessagesFromDaemon> listener) {
+        int port = daemonConnector.listenForDaemonConnection(listener);
 
         try {
             Process process = processStarter.startJavaProcess(
-                    homeManager.getDaemonJar(),
-                    homeManager.getSettingsDir(),
+                    steward.getDaemonJar(),
+                    steward.getSettingsDir(),
                     suiteOptions.jvmOptions,
                     suiteOptions.systemProperties,
                     Configuration.LAUNCHER_PORT, String.valueOf(port)
