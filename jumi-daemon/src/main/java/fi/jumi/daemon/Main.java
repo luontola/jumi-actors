@@ -12,7 +12,6 @@ import fi.jumi.core.config.Configuration;
 import fi.jumi.core.events.*;
 import fi.jumi.core.network.*;
 import fi.jumi.core.util.PrefixedThreadFactory;
-import org.jboss.netty.logging.InternalLogLevel;
 
 import javax.annotation.concurrent.*;
 import java.io.PrintStream;
