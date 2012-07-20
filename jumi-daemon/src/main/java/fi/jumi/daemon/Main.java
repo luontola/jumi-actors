@@ -11,16 +11,9 @@ import fi.jumi.core.*;
 import fi.jumi.core.config.Configuration;
 import fi.jumi.core.events.*;
 import fi.jumi.core.util.PrefixedThreadFactory;
-import org.jboss.netty.bootstrap.ClientBootstrap;
-import org.jboss.netty.channel.*;
-import org.jboss.netty.channel.socket.oio.OioClientSocketChannelFactory;
-import org.jboss.netty.handler.codec.serialization.*;
-import org.jboss.netty.handler.logging.LoggingHandler;
-import org.jboss.netty.logging.InternalLogLevel;
 
 import javax.annotation.concurrent.*;
 import java.io.PrintStream;
-import java.net.InetSocketAddress;
 import java.util.concurrent.*;
 
 @ThreadSafe
@@ -66,30 +59,7 @@ public class Main {
         ActorThread actorThread = actors.startActorThread();
         ActorRef<CommandListener> coordinator =
                 actorThread.bindActor(CommandListener.class, new TestRunCoordinator(actorThread, testsThreadPool));
-        connectToLauncher(config.launcherPort, coordinator);
-    }
-
-    private static void connectToLauncher(int launcherPort, final ActorRef<CommandListener> coordinator) {
-        ChannelFactory factory = new OioClientSocketChannelFactory(Executors.newCachedThreadPool());
-        ClientBootstrap bootstrap = new ClientBootstrap(factory);
-
-        @ThreadSafe
-        class MyChannelPipelineFactory implements ChannelPipelineFactory {
-            @Override
-            public ChannelPipeline getPipeline() {
-                return Channels.pipeline(
-                        new ObjectEncoder(),
-                        new ObjectDecoder(ClassResolvers.softCachingResolver(Main.class.getClassLoader())),
-                        new LoggingHandler(InternalLogLevel.INFO), // TODO: remove this debug code
-                        new JumiDaemonHandler(coordinator));
-            }
-        }
-        bootstrap.setPipelineFactory(new MyChannelPipelineFactory());
-
-        bootstrap.setOption("tcpNoDelay", true);
-        bootstrap.setOption("keepAlive", true);
-
-        bootstrap.connect(new InetSocketAddress("localhost", launcherPort));
+        SocketLauncherConnector.connectToLauncher(config.launcherPort, coordinator);
     }
 
     private static void exitWhenNotAnymoreInUse() {

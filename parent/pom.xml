@@ -111,6 +111,11 @@
             </dependency>
             <dependency>
                 <groupId>fi.jumi</groupId>
+                <artifactId>jumi-daemon</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>fi.jumi</groupId>
                 <artifactId>jumi-launcher</artifactId>
                 <version>${project.version}</version>
             </dependency>

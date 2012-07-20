@@ -69,9 +69,12 @@ TODO NEXT:
 				OK - tells to daemon the socket to contact
 				OK - tells to listener what the daemon prints (later through tailing a log file)
 			!! - write SocketDaemonConnectorTest
-				- roundtrip test
-				- extract SocketLauncherConnector from daemon.Main#connectToLauncher
-				- should both connection endpoints be in jumi-core?
+				OK - roundtrip test
+				OK - extract SocketLauncherConnector from daemon.Main#connectToLauncher
+				!! - should both connection endpoints be in jumi-core?
+					- move to core.network
+					- decouple server/client choice from launcher/daemon choice
+					- remove dependency launcher -> daemon
 			- write DirBasedStewardTest
 				- copies the embedded daemon JAR to the settings dir
 				- does not copy the daemon JAR if it has already been copied
