@@ -31,11 +31,6 @@
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>fi.jumi</groupId>
-            <artifactId>jumi-daemon</artifactId>
-            <scope>test</scope>
-        </dependency>
 
         <dependency>
             <groupId>commons-io</groupId>
