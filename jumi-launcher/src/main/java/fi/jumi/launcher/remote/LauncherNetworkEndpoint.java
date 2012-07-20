@@ -8,7 +8,7 @@ import fi.jumi.actors.*;
 import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.MessageSender;
 import fi.jumi.core.*;
-import fi.jumi.launcher.network.*;
+import fi.jumi.core.network.NetworkEndpoint;
 
 import javax.annotation.concurrent.ThreadSafe;
 

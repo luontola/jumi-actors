@@ -11,7 +11,6 @@ import fi.jumi.actors.listeners.*;
 import fi.jumi.actors.queue.MessageQueue;
 import fi.jumi.core.SuiteListener;
 import fi.jumi.launcher.SuiteOptions;
-import fi.jumi.launcher.network.*;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;

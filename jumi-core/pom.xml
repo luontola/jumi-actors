@@ -29,6 +29,11 @@
         </dependency>
 
         <dependency>
+            <groupId>org.jboss.netty</groupId>
+            <artifactId>netty</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
@@ -112,11 +117,21 @@
                                     <pattern>org.apache</pattern>
                                     <shadedPattern>${shadedPrefix}.org.apache</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>org.jboss</pattern>
+                                    <shadedPattern>${shadedPrefix}.org.jboss</shadedPattern>
+                                </relocation>
                             </relocations>
                             <filters>
                                 <!-- Throw away license files, POMs etc. of hidden dependencies -->
                                 <filter>
                                     <artifact>commons-io:commons-io</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/**</exclude>
+                                    </excludes>
+                                </filter>
+                                <filter>
+                                    <artifact>org.jboss.netty:netty</artifact>
                                     <excludes>
                                         <exclude>META-INF/**</exclude>
                                     </excludes>

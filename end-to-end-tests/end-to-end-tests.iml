@@ -25,8 +25,8 @@
     <orderEntry type="module" module-name="jumi-launcher" scope="TEST" />
     <orderEntry type="module" module-name="jumi-core" scope="TEST" />
     <orderEntry type="module" module-name="jumi-actors" scope="TEST" />
-    <orderEntry type="library" scope="TEST" name="Maven: commons-io:commons-io:2.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.jboss.netty:netty:3.2.7.Final" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: commons-io:commons-io:2.1" level="project" />
     <orderEntry type="module" module-name="jumi-core" scope="TEST" />
     <orderEntry type="library" scope="TEST" name="Maven: org.ow2.asm:asm-debug-all:4.0" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.findbugs:jsr305:2.0.0" level="project" />

@@ -5,9 +5,10 @@
 package fi.jumi.launcher.remote;
 
 import fi.jumi.actors.*;
+import fi.jumi.core.network.*;
 import fi.jumi.launcher.*;
 import fi.jumi.launcher.daemon.Steward;
-import fi.jumi.launcher.network.*;
+import fi.jumi.launcher.network.FakeActorThread;
 import fi.jumi.launcher.process.ProcessStarter;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -27,7 +28,7 @@ public class ProcessStartingDaemonSummonerTest {
     private final ActorThread actorThread = new FakeActorThread();
     private final Steward steward = mock(Steward.class);
     private final SpyProcessStarter processStarter = new SpyProcessStarter();
-    private final DaemonConnector daemonConnector = mock(DaemonConnector.class);
+    private final NetworkServer daemonConnector = mock(NetworkServer.class);
     private final StringWriter outputListener = new StringWriter();
 
     private final ProcessStartingDaemonSummoner daemonSummoner = new ProcessStartingDaemonSummoner(
@@ -43,7 +44,7 @@ public class ProcessStartingDaemonSummonerTest {
 
     @Test
     public void tells_to_daemon_the_socket_to_contact() {
-        stub(daemonConnector.listenForDaemonConnection(Mockito.<NetworkEndpoint<?, ?>>any())).toReturn(123);
+        stub(daemonConnector.listenOnAnyPort(Mockito.<NetworkEndpoint<?, ?>>any())).toReturn(123);
 
         daemonSummoner.connectToDaemon(suiteOptions, daemonListener);
 

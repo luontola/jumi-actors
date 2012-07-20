@@ -6,7 +6,6 @@ package fi.jumi.launcher.remote;
 
 import fi.jumi.actors.ActorRef;
 import fi.jumi.launcher.SuiteOptions;
-import fi.jumi.launcher.network.MessagesFromDaemon;
 
 public interface DaemonSummoner {
 

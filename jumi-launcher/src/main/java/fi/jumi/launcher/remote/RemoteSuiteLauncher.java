@@ -9,7 +9,6 @@ import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.MessageSender;
 import fi.jumi.core.SuiteListener;
 import fi.jumi.launcher.SuiteOptions;
-import fi.jumi.launcher.network.*;
 
 import javax.annotation.concurrent.NotThreadSafe;
 

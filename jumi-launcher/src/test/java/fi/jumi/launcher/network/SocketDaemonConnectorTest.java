@@ -7,9 +7,10 @@ package fi.jumi.launcher.network;
 import fi.jumi.actors.ActorRef;
 import fi.jumi.actors.eventizers.Event;
 import fi.jumi.core.*;
-import fi.jumi.daemon.SocketLauncherConnector;
+import fi.jumi.core.network.*;
+import fi.jumi.daemon.DaemonNetworkEndpoint;
 import fi.jumi.launcher.SuiteOptions;
-import fi.jumi.launcher.remote.LauncherNetworkEndpoint;
+import fi.jumi.launcher.remote.*;
 import org.junit.Test;
 
 import java.io.File;
@@ -48,10 +49,10 @@ public class SocketDaemonConnectorTest {
 
 
     private void connectDaemonToLauncher() {
-        SocketDaemonConnector launcher = new SocketDaemonConnector();
+        NettyNetworkServer launcher = new NettyNetworkServer();
         LauncherNetworkEndpoint endpoint = new LauncherNetworkEndpoint(new FakeActorThread(), ActorRef.<MessagesFromDaemon>wrap(launcherSide));
-        int port = launcher.listenForDaemonConnection(endpoint);
-        SocketLauncherConnector.connectToLauncher(port, ActorRef.<CommandListener>wrap(daemonSide));
+        int port = launcher.listenOnAnyPort(endpoint);
+        new NettyNetworkClient().connect("127.0.0.1", port, new DaemonNetworkEndpoint(ActorRef.<CommandListener>wrap(daemonSide)));
     }
 
     private static class SpyMessagesFromDaemon implements MessagesFromDaemon {

@@ -7,11 +7,11 @@ package fi.jumi.test;
 import fi.jumi.actors.*;
 import fi.jumi.actors.eventizers.dynamic.DynamicEventizerProvider;
 import fi.jumi.actors.listeners.*;
+import fi.jumi.core.network.NettyNetworkServer;
 import fi.jumi.core.runs.RunId;
 import fi.jumi.core.util.*;
 import fi.jumi.launcher.JumiLauncher;
 import fi.jumi.launcher.daemon.DirBasedSteward;
-import fi.jumi.launcher.network.SocketDaemonConnector;
 import fi.jumi.launcher.process.*;
 import fi.jumi.launcher.remote.*;
 import fi.jumi.launcher.ui.TextUI;
@@ -54,7 +54,7 @@ public class AppRunner implements TestRule {
                 actorThread,
                 new DirBasedSteward(new File(sandboxDir, "jumi-home")),
                 processStarter,
-                new SocketDaemonConnector(),
+                new NettyNetworkServer(),
                 new SystemOutWriter()
         ));
         ActorRef<SuiteLauncher> suiteLauncher = actorThread.bindActor(SuiteLauncher.class, new RemoteSuiteLauncher(actorThread, daemonSummoner));

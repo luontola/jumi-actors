@@ -9,8 +9,9 @@ import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.MessageSender;
 import fi.jumi.core.SuiteListener;
 import fi.jumi.core.config.Configuration;
+import fi.jumi.core.network.*;
 import fi.jumi.launcher.daemon.Steward;
-import fi.jumi.launcher.network.*;
+import fi.jumi.launcher.network.FakeActorThread;
 import fi.jumi.launcher.process.ProcessStarter;
 import fi.jumi.launcher.remote.*;
 import org.apache.commons.io.output.NullWriter;
@@ -29,7 +30,7 @@ public class DaemonParametersTest {
     @Rule
     public final TemporaryFolder tempDir = new TemporaryFolder();
 
-    private final StubDaemonConnector daemonConnector = new StubDaemonConnector();
+    private final StubNetworkServer daemonConnector = new StubNetworkServer();
     private final SpySuiteLauncher suiteRemote = new SpySuiteLauncher();
 
     private final JumiLauncher launcher = new JumiLauncher(ActorRef.<SuiteLauncher>wrap(suiteRemote));
@@ -86,12 +87,12 @@ public class DaemonParametersTest {
         }
     }
 
-    private static class StubDaemonConnector implements DaemonConnector {
+    private static class StubNetworkServer implements NetworkServer {
 
         public int port = 42;
 
         @Override
-        public <In, Out> int listenForDaemonConnection(NetworkEndpoint<In, Out> endpoint) {
+        public <In, Out> int listenOnAnyPort(NetworkEndpoint<In, Out> endpoint) {
             return port;
         }
     }

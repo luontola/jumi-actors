@@ -38,6 +38,7 @@ public class BuildTest {
 
     private static final String[] DOES_NOT_NEED_JSR305_ANNOTATIONS = {
             // shaded classes
+            "fi/jumi/core/INTERNAL/",
             "fi/jumi/daemon/INTERNAL/",
             "fi/jumi/launcher/INTERNAL/",
             // generated classes
