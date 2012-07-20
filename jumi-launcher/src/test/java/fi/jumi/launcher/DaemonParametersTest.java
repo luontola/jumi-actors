@@ -62,6 +62,7 @@ public class DaemonParametersTest {
         SpyProcessStarter processStarter = new SpyProcessStarter();
 
         ProcessStartingDaemonSummoner daemonRemote = new ProcessStartingDaemonSummoner(
+                new FakeActorThread(),
                 mock(Steward.class),
                 processStarter,
                 daemonConnector,
@@ -90,7 +91,7 @@ public class DaemonParametersTest {
         public int port = 42;
 
         @Override
-        public int listenForDaemonConnection(ActorRef<MessagesFromDaemon> listener) {
+        public <In, Out> int listenForDaemonConnection(NetworkEndpoint<In, Out> endpoint) {
             return port;
         }
     }

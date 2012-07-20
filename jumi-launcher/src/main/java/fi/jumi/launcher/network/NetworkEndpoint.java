@@ -4,7 +4,11 @@
 
 package fi.jumi.launcher.network;
 
-public interface DaemonConnector {
+import fi.jumi.actors.queue.MessageSender;
 
-    <In, Out> int listenForDaemonConnection(NetworkEndpoint<In, Out> endpoint);
+public interface NetworkEndpoint<In, Out> {
+
+    void onConnected(MessageSender<Out> sender);
+
+    void onMessage(In message);
 }

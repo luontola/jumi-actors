@@ -4,36 +4,22 @@
 
 package fi.jumi.launcher.network;
 
-import fi.jumi.actors.*;
-import fi.jumi.actors.eventizers.Event;
-import fi.jumi.actors.queue.MessageQueue;
-import fi.jumi.core.*;
-import fi.jumi.core.events.CommandListenerEventizer;
-import fi.jumi.launcher.*;
+import fi.jumi.actors.queue.MessageSender;
+import fi.jumi.launcher.JumiLauncher;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.socket.oio.OioServerSocketChannelFactory;
 import org.jboss.netty.handler.codec.serialization.*;
 
 import javax.annotation.concurrent.*;
-import java.io.File;
 import java.net.InetSocketAddress;
-import java.util.List;
 import java.util.concurrent.Executors;
 
 @Immutable
 public class SocketDaemonConnector implements DaemonConnector {
 
-    private final ActorThread currentThread;
-
-    public SocketDaemonConnector(ActorThread currentThread) {
-        this.currentThread = currentThread;
-    }
-
     @Override
-    public int listenForDaemonConnection(ActorRef<MessagesFromDaemon> listener) {
-        final DaemonConnectorHandler handler = new DaemonConnectorHandler(listener);
-
+    public <In, Out> int listenForDaemonConnection(final NetworkEndpoint<In, Out> endpoint) {
         ChannelFactory factory =
                 new OioServerSocketChannelFactory(
                         Executors.newCachedThreadPool(),
@@ -48,7 +34,7 @@ public class SocketDaemonConnector implements DaemonConnector {
                 return Channels.pipeline(
                         new ObjectEncoder(),
                         new ObjectDecoder(ClassResolvers.softCachingResolver(JumiLauncher.class.getClassLoader())),
-                        handler);
+                        new NetworkEndpointAdapter<In, Out>(endpoint));
             }
         }
         bootstrap.setPipelineFactory(new MyChannelPipelineFactory());
@@ -61,29 +47,25 @@ public class SocketDaemonConnector implements DaemonConnector {
         return addr.getPort();
     }
 
-    private ActorRef<MessagesToDaemon> actor(SocketMessagesToDaemon rawActor) {
-        return currentThread.bindActor(MessagesToDaemon.class, rawActor);
-    }
-
 
     @ThreadSafe
-    public class DaemonConnectorHandler extends SimpleChannelHandler {
+    private static class NetworkEndpointAdapter<In, Out> extends SimpleChannelHandler {
 
-        private final ActorRef<MessagesFromDaemon> listener;
+        private final NetworkEndpoint<In, Out> endpoint;
 
-        public DaemonConnectorHandler(ActorRef<MessagesFromDaemon> listener) {
-            this.listener = listener;
+        public NetworkEndpointAdapter(NetworkEndpoint<In, Out> endpoint) {
+            this.endpoint = endpoint;
         }
 
         @Override
         public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
-            listener.tell().onDaemonConnected(actor(new SocketMessagesToDaemon(e.getChannel())));
+            endpoint.onConnected(new ChannelMessageSender<Out>(e.getChannel()));
         }
 
         @SuppressWarnings("unchecked")
         @Override
         public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-            listener.tell().onMessageFromDaemon((Event<SuiteListener>) e.getMessage());
+            endpoint.onMessage((In) e.getMessage());
         }
 
         @Override
@@ -95,23 +77,17 @@ public class SocketDaemonConnector implements DaemonConnector {
     }
 
     @ThreadSafe
-    private static class SocketMessagesToDaemon implements MessagesToDaemon {
+    private static class ChannelMessageSender<T> implements MessageSender<T> {
 
         private final Channel channel;
 
-        public SocketMessagesToDaemon(Channel channel) {
+        public ChannelMessageSender(Channel channel) {
             this.channel = channel;
         }
 
         @Override
-        public void runTests(SuiteOptions suiteOptions) {
-            channel.write(generateStartupCommand(suiteOptions.classPath, suiteOptions.testsToIncludePattern));
-        }
-
-        private static Event<CommandListener> generateStartupCommand(List<File> classPath, String testsToIncludePattern) {
-            MessageQueue<Event<CommandListener>> spy = new MessageQueue<Event<CommandListener>>();
-            new CommandListenerEventizer().newFrontend(spy).runTests(classPath, testsToIncludePattern);
-            return spy.poll();
+        public void send(T message) {
+            channel.write(message);
         }
     }
 }

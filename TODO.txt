@@ -72,9 +72,11 @@ TODO NEXT:
 				OK - roundtrip test
 				OK - extract SocketLauncherConnector from daemon.Main#connectToLauncher
 				!! - should both connection endpoints be in jumi-core?
+					!! - decouple server/client choice from launcher/daemon choice
+					- rename generic classes: DaemonConnector, SocketDaemonConnector
 					- move to core.network
-					- decouple server/client choice from launcher/daemon choice
 					- remove dependency launcher -> daemon
+					- inline DaemonNetworkEndpoint or SocketMessagesToDaemon?
 			- write DirBasedStewardTest
 				- copies the embedded daemon JAR to the settings dir
 				- does not copy the daemon JAR if it has already been copied

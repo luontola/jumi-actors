@@ -9,6 +9,7 @@ import fi.jumi.actors.eventizers.Event;
 import fi.jumi.core.*;
 import fi.jumi.daemon.SocketLauncherConnector;
 import fi.jumi.launcher.SuiteOptions;
+import fi.jumi.launcher.remote.LauncherNetworkEndpoint;
 import org.junit.Test;
 
 import java.io.File;
@@ -47,8 +48,9 @@ public class SocketDaemonConnectorTest {
 
 
     private void connectDaemonToLauncher() {
-        SocketDaemonConnector launcher = new SocketDaemonConnector(new FakeActorThread());
-        int port = launcher.listenForDaemonConnection(ActorRef.<MessagesFromDaemon>wrap(launcherSide));
+        SocketDaemonConnector launcher = new SocketDaemonConnector();
+        LauncherNetworkEndpoint endpoint = new LauncherNetworkEndpoint(new FakeActorThread(), ActorRef.<MessagesFromDaemon>wrap(launcherSide));
+        int port = launcher.listenForDaemonConnection(endpoint);
         SocketLauncherConnector.connectToLauncher(port, ActorRef.<CommandListener>wrap(daemonSide));
     }
 

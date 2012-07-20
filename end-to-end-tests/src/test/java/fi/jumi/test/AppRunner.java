@@ -51,9 +51,10 @@ public class AppRunner implements TestRule {
         ActorThread actorThread = actors.startActorThread();
 
         ActorRef<DaemonSummoner> daemonSummoner = actorThread.bindActor(DaemonSummoner.class, new ProcessStartingDaemonSummoner(
+                actorThread,
                 new DirBasedSteward(new File(sandboxDir, "jumi-home")),
                 processStarter,
-                new SocketDaemonConnector(actorThread),
+                new SocketDaemonConnector(),
                 new SystemOutWriter()
         ));
         ActorRef<SuiteLauncher> suiteLauncher = actorThread.bindActor(SuiteLauncher.class, new RemoteSuiteLauncher(actorThread, daemonSummoner));

@@ -4,7 +4,7 @@
 
 package fi.jumi.launcher.remote;
 
-import fi.jumi.actors.ActorRef;
+import fi.jumi.actors.*;
 import fi.jumi.core.config.Configuration;
 import fi.jumi.launcher.SuiteOptions;
 import fi.jumi.launcher.daemon.Steward;
@@ -18,16 +18,19 @@ import java.io.*;
 @NotThreadSafe
 public class ProcessStartingDaemonSummoner implements DaemonSummoner {
 
+    private final ActorThread currentThread;
     private final Steward steward;
     private final ProcessStarter processStarter;
     private final DaemonConnector daemonConnector;
 
     private final Writer outputListener; // TODO: remove me
 
-    public ProcessStartingDaemonSummoner(Steward steward,
+    public ProcessStartingDaemonSummoner(ActorThread currentThread,
+                                         Steward steward,
                                          ProcessStarter processStarter,
                                          DaemonConnector daemonConnector,
                                          Writer outputListener) {
+        this.currentThread = currentThread;
         this.steward = steward;
         this.processStarter = processStarter;
         this.daemonConnector = daemonConnector;
@@ -36,7 +39,7 @@ public class ProcessStartingDaemonSummoner implements DaemonSummoner {
 
     @Override
     public void connectToDaemon(SuiteOptions suiteOptions, ActorRef<MessagesFromDaemon> listener) {
-        int port = daemonConnector.listenForDaemonConnection(listener);
+        int port = daemonConnector.listenForDaemonConnection(new LauncherNetworkEndpoint(currentThread, listener));
 
         try {
             Process process = processStarter.startJavaProcess(
