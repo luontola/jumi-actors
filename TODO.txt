@@ -159,6 +159,9 @@ TODO NEXT:
 	- maybe testable by throwing exceptions from a driver or by producing non-valid .class files
 
 - misc refactoring
+	- BuildTest: make sure that jumi-daemon.jar contains everything from jumi-api.jar no matter what
+		- test the test by adding an unused class to jumi-api
+		- add includes if necessary: http://maven.apache.org/plugins/maven-shade-plugin/examples/includes-excludes.html
 	- network layer: implement closing connections, shutting down executors
 	- fix Maven's pomPropertiesFile element, get rid of the current workaround of a separate build.properties
 		http://jira.codehaus.org/browse/MSHARED-154
