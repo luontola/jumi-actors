@@ -8,19 +8,23 @@ import java.io.*;
 
 public class FakeProcess extends Process {
 
+    public ByteArrayInputStream inputStream = new ByteArrayInputStream(new byte[0]);
+    public ByteArrayInputStream errorStream = new ByteArrayInputStream(new byte[0]);
+    public ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
     @Override
     public OutputStream getOutputStream() {
-        return new ByteArrayOutputStream();
+        return outputStream;
     }
 
     @Override
     public InputStream getInputStream() {
-        return new ByteArrayInputStream(new byte[0]);
+        return inputStream;
     }
 
     @Override
     public InputStream getErrorStream() {
-        return new ByteArrayInputStream(new byte[0]);
+        return errorStream;
     }
 
     @Override

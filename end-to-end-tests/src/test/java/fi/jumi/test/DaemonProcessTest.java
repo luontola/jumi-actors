@@ -7,7 +7,7 @@ package fi.jumi.test;
 import fi.jumi.launcher.JumiLauncher;
 import org.junit.*;
 
-import static fi.jumi.test.util.AsyncAssert.assertEventually;
+import static fi.jumi.core.util.AsyncAssert.assertEventually;
 import static fi.jumi.test.util.ProcessMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 

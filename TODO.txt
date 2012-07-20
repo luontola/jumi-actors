@@ -65,11 +65,10 @@ TODO NEXT:
 				OK - enable both tests ("connect to daemon" doesn't need to be mentioned)
 				OK - no raw actors as fields in test
 				SKIP - handle disconnect? or later when having persistent daemons?
-			!! - write ProcessStartingDaemonSummonerTest
-				- tells to daemon the socket to contact
-				- tells to listener what the daemon prints (later through tailing a log file)
-				- extract startJavaProcess's parameters to a JvmArgs? would be unit testable as value object
-			- write SocketDaemonConnectorTest
+			OK - write ProcessStartingDaemonSummonerTest
+				OK - tells to daemon the socket to contact
+				OK - tells to listener what the daemon prints (later through tailing a log file)
+			!! - write SocketDaemonConnectorTest
 				- roundtrip test
 				- extract SocketLauncherConnector from daemon.Main#connectToLauncher
 				- should both connection endpoints be in jumi-core?
@@ -77,6 +76,7 @@ TODO NEXT:
 				- copies the embedded daemon JAR to the settings dir
 				- does not copy the daemon JAR if it has already been copied
 			- write SystemProcessStarterTest
+				- extract startJavaProcess's parameters to a JvmArgs? would be unit testable as value object
 				- starts an executable JAR
 				- passes program arguments as is
 				- passes JVM options as is
@@ -132,6 +132,8 @@ TODO NEXT:
 			- note: can't override just selected methods, because the print's delegate to a private method, and anyways it would couple to PrintStream's implementation details
 			- might break in future Java versions, if more methods are added to PrintStream, so beware of it
 			! - or just use a CGLIB proxy (net.sf.cglib.proxy.MethodInterceptor which synchronizes and delegates to real PrintStream, except net.sf.cglib.proxy.NoOp for Object's methods)
+	- tell launcher that what encoding the stdout/stderr use
+		- test: one daemon using ISO-8859-1 and another using UTF-8 to print åäö, the output should be the same
 
 - SuiteListener#onFailure cannot rely on the exception class from existing in the caller's class loader
 	- introduce ExceptionSafetyGloves?

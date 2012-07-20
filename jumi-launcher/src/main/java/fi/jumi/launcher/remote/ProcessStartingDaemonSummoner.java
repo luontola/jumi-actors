@@ -61,6 +61,9 @@ public class ProcessStartingDaemonSummoner implements DaemonSummoner {
                     IOUtils.copy(src, dest);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
+                } finally {
+                    IOUtils.closeQuietly(src);
+                    IOUtils.closeQuietly(dest);
                 }
             }
         }
