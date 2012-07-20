@@ -10,8 +10,9 @@ import fi.jumi.actors.listeners.*;
 import fi.jumi.core.*;
 import fi.jumi.core.config.Configuration;
 import fi.jumi.core.events.*;
-import fi.jumi.core.network.NettyNetworkClient;
+import fi.jumi.core.network.*;
 import fi.jumi.core.util.PrefixedThreadFactory;
+import org.jboss.netty.logging.InternalLogLevel;
 
 import javax.annotation.concurrent.*;
 import java.io.PrintStream;
@@ -60,7 +61,9 @@ public class Main {
         ActorThread actorThread = actors.startActorThread();
         ActorRef<CommandListener> coordinator =
                 actorThread.bindActor(CommandListener.class, new TestRunCoordinator(actorThread, testsThreadPool));
-        new NettyNetworkClient().connect("127.0.0.1", config.launcherPort, new DaemonNetworkEndpoint(coordinator));
+
+        NetworkClient client = new NettyNetworkClient(true); // TODO: disable logging
+        client.connect("127.0.0.1", config.launcherPort, new DaemonNetworkEndpoint(coordinator));
     }
 
     private static void exitWhenNotAnymoreInUse() {

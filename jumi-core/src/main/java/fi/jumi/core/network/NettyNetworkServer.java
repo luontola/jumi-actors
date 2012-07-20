@@ -8,6 +8,8 @@ import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.socket.oio.OioServerSocketChannelFactory;
 import org.jboss.netty.handler.codec.serialization.*;
+import org.jboss.netty.handler.logging.LoggingHandler;
+import org.jboss.netty.logging.InternalLogLevel;
 
 import javax.annotation.concurrent.*;
 import java.net.InetSocketAddress;
@@ -15,6 +17,16 @@ import java.util.concurrent.Executors;
 
 @Immutable
 public class NettyNetworkServer implements NetworkServer {
+
+    private final InternalLogLevel logLevel;
+
+    public NettyNetworkServer() {
+        this(false);
+    }
+
+    public NettyNetworkServer(boolean logging) {
+        this.logLevel = logging ? InternalLogLevel.INFO : InternalLogLevel.DEBUG;
+    }
 
     @Override
     public <In, Out> int listenOnAnyPort(NetworkEndpoint<In, Out> endpoint) {
@@ -38,6 +50,7 @@ public class NettyNetworkServer implements NetworkServer {
                 return Channels.pipeline(
                         new ObjectEncoder(),
                         new ObjectDecoder(ClassResolvers.softCachingResolver(getClass().getClassLoader())),
+                        new LoggingHandler(logLevel),
                         new NettyNetworkEndpointAdapter<In, Out>(endpoint));
             }
         }

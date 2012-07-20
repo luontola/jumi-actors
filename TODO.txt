@@ -76,9 +76,8 @@ TODO NEXT:
 					OK - rename generic classes: DaemonConnector, SocketDaemonConnector
 					OK - move to core.network
 					OK - check where the application specific classes should be
-					!! - move network tests to core, make more generic: SocketDaemonConnectorTest
-					- closing the connection, shutting down executors
-					- remove dependency launcher -> daemon
+					OK - move network tests to core, make more generic: SocketDaemonConnectorTest
+					!! - remove dependency launcher -> daemon
 					- inline DaemonNetworkEndpoint or SocketMessagesToDaemon?
 					- have a second look at DaemonParametersTest
 			- write DirBasedStewardTest
@@ -160,6 +159,7 @@ TODO NEXT:
 	- maybe testable by throwing exceptions from a driver or by producing non-valid .class files
 
 - misc refactoring
+	- network layer: implement closing connections, shutting down executors
 	- fix Maven's pomPropertiesFile element, get rid of the current workaround of a separate build.properties
 		http://jira.codehaus.org/browse/MSHARED-154
 		http://stackoverflow.com/questions/10102818/custom-values-in-maven-pom-properties-file

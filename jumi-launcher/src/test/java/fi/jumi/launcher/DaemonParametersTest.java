@@ -11,7 +11,6 @@ import fi.jumi.core.SuiteListener;
 import fi.jumi.core.config.Configuration;
 import fi.jumi.core.network.*;
 import fi.jumi.launcher.daemon.Steward;
-import fi.jumi.launcher.network.FakeActorThread;
 import fi.jumi.launcher.process.ProcessStarter;
 import fi.jumi.launcher.remote.*;
 import org.apache.commons.io.output.NullWriter;

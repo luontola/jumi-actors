@@ -18,6 +18,16 @@ import java.util.concurrent.Executors;
 @ThreadSafe
 public class NettyNetworkClient implements NetworkClient {
 
+    private final InternalLogLevel logLevel;
+
+    public NettyNetworkClient() {
+        this(false);
+    }
+
+    public NettyNetworkClient(boolean logging) {
+        this.logLevel = logging ? InternalLogLevel.INFO : InternalLogLevel.DEBUG;
+    }
+
     @Override
     public <In, Out> void connect(String hostname, int port, final NetworkEndpoint<In, Out> endpoint) {
         ChannelFactory factory = new OioClientSocketChannelFactory(Executors.newCachedThreadPool());
@@ -30,7 +40,7 @@ public class NettyNetworkClient implements NetworkClient {
                 return Channels.pipeline(
                         new ObjectEncoder(),
                         new ObjectDecoder(ClassResolvers.softCachingResolver(getClass().getClassLoader())),
-                        new LoggingHandler(InternalLogLevel.INFO), // TODO: remove this debug code
+                        new LoggingHandler(logLevel),
                         new NettyNetworkEndpointAdapter<In, Out>(endpoint));
             }
         }

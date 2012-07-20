@@ -8,7 +8,6 @@ import fi.jumi.actors.*;
 import fi.jumi.core.network.*;
 import fi.jumi.launcher.*;
 import fi.jumi.launcher.daemon.Steward;
-import fi.jumi.launcher.network.FakeActorThread;
 import fi.jumi.launcher.process.ProcessStarter;
 import org.junit.Test;
 import org.mockito.Mockito;

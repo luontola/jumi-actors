@@ -54,7 +54,7 @@ public class AppRunner implements TestRule {
                 actorThread,
                 new DirBasedSteward(new File(sandboxDir, "jumi-home")),
                 processStarter,
-                new NettyNetworkServer(),
+                new NettyNetworkServer(true), // TODO: disable logging
                 new SystemOutWriter()
         ));
         ActorRef<SuiteLauncher> suiteLauncher = actorThread.bindActor(SuiteLauncher.class, new RemoteSuiteLauncher(actorThread, daemonSummoner));
