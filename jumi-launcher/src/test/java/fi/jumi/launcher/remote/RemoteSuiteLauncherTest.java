@@ -12,8 +12,10 @@ import fi.jumi.actors.queue.MessageQueue;
 import fi.jumi.core.SuiteListener;
 import fi.jumi.launcher.SuiteOptions;
 import fi.jumi.launcher.network.*;
-import org.junit.*;
+import org.junit.Test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 
 public class RemoteSuiteLauncherTest {
@@ -25,34 +27,35 @@ public class RemoteSuiteLauncherTest {
     );
     private final ActorThread actorThread = actors.startActorThread();
 
-    private final MessageQueue<Event<SuiteListener>> suiteListener = new MessageQueue<Event<SuiteListener>>();
-    private final MessagesToDaemon daemon = mock(MessagesToDaemon.class);
+    private final ActorRef<DaemonSummoner> daemonSummoner =
+            actorThread.bindActor(DaemonSummoner.class, new FakeDaemonRemote());
+    private final ActorRef<SuiteLauncher> suiteLauncher =
+            actorThread.bindActor(SuiteLauncher.class, new RemoteSuiteLauncher(actorThread, daemonSummoner));
 
-    private final FakeDaemonRemote daemonRemote = new FakeDaemonRemote();
-    private final ActorRef<DaemonSummoner> daemonRemoteRef = actorThread.bindActor(DaemonSummoner.class, this.daemonRemote);
-
-    private final RemoteSuiteLauncher suiteRemote = new RemoteSuiteLauncher(actorThread, daemonRemoteRef);
-    private final ActorRef<SuiteLauncher> suiteRemoteRef = actorThread.bindActor(SuiteLauncher.class, suiteRemote);
     private final SuiteOptions suiteOptions = new SuiteOptions();
-
+    private final MessageQueue<Event<SuiteListener>> suiteListener = new MessageQueue<Event<SuiteListener>>();
+    private final MessagesToDaemon messagesToDaemon = mock(MessagesToDaemon.class);
+    public ActorRef<MessagesFromDaemon> messagesFromDaemon;
 
     @Test
-    public void connects_to_a_daemon_and_sends_RunTests_command_to_the_connected_daemon() {
-        suiteRemoteRef.tell().runTests(suiteOptions, suiteListener);
+    public void sends_RunTests_command_to_the_daemon_when_it_connects() {
+        suiteLauncher.tell().runTests(suiteOptions, suiteListener);
 
         actors.processEventsUntilIdle();
-        verify(daemon).runTests(suiteOptions);
+        verify(messagesToDaemon).runTests(suiteOptions);
     }
 
-    @Ignore("location of the responsibility unsure")
     @Test
-    public void forwards_suite_events_to_listener() {
-//        RemoteSuiteLauncher suiteRemote = new RemoteSuiteLauncher(actorThread, ActorRef.wrap(daemonRemote));
-//        suiteRemote.runTests(suiteListener);
-//        suiteRemote.onDaemonConnected(ActorRef.wrap(daemon));
+    @SuppressWarnings("unchecked")
+    public void forwards_messages_from_daemon_to_the_SuiteListener() {
+        suiteLauncher.tell().runTests(suiteOptions, suiteListener);
+        actors.processEventsUntilIdle();
+        Event<SuiteListener> expectedEvent = mock(Event.class);
 
-        // TODO: should we forward the MessageQueue like we do now, or send a mediator to the MessagesToDaemon?
-        // MessageReceiver<Event<SuiteListener>>
+        messagesFromDaemon.tell().onMessageFromDaemon(expectedEvent);
+        actors.processEventsUntilIdle();
+
+        assertThat(suiteListener.poll(), is(expectedEvent));
     }
 
 
@@ -60,7 +63,8 @@ public class RemoteSuiteLauncherTest {
 
         @Override
         public void connectToDaemon(SuiteOptions suiteOptions, ActorRef<MessagesFromDaemon> listener) {
-            listener.tell().onDaemonConnected(ActorRef.wrap(daemon));
+            messagesFromDaemon = listener;
+            listener.tell().onDaemonConnected(ActorRef.wrap(messagesToDaemon));
         }
     }
 }
