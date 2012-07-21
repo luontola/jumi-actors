@@ -4,9 +4,9 @@
 
 package fi.jumi.launcher.remote;
 
-import fi.jumi.launcher.SuiteOptions;
+import fi.jumi.actors.eventizers.Event;
+import fi.jumi.core.*;
+import fi.jumi.core.network.NetworkEndpoint;
 
-public interface MessagesToDaemon {
-
-    void runTests(SuiteOptions suiteOptions);
+public interface DaemonListener extends NetworkEndpoint<Event<SuiteListener>, Event<CommandListener>> {
 }

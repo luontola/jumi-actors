@@ -36,7 +36,7 @@ public class DaemonParametersTest {
 
     @Test
     public void tells_daemon_process_the_launcher_port_number() throws Exception {
-        daemonConnector.port = 123;
+        daemonConnector.portToReturn = 123;
 
         launcher.start();
 
@@ -62,13 +62,12 @@ public class DaemonParametersTest {
         SpyProcessStarter processStarter = new SpyProcessStarter();
 
         ProcessStartingDaemonSummoner daemonRemote = new ProcessStartingDaemonSummoner(
-                new FakeActorThread(),
                 mock(Steward.class),
                 processStarter,
                 daemonConnector,
                 new NullWriter()
         );
-        daemonRemote.connectToDaemon(suiteRemote.suiteOptions, null);
+        daemonRemote.connectToDaemon(suiteRemote.lastSuiteOptions, ActorRef.wrap((DaemonListener) null));
 
         return Configuration.parse(processStarter.lastArgs, processStarter.lastSystemProperties);
     }
@@ -88,22 +87,22 @@ public class DaemonParametersTest {
 
     private static class StubNetworkServer implements NetworkServer {
 
-        public int port = 42;
+        public int portToReturn = 42;
 
         @Override
         public <In, Out> int listenOnAnyPort(NetworkEndpoint<In, Out> endpoint) {
-            return port;
+            return portToReturn;
         }
     }
 
     private static class SpySuiteLauncher implements SuiteLauncher {
-        public SuiteOptions suiteOptions;
-        public MessageSender<Event<SuiteListener>> suiteListener;
+        public SuiteOptions lastSuiteOptions;
+        public MessageSender<Event<SuiteListener>> lastSuiteListener;
 
         @Override
         public void runTests(SuiteOptions suiteOptions, MessageSender<Event<SuiteListener>> suiteListener) {
-            this.suiteOptions = suiteOptions;
-            this.suiteListener = suiteListener;
+            this.lastSuiteOptions = suiteOptions;
+            this.lastSuiteListener = suiteListener;
         }
     }
 }

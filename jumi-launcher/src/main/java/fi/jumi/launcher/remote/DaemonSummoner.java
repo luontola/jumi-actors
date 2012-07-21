@@ -9,5 +9,5 @@ import fi.jumi.launcher.SuiteOptions;
 
 public interface DaemonSummoner {
 
-    void connectToDaemon(SuiteOptions suiteOptions, ActorRef<MessagesFromDaemon> listener);
+    void connectToDaemon(SuiteOptions suiteOptions, ActorRef<DaemonListener> listener);
 }

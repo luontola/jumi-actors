@@ -4,7 +4,7 @@
 
 package fi.jumi.launcher.remote;
 
-import fi.jumi.actors.*;
+import fi.jumi.actors.ActorRef;
 import fi.jumi.core.network.*;
 import fi.jumi.launcher.*;
 import fi.jumi.launcher.daemon.Steward;
@@ -24,37 +24,35 @@ public class ProcessStartingDaemonSummonerTest {
 
     private static final int TIMEOUT = 1000;
 
-    private final ActorThread actorThread = new FakeActorThread();
     private final Steward steward = mock(Steward.class);
     private final SpyProcessStarter processStarter = new SpyProcessStarter();
     private final NetworkServer daemonConnector = mock(NetworkServer.class);
     private final StringWriter outputListener = new StringWriter();
 
     private final ProcessStartingDaemonSummoner daemonSummoner = new ProcessStartingDaemonSummoner(
-            actorThread,
             steward,
             processStarter,
             daemonConnector,
             outputListener
     );
 
-    private final ActorRef<MessagesFromDaemon> daemonListener = ActorRef.wrap(mock(MessagesFromDaemon.class));
     private final SuiteOptions suiteOptions = new SuiteOptions();
+    private final ActorRef<DaemonListener> dummyListener = ActorRef.wrap(null);
 
     @Test
     public void tells_to_daemon_the_socket_to_contact() {
         stub(daemonConnector.listenOnAnyPort(Mockito.<NetworkEndpoint<?, ?>>any())).toReturn(123);
 
-        daemonSummoner.connectToDaemon(suiteOptions, daemonListener);
+        daemonSummoner.connectToDaemon(suiteOptions, dummyListener);
 
-        assertThat(processStarter.args, is(hasItemInArray("123")));
+        assertThat(processStarter.lastArgs, is(hasItemInArray("123")));
     }
 
     @Test
     public void tells_to_output_listener_what_the_daemon_prints() {
-        processStarter.process.inputStream = new ByteArrayInputStream("hello".getBytes());
+        processStarter.processToReturn.inputStream = new ByteArrayInputStream("hello".getBytes());
 
-        daemonSummoner.connectToDaemon(suiteOptions, daemonListener);
+        daemonSummoner.connectToDaemon(suiteOptions, dummyListener);
 
         assertEventually(outputListener, hasToString("hello"), TIMEOUT);
     }
@@ -62,13 +60,13 @@ public class ProcessStartingDaemonSummonerTest {
 
     private static class SpyProcessStarter implements ProcessStarter {
 
-        public String[] args;
-        public FakeProcess process = new FakeProcess();
+        public String[] lastArgs;
+        public FakeProcess processToReturn = new FakeProcess();
 
         @Override
         public Process startJavaProcess(File executableJar, File workingDir, List<String> jvmOptions, Properties systemProperties, String... args) throws IOException {
-            this.args = args;
-            return process;
+            this.lastArgs = args;
+            return processToReturn;
         }
     }
 }

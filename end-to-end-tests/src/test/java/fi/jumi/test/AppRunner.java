@@ -51,7 +51,6 @@ public class AppRunner implements TestRule {
         ActorThread actorThread = actors.startActorThread();
 
         ActorRef<DaemonSummoner> daemonSummoner = actorThread.bindActor(DaemonSummoner.class, new ProcessStartingDaemonSummoner(
-                actorThread,
                 new DirBasedSteward(new File(sandboxDir, "jumi-home")),
                 processStarter,
                 new NettyNetworkServer(true), // TODO: disable logging

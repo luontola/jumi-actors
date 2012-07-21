@@ -7,19 +7,21 @@ package fi.jumi.launcher.remote;
 import fi.jumi.actors.*;
 import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.MessageSender;
-import fi.jumi.core.SuiteListener;
+import fi.jumi.core.*;
+import fi.jumi.core.events.CommandListenerEventizer;
 import fi.jumi.launcher.SuiteOptions;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
 @NotThreadSafe
-public class RemoteSuiteLauncher implements MessagesFromDaemon, SuiteLauncher {
+public class RemoteSuiteLauncher implements SuiteLauncher, DaemonListener {
 
     private final ActorThread currentThread;
     private final ActorRef<DaemonSummoner> daemonSummoner;
 
     private SuiteOptions suiteOptions;
     private MessageSender<Event<SuiteListener>> suiteListener;
+    private CommandListener daemon;
 
     public RemoteSuiteLauncher(ActorThread currentThread, ActorRef<DaemonSummoner> daemonSummoner) {
         this.currentThread = currentThread;
@@ -34,20 +36,20 @@ public class RemoteSuiteLauncher implements MessagesFromDaemon, SuiteLauncher {
     }
 
     @Override
-    public void onDaemonConnected(ActorRef<MessagesToDaemon> daemon) {
-        assert suiteOptions != null; // TODO: remove me
-        daemon.tell().runTests(suiteOptions);
+    public void onConnected(MessageSender<Event<CommandListener>> daemon) {
+        this.daemon = new CommandListenerEventizer().newFrontend(daemon);
+        this.daemon.runTests(suiteOptions.classPath, suiteOptions.testsToIncludePattern);
     }
 
     @Override
-    public void onMessageFromDaemon(Event<SuiteListener> message) {
+    public void onMessage(Event<SuiteListener> message) {
         suiteListener.send(message);
     }
 
 
     // actor helpers
 
-    private ActorRef<MessagesFromDaemon> self() {
-        return currentThread.bindActor(MessagesFromDaemon.class, this);
+    private ActorRef<DaemonListener> self() {
+        return currentThread.bindActor(DaemonListener.class, this);
     }
 }

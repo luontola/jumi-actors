@@ -68,19 +68,19 @@ TODO NEXT:
 			OK - write ProcessStartingDaemonSummonerTest
 				OK - tells to daemon the socket to contact
 				OK - tells to listener what the daemon prints (later through tailing a log file)
-			!! - write SocketDaemonConnectorTest
+			OK - write SocketDaemonConnectorTest
 				OK - roundtrip test
 				OK - extract SocketLauncherConnector from daemon.Main#connectToLauncher
-				!! - should both connection endpoints be in jumi-core?
+				OK - should both connection endpoints be in jumi-core?
 					OK - decouple server/client choice from launcher/daemon choice
 					OK - rename generic classes: DaemonConnector, SocketDaemonConnector
 					OK - move to core.network
 					OK - check where the application specific classes should be
 					OK - move network tests to core, make more generic: SocketDaemonConnectorTest
-					!! - remove dependency launcher -> daemon
-					- inline DaemonNetworkEndpoint or SocketMessagesToDaemon?
-					- have a second look at DaemonParametersTest
-			- write DirBasedStewardTest
+					OK - remove dependency launcher -> daemon
+					OK - inline DaemonNetworkEndpoint or SocketMessagesToDaemon?
+					OK - have a second look at DaemonParametersTest
+			!! - write DirBasedStewardTest
 				- copies the embedded daemon JAR to the settings dir
 				- does not copy the daemon JAR if it has already been copied
 			- write SystemProcessStarterTest

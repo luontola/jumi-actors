@@ -4,14 +4,15 @@
 
 package fi.jumi.launcher.remote;
 
-import fi.jumi.actors.*;
+import fi.jumi.actors.ActorRef;
 import fi.jumi.actors.eventizers.Event;
-import fi.jumi.actors.eventizers.dynamic.DynamicEventizerProvider;
-import fi.jumi.actors.listeners.*;
-import fi.jumi.actors.queue.MessageQueue;
-import fi.jumi.core.SuiteListener;
-import fi.jumi.launcher.SuiteOptions;
+import fi.jumi.actors.queue.*;
+import fi.jumi.core.*;
+import fi.jumi.core.events.CommandListenerEventizer;
+import fi.jumi.launcher.*;
 import org.junit.Test;
+
+import java.io.File;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -19,51 +20,33 @@ import static org.mockito.Mockito.*;
 
 public class RemoteSuiteLauncherTest {
 
-    private final SingleThreadedActors actors = new SingleThreadedActors(
-            new DynamicEventizerProvider(),
-            new CrashEarlyFailureHandler(),
-            new NullMessageListener()
-    );
-    private final ActorThread actorThread = actors.startActorThread();
-
-    private final ActorRef<DaemonSummoner> daemonSummoner =
-            actorThread.bindActor(DaemonSummoner.class, new FakeDaemonRemote());
-    private final ActorRef<SuiteLauncher> suiteLauncher =
-            actorThread.bindActor(SuiteLauncher.class, new RemoteSuiteLauncher(actorThread, daemonSummoner));
+    private final CommandListener daemon = mock(CommandListener.class);
+    private final MessageSender<Event<CommandListener>> senderToDaemon = new CommandListenerEventizer().newBackend(daemon);
+    private final RemoteSuiteLauncher suiteLauncher = new RemoteSuiteLauncher(new FakeActorThread(), ActorRef.wrap(mock(DaemonSummoner.class)));
 
     private final SuiteOptions suiteOptions = new SuiteOptions();
     private final MessageQueue<Event<SuiteListener>> suiteListener = new MessageQueue<Event<SuiteListener>>();
-    private final MessagesToDaemon messagesToDaemon = mock(MessagesToDaemon.class);
-    public ActorRef<MessagesFromDaemon> messagesFromDaemon;
 
     @Test
     public void sends_RunTests_command_to_the_daemon_when_it_connects() {
-        suiteLauncher.tell().runTests(suiteOptions, suiteListener);
+        suiteOptions.classPath.add(new File("dependency.jar"));
+        suiteOptions.testsToIncludePattern = "*Test";
 
-        actors.processEventsUntilIdle();
-        verify(messagesToDaemon).runTests(suiteOptions);
+        suiteLauncher.runTests(suiteOptions, suiteListener);
+        suiteLauncher.onConnected(senderToDaemon);
+
+        verify(daemon).runTests(suiteOptions.classPath, suiteOptions.testsToIncludePattern);
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    public void forwards_messages_from_daemon_to_the_SuiteListener() {
-        suiteLauncher.tell().runTests(suiteOptions, suiteListener);
-        actors.processEventsUntilIdle();
+    public void forwards_messages_from_daemon_to_the_SuiteListener2() {
         Event<SuiteListener> expectedEvent = mock(Event.class);
+        suiteLauncher.runTests(suiteOptions, suiteListener);
+        suiteLauncher.onConnected(senderToDaemon);
 
-        messagesFromDaemon.tell().onMessageFromDaemon(expectedEvent);
-        actors.processEventsUntilIdle();
+        suiteLauncher.onMessage(expectedEvent);
 
         assertThat(suiteListener.poll(), is(expectedEvent));
-    }
-
-
-    private class FakeDaemonRemote implements DaemonSummoner {
-
-        @Override
-        public void connectToDaemon(SuiteOptions suiteOptions, ActorRef<MessagesFromDaemon> listener) {
-            messagesFromDaemon = listener;
-            listener.tell().onDaemonConnected(ActorRef.wrap(messagesToDaemon));
-        }
     }
 }
