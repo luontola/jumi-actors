@@ -8,12 +8,11 @@ import fi.jumi.actors.ActorRef;
 import fi.jumi.core.network.*;
 import fi.jumi.launcher.*;
 import fi.jumi.launcher.daemon.Steward;
-import fi.jumi.launcher.process.ProcessStarter;
+import fi.jumi.launcher.process.*;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.io.*;
-import java.util.*;
 
 import static fi.jumi.core.util.AsyncAssert.assertEventually;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -64,8 +63,8 @@ public class ProcessStartingDaemonSummonerTest {
         public FakeProcess processToReturn = new FakeProcess();
 
         @Override
-        public Process startJavaProcess(File executableJar, File workingDir, List<String> jvmOptions, Properties systemProperties, String... args) throws IOException {
-            this.lastArgs = args;
+        public Process startJavaProcess(JvmArgs jvmArgs) throws IOException {
+            this.lastArgs = jvmArgs.programArgs.toArray(new String[0]);
             return processToReturn;
         }
     }

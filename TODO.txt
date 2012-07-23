@@ -84,8 +84,8 @@ TODO NEXT:
 				OK - copies the embedded daemon JAR to the settings dir
 				OK - does not copy the daemon JAR if it has already been copied
 			!! - write SystemProcessStarterTest
-				- extract startJavaProcess's parameters to a JvmArgs? would be unit testable as value object
-				- starts an executable JAR
+				OK - extract startJavaProcess's parameters to a JvmArgs? would be unit testable as value object
+				!! - starts an executable JAR
 				- passes program arguments as is
 				- passes JVM options as is
 				- passes system properties as JVM options

@@ -9,7 +9,7 @@ import fi.jumi.core.config.Configuration;
 import fi.jumi.core.network.NetworkServer;
 import fi.jumi.launcher.SuiteOptions;
 import fi.jumi.launcher.daemon.Steward;
-import fi.jumi.launcher.process.ProcessStarter;
+import fi.jumi.launcher.process.*;
 import org.apache.commons.io.IOUtils;
 
 import javax.annotation.concurrent.NotThreadSafe;
@@ -39,13 +39,14 @@ public class ProcessStartingDaemonSummoner implements DaemonSummoner {
         int port = daemonConnector.listenOnAnyPort(listener.tell());
 
         try {
-            Process process = processStarter.startJavaProcess(
-                    steward.getDaemonJar(),
-                    steward.getSettingsDir(),
-                    suiteOptions.jvmOptions,
-                    suiteOptions.systemProperties,
-                    Configuration.LAUNCHER_PORT, String.valueOf(port)
-            );
+            JvmArgs jvmArgs = new JvmArgsBuilder()
+                    .executableJar(steward.getDaemonJar())
+                    .workingDir(steward.getSettingsDir())
+                    .jvmOptions(suiteOptions.jvmOptions)
+                    .systemProperties(suiteOptions.systemProperties)
+                    .programArgs(Configuration.LAUNCHER_PORT, String.valueOf(port))
+                    .toJvmArgs();
+            Process process = processStarter.startJavaProcess(jvmArgs);
             copyInBackground(process.getInputStream(), outputListener); // TODO: write the output to a log file using OS pipes, read it from there with AppRunner
         } catch (Exception e) {
             throw new RuntimeException(e);

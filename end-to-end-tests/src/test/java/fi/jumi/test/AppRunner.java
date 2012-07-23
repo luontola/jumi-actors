@@ -194,8 +194,8 @@ public class AppRunner implements TestRule {
         }
 
         @Override
-        public Process startJavaProcess(File executableJar, File workingDir, List<String> jvmOptions, Properties systemProperties, String... args) throws IOException {
-            Process process = processStarter.startJavaProcess(executableJar, workingDir, jvmOptions, systemProperties, args);
+        public Process startJavaProcess(JvmArgs jvmArgs) throws IOException {
+            Process process = processStarter.startJavaProcess(jvmArgs);
             this.lastProcess = process;
             return process;
         }

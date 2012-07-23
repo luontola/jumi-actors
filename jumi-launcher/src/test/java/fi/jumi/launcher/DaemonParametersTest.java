@@ -11,13 +11,13 @@ import fi.jumi.core.SuiteListener;
 import fi.jumi.core.config.Configuration;
 import fi.jumi.core.network.*;
 import fi.jumi.launcher.daemon.Steward;
-import fi.jumi.launcher.process.ProcessStarter;
+import fi.jumi.launcher.process.*;
 import fi.jumi.launcher.remote.*;
 import org.apache.commons.io.output.NullWriter;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 
-import java.io.*;
+import java.io.IOException;
 import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -78,10 +78,18 @@ public class DaemonParametersTest {
         public Properties lastSystemProperties = new Properties();
 
         @Override
-        public Process startJavaProcess(File executableJar, File workingDir, List<String> jvmOptions, Properties systemProperties, String... args) throws IOException {
-            lastArgs = args;
-            lastSystemProperties = systemProperties;
+        public Process startJavaProcess(JvmArgs jvmArgs) throws IOException {
+            lastArgs = jvmArgs.programArgs.toArray(new String[0]);
+            lastSystemProperties = toProperties(jvmArgs.systemProperties);
             return new FakeProcess();
+        }
+
+        private static Properties toProperties(Map<String, String> map) {
+            Properties p = new Properties();
+            for (Map.Entry<String, String> entry : map.entrySet()) {
+                p.setProperty(entry.getKey(), entry.getValue());
+            }
+            return p;
         }
     }
 
