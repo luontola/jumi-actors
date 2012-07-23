@@ -80,10 +80,10 @@ TODO NEXT:
 					OK - remove dependency launcher -> daemon
 					OK - inline DaemonNetworkEndpoint or SocketMessagesToDaemon?
 					OK - have a second look at DaemonParametersTest
-			!! - write DirBasedStewardTest
-				- copies the embedded daemon JAR to the settings dir
-				- does not copy the daemon JAR if it has already been copied
-			- write SystemProcessStarterTest
+			OK - write DirBasedStewardTest
+				OK - copies the embedded daemon JAR to the settings dir
+				OK - does not copy the daemon JAR if it has already been copied
+			!! - write SystemProcessStarterTest
 				- extract startJavaProcess's parameters to a JvmArgs? would be unit testable as value object
 				- starts an executable JAR
 				- passes program arguments as is

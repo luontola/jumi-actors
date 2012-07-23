@@ -12,9 +12,11 @@ import java.io.*;
 @NotThreadSafe
 public class DirBasedSteward implements Steward {
 
+    private final DaemonJar daemonJar;
     private final File settingsDir; // TODO: default to "~/.jumi" (create default constructor?)
 
-    public DirBasedSteward(File settingsDir) {
+    public DirBasedSteward(DaemonJar daemonJar, File settingsDir) {
+        this.daemonJar = daemonJar;
         this.settingsDir = settingsDir;
     }
 
@@ -26,10 +28,11 @@ public class DirBasedSteward implements Steward {
     @Override
     public File getDaemonJar() {
         try {
-            EmbeddedDaemonJar daemonJar = new EmbeddedDaemonJar();
-            InputStream embeddedJar = daemonJar.getDaemonJarAsStream();
             File extractedJar = new File(settingsDir, "lib/" + daemonJar.getDaemonJarName());
-            copyToFile(embeddedJar, extractedJar);
+            if (!extractedJar.exists()) {
+                InputStream embeddedJar = daemonJar.getDaemonJarAsStream();
+                copyToFile(embeddedJar, extractedJar);
+            }
             return extractedJar;
         } catch (IOException e) {
             throw new RuntimeException("failed to copy daemon JAR to " + settingsDir, e);

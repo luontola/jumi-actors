@@ -11,7 +11,7 @@ import fi.jumi.core.network.NettyNetworkServer;
 import fi.jumi.core.runs.RunId;
 import fi.jumi.core.util.*;
 import fi.jumi.launcher.JumiLauncher;
-import fi.jumi.launcher.daemon.DirBasedSteward;
+import fi.jumi.launcher.daemon.*;
 import fi.jumi.launcher.process.*;
 import fi.jumi.launcher.remote.*;
 import fi.jumi.launcher.ui.TextUI;
@@ -51,7 +51,7 @@ public class AppRunner implements TestRule {
         ActorThread actorThread = actors.startActorThread();
 
         ActorRef<DaemonSummoner> daemonSummoner = actorThread.bindActor(DaemonSummoner.class, new ProcessStartingDaemonSummoner(
-                new DirBasedSteward(new File(sandboxDir, "jumi-home")),
+                new DirBasedSteward(new EmbeddedDaemonJar(), new File(sandboxDir, "jumi-home")),
                 processStarter,
                 new NettyNetworkServer(true), // TODO: disable logging
                 new SystemOutWriter()

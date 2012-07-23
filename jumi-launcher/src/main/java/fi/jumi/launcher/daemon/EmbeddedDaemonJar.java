@@ -11,7 +11,7 @@ import java.io.*;
 import java.util.Properties;
 
 @Immutable
-public class EmbeddedDaemonJar {
+public class EmbeddedDaemonJar implements DaemonJar {
 
     private static final String daemonJarName;
 
@@ -28,10 +28,12 @@ public class EmbeddedDaemonJar {
         }
     }
 
+    @Override
     public String getDaemonJarName() {
         return daemonJarName;
     }
 
+    @Override
     public InputStream getDaemonJarAsStream() {
         return getResourceAsStream(daemonJarName);
     }
