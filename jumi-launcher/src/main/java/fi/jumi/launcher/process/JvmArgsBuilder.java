@@ -11,20 +11,20 @@ import java.util.*;
 @NotThreadSafe
 public class JvmArgsBuilder {
 
-    private File executableJar;
     private File workingDir;
-    private List<String> jvmOptions;
-    private Properties systemProperties;
     private File javaHome = new File(System.getProperty("java.home"));
-    private String[] programArgs;
-
-    public JvmArgsBuilder executableJar(File executableJar) {
-        this.executableJar = executableJar;
-        return this;
-    }
+    private List<String> jvmOptions = new ArrayList<String>();
+    private Properties systemProperties = new Properties();
+    private File executableJar;
+    private String[] programArgs = new String[0];
 
     public JvmArgsBuilder workingDir(File workingDir) {
         this.workingDir = workingDir;
+        return this;
+    }
+
+    public JvmArgsBuilder javaHome(File javaHome) {
+        this.javaHome = javaHome;
         return this;
     }
 
@@ -38,8 +38,8 @@ public class JvmArgsBuilder {
         return this;
     }
 
-    public JvmArgsBuilder setJavaHome(File javaHome) {
-        this.javaHome = javaHome;
+    public JvmArgsBuilder executableJar(File executableJar) {
+        this.executableJar = executableJar;
         return this;
     }
 
@@ -49,6 +49,6 @@ public class JvmArgsBuilder {
     }
 
     public JvmArgs toJvmArgs() {
-        return new JvmArgs(executableJar, workingDir, jvmOptions, systemProperties, javaHome, programArgs);
+        return new JvmArgs(workingDir, javaHome, jvmOptions, systemProperties, executableJar, programArgs);
     }
 }

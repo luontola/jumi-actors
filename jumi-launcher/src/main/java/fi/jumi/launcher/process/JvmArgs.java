@@ -18,11 +18,11 @@ public class JvmArgs {
     public final File executableJar;
     public final List<String> programArgs;
 
-    public JvmArgs(File executableJar,
-                   File workingDir,
+    public JvmArgs(File workingDir,
+                   File javaHome,
                    List<String> jvmOptions,
                    Properties systemProperties,
-                   File javaHome,
+                   File executableJar,
                    String[] programArgs) {
         this.workingDir = workingDir;
         this.javaHome = javaHome;

@@ -83,16 +83,16 @@ TODO NEXT:
 			OK - write DirBasedStewardTest
 				OK - copies the embedded daemon JAR to the settings dir
 				OK - does not copy the daemon JAR if it has already been copied
-			!! - write SystemProcessStarterTest
+			OK - write SystemProcessStarterTest
 				OK - extract startJavaProcess's parameters to a JvmArgs? would be unit testable as value object
-				!! - starts an executable JAR
-				- passes program arguments as is
-				- passes JVM options as is
-				- passes system properties as JVM options
-				- uses specified working directory
-				- uses specified java home
-				- defaults to current java home
-			- check code coverage
+				OK - starts an executable JAR
+				OK - passes program arguments as is
+				OK - passes JVM options as is
+				OK - passes system properties as JVM options
+				OK - uses specified working directory
+				OK - uses specified java home
+				OK - defaults to current java home
+			!! - check code coverage
 		- using the above way of sending commands, implement sending the shutdown command
 	- AppRunner: after receiving the last suite event, send the shutdown command
 	- exit after a timeout if no client connects to daemon or the client disconnects
