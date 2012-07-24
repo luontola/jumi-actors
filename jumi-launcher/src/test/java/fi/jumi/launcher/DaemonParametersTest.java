@@ -116,5 +116,9 @@ public class DaemonParametersTest {
         @Override
         public void shutdownDaemon() {
         }
+
+        @Override
+        public void disconnectFromDaemon() {
+        }
     }
 }

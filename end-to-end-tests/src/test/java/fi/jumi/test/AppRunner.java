@@ -33,14 +33,24 @@ public class AppRunner implements TestRule {
     // TODO: use a proper sandbox utility
     private final File sandboxDir = new File(TestEnvironment.getSandboxDir(), UUID.randomUUID().toString());
 
-    private ExecutorService actorsThreadPool;
     private final SpyProcessStarter processStarter = new SpyProcessStarter(new SystemProcessStarter());
-    private final JumiLauncher launcher;
     private final ByteArrayOutputStream out = new ByteArrayOutputStream();
 
+    private ExecutorService actorsThreadPool;
+    private JumiLauncher launcher;
     private TextUIParser ui;
 
     public AppRunner() {
+    }
+
+    public JumiLauncher getLauncher() {
+        if (launcher == null) {
+            launcher = createLauncher();
+        }
+        return launcher;
+    }
+
+    private JumiLauncher createLauncher() {
         actorsThreadPool = Executors.newCachedThreadPool(new PrefixedThreadFactory("jumi-launcher"));
         MultiThreadedActors actors = new MultiThreadedActors(
                 actorsThreadPool,
@@ -59,10 +69,14 @@ public class AppRunner implements TestRule {
         ActorRef<SuiteLauncher> suiteLauncher = actorThread.bindActor(SuiteLauncher.class, new RemoteSuiteLauncher(actorThread, daemonSummoner));
 
         // TODO: create default constructor or helper factory method for default configuration?
-        launcher = new JumiLauncher(suiteLauncher);
-    }
+        JumiLauncher launcher = new JumiLauncher(suiteLauncher);
 
-    public JumiLauncher getLauncher() {
+        if (TestSystemProperties.useThreadSafetyAgent()) {
+            String threadSafetyAgent = TestEnvironment.getProjectJar("thread-safety-agent").getAbsolutePath();
+            launcher.addJvmOptions("-javaagent:" + threadSafetyAgent);
+        }
+
+        launcher.enableMessageLogging();
         return launcher;
     }
 
@@ -75,6 +89,7 @@ public class AppRunner implements TestRule {
     }
 
     public void runTests(String testsToInclude) throws Exception {
+        JumiLauncher launcher = getLauncher();
         launcher.addToClassPath(TestEnvironment.getSampleClasses());
         launcher.setTestsToInclude(testsToInclude);
         launcher.start();
@@ -145,13 +160,6 @@ public class AppRunner implements TestRule {
 
     private void setUp() {
         assertTrue("Unable to create " + sandboxDir, sandboxDir.mkdirs());
-
-        if (TestSystemProperties.useThreadSafetyAgent()) {
-            String threadSafetyAgent = TestEnvironment.getProjectJar("thread-safety-agent").getAbsolutePath();
-            launcher.addJvmOptions("-javaagent:" + threadSafetyAgent);
-        }
-
-        launcher.enableMessageLogging();
     }
 
     private void tearDown() {
@@ -168,7 +176,9 @@ public class AppRunner implements TestRule {
         } catch (IOException e) {
             System.err.println("WARNING: " + e.getMessage());
         }
-        actorsThreadPool.shutdownNow();
+        if (actorsThreadPool != null) {
+            actorsThreadPool.shutdownNow();
+        }
     }
 
     private static void kill(Process process) {

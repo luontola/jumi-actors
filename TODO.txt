@@ -98,10 +98,12 @@ TODO NEXT:
 	!! - exit after a timeout if no client connects to daemon or the client disconnects
 		!! - launcher: disconnect from daemon
 			OK - network: disconnect command
-			!! - launcher: disconnect from daemon
-				- RemoteSuiteLauncher
-				- DaemonNetworkEndpoint
+			!! - launcher: release resources on close()
+				- disconnect from daemon
+				- stop actors
+				- shutdown executors
 			- noop if already disconnected
+			- check that implemented: RemoteSuiteLauncher, DaemonNetworkEndpoint
 		- launcher: shutdown actors and executors
 		- network: notify about disconnect
 		- create a timeout in daemon

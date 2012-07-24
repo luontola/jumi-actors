@@ -41,7 +41,8 @@ public class JumiLauncher implements Closeable {
 
     @Override
     public void close() {
-        // TODO
+        // TODO: stop actors, shutdown executors
+        suiteLauncher.tell().disconnectFromDaemon();
     }
 
     public void addToClassPath(File file) {
