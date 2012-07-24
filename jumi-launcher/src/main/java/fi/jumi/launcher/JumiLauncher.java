@@ -12,11 +12,11 @@ import fi.jumi.core.config.Configuration;
 import fi.jumi.launcher.remote.SuiteLauncher;
 
 import javax.annotation.concurrent.ThreadSafe;
-import java.io.File;
+import java.io.*;
 import java.util.Arrays;
 
 @ThreadSafe
-public class JumiLauncher {
+public class JumiLauncher implements Closeable {
 
     private final MessageQueue<Event<SuiteListener>> eventQueue = new MessageQueue<Event<SuiteListener>>();
 
@@ -37,6 +37,11 @@ public class JumiLauncher {
 
     public void shutdownDaemon() {
         suiteLauncher.tell().shutdownDaemon();
+    }
+
+    @Override
+    public void close() {
+        // TODO
     }
 
     public void addToClassPath(File file) {

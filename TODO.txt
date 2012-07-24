@@ -94,8 +94,18 @@ TODO NEXT:
 				OK - defaults to current java home
 			OK - check code coverage
 		OK - using the above way of sending commands, implement sending the shutdown command
-	!! - AppRunner: after receiving the last suite event, send the shutdown command
-	- exit after a timeout if no client connects to daemon or the client disconnects
+	SKIP - AppRunner: after receiving the last suite event, send the shutdown command
+	!! - exit after a timeout if no client connects to daemon or the client disconnects
+		- launcher: disconnect from daemon
+			- network: disconnect command
+			- launcher: disconnect from daemon
+			- noop if already disconnected
+		- launcher: shutdown actors and executors
+		- network: notify about disconnect
+		- create a timeout in daemon
+			- exit if nobody connects within timeout from disconnect
+			- keep living if somebody connects
+			- exit if nobody connects within timeout from startup (two timeout settings?)
 	- remove the hack in fi.jumi.daemon.Main#exitWhenNotAnymoreInUse
 	- print a message on daemon startup and shutdown; makes it easier to see from logs that when the JVM was restarted
 
