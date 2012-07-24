@@ -43,6 +43,7 @@ public class TestRunCoordinator implements CommandListener {
 
     @Override
     public void shutdown() {
-        // TODO
+        System.out.println("Daemon told to exit; shutting down now!");
+        System.exit(0);
     }
 }

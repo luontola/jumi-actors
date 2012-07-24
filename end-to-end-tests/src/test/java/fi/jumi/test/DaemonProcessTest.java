@@ -4,7 +4,6 @@
 
 package fi.jumi.test;
 
-import fi.jumi.launcher.JumiLauncher;
 import org.junit.*;
 
 import static fi.jumi.core.util.AsyncAssert.assertEventually;
@@ -20,16 +19,15 @@ public class DaemonProcessTest {
     public final AppRunner app = new AppRunner();
 
 
-    @Ignore("not implemented")
     @Test(timeout = TIMEOUT)
     public void daemon_process_can_be_closed_by_sending_it_a_shutdown_command() throws Exception {
-        JumiLauncher launcher = app.getLauncher();
-        launcher.start();
+        app.runTests("unimportant");
         Process process = app.getDaemonProcess();
         assertThat(process, is(alive()));
 
-        launcher.shutdownDaemon();
+        app.getLauncher().shutdownDaemon();
 
         assertEventually(process, is(dead()), TIMEOUT / 2);
+        // TODO: assert on the message that the daemon prints on shutdown?
     }
 }
