@@ -8,7 +8,7 @@ import org.hamcrest.*;
 
 public class ProcessMatchers {
 
-    public static Matcher<Process> isAlive() {
+    public static Matcher<Process> alive() {
         return new TypeSafeMatcher<Process>() {
             @Override
             protected boolean matchesSafely(Process item) {
@@ -17,7 +17,7 @@ public class ProcessMatchers {
 
             @Override
             public void describeTo(Description description) {
-                description.appendText("is alive");
+                description.appendText("alive");
             }
 
             @Override
@@ -27,7 +27,7 @@ public class ProcessMatchers {
         };
     }
 
-    public static Matcher<Process> isDead() {
+    public static Matcher<Process> dead() {
         return new TypeSafeMatcher<Process>() {
             @Override
             protected boolean matchesSafely(Process item) {
@@ -36,7 +36,7 @@ public class ProcessMatchers {
 
             @Override
             public void describeTo(Description description) {
-                description.appendText("is dead");
+                description.appendText("dead");
             }
 
             @Override

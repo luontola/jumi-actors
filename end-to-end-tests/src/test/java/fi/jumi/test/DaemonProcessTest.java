@@ -10,6 +10,7 @@ import org.junit.*;
 import static fi.jumi.core.util.AsyncAssert.assertEventually;
 import static fi.jumi.test.util.ProcessMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 public class DaemonProcessTest {
 
@@ -25,10 +26,10 @@ public class DaemonProcessTest {
         JumiLauncher launcher = app.getLauncher();
         launcher.start();
         Process process = app.getDaemonProcess();
-        assertThat(process, isAlive());
+        assertThat(process, is(alive()));
 
         launcher.shutdown();
 
-        assertEventually(process, isDead(), TIMEOUT / 2);
+        assertEventually(process, is(dead()), TIMEOUT / 2);
     }
 }
