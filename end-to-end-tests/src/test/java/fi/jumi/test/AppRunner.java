@@ -7,7 +7,7 @@ package fi.jumi.test;
 import fi.jumi.actors.*;
 import fi.jumi.actors.eventizers.dynamic.DynamicEventizerProvider;
 import fi.jumi.actors.listeners.*;
-import fi.jumi.core.network.NettyNetworkServer;
+import fi.jumi.core.network.*;
 import fi.jumi.core.runs.RunId;
 import fi.jumi.core.util.*;
 import fi.jumi.launcher.JumiLauncher;
@@ -66,12 +66,8 @@ public class AppRunner implements TestRule {
         return launcher;
     }
 
-    public Process getDaemonProcess() {
-        Process process = processStarter.lastProcess;
-        if (process == null) {
-            throw new IllegalStateException("daemon not yet started");
-        }
-        return process;
+    public Process getDaemonProcess() throws Exception {
+        return processStarter.lastProcess.get();
     }
 
     public void runTests(Class<?> clazz) throws Exception {
@@ -159,9 +155,13 @@ public class AppRunner implements TestRule {
     }
 
     private void tearDown() {
-        Process process = processStarter.lastProcess;
-        if (process != null) {
-            kill(process);
+        if (processStarter.lastProcess.isDone()) {
+            try {
+                Process process = processStarter.lastProcess.get();
+                kill(process);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         try {
             FileUtils.forceDelete(sandboxDir);
@@ -187,7 +187,7 @@ public class AppRunner implements TestRule {
     public static class SpyProcessStarter implements ProcessStarter {
 
         private final ProcessStarter processStarter;
-        public Process lastProcess;
+        public final FutureValue<Process> lastProcess = new FutureValue<Process>();
 
         public SpyProcessStarter(ProcessStarter processStarter) {
             this.processStarter = processStarter;
@@ -196,7 +196,7 @@ public class AppRunner implements TestRule {
         @Override
         public Process startJavaProcess(JvmArgs jvmArgs) throws IOException {
             Process process = processStarter.startJavaProcess(jvmArgs);
-            this.lastProcess = process;
+            lastProcess.set(process);
             return process;
         }
     }
