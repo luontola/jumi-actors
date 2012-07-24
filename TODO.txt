@@ -152,6 +152,8 @@ TODO NEXT:
 	- test: same toString & StackTraceElements also for cause
 	- test: same output of printStackTrace
 
+- end-to-end tests: setting the working directory for a test run
+
 - end-to-end tests: failures outside tests (in drivers and core)
 	OK - actor tests print dummy exceptions; solve by having a custom pluggable exception handler which doesn't print stack traces of a DummyException class
 	OK - consider a command for stopping actors (Thread.interrupt(), DeathPill)
