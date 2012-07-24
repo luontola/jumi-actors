@@ -10,14 +10,13 @@ import fi.jumi.launcher.*;
 import fi.jumi.launcher.daemon.Steward;
 import fi.jumi.launcher.process.*;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import java.io.*;
 
 import static fi.jumi.core.util.AsyncAssert.assertEventually;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
 public class ProcessStartingDaemonSummonerTest {
 
@@ -25,7 +24,7 @@ public class ProcessStartingDaemonSummonerTest {
 
     private final Steward steward = mock(Steward.class);
     private final SpyProcessStarter processStarter = new SpyProcessStarter();
-    private final NetworkServer daemonConnector = mock(NetworkServer.class);
+    private final SpyNetworkServer daemonConnector = new SpyNetworkServer();
     private final StringWriter outputListener = new StringWriter();
 
     private final ProcessStartingDaemonSummoner daemonSummoner = new ProcessStartingDaemonSummoner(
@@ -40,7 +39,7 @@ public class ProcessStartingDaemonSummonerTest {
 
     @Test
     public void tells_to_daemon_the_socket_to_contact() {
-        stub(daemonConnector.listenOnAnyPort(Mockito.<NetworkEndpoint<?, ?>>any())).toReturn(123);
+        daemonConnector.portToReturn = 123;
 
         daemonSummoner.connectToDaemon(suiteOptions, dummyListener);
 
@@ -66,6 +65,16 @@ public class ProcessStartingDaemonSummonerTest {
         public Process startJavaProcess(JvmArgs jvmArgs) throws IOException {
             this.lastArgs = jvmArgs.programArgs.toArray(new String[0]);
             return processToReturn;
+        }
+    }
+
+    private static class SpyNetworkServer implements NetworkServer {
+
+        public int portToReturn = 1;
+
+        @Override
+        public <In, Out> int listenOnAnyPort(NetworkEndpoint<In, Out> endpoint) {
+            return portToReturn;
         }
     }
 }
