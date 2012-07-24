@@ -60,7 +60,7 @@ TODO NEXT:
 			NettyDaemonConnection -> SocketDaemon
 			HomeManager -> Steward
 			- check package dependencies and reorder
-		!! - unit tests
+		OK - unit tests
 			OK - clean up RemoteSuiteLauncherTest
 				OK - enable both tests ("connect to daemon" doesn't need to be mentioned)
 				OK - no raw actors as fields in test
@@ -92,8 +92,8 @@ TODO NEXT:
 				OK - uses specified working directory
 				OK - uses specified java home
 				OK - defaults to current java home
-			!! - check code coverage
-		- using the above way of sending commands, implement sending the shutdown command
+			OK - check code coverage
+		!! - using the above way of sending commands, implement sending the shutdown command
 	- AppRunner: after receiving the last suite event, send the shutdown command
 	- exit after a timeout if no client connects to daemon or the client disconnects
 	- remove the hack in fi.jumi.daemon.Main#exitWhenNotAnymoreInUse

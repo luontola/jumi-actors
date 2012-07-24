@@ -22,7 +22,10 @@ public class RemoteSuiteLauncherTest {
 
     private final CommandListener daemon = mock(CommandListener.class);
     private final MessageSender<Event<CommandListener>> senderToDaemon = new CommandListenerEventizer().newBackend(daemon);
-    private final RemoteSuiteLauncher suiteLauncher = new RemoteSuiteLauncher(new FakeActorThread(), ActorRef.wrap(mock(DaemonSummoner.class)));
+    private final SpyDaemonSummoner daemonSummoner = new SpyDaemonSummoner();
+
+    private final RemoteSuiteLauncher suiteLauncher =
+            new RemoteSuiteLauncher(new FakeActorThread(), ActorRef.<DaemonSummoner>wrap(daemonSummoner));
 
     private final SuiteOptions suiteOptions = new SuiteOptions();
     private final MessageQueue<Event<SuiteListener>> suiteListener = new MessageQueue<Event<SuiteListener>>();
@@ -33,20 +36,37 @@ public class RemoteSuiteLauncherTest {
         suiteOptions.testsToIncludePattern = "*Test";
 
         suiteLauncher.runTests(suiteOptions, suiteListener);
-        suiteLauncher.onConnected(senderToDaemon);
+        callback().tell().onConnected(senderToDaemon);
 
         verify(daemon).runTests(suiteOptions.classPath, suiteOptions.testsToIncludePattern);
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    public void forwards_messages_from_daemon_to_the_SuiteListener2() {
+    public void forwards_messages_from_daemon_to_the_SuiteListener() {
         Event<SuiteListener> expectedEvent = mock(Event.class);
         suiteLauncher.runTests(suiteOptions, suiteListener);
-        suiteLauncher.onConnected(senderToDaemon);
+        callback().tell().onConnected(senderToDaemon);
 
-        suiteLauncher.onMessage(expectedEvent);
+        callback().tell().onMessage(expectedEvent);
 
         assertThat(suiteListener.poll(), is(expectedEvent));
+    }
+
+
+    // helpers
+
+    private ActorRef<DaemonListener> callback() {
+        return daemonSummoner.lastListener;
+    }
+
+    private static class SpyDaemonSummoner implements DaemonSummoner {
+
+        public ActorRef<DaemonListener> lastListener;
+
+        @Override
+        public void connectToDaemon(SuiteOptions suiteOptions, ActorRef<DaemonListener> listener) {
+            lastListener = listener;
+        }
     }
 }
