@@ -96,9 +96,11 @@ TODO NEXT:
 		OK - using the above way of sending commands, implement sending the shutdown command
 	SKIP - AppRunner: after receiving the last suite event, send the shutdown command
 	!! - exit after a timeout if no client connects to daemon or the client disconnects
-		- launcher: disconnect from daemon
-			- network: disconnect command
-			- launcher: disconnect from daemon
+		!! - launcher: disconnect from daemon
+			OK - network: disconnect command
+			!! - launcher: disconnect from daemon
+				- RemoteSuiteLauncher
+				- DaemonNetworkEndpoint
 			- noop if already disconnected
 		- launcher: shutdown actors and executors
 		- network: notify about disconnect

@@ -9,6 +9,7 @@ import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.MessageSender;
 import fi.jumi.core.*;
 import fi.jumi.core.events.CommandListenerEventizer;
+import fi.jumi.core.network.NetworkConnection;
 import fi.jumi.launcher.SuiteOptions;
 
 import javax.annotation.concurrent.NotThreadSafe;
@@ -44,7 +45,7 @@ public class RemoteSuiteLauncher implements SuiteLauncher, DaemonListener {
     }
 
     @Override
-    public void onConnected(MessageSender<Event<CommandListener>> daemon) {
+    public void onConnected(NetworkConnection connection, MessageSender<Event<CommandListener>> daemon) {
         this.daemon = new CommandListenerEventizer().newFrontend(daemon);
         this.daemon.runTests(suiteOptions.classPath, suiteOptions.testsToIncludePattern);
     }
@@ -52,6 +53,11 @@ public class RemoteSuiteLauncher implements SuiteLauncher, DaemonListener {
     @Override
     public void onMessage(Event<SuiteListener> message) {
         suiteListener.send(message);
+    }
+
+    @Override
+    public void onDisconnected() {
+        // TODO
     }
 
 

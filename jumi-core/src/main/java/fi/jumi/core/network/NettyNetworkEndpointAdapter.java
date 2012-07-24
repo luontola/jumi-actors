@@ -19,13 +19,19 @@ class NettyNetworkEndpointAdapter<In, Out> extends SimpleChannelHandler {
 
     @Override
     public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
-        endpoint.onConnected(new NettyMessageSenderAdapter<Out>(e.getChannel()));
+        Channel channel = e.getChannel();
+        endpoint.onConnected(new NettyNetworkConnectionAdapter(channel), new NettyMessageSenderAdapter<Out>(channel));
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
         endpoint.onMessage((In) e.getMessage());
+    }
+
+    @Override
+    public void channelDisconnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
+        endpoint.onDisconnected();
     }
 
     @Override

@@ -8,7 +8,9 @@ import fi.jumi.actors.queue.MessageSender;
 
 public interface NetworkEndpoint<In, Out> {
 
-    void onConnected(MessageSender<Out> sender);
+    void onConnected(NetworkConnection connection, MessageSender<Out> sender);
 
     void onMessage(In message);
+
+    void onDisconnected();
 }

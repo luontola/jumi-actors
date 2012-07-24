@@ -9,7 +9,7 @@ import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.MessageSender;
 import fi.jumi.core.*;
 import fi.jumi.core.events.SuiteListenerEventizer;
-import fi.jumi.core.network.NetworkEndpoint;
+import fi.jumi.core.network.*;
 
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -23,7 +23,7 @@ public class DaemonNetworkEndpoint implements NetworkEndpoint<Event<CommandListe
     }
 
     @Override
-    public void onConnected(MessageSender<Event<SuiteListener>> sender) {
+    public void onConnected(NetworkConnection connection, MessageSender<Event<SuiteListener>> sender) {
         // TODO: notify the coordinator on disconnect
         SuiteListener listener = new SuiteListenerEventizer().newFrontend((MessageSender<Event<SuiteListener>>) sender);
         coordinator.tell().addSuiteListener(listener);
@@ -32,5 +32,10 @@ public class DaemonNetworkEndpoint implements NetworkEndpoint<Event<CommandListe
     @Override
     public void onMessage(Event<CommandListener> message) {
         message.fireOn(coordinator.tell());
+    }
+
+    @Override
+    public void onDisconnected() {
+        // TODO
     }
 }

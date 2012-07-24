@@ -40,7 +40,7 @@ public class RemoteSuiteLauncherTest {
         suiteOptions.testsToIncludePattern = "*Test";
 
         suiteLauncher.runTests(suiteOptions, suiteListener);
-        callback().tell().onConnected(senderToDaemon);
+        callback().tell().onConnected(null, senderToDaemon);
 
         verify(daemon).runTests(suiteOptions.classPath, suiteOptions.testsToIncludePattern);
     }
@@ -50,7 +50,7 @@ public class RemoteSuiteLauncherTest {
     public void forwards_messages_from_daemon_to_the_SuiteListener() {
         Event<SuiteListener> expectedEvent = mock(Event.class);
         suiteLauncher.runTests(suiteOptions, suiteListener);
-        callback().tell().onConnected(senderToDaemon);
+        callback().tell().onConnected(null, senderToDaemon);
 
         callback().tell().onMessage(expectedEvent);
 
@@ -60,7 +60,7 @@ public class RemoteSuiteLauncherTest {
     @Test
     public void can_send_shutdown_command_to_the_daemon() {
         suiteLauncher.runTests(suiteOptions, suiteListener);
-        callback().tell().onConnected(senderToDaemon);
+        callback().tell().onConnected(null, senderToDaemon);
 
         suiteLauncher.shutdownDaemon();
 
