@@ -28,7 +28,7 @@ public class DaemonProcessTest {
         Process process = app.getDaemonProcess();
         assertThat(process, is(alive()));
 
-        launcher.shutdown();
+        launcher.shutdownDaemon();
 
         assertEventually(process, is(dead()), TIMEOUT / 2);
     }

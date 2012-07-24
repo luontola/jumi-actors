@@ -12,9 +12,8 @@ import fi.jumi.core.config.Configuration;
 import fi.jumi.launcher.remote.SuiteLauncher;
 
 import javax.annotation.concurrent.ThreadSafe;
-import java.io.*;
+import java.io.File;
 import java.util.Arrays;
-import java.util.concurrent.ExecutionException;
 
 @ThreadSafe
 public class JumiLauncher {
@@ -32,12 +31,12 @@ public class JumiLauncher {
         return eventQueue;
     }
 
-    public void start() throws IOException, ExecutionException, InterruptedException {
+    public void start() {
         suiteLauncher.tell().runTests(suiteOptions, eventQueue);
     }
 
-    public void shutdown() {
-        // TODO
+    public void shutdownDaemon() {
+        suiteLauncher.tell().shutdownDaemon();
     }
 
     public void addToClassPath(File file) {

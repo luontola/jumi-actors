@@ -112,5 +112,9 @@ public class DaemonParametersTest {
             this.lastSuiteOptions = suiteOptions;
             this.lastSuiteListener = suiteListener;
         }
+
+        @Override
+        public void shutdownDaemon() {
+        }
     }
 }

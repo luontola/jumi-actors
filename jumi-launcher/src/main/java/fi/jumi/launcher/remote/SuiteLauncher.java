@@ -12,4 +12,6 @@ import fi.jumi.launcher.SuiteOptions;
 public interface SuiteLauncher {
 
     void runTests(SuiteOptions suiteOptions, MessageSender<Event<SuiteListener>> suiteListener);
+
+    void shutdownDaemon();
 }

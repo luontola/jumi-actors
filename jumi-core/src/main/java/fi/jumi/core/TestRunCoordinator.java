@@ -40,4 +40,9 @@ public class TestRunCoordinator implements CommandListener {
                 new SuiteRunner(listener, testClassFinder, driverFinder, actorThread, testExecutor));
         suiteRunner.tell().start();
     }
+
+    @Override
+    public void shutdown() {
+        // TODO
+    }
 }

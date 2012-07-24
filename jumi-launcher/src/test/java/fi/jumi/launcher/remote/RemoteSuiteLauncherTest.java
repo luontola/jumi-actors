@@ -10,7 +10,8 @@ import fi.jumi.actors.queue.*;
 import fi.jumi.core.*;
 import fi.jumi.core.events.CommandListenerEventizer;
 import fi.jumi.launcher.*;
-import org.junit.Test;
+import org.junit.*;
+import org.junit.rules.ExpectedException;
 
 import java.io.File;
 
@@ -19,6 +20,9 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 
 public class RemoteSuiteLauncherTest {
+
+    @Rule
+    public final ExpectedException thrown = ExpectedException.none();
 
     private final CommandListener daemon = mock(CommandListener.class);
     private final MessageSender<Event<CommandListener>> senderToDaemon = new CommandListenerEventizer().newBackend(daemon);
@@ -51,6 +55,24 @@ public class RemoteSuiteLauncherTest {
         callback().tell().onMessage(expectedEvent);
 
         assertThat(suiteListener.poll(), is(expectedEvent));
+    }
+
+    @Test
+    public void can_send_shutdown_command_to_the_daemon() {
+        suiteLauncher.runTests(suiteOptions, suiteListener);
+        callback().tell().onConnected(senderToDaemon);
+
+        suiteLauncher.shutdownDaemon();
+
+        verify(daemon).shutdown();
+    }
+
+    @Test
+    public void shutdown_command_fails_if_the_daemon_is_not_connected() {
+        thrown.expect(IllegalStateException.class);
+        thrown.expectMessage("daemon not connected");
+
+        suiteLauncher.shutdownDaemon();
     }
 
 

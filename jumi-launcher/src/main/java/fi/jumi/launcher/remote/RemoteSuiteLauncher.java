@@ -36,6 +36,14 @@ public class RemoteSuiteLauncher implements SuiteLauncher, DaemonListener {
     }
 
     @Override
+    public void shutdownDaemon() {
+        if (daemon == null) {
+            throw new IllegalStateException("cannot shutdown; daemon not connected");
+        }
+        daemon.shutdown();
+    }
+
+    @Override
     public void onConnected(MessageSender<Event<CommandListener>> daemon) {
         this.daemon = new CommandListenerEventizer().newFrontend(daemon);
         this.daemon.runTests(suiteOptions.classPath, suiteOptions.testsToIncludePattern);
