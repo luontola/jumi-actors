@@ -112,6 +112,12 @@ TODO NEXT:
 			- exit if nobody connects within timeout from startup (two timeout settings?)
 	- remove the hack in fi.jumi.daemon.Main#exitWhenNotAnymoreInUse
 	- print a message on daemon startup and shutdown; makes it easier to see from logs that when the JVM was restarted
+	- refactor JumiLauncher
+		- create SuiteOptionsBuilder
+		- make SuiteOptions immutable
+		- better name? SuiteSetup, SuiteConfig, SuiteConfiguration, SuiteArgs, SuiteParameters
+			-> SuiteConfiguration (also rename core.config.Configuration -> core.bootstrap.DaemonConfiguration)
+		- replace JumiLauncher.start() and all setters with runTests(SuiteOptions)
 
 - write daemon output to log file
 	- use Process.getInputStream to write the log file in JumiLauncher's process
