@@ -22,7 +22,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="jumi-actors" />
     <orderEntry type="module" module-name="jumi-api" />
-    <orderEntry type="library" name="Maven: org.jboss.netty:netty:3.2.7.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty:3.5.3.Final" level="project" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.google.code.findbugs:jsr305:2.0.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit-dep:4.10" level="project" />
