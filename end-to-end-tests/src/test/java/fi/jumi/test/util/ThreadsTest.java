@@ -7,7 +7,7 @@ package fi.jumi.test.util;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 
 public class ThreadsTest {
 
@@ -17,7 +17,7 @@ public class ThreadsTest {
         Thread thread = new Thread(group, new LongRunningTask());
         thread.start();
 
-        assertThat(Threads.getActiveThreads(group), arrayContainingInAnyOrder(thread));
+        assertThat(Threads.getActiveThreads(group), containsInAnyOrder(thread));
 
         thread.interrupt();
     }
@@ -29,7 +29,7 @@ public class ThreadsTest {
         Thread threadInChild = new Thread(child, new LongRunningTask());
         threadInChild.start();
 
-        assertThat(Threads.getActiveThreads(parent), arrayContainingInAnyOrder(threadInChild));
+        assertThat(Threads.getActiveThreads(parent), containsInAnyOrder(threadInChild));
 
         threadInChild.interrupt();
     }
@@ -45,7 +45,7 @@ public class ThreadsTest {
             threads[i] = t;
         }
 
-        assertThat(Threads.getActiveThreads(group, INITIAL_GUESSIMATE), arrayContainingInAnyOrder(threads));
+        assertThat(Threads.getActiveThreads(group, INITIAL_GUESSIMATE), containsInAnyOrder(threads));
 
         for (Thread thread : threads) {
             thread.interrupt();

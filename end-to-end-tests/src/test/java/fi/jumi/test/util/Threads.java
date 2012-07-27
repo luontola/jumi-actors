@@ -4,19 +4,19 @@
 
 package fi.jumi.test.util;
 
-import java.util.Arrays;
+import java.util.*;
 
 public class Threads {
 
-    public static Thread[] getActiveThreads(ThreadGroup threadGroup) {
+    public static List<Thread> getActiveThreads(ThreadGroup threadGroup) {
         return getActiveThreads(threadGroup, 10);
     }
 
-    static Thread[] getActiveThreads(ThreadGroup threadGroup, int expectedCount) {
+    static List<Thread> getActiveThreads(ThreadGroup threadGroup, int expectedCount) {
         Thread[] enumerated = new Thread[expectedCount];
         int actualCount = threadGroup.enumerate(enumerated, true);
         if (actualCount < enumerated.length) {
-            return Arrays.copyOfRange(enumerated, 0, actualCount);
+            return Arrays.asList(Arrays.copyOfRange(enumerated, 0, actualCount));
         } else {
             return getActiveThreads(threadGroup, expectedCount * 2);
         }

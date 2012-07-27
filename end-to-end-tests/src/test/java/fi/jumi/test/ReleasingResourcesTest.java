@@ -8,10 +8,10 @@ import fi.jumi.launcher.JumiLauncher;
 import fi.jumi.test.util.Threads;
 import org.junit.*;
 
-import java.util.Arrays;
+import java.util.List;
 
+import static fi.jumi.test.util.CollectionMatchers.containsAtMost;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
 
 public class ReleasingResourcesTest {
 
@@ -24,14 +24,12 @@ public class ReleasingResourcesTest {
     @Test(timeout = TIMEOUT)
     public void launcher_stops_the_threads_it_started() throws Exception {
         ThreadGroup threadGroup = Thread.currentThread().getThreadGroup();
-        Thread[] threadsBefore = Threads.getActiveThreads(threadGroup);
+        List<Thread> threadsBefore = Threads.getActiveThreads(threadGroup);
 
         startAndStopLauncher();
 
-        Thread[] threadsAfter = Threads.getActiveThreads(threadGroup);
-        System.out.println("threadsBefore = " + Arrays.toString(threadsBefore));
-        System.out.println("threadsAfter = " + Arrays.toString(threadsAfter));
-        assertThat(threadsAfter.length, is(threadsBefore.length));
+        List<Thread> threadsAfter = Threads.getActiveThreads(threadGroup);
+        assertThat(threadsAfter, containsAtMost(threadsBefore));
     }
 
     // TODO: network sockets
