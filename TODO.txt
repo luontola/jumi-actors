@@ -99,6 +99,8 @@ TODO NEXT:
 		!! - launcher: disconnect from daemon
 			OK - network: disconnect command
 			!! - launcher: release resources on close()
+				- stop actors
+				- shutdown executors
 				- disconnect from daemon
 				- close all sockets
 					- monitor open sockets by hooking into Netty
@@ -118,8 +120,6 @@ TODO NEXT:
 						java.net.ServerSocket#setSocketFactory
 						http://www.javaspecialists.eu/archive/Issue169.html
 						http://java.dzone.com/news/socket-monitoring-now-using
-				- stop actors
-				- shutdown executors
 			- noop if already disconnected
 			- check that implemented: RemoteSuiteLauncher, DaemonNetworkEndpoint
 		- launcher: shutdown actors and executors

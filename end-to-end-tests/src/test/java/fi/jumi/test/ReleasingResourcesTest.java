@@ -5,6 +5,7 @@
 package fi.jumi.test;
 
 import fi.jumi.launcher.JumiLauncher;
+import fi.jumi.test.util.Threads;
 import org.junit.*;
 
 import java.util.Arrays;
@@ -23,11 +24,11 @@ public class ReleasingResourcesTest {
     @Test(timeout = TIMEOUT)
     public void launcher_stops_the_threads_it_started() throws Exception {
         ThreadGroup threadGroup = Thread.currentThread().getThreadGroup();
-        Thread[] threadsBefore = getActiveThreads(threadGroup);
+        Thread[] threadsBefore = Threads.getActiveThreads(threadGroup);
 
         startAndStopLauncher();
 
-        Thread[] threadsAfter = getActiveThreads(threadGroup);
+        Thread[] threadsAfter = Threads.getActiveThreads(threadGroup);
         System.out.println("threadsBefore = " + Arrays.toString(threadsBefore));
         System.out.println("threadsAfter = " + Arrays.toString(threadsAfter));
         assertThat(threadsAfter.length, is(threadsBefore.length));
@@ -40,19 +41,5 @@ public class ReleasingResourcesTest {
         app.runTests("unimportant");
         JumiLauncher launcher = app.getLauncher();
         launcher.close();
-    }
-
-    private static Thread[] getActiveThreads(ThreadGroup threadGroup) {
-        return getActiveThreads(threadGroup, 10);
-    }
-
-    private static Thread[] getActiveThreads(ThreadGroup threadGroup, int expectedCount) {
-        Thread[] enumerated = new Thread[expectedCount];
-        int actualCount = threadGroup.enumerate(enumerated, true);
-        if (actualCount < enumerated.length) {
-            return Arrays.copyOfRange(enumerated, 0, actualCount);
-        } else {
-            return getActiveThreads(threadGroup, expectedCount * 2);
-        }
     }
 }
