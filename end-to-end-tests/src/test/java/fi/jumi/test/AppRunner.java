@@ -4,16 +4,11 @@
 
 package fi.jumi.test;
 
-import fi.jumi.actors.*;
-import fi.jumi.actors.eventizers.dynamic.DynamicEventizerProvider;
-import fi.jumi.actors.listeners.*;
-import fi.jumi.core.network.*;
+import fi.jumi.core.network.FutureValue;
 import fi.jumi.core.runs.RunId;
-import fi.jumi.core.util.*;
-import fi.jumi.launcher.JumiLauncher;
-import fi.jumi.launcher.daemon.*;
+import fi.jumi.core.util.Strings;
+import fi.jumi.launcher.*;
 import fi.jumi.launcher.process.*;
-import fi.jumi.launcher.remote.*;
 import fi.jumi.launcher.ui.TextUI;
 import org.apache.commons.io.FileUtils;
 import org.junit.rules.TestRule;
@@ -22,7 +17,6 @@ import org.junit.runners.model.Statement;
 
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -36,7 +30,6 @@ public class AppRunner implements TestRule {
     private final SpyProcessStarter processStarter = new SpyProcessStarter(new SystemProcessStarter());
     private final ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-    private ExecutorService actorsThreadPool;
     private JumiLauncher launcher;
     private TextUIParser ui;
 
@@ -51,25 +44,27 @@ public class AppRunner implements TestRule {
     }
 
     private JumiLauncher createLauncher() {
-        actorsThreadPool = Executors.newCachedThreadPool(new PrefixedThreadFactory("jumi-launcher"));
-        MultiThreadedActors actors = new MultiThreadedActors(
-                actorsThreadPool,
-                new DynamicEventizerProvider(),
-                new PrintStreamFailureLogger(System.out),
-                new NullMessageListener()
-        );
-        ActorThread actorThread = actors.startActorThread();
+        class CustomJumiLauncherBuilder extends JumiLauncherBuilder {
 
-        ActorRef<DaemonSummoner> daemonSummoner = actorThread.bindActor(DaemonSummoner.class, new ProcessStartingDaemonSummoner(
-                new DirBasedSteward(new EmbeddedDaemonJar(), new File(sandboxDir, "jumi-home")),
-                processStarter,
-                new NettyNetworkServer(true), // TODO: disable logging
-                new SystemOutWriter()
-        ));
-        ActorRef<SuiteLauncher> suiteLauncher = actorThread.bindActor(SuiteLauncher.class, new RemoteSuiteLauncher(actorThread, daemonSummoner));
+            @Override
+            protected File getSettingsDirectory() {
+                return new File(sandboxDir, "jumi-home");
+            }
 
-        // TODO: create default constructor or helper factory method for default configuration?
-        JumiLauncher launcher = new JumiLauncher(suiteLauncher);
+            @Override
+            protected ProcessStarter createProcessStarter() {
+                return processStarter;
+            }
+
+            @Override
+            protected Writer createDaemonOutputListener() {
+                return new SystemOutWriter();
+            }
+        }
+
+        JumiLauncher launcher = new CustomJumiLauncherBuilder()
+                .enableDebugLogging()
+                .build();
 
         if (TestSystemProperties.useThreadSafetyAgent()) {
             String threadSafetyAgent = TestEnvironment.getProjectJar("thread-safety-agent").getAbsolutePath();
@@ -163,6 +158,9 @@ public class AppRunner implements TestRule {
     }
 
     private void tearDown() {
+        if (launcher != null) {
+            launcher.close();
+        }
         if (processStarter.lastProcess.isDone()) {
             try {
                 Process process = processStarter.lastProcess.get();
@@ -175,9 +173,6 @@ public class AppRunner implements TestRule {
             FileUtils.forceDelete(sandboxDir);
         } catch (IOException e) {
             System.err.println("WARNING: " + e.getMessage());
-        }
-        if (actorsThreadPool != null) {
-            actorsThreadPool.shutdownNow();
         }
     }
 

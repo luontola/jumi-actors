@@ -99,7 +99,10 @@ TODO NEXT:
 		!! - launcher: disconnect from daemon
 			OK - network: disconnect command
 			!! - launcher: release resources on close()
-				- stop actors
+				!! - stop actors
+					OK - extract JumiLauncherBuilder from AppRunner
+					!! - JumiLauncherTest: override method in builder, check that resource is released on close()
+					- JumiLauncherTest: dynamic test for checking missing tests for dependencies that have close/stop/shutdown methods
 				- shutdown executors
 				- disconnect from daemon
 				- close all sockets
