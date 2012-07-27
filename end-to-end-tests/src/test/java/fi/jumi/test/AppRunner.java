@@ -159,7 +159,11 @@ public class AppRunner implements TestRule {
 
     private void tearDown() {
         if (launcher != null) {
-            launcher.close();
+            try {
+                launcher.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         if (processStarter.lastProcess.isDone()) {
             try {

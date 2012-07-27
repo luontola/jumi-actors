@@ -99,13 +99,13 @@ TODO NEXT:
 		!! - launcher: disconnect from daemon
 			OK - network: disconnect command
 			!! - launcher: release resources on close()
-				!! - stop actors
+				OK - stop actors
 					OK - extract JumiLauncherBuilder from AppRunner
-					!! - JumiLauncherTest: override method in builder, check that resource is released on close()
-					- JumiLauncherTest: dynamic test for checking missing tests for dependencies that have close/stop/shutdown methods
-				- shutdown executors
-				- disconnect from daemon
-				- close all sockets
+					OK - JumiLauncherTest: override method in builder, check that resource is released on close()
+				OK - shutdown executors
+				SKIP - JumiLauncherTest: dynamic test for checking missing tests for dependencies that have close/stop/shutdown methods?
+				SKIP - disconnect from daemon (doable by closing all sockets)
+				!! - close all sockets
 					- monitor open sockets by hooking into Netty
 						org.jboss.netty.channel.group.ChannelGroup
 						org.jboss.netty.channel.socket.ClientSocketChannelFactory
@@ -124,7 +124,7 @@ TODO NEXT:
 						http://www.javaspecialists.eu/archive/Issue169.html
 						http://java.dzone.com/news/socket-monitoring-now-using
 			- noop if already disconnected
-			- check that implemented: RemoteSuiteLauncher, DaemonNetworkEndpoint
+			- check that implemented: RemoteSuiteLauncher, DaemonNetworkEndpoint, or are they needed at all and can be removed?
 		- launcher: shutdown actors and executors
 		- network: notify about disconnect
 		- create a timeout in daemon

@@ -32,7 +32,7 @@ public class DaemonParametersTest {
     private final StubNetworkServer daemonConnector = new StubNetworkServer();
     private final SpySuiteLauncher suiteRemote = new SpySuiteLauncher();
 
-    private final JumiLauncher launcher = new JumiLauncher(null, ActorRef.<SuiteLauncher>wrap(suiteRemote));
+    private final JumiLauncher launcher = new JumiLauncher(ActorRef.<SuiteLauncher>wrap(suiteRemote), null);
 
     @Test
     public void tells_daemon_process_the_launcher_port_number() throws Exception {

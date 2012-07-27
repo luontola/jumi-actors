@@ -7,22 +7,47 @@ package fi.jumi.launcher;
 import fi.jumi.actors.*;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 public class JumiLauncherTest {
 
-    @Test
-    public void on_close_stops_the_actor_thread() {
+    private static final long TIMEOUT = 1000;
+
+    private ExecutorService actorsThreadPool;
+
+    @Test(timeout = TIMEOUT)
+    public void on_close_stops_the_actor_thread() throws IOException {
         final ActorThread actorThread = spy(new FakeActorThread());
-        JumiLauncher launcher = new JumiLauncherBuilder() {
+        JumiLauncherBuilder builder = new JumiLauncherBuilder() {
             @Override
-            protected ActorThread createActorThread(Actors actors) {
+            protected ActorThread startActorThread(Actors actors) {
                 return actorThread;
             }
-        }.build();
+        };
+        JumiLauncher launcher = builder.build();
 
         launcher.close();
 
         verify(actorThread).stop();
+    }
+
+    @Test(timeout = TIMEOUT)
+    public void on_close_terminates_the_actor_thread_pool() throws IOException {
+        JumiLauncherBuilder builder = new JumiLauncherBuilder() {
+            @Override
+            protected ExecutorService createActorsThreadPool() {
+                actorsThreadPool = super.createActorsThreadPool();
+                return actorsThreadPool;
+            }
+        };
+        JumiLauncher launcher = builder.build();
+
+        launcher.close();
+
+        assertTrue("should have terminated the actors thread pool", actorsThreadPool.isTerminated());
     }
 }
