@@ -15,7 +15,7 @@ import fi.jumi.launcher.remote.*;
 import org.apache.commons.io.output.NullWriter;
 
 import java.io.*;
-import java.util.concurrent.*;
+import java.util.concurrent.Executors;
 
 public class JumiLauncherBuilder {
 
@@ -27,13 +27,13 @@ public class JumiLauncherBuilder {
     }
 
     public JumiLauncher build() {
-        MultiThreadedActors actors = new MultiThreadedActors(
-                createActorsThreadPool(),
+        Actors actors = new MultiThreadedActors(
+                Executors.newCachedThreadPool(new PrefixedThreadFactory("jumi-launcher-")),
                 new DynamicEventizerProvider(),
                 new PrintStreamFailureLogger(System.out),
                 new NullMessageListener()
         );
-        ActorThread actorThread = actors.startActorThread();
+        ActorThread actorThread = createActorThread(actors);
 
         ActorRef<DaemonSummoner> daemonSummoner = actorThread.bindActor(DaemonSummoner.class, new ProcessStartingDaemonSummoner(
                 new DirBasedSteward(new EmbeddedDaemonJar(), getSettingsDirectory()),
@@ -43,15 +43,15 @@ public class JumiLauncherBuilder {
         ));
         ActorRef<SuiteLauncher> suiteLauncher = actorThread.bindActor(SuiteLauncher.class, new RemoteSuiteLauncher(actorThread, daemonSummoner));
 
-        return new JumiLauncher(suiteLauncher);
+        return new JumiLauncher(actorThread, suiteLauncher);
+    }
+
+    protected ActorThread createActorThread(Actors actors) {
+        return actors.startActorThread();
     }
 
     protected File getSettingsDirectory() {
         return new File(".jumi"); // TODO: put into user home
-    }
-
-    protected ExecutorService createActorsThreadPool() {
-        return Executors.newCachedThreadPool(new PrefixedThreadFactory("jumi-launcher"));
     }
 
     protected ProcessStarter createProcessStarter() {

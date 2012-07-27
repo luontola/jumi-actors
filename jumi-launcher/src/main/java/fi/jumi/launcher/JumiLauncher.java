@@ -4,7 +4,7 @@
 
 package fi.jumi.launcher;
 
-import fi.jumi.actors.ActorRef;
+import fi.jumi.actors.*;
 import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.*;
 import fi.jumi.core.SuiteListener;
@@ -21,9 +21,11 @@ public class JumiLauncher implements Closeable {
     private final MessageQueue<Event<SuiteListener>> eventQueue = new MessageQueue<Event<SuiteListener>>();
 
     private final SuiteOptions suiteOptions = new SuiteOptions();
+    private final ActorThread actorThread;
     private final ActorRef<SuiteLauncher> suiteLauncher;
 
-    public JumiLauncher(ActorRef<SuiteLauncher> suiteLauncher) {
+    public JumiLauncher(ActorThread actorThread, ActorRef<SuiteLauncher> suiteLauncher) {
+        this.actorThread = actorThread;
         this.suiteLauncher = suiteLauncher;
     }
 
@@ -41,8 +43,9 @@ public class JumiLauncher implements Closeable {
 
     @Override
     public void close() {
-        // TODO: stop actors, shutdown executors
-        suiteLauncher.tell().disconnectFromDaemon();
+        suiteLauncher.tell().disconnectFromDaemon(); // TODO: is this needed after we have a way to disconnect all network connections?
+        actorThread.stop();
+        // TODO: shutdown executors
     }
 
     public void addToClassPath(File file) {
