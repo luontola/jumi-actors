@@ -15,7 +15,8 @@ import static org.junit.Assert.assertTrue;
 
 public class NettyNetworkCommunicationTest {
 
-    private static final long TIMEOUT = 1000;
+    private static final long TIMEOUT = 2000;
+    private static final long ASSERT_TIMEOUT = TIMEOUT - 500; // XXX: using a separate timeout, because JUnit doesn't give a stack trace on timeout
 
     private final NettyNetworkClient client = new NettyNetworkClient();
     private final NettyNetworkServer server = new NettyNetworkServer();
@@ -70,7 +71,7 @@ public class NettyNetworkCommunicationTest {
     }
 
     private static void assertEventHappens(String message, CountDownLatch event) throws InterruptedException {
-        assertTrue(message, event.await(TIMEOUT / 2, TimeUnit.MILLISECONDS));
+        assertTrue(message, event.await(ASSERT_TIMEOUT, TimeUnit.MILLISECONDS));
     }
 
 
