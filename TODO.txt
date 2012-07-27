@@ -106,11 +106,17 @@ TODO NEXT:
 				SKIP - JumiLauncherTest: dynamic test for checking missing tests for dependencies that have close/stop/shutdown methods?
 				SKIP - disconnect from daemon (doable by closing all sockets)
 				!! - close all sockets
-					- monitor open sockets by hooking into Netty
+					SKIP - monitor open sockets by hooking into Netty
+					OK - or how hard would it be to hook a custom SocketImpl?
+						java.net.Socket#setSocketImplFactory
+						java.net.ServerSocket#setSocketFactory
+						http://www.javaspecialists.eu/archive/Issue169.html
+						http://java.dzone.com/news/socket-monitoring-now-using
+					!! - network: implement closing all channels
 						org.jboss.netty.channel.group.ChannelGroup
 						org.jboss.netty.channel.socket.ClientSocketChannelFactory
 						org.jboss.netty.channel.socket.ServerSocketChannelFactory
-						- expose the number of open connections from NetworkClient and NetworkServer
+						!! - expose the number of open connections from NetworkClient and NetworkServer
 							- test: increment on listen
 							- test: increment on connect
 							- test: decrement on disconnect
@@ -118,11 +124,6 @@ TODO NEXT:
 						- add close() to NetworkClient and NetworkServer
 						- NetworkEndpointFactory for NetworkServer#listenOnAnyPort
 						- extract JumiLauncherBuilder from AppRunner
-					- or how hard would it be to hook a custom SocketImpl?
-						java.net.Socket#setSocketImplFactory
-						java.net.ServerSocket#setSocketFactory
-						http://www.javaspecialists.eu/archive/Issue169.html
-						http://java.dzone.com/news/socket-monitoring-now-using
 			- noop if already disconnected
 			- check that implemented: RemoteSuiteLauncher, DaemonNetworkEndpoint, or are they needed at all and can be removed?
 		- launcher: shutdown actors and executors
