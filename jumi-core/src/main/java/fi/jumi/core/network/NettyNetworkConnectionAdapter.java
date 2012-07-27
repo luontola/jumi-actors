@@ -19,6 +19,6 @@ class NettyNetworkConnectionAdapter implements NetworkConnection {
 
     @Override
     public void disconnect() {
-        channel.disconnect();
+        channel.disconnect().awaitUninterruptibly();
     }
 }
