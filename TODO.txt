@@ -174,7 +174,7 @@ TODO NEXT:
 	- test: printing from the same thread to out & err should be synchronous, unlike in probably every IDE
 	- hacking System.out/err
 		- tests should restore the original out/err defensively in @After
-		- concurrency test: out.println("O") and err.println("E") from different threads, output must not contain "OE"/"EO" but only "O\nE\n"
+		- concurrency test, no interleaving: out.println("O") and err.println("E") from different threads, output must not contain "OE"/"EO" but only "O\nE\n"
 		- unit test: the PrintStreams for our & err must sync on the same object, testable by checking holdsLock in a mock OutputStream
 			- Thread.holdsLock(java.lang.Object)
 			- ReentrantLock.isHeldByCurrentThread()
@@ -203,6 +203,10 @@ TODO NEXT:
 	- maybe testable by throwing exceptions from a driver or by producing non-valid .class files
 
 - misc refactoring
+	- rename TestClass to TestCase, wrap it in a value object, allow any files and not just .class (maybe just pretty-print classes)
+		- in Java, "testclass" appears preferable over "fixture":
+		http://xunitpatterns.com/Testcase%20Class.html
+		http://xunitpatterns.com/XUnit%20Terminology%20Crossreference.html
 	- BuildTest: make sure that jumi-daemon.jar contains everything from jumi-api.jar no matter what
 		- test the test by adding an unused class to jumi-api
 		- add includes if necessary: http://maven.apache.org/plugins/maven-shade-plugin/examples/includes-excludes.html
@@ -251,6 +255,10 @@ TODO NEXT:
 		http://sonatype.github.com/jarjar-maven-plugin/
 		http://pyx4me.com/pyx4me-maven-plugins/proguard-maven-plugin/
 		https://github.com/wvengen/proguard-maven-plugin (uses newer version of ProGuard)
+		1. run shade plugin to embed all dependencies and create the dependency-reduced POM
+		2. run proguard to minimize the JAR at method level and preverify (in and out files must be different?)
+		3. replace the main artifact
+			http://mojo.codehaus.org/build-helper-maven-plugin/attach-artifact-mojo.html
 	- seems that Eventizer.newBackend is not used; keep it for symmetry or remove it?
 	- consider logging with http://code.google.com/p/minlog/
 
@@ -283,6 +291,20 @@ TODO NEXT:
 		http://vanillajava.blogspot.com/2011/12/test-complete-failure-of-jvm.html
 	- if daemon disconnects due to network problem, reconnect and resume where we were left?
 	- make it reliable
+
+- communicate using memory mapped files?
+	http://en.wikipedia.org/wiki/Memory-mapped_file
+	http://javarevisited.blogspot.fi/2012/01/memorymapped-file-and-io-in-java.html
+	http://stackoverflow.com/questions/5943365/java-tcp-ip-socket-latency-stuck-at-50-s-microseconds-used-for-java-ipc
+	http://stackoverflow.com/questions/6096485/how-to-dynamically-expand-a-memory-mapped-file
+	- benefits:
+		- more secure than sockets (uses file system permissions)
+		- should be faster (benchmark latency and throughput)
+		- automatically saved to file for later use
+		- no need to close socket connections
+		- no need for a networking library
+	- need to find out how to do synchronization
+		http://stackoverflow.com/questions/4743380/controlling-read-writes-to-memory-mapped-files-windows
 
 - refactor jumi-actors-maven-plugin
 	- DummyListenerToEvent: rename sender to target
