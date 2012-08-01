@@ -4,7 +4,9 @@
 
 package fi.jumi.core.network;
 
-public interface NetworkClient {
+import java.io.Closeable;
+
+public interface NetworkClient extends Closeable {
 
     <In, Out> void connect(String hostname, int port, NetworkEndpoint<In, Out> endpoint);
 }

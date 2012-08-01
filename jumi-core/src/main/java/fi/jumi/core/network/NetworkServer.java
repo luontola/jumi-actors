@@ -4,7 +4,9 @@
 
 package fi.jumi.core.network;
 
-public interface NetworkServer {
+import java.io.Closeable;
+
+public interface NetworkServer extends Closeable {
 
     <In, Out> int listenOnAnyPort(NetworkEndpoint<In, Out> endpoint);
 }

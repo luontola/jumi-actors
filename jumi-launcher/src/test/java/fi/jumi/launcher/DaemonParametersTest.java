@@ -101,6 +101,10 @@ public class DaemonParametersTest {
         public <In, Out> int listenOnAnyPort(NetworkEndpoint<In, Out> endpoint) {
             return portToReturn;
         }
+
+        @Override
+        public void close() throws IOException {
+        }
     }
 
     private static class SpySuiteLauncher implements SuiteLauncher {

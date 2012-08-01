@@ -116,12 +116,13 @@ TODO NEXT:
 						org.jboss.netty.channel.group.ChannelGroup
 						org.jboss.netty.channel.socket.ClientSocketChannelFactory
 						org.jboss.netty.channel.socket.ServerSocketChannelFactory
-						!! - expose the number of open connections from NetworkClient and NetworkServer
+						SKIP - expose the number of open connections from NetworkClient and NetworkServer
 							- test: increment on listen
 							- test: increment on connect
 							- test: decrement on disconnect
 							- test: decrement on close
-						- add close() to NetworkClient and NetworkServer
+						OK - add close() to NetworkClient and NetworkServer
+						!! - call org.jboss.netty.channel.ChannelFactory#releaseExternalResources
 						- NetworkEndpointFactory for NetworkServer#listenOnAnyPort
 						- extract JumiLauncherBuilder from AppRunner
 			- noop if already disconnected

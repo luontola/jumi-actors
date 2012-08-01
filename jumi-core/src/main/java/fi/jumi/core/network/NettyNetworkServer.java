@@ -6,6 +6,7 @@ package fi.jumi.core.network;
 
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.*;
+import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.channel.socket.oio.OioServerSocketChannelFactory;
 import org.jboss.netty.handler.codec.serialization.*;
 import org.jboss.netty.handler.logging.LoggingHandler;
@@ -19,6 +20,7 @@ import java.util.concurrent.Executors;
 public class NettyNetworkServer implements NetworkServer {
 
     private final InternalLogLevel logLevel;
+    private final DefaultChannelGroup allChannels = new DefaultChannelGroup();
 
     public NettyNetworkServer() {
         this(false);
@@ -51,7 +53,8 @@ public class NettyNetworkServer implements NetworkServer {
                         new ObjectEncoder(),
                         new ObjectDecoder(ClassResolvers.softCachingResolver(getClass().getClassLoader())),
                         new LoggingHandler(logLevel),
-                        new NettyNetworkEndpointAdapter<In, Out>(endpoint));
+                        new NettyNetworkEndpointAdapter<In, Out>(endpoint),
+                        new AddToChannelGroupHandler(allChannels));
             }
         }
         bootstrap.setPipelineFactory(new MyChannelPipelineFactory());
@@ -59,6 +62,14 @@ public class NettyNetworkServer implements NetworkServer {
         bootstrap.setOption("child.tcpNoDelay", true);
         bootstrap.setOption("child.keepAlive", true);
 
-        return bootstrap.bind(new InetSocketAddress(port));
+        Channel channel = bootstrap.bind(new InetSocketAddress(port));
+        allChannels.add(channel);
+        return channel;
+    }
+
+    @Override
+    public void close() {
+        // TODO: call releaseExternalResources
+        allChannels.close().awaitUninterruptibly();
     }
 }

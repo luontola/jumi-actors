@@ -76,5 +76,9 @@ public class ProcessStartingDaemonSummonerTest {
         public <In, Out> int listenOnAnyPort(NetworkEndpoint<In, Out> endpoint) {
             return portToReturn;
         }
+
+        @Override
+        public void close() throws IOException {
+        }
     }
 }

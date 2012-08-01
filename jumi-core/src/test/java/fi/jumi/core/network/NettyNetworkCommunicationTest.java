@@ -15,7 +15,7 @@ import static org.junit.Assert.assertTrue;
 
 public class NettyNetworkCommunicationTest {
 
-    private static final long TIMEOUT = 10000;
+    private static final long TIMEOUT = 1000;
     private static final long ASSERT_TIMEOUT = TIMEOUT - 500; // XXX: using a separate timeout, because JUnit doesn't give a stack trace on timeout
 
     private final NettyNetworkClient client = new NettyNetworkClient();
@@ -62,6 +62,25 @@ public class NettyNetworkCommunicationTest {
 
         assertEventHappens("server should get disconnected event", serverEndpoint.disconnected);
         assertEventHappens("client should get disconnected event", clientEndpoint.disconnected);
+    }
+
+    @Test(timeout = TIMEOUT)
+    public void on_close_the_client_disconnects_all_connections() throws Exception {
+        connectClientToServer();
+
+        client.close();
+
+        assertEventHappens("client should get disconnected event", clientEndpoint.disconnected);
+    }
+
+    @Test(timeout = TIMEOUT)
+    public void on_close_the_server_disconnects_all_connections() throws Exception {
+        connectClientToServer();
+        serverEndpoint.connection.get();
+
+        server.close();
+
+        assertEventHappens("server should get disconnected event", serverEndpoint.disconnected);
     }
 
 

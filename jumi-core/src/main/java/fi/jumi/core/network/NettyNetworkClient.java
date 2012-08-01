@@ -6,6 +6,7 @@ package fi.jumi.core.network;
 
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.*;
+import org.jboss.netty.channel.group.*;
 import org.jboss.netty.channel.socket.oio.OioClientSocketChannelFactory;
 import org.jboss.netty.handler.codec.serialization.*;
 import org.jboss.netty.handler.logging.LoggingHandler;
@@ -19,6 +20,7 @@ import java.util.concurrent.Executors;
 public class NettyNetworkClient implements NetworkClient {
 
     private final InternalLogLevel logLevel;
+    private final ChannelGroup allChannels = new DefaultChannelGroup();
 
     public NettyNetworkClient() {
         this(false);
@@ -41,7 +43,8 @@ public class NettyNetworkClient implements NetworkClient {
                         new ObjectEncoder(),
                         new ObjectDecoder(ClassResolvers.softCachingResolver(getClass().getClassLoader())),
                         new LoggingHandler(logLevel),
-                        new NettyNetworkEndpointAdapter<In, Out>(endpoint));
+                        new NettyNetworkEndpointAdapter<In, Out>(endpoint),
+                        new AddToChannelGroupHandler(allChannels));
             }
         }
         bootstrap.setPipelineFactory(new MyChannelPipelineFactory());
@@ -50,5 +53,11 @@ public class NettyNetworkClient implements NetworkClient {
         bootstrap.setOption("keepAlive", true);
 
         bootstrap.connect(new InetSocketAddress(hostname, port));
+    }
+
+    @Override
+    public void close() {
+        // TODO: call releaseExternalResources
+        allChannels.close().awaitUninterruptibly();
     }
 }
