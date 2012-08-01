@@ -5,7 +5,7 @@
 package fi.jumi.core.network;
 
 import fi.jumi.actors.queue.MessageSender;
-import org.junit.Test;
+import org.junit.*;
 
 import java.util.concurrent.*;
 
@@ -18,13 +18,21 @@ public class NettyNetworkCommunicationTest {
     private static final long TIMEOUT = 1000;
     private static final long ASSERT_TIMEOUT = TIMEOUT - 500; // XXX: using a separate timeout, because JUnit doesn't give a stack trace on timeout
 
-    private final NettyNetworkClient client = new NettyNetworkClient();
-    private final NettyNetworkServer server = new NettyNetworkServer(true); // TODO: remove logging once these tests are less flaky
+    private final ExecutorService clientExecutor = Executors.newCachedThreadPool();
+    private final ExecutorService serverExecutor = Executors.newCachedThreadPool();
+
+    private final NettyNetworkClient client = new NettyNetworkClient(false, clientExecutor);
+    private final NettyNetworkServer server = new NettyNetworkServer(true, serverExecutor); // TODO: remove logging once these tests are less flaky
 
     private final ClientNetworkEndpoint clientEndpoint = new ClientNetworkEndpoint();
     private final ServerNetworkEndpoint serverEndpoint = new ServerNetworkEndpoint();
 
-    // TODO: disconnect at the end of a test
+    @After
+    public void tearDown() {
+        client.close();
+        server.close();
+    }
+
 
     @Test(timeout = TIMEOUT)
     public void client_can_send_messages_to_server() throws Exception {
@@ -81,6 +89,24 @@ public class NettyNetworkCommunicationTest {
         server.close();
 
         assertEventHappens("server should get disconnected event", serverEndpoint.disconnected);
+    }
+
+    @Test(timeout = TIMEOUT)
+    public void on_close_the_client_terminates_its_executors() {
+        connectClientToServer();
+
+        client.close();
+
+        assertThat("client executor terminated", clientExecutor.isTerminated(), is(true));
+    }
+
+    @Test(timeout = TIMEOUT)
+    public void on_close_the_server_terminates_its_executors() {
+        connectClientToServer();
+
+        server.close();
+
+        assertThat("server executor terminated", serverExecutor.isTerminated(), is(true));
     }
 
 

@@ -122,8 +122,8 @@ TODO NEXT:
 							- test: decrement on disconnect
 							- test: decrement on close
 						OK - add close() to NetworkClient and NetworkServer
-						!! - call org.jboss.netty.channel.ChannelFactory#releaseExternalResources
-						- NetworkEndpointFactory for NetworkServer#listenOnAnyPort
+						OK - call org.jboss.netty.channel.ChannelFactory#releaseExternalResources
+						!! - NetworkEndpointFactory for NetworkServer#listenOnAnyPort
 						- extract JumiLauncherBuilder from AppRunner
 			- noop if already disconnected
 			- check that implemented: RemoteSuiteLauncher, DaemonNetworkEndpoint, or are they needed at all and can be removed?
