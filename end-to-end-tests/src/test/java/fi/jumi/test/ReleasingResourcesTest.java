@@ -19,13 +19,11 @@ import static org.hamcrest.Matchers.*;
 
 public class ReleasingResourcesTest {
 
-    private static final int TIMEOUT = 2000;
-
     @Rule
     public final AppRunner app = new AppRunner();
 
     @Ignore("not implemented")
-    @Test(timeout = TIMEOUT)
+    @Test(timeout = Timeouts.END_TO_END_TEST)
     public void launcher_stops_the_threads_it_started() throws Exception {
         ThreadGroup threadGroup = Thread.currentThread().getThreadGroup();
         List<Thread> threadsBefore = Threads.getActiveThreads(threadGroup);
@@ -37,27 +35,29 @@ public class ReleasingResourcesTest {
     }
 
     @Ignore("not implemented")
-    @Test(timeout = TIMEOUT)
+    @Test(timeout = Timeouts.END_TO_END_TEST)
     public void launcher_closes_all_server_sockets_it_opened() throws Exception {
-        List<SocketImpl> allSockets = Collections.synchronizedList(new ArrayList<SocketImpl>());
-        ServerSocket.setSocketFactory(new SpySocketImplFactory(allSockets));
+        List<SocketImpl> serverSockets = Collections.synchronizedList(new ArrayList<SocketImpl>());
+        ServerSocket.setSocketFactory(new SpySocketImplFactory(serverSockets));
 
         startAndStopLauncher();
 
-        for (SocketImpl impl : allSockets) {
+        assertThat("expected the launcher to open server sockets", serverSockets, not(hasSize(0)));
+        for (SocketImpl impl : serverSockets) {
             assertIsClosed(getServerSocket(impl));
         }
     }
 
     @Ignore("not implemented")
-    @Test(timeout = TIMEOUT)
+    @Test(timeout = Timeouts.END_TO_END_TEST)
     public void launcher_closes_all_client_sockets_it_opened() throws Exception {
-        List<SocketImpl> allSockets = Collections.synchronizedList(new ArrayList<SocketImpl>());
-        Socket.setSocketImplFactory(new SpySocketImplFactory(allSockets));
+        List<SocketImpl> clientSockets = Collections.synchronizedList(new ArrayList<SocketImpl>());
+        Socket.setSocketImplFactory(new SpySocketImplFactory(clientSockets));
 
         startAndStopLauncher();
 
-        for (SocketImpl impl : allSockets) {
+        assertThat("expected the launcher to open client sockets", clientSockets, not(hasSize(0)));
+        for (SocketImpl impl : clientSockets) {
             assertIsClosed(getSocket(impl));
         }
     }

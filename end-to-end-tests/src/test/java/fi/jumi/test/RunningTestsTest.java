@@ -9,13 +9,11 @@ import sample.*;
 
 public class RunningTestsTest {
 
-    private static final int TIMEOUT = 3000;
-
     @Rule
     public final AppRunner app = new AppRunner();
 
 
-    @Test(timeout = TIMEOUT)
+    @Test(timeout = Timeouts.END_TO_END_TEST)
     public void suite_with_zero_tests() throws Exception {
         app.runTests("sample.notests.NoSuchTest");
 
@@ -23,7 +21,7 @@ public class RunningTestsTest {
         app.checkTotalTestRuns(0);
     }
 
-    @Test(timeout = TIMEOUT)
+    @Test(timeout = Timeouts.END_TO_END_TEST)
     public void suite_with_one_passing_test() throws Exception {
         app.runTests(OnePassingTest.class);
 
@@ -32,7 +30,7 @@ public class RunningTestsTest {
         app.checkContainsRun("OnePassingTest", "testPassing", "/", "/");
     }
 
-    @Test(timeout = TIMEOUT)
+    @Test(timeout = Timeouts.END_TO_END_TEST)
     public void suite_with_one_failing_test() throws Exception {
         app.runTests(OneFailingTest.class);
 
@@ -41,7 +39,7 @@ public class RunningTestsTest {
         app.checkContainsRun("OneFailingTest", "testFailing", "/", "/");
     }
 
-    @Test(timeout = TIMEOUT)
+    @Test(timeout = Timeouts.END_TO_END_TEST)
     public void reports_failure_stack_traces() throws Exception {
         app.runTests(OneFailingTest.class);
 
@@ -50,7 +48,7 @@ public class RunningTestsTest {
                 "at sample.OneFailingTest.testFailing");
     }
 
-    @Test(timeout = TIMEOUT)
+    @Test(timeout = Timeouts.END_TO_END_TEST)
     public void tests_are_run_in_parallel() throws Exception {
         app.runTests(ParallelismTest.class);
 

@@ -292,17 +292,21 @@ TODO NEXT:
 	- if daemon disconnects due to network problem, reconnect and resume where we were left?
 	- make it reliable
 
-- communicate using memory mapped files?
+- communicate using memory-mapped files?
 	http://en.wikipedia.org/wiki/Memory-mapped_file
 	http://javarevisited.blogspot.fi/2012/01/memorymapped-file-and-io-in-java.html
 	http://stackoverflow.com/questions/5943365/java-tcp-ip-socket-latency-stuck-at-50-s-microseconds-used-for-java-ipc
 	http://stackoverflow.com/questions/6096485/how-to-dynamically-expand-a-memory-mapped-file
+	https://github.com/peter-lawrey/Java-Chronicle (see how IPC is done here)
 	- benefits:
 		- more secure than sockets (uses file system permissions)
 		- should be faster (benchmark latency and throughput)
 		- automatically saved to file for later use
 		- no need to close socket connections
 		- no need for a networking library
+	- disadvantages:
+		- how to manage multiple writers? one file per writer?
+		- probably requires polling to get informed about updates
 	- need to find out how to do synchronization
 		http://stackoverflow.com/questions/4743380/controlling-read-writes-to-memory-mapped-files-windows
 
