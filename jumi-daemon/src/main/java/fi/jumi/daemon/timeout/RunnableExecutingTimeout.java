@@ -10,7 +10,10 @@ import java.util.concurrent.*;
 @ThreadSafe
 public class RunnableExecutingTimeout implements Timeout {
 
-    // FIXME: doesn't work with corePoolSize = 0
+    // XXX: doesn't work with corePoolSize = 0, so always creates a thread
+    // Known bug, fixed in JDK 8(b08), 7u4(b13): http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=7091003
+    // The applied fix is to always start at least one thread, so there is no way to avoid starting a thread.
+    // The design of ScheduledThreadPoolExecutor requires it. See http://stackoverflow.com/a/4361081/62130
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     private final Runnable command;
