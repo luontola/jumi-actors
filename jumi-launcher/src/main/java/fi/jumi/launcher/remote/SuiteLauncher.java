@@ -14,6 +14,4 @@ public interface SuiteLauncher {
     void runTests(SuiteOptions suiteOptions, MessageSender<Event<SuiteListener>> suiteListener);
 
     void shutdownDaemon();
-
-    void disconnectFromDaemon();
 }

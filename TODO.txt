@@ -124,8 +124,8 @@ TODO NEXT:
 						OK - add close() to NetworkClient and NetworkServer
 						OK - call org.jboss.netty.channel.ChannelFactory#releaseExternalResources
 						OK - in JumiLauncher, call close() on NetworkClient and NetworkServer
-						!! - remove fi.jumi.launcher.remote.SuiteLauncher#disconnectFromDaemon
-						- NetworkEndpointFactory for NetworkServer#listenOnAnyPort
+						OK - remove fi.jumi.launcher.remote.SuiteLauncher#disconnectFromDaemon
+						!! - NetworkEndpointFactory for NetworkServer#listenOnAnyPort
 						OK - extract JumiLauncherBuilder from AppRunner
 						- make ReleasingResourcesTest pass
 			- noop if already disconnected

@@ -45,11 +45,6 @@ public class RemoteSuiteLauncher implements SuiteLauncher, DaemonListener {
     }
 
     @Override
-    public void disconnectFromDaemon() {
-        // TODO
-    }
-
-    @Override
     public void onConnected(NetworkConnection connection, MessageSender<Event<CommandListener>> daemon) {
         this.daemon = new CommandListenerEventizer().newFrontend(daemon);
         this.daemon.runTests(suiteOptions.classPath, suiteOptions.testsToIncludePattern);
