@@ -98,7 +98,7 @@ TODO NEXT:
 	!! - exit after a timeout if no client connects to daemon or the client disconnects
 		!! - launcher: disconnect from daemon
 			OK - network: disconnect command
-			!! - launcher: release resources on close()
+			OK - launcher: release resources on close()
 				OK - stop actors
 					OK - extract JumiLauncherBuilder from AppRunner
 					OK - JumiLauncherTest: override method in builder, check that resource is released on close()
@@ -126,8 +126,8 @@ TODO NEXT:
 						OK - in JumiLauncher, call close() on NetworkClient and NetworkServer
 						OK - remove fi.jumi.launcher.remote.SuiteLauncher#disconnectFromDaemon
 						OK - extract JumiLauncherBuilder from AppRunner
-				!! - make ReleasingResourcesTest pass
-			- noop if already disconnected
+				OK - make ReleasingResourcesTest pass
+			!! - noop if already disconnected
 		OK - launcher: shutdown actors and executors
 		OK - network: notify about disconnect
 		- NetworkEndpointFactory for NetworkServer#listenOnAnyPort
@@ -161,6 +161,9 @@ TODO NEXT:
 				3.1.5 pages 39-41: stack map frames explained
 				3.2.1 page 44: ClassWriter options for computing them automatically (slower)
 	- use ProcessBuilder.redirectOutput to write the log file (else the process would hang when the launcher JVM exits)
+	- get rid of fi.jumi.launcher.remote.ProcessStartingDaemonSummoner#copyInBackground
+		- don't create background threads in the launcher automatically (the tests should create them explicitly, if any)
+		- also remove the hack in fi.jumi.test.ReleasingResourcesTest#launcher_stops_the_threads_it_started
 
 - migrate to Java 7
 	- find usages of File, migrate to Path

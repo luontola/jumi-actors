@@ -22,7 +22,6 @@ public class ReleasingResourcesTest {
     @Rule
     public final AppRunner app = new AppRunner();
 
-    @Ignore("not implemented")
     @Test(timeout = Timeouts.END_TO_END_TEST)
     public void launcher_stops_the_threads_it_started() throws Exception {
         ThreadGroup threadGroup = Thread.currentThread().getThreadGroup();
@@ -31,7 +30,22 @@ public class ReleasingResourcesTest {
         startAndStopLauncher();
 
         List<Thread> threadsAfter = Threads.getActiveThreads(threadGroup);
+        threadsAfter = new ArrayList<Thread>(threadsAfter);
+        ignoreThreadsWithName(threadsAfter, "Daemon Output Copier"); // XXX: remove after we get rid of ProcessStartingDaemonSummoner.copyInBackground()
         assertThat(threadsAfter, containsAtMost(threadsBefore));
+    }
+
+    private static void ignoreThreadsWithName(List<Thread> threads, String name) {
+        // Another option would be to wait for the threads to stop and ignore
+        // those that stop quickly. But would want JumiLauncher.close() already
+        // to do that waiting to fully close everything, so let's not do it that way here.
+        for (Iterator<Thread> it = threads.iterator(); it.hasNext(); ) {
+            Thread thread = it.next();
+            if (thread.getName().equals(name)) {
+                it.remove();
+                System.err.println("WARN: Ignoring thread " + thread);
+            }
+        }
     }
 
     @Test(timeout = Timeouts.END_TO_END_TEST)

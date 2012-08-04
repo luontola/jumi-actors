@@ -68,7 +68,7 @@ public class ProcessStartingDaemonSummoner implements DaemonSummoner {
                 }
             }
         }
-        Thread t = new Thread(new Copier());
+        Thread t = new Thread(new Copier(), "Daemon Output Copier");
         t.setDaemon(true);
         t.start();
     }
