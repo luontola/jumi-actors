@@ -32,7 +32,9 @@ public class HelloWorld {
 
         // Create an actor to be executed in this actor thread. Some guidelines:
         // - Never pass around a direct reference to an actor, but always use ActorRef
-        // - To avoid confusion, also avoid passing around the proxy returned by ActorRef.tell()
+        // - To avoid confusion, also avoid passing around the proxy returned by ActorRef.tell(),
+        //   though that may sometimes be warranted when interacting with actor-unaware code
+        //   or if you wish to avoid the dependency to ActorRef
         ActorRef<Greeter> helloGreeter = actorThread.bindActor(Greeter.class, new Greeter() {
             @Override
             public void sayGreeting(String name) {

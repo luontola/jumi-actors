@@ -34,7 +34,8 @@ public class ActorRef<T> {
      * <p/>
      * To avoid confusion, the proxy returned from this method should never be stored in a variable or passed as a
      * parameter to a method. Otherwise it can be hard to know that when you are holding the real actor object and when
-     * a proxy to it.
+     * a proxy to it. Though that may sometimes be warranted when interacting with actor-unaware code or if you wish to
+     * avoid the dependency to {@code ActorRef}.
      */
     public T tell() {
         return proxy;
