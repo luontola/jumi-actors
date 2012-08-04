@@ -130,8 +130,10 @@ TODO NEXT:
 			OK - noop if already disconnected
 		OK - launcher: shutdown actors and executors
 		OK - network: notify about disconnect
-		!! - NetworkEndpointFactory for NetworkServer#listenOnAnyPort
-		- create a timeout in daemon
+		OK - NetworkEndpointFactory for NetworkServer#listenOnAnyPort
+			OK - hook the factory in
+			OK - tests for multiple connections
+		!! - create a timeout in daemon
 			- names:
 				VacantTimeout, VacancyTimeout (!), DesertionTimeout
 				checkIn/checkOut (!)

@@ -7,11 +7,12 @@ package fi.jumi.core.network;
 import fi.jumi.actors.queue.MessageSender;
 import org.junit.*;
 
+import java.util.Collections;
 import java.util.concurrent.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class NettyNetworkCommunicationTest {
 
@@ -50,6 +51,28 @@ public class NettyNetworkCommunicationTest {
         serverEndpoint.toClient.get().send("hello");
 
         assertThat(clientEndpoint.messagesReceived.take(), is("hello"));
+    }
+
+    @Test(timeout = TIMEOUT)
+    public void multiple_clients_can_connect_to_the_server_independently() throws Exception {
+        ServerNetworkEndpoint serverEndpoint1 = new ServerNetworkEndpoint();
+        ServerNetworkEndpoint serverEndpoint2 = new ServerNetworkEndpoint();
+        int port = server.listenOnAnyPort(new StubServerNetworkEndpointFactory(serverEndpoint1, serverEndpoint2));
+
+        ClientNetworkEndpoint clientEndpoint1 = new ClientNetworkEndpoint();
+        client.connect("127.0.0.1", port, clientEndpoint1);
+        ClientNetworkEndpoint clientEndpoint2 = new ClientNetworkEndpoint();
+        client.connect("127.0.0.1", port, clientEndpoint2);
+
+        serverEndpoint1.toClient.get().send("message1");
+        clientEndpoint1.toServer.get().send(100);
+        serverEndpoint2.toClient.get().send("message2");
+        clientEndpoint2.toServer.get().send(200);
+
+        assertThat(clientEndpoint1.messagesReceived.take(), is("message1"));
+        assertThat(serverEndpoint1.messagesReceived.take(), is(100));
+        assertThat(clientEndpoint2.messagesReceived.take(), is("message2"));
+        assertThat(serverEndpoint2.messagesReceived.take(), is(200));
     }
 
     @Test(timeout = TIMEOUT)
@@ -111,7 +134,7 @@ public class NettyNetworkCommunicationTest {
 
 
     private void connectClientToServer() {
-        int port = server.listenOnAnyPort(serverEndpoint);
+        int port = server.listenOnAnyPort(new StubServerNetworkEndpointFactory(serverEndpoint));
         client.connect("127.0.0.1", port, clientEndpoint);
     }
 
@@ -171,6 +194,22 @@ public class NettyNetworkCommunicationTest {
         public void onDisconnected() {
             System.err.println("ClientNetworkEndpoint.onDisconnected"); // TODO: remove logging
             disconnected.countDown();
+        }
+    }
+
+    private static class StubServerNetworkEndpointFactory implements NetworkEndpointFactory<Integer, String> {
+        private final BlockingQueue<ServerNetworkEndpoint> serverEndpoints;
+
+        public StubServerNetworkEndpointFactory(ServerNetworkEndpoint... serverEndpoints) {
+            this.serverEndpoints = new ArrayBlockingQueue<ServerNetworkEndpoint>(serverEndpoints.length);
+            Collections.addAll(this.serverEndpoints, serverEndpoints);
+        }
+
+        @Override
+        public NetworkEndpoint<Integer, String> createEndpoint() {
+            ServerNetworkEndpoint endpoint = serverEndpoints.poll();
+            assertNotNull("more clients connected than were expected", endpoint);
+            return endpoint;
         }
     }
 }

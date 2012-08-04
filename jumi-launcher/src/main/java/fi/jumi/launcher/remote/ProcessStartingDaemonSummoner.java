@@ -5,15 +5,18 @@
 package fi.jumi.launcher.remote;
 
 import fi.jumi.actors.ActorRef;
+import fi.jumi.actors.eventizers.Event;
+import fi.jumi.core.*;
 import fi.jumi.core.config.Configuration;
-import fi.jumi.core.network.NetworkServer;
+import fi.jumi.core.network.*;
 import fi.jumi.launcher.SuiteOptions;
 import fi.jumi.launcher.daemon.Steward;
 import fi.jumi.launcher.process.*;
 import org.apache.commons.io.IOUtils;
 
-import javax.annotation.concurrent.NotThreadSafe;
+import javax.annotation.concurrent.*;
 import java.io.*;
+import java.util.concurrent.*;
 
 @NotThreadSafe
 public class ProcessStartingDaemonSummoner implements DaemonSummoner {
@@ -36,7 +39,8 @@ public class ProcessStartingDaemonSummoner implements DaemonSummoner {
 
     @Override
     public void connectToDaemon(SuiteOptions suiteOptions, ActorRef<DaemonListener> listener) {
-        int port = daemonConnector.listenOnAnyPort(listener.tell());
+        // XXX: should we handle multiple connections properly, even though we are expecting only one?
+        int port = daemonConnector.listenOnAnyPort(new OneTimeDaemonListenerFactory(listener));
 
         try {
             JvmArgs jvmArgs = new JvmArgsBuilder()
@@ -71,5 +75,24 @@ public class ProcessStartingDaemonSummoner implements DaemonSummoner {
         Thread t = new Thread(new Copier(), "Daemon Output Copier");
         t.setDaemon(true);
         t.start();
+    }
+
+    @ThreadSafe
+    private static class OneTimeDaemonListenerFactory implements NetworkEndpointFactory<Event<SuiteListener>, Event<CommandListener>> {
+
+        private final BlockingQueue<ActorRef<DaemonListener>> oneTimeListener = new ArrayBlockingQueue<ActorRef<DaemonListener>>(1);
+
+        public OneTimeDaemonListenerFactory(ActorRef<DaemonListener> listener) {
+            this.oneTimeListener.add(listener);
+        }
+
+        @Override
+        public NetworkEndpoint<Event<SuiteListener>, Event<CommandListener>> createEndpoint() {
+            ActorRef<DaemonListener> listener = oneTimeListener.poll();
+            if (listener == null) {
+                throw new IllegalStateException("already connected once");
+            }
+            return listener.tell();
+        }
     }
 }

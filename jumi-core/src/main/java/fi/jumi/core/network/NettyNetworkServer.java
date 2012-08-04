@@ -38,19 +38,20 @@ public class NettyNetworkServer implements NetworkServer {
     }
 
     @Override
-    public <In, Out> int listenOnAnyPort(NetworkEndpoint<In, Out> endpoint) {
-        Channel ch = listen(0, endpoint);
+    public <In, Out> int listenOnAnyPort(NetworkEndpointFactory<In, Out> endpointFactory) {
+        Channel ch = listen(0, endpointFactory);
         InetSocketAddress addr = (InetSocketAddress) ch.getLocalAddress();
         return addr.getPort();
     }
 
-    private <In, Out> Channel listen(int port, final NetworkEndpoint<In, Out> endpoint) {
+    private <In, Out> Channel listen(int port, final NetworkEndpointFactory<In, Out> endpointFactory) {
         ServerBootstrap bootstrap = new ServerBootstrap(channelFactory);
 
         @ThreadSafe
         class MyChannelPipelineFactory implements ChannelPipelineFactory {
             @Override
             public ChannelPipeline getPipeline() {
+                NetworkEndpoint<In, Out> endpoint = endpointFactory.createEndpoint();
                 return Channels.pipeline(
                         new ObjectEncoder(),
                         new ObjectDecoder(ClassResolvers.softCachingResolver(getClass().getClassLoader())),

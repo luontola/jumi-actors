@@ -73,7 +73,7 @@ public class ProcessStartingDaemonSummonerTest {
         public int portToReturn = 1;
 
         @Override
-        public <In, Out> int listenOnAnyPort(NetworkEndpoint<In, Out> endpoint) {
+        public <In, Out> int listenOnAnyPort(NetworkEndpointFactory<In, Out> endpointFactory) {
             return portToReturn;
         }
 
