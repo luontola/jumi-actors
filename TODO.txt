@@ -134,13 +134,14 @@ TODO NEXT:
 			OK - hook the factory in
 			OK - tests for multiple connections
 		!! - create a timeout in daemon
-			- names:
+			OK - create utility, names:
 				VacantTimeout, VacancyTimeout (!), DesertionTimeout
 				checkIn/checkOut (!)
 				onVacantFor(timout), onProlongedVacancy, vacancyProlonged (!)
-			- exit if nobody connects within timeout from disconnect
-			- keep living if somebody connects
-			- exit if nobody connects within timeout from startup (two timeout settings?)
+			OK - exit if nobody connects within timeout from disconnect
+			OK - keep living if somebody connects
+			!! - exit if nobody connects within timeout from startup (two timeout settings?)
+			- use VacancyTimeout in Main
 		- check that implemented: RemoteSuiteLauncher, DaemonNetworkEndpoint, or are they needed at all and can be removed?
 	- remove the hack in fi.jumi.daemon.Main#exitWhenNotAnymoreInUse
 	- print a message on daemon startup and shutdown; makes it easier to see from logs that when the JVM was restarted
