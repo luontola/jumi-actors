@@ -47,7 +47,10 @@ public class ReleasingResourcesTest {
         }
     }
 
-    @Ignore("not implemented")
+    /**
+     * Even though the launcher does not directly open client connections, when somebody (i.e. the daemon) connects to a
+     * server socket, the server socket creates a client socket is to handle that connection.
+     */
     @Test(timeout = Timeouts.END_TO_END_TEST)
     public void launcher_closes_all_client_sockets_it_opened() throws Exception {
         List<SocketImpl> clientSockets = Collections.synchronizedList(new ArrayList<SocketImpl>());
@@ -55,9 +58,23 @@ public class ReleasingResourcesTest {
 
         startAndStopLauncher();
 
+        ignoreUnconnectedSockets(clientSockets);
         assertThat("expected the launcher to open client sockets", clientSockets, not(hasSize(0)));
         for (SocketImpl impl : clientSockets) {
             assertIsClosed(getSocket(impl));
+        }
+    }
+
+    private static void ignoreUnconnectedSockets(List<SocketImpl> clientSockets) {
+        // ServerSocket.accept() creates a Socket instance when it starts waiting for incoming connections,
+        // but they won't be in connected state until a client connects. So it is normal for each ServerSocket
+        // to have 0..1 unconnected sockets.
+        for (Iterator<SocketImpl> it = clientSockets.iterator(); it.hasNext(); ) {
+            Socket socket = getSocket(it.next());
+
+            if (!socket.isConnected()) {
+                it.remove();
+            }
         }
     }
 
