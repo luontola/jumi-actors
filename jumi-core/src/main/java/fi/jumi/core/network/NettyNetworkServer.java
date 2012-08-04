@@ -55,7 +55,7 @@ public class NettyNetworkServer implements NetworkServer {
                 return Channels.pipeline(
                         new ObjectEncoder(),
                         new ObjectDecoder(ClassResolvers.softCachingResolver(getClass().getClassLoader())),
-                        new LoggingHandler(logLevel),
+                        new LoggingHandler(NettyNetworkServer.class, logLevel),
                         new NettyNetworkEndpointAdapter<In, Out>(endpoint),
                         new AddToChannelGroupHandler(allChannels));
             }

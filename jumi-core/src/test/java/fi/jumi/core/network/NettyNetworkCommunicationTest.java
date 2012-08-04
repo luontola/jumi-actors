@@ -22,7 +22,7 @@ public class NettyNetworkCommunicationTest {
     private final ExecutorService clientExecutor = Executors.newCachedThreadPool();
     private final ExecutorService serverExecutor = Executors.newCachedThreadPool();
 
-    private final NettyNetworkClient client = new NettyNetworkClient(false, clientExecutor);
+    private final NettyNetworkClient client = new NettyNetworkClient(true, clientExecutor);
     private final NettyNetworkServer server = new NettyNetworkServer(true, serverExecutor); // TODO: remove logging once these tests are less flaky
 
     private final ClientNetworkEndpoint clientEndpoint = new ClientNetworkEndpoint();

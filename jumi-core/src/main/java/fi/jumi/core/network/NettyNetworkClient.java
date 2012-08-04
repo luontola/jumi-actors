@@ -48,7 +48,7 @@ public class NettyNetworkClient implements NetworkClient {
                 return Channels.pipeline(
                         new ObjectEncoder(),
                         new ObjectDecoder(ClassResolvers.softCachingResolver(getClass().getClassLoader())),
-                        new LoggingHandler(logLevel),
+                        new LoggingHandler(NettyNetworkClient.class, logLevel),
                         new NettyNetworkEndpointAdapter<In, Out>(endpoint),
                         new AddToChannelGroupHandler(allChannels));
             }
