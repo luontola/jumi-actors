@@ -67,4 +67,13 @@ public class JumiLauncherTest {
 
         verify(networkServer).close();
     }
+
+    @Test(timeout = TIMEOUT)
+    public void closing_more_than_once_has_no_effect() throws IOException {
+        JumiLauncherBuilder builder = new JumiLauncherBuilder();
+        JumiLauncher launcher = builder.build();
+
+        launcher.close();
+        launcher.close();
+    }
 }

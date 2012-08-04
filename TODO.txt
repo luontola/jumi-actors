@@ -96,7 +96,7 @@ TODO NEXT:
 		OK - using the above way of sending commands, implement sending the shutdown command
 	SKIP - AppRunner: after receiving the last suite event, send the shutdown command
 	!! - exit after a timeout if no client connects to daemon or the client disconnects
-		!! - launcher: disconnect from daemon
+		OK - launcher: disconnect from daemon
 			OK - network: disconnect command
 			OK - launcher: release resources on close()
 				OK - stop actors
@@ -127,10 +127,10 @@ TODO NEXT:
 						OK - remove fi.jumi.launcher.remote.SuiteLauncher#disconnectFromDaemon
 						OK - extract JumiLauncherBuilder from AppRunner
 				OK - make ReleasingResourcesTest pass
-			!! - noop if already disconnected
+			OK - noop if already disconnected
 		OK - launcher: shutdown actors and executors
 		OK - network: notify about disconnect
-		- NetworkEndpointFactory for NetworkServer#listenOnAnyPort
+		!! - NetworkEndpointFactory for NetworkServer#listenOnAnyPort
 		- create a timeout in daemon
 			- names:
 				VacantTimeout, VacancyTimeout (!), DesertionTimeout
