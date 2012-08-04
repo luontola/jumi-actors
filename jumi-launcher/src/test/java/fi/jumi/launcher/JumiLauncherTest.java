@@ -5,6 +5,7 @@
 package fi.jumi.launcher;
 
 import fi.jumi.actors.*;
+import fi.jumi.core.network.NetworkServer;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -49,5 +50,21 @@ public class JumiLauncherTest {
         launcher.close();
 
         assertTrue("should have terminated the actors thread pool", actorsThreadPool.isTerminated());
+    }
+
+    @Test(timeout = TIMEOUT)
+    public void on_close_closes_network_sockets() throws IOException {
+        final NetworkServer networkServer = mock(NetworkServer.class);
+        JumiLauncherBuilder builder = new JumiLauncherBuilder() {
+            @Override
+            protected NetworkServer createNetworkServer() {
+                return networkServer;
+            }
+        };
+        JumiLauncher launcher = builder.build();
+
+        launcher.close();
+
+        verify(networkServer).close();
     }
 }

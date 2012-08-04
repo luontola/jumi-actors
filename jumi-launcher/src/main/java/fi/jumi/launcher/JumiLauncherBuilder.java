@@ -7,7 +7,7 @@ package fi.jumi.launcher;
 import fi.jumi.actors.*;
 import fi.jumi.actors.eventizers.dynamic.DynamicEventizerProvider;
 import fi.jumi.actors.listeners.*;
-import fi.jumi.core.network.NettyNetworkServer;
+import fi.jumi.core.network.*;
 import fi.jumi.core.util.PrefixedThreadFactory;
 import fi.jumi.launcher.daemon.*;
 import fi.jumi.launcher.process.*;
@@ -26,6 +26,7 @@ public class JumiLauncherBuilder {
     public JumiLauncher build() {
         final ExecutorService actorsThreadPool = createActorsThreadPool();
         ProcessStarter processStarter = createProcessStarter();
+        final NetworkServer networkServer = createNetworkServer();
         Writer daemonOutputListener = createDaemonOutputListener();
 
         Actors actors = new MultiThreadedActors(
@@ -39,7 +40,7 @@ public class JumiLauncherBuilder {
         ActorRef<DaemonSummoner> daemonSummoner = actorThread.bindActor(DaemonSummoner.class, new ProcessStartingDaemonSummoner(
                 new DirBasedSteward(new EmbeddedDaemonJar(), getSettingsDirectory()),
                 processStarter,
-                new NettyNetworkServer(debugLogging),
+                networkServer,
                 daemonOutputListener
         ));
         final ActorRef<SuiteLauncher> suiteLauncher = actorThread.bindActor(SuiteLauncher.class, new RemoteSuiteLauncher(actorThread, daemonSummoner));
@@ -48,11 +49,11 @@ public class JumiLauncherBuilder {
         class ExternalResources implements Closeable {
             @Override
             public void close() throws IOException {
-                suiteLauncher.tell().disconnectFromDaemon(); // TODO: is this needed after we have a way to disconnect all network connections?
+                networkServer.close();
                 actorThread.stop();
                 actorsThreadPool.shutdown();
                 try {
-                    actorsThreadPool.awaitTermination(10, TimeUnit.SECONDS);
+                    actorsThreadPool.awaitTermination(1, TimeUnit.MINUTES);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
@@ -85,6 +86,10 @@ public class JumiLauncherBuilder {
 
     protected ProcessStarter createProcessStarter() {
         return new SystemProcessStarter();
+    }
+
+    protected NetworkServer createNetworkServer() {
+        return new NettyNetworkServer(debugLogging);
     }
 
     protected Writer createDaemonOutputListener() {

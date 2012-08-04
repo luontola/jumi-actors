@@ -123,9 +123,11 @@ TODO NEXT:
 							- test: decrement on close
 						OK - add close() to NetworkClient and NetworkServer
 						OK - call org.jboss.netty.channel.ChannelFactory#releaseExternalResources
-						!! - in JumiLauncher, call close() on NetworkClient and NetworkServer
+						OK - in JumiLauncher, call close() on NetworkClient and NetworkServer
+						!! - remove fi.jumi.launcher.remote.SuiteLauncher#disconnectFromDaemon
 						- NetworkEndpointFactory for NetworkServer#listenOnAnyPort
-						- extract JumiLauncherBuilder from AppRunner
+						OK - extract JumiLauncherBuilder from AppRunner
+						- make ReleasingResourcesTest pass
 			- noop if already disconnected
 			- check that implemented: RemoteSuiteLauncher, DaemonNetworkEndpoint, or are they needed at all and can be removed?
 		OK - launcher: shutdown actors and executors

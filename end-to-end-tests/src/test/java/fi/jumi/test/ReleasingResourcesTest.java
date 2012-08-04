@@ -34,7 +34,6 @@ public class ReleasingResourcesTest {
         assertThat(threadsAfter, containsAtMost(threadsBefore));
     }
 
-    @Ignore("not implemented")
     @Test(timeout = Timeouts.END_TO_END_TEST)
     public void launcher_closes_all_server_sockets_it_opened() throws Exception {
         List<SocketImpl> serverSockets = Collections.synchronizedList(new ArrayList<SocketImpl>());
