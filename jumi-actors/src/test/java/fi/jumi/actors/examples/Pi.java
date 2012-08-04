@@ -12,11 +12,9 @@ import fi.jumi.actors.listeners.*;
 import java.util.concurrent.*;
 
 /**
- * Comparison of Jumi Actors and Akka Actors, by implementing the same algorithm
- * for calculating Pi as in
- * <a href="http://doc.akka.io/docs/akka/2.0.2/intro/getting-started-first-java.html">
- * Akka's getting started tutorial</a>. Go read that first and then compare how
- * the style of this actors library differs from it.
+ * Comparison of Jumi Actors and Akka Actors, by implementing the same algorithm for calculating Pi as in <a
+ * href="http://doc.akka.io/docs/akka/2.0.2/intro/getting-started-first-java.html">Akka's getting started tutorial</a>.
+ * You may read that first and then compare how the style, performance etc. of this actor library differs from it.
  */
 public class Pi {
 
@@ -34,21 +32,15 @@ public class Pi {
 
         // Executors for creating actor threads and executing the Pi calculating workers
         final ExecutorService actorsThreadPool = Executors.newCachedThreadPool();
-        final ExecutorService realWorkersThreadPool = Executors.newFixedThreadPool(NR_OF_WORKERS);
+        final ExecutorService workersThreadPoolImpl = Executors.newFixedThreadPool(NR_OF_WORKERS);
 
-        MessageListener messageListener;
-        Executor workersThreadPool;
-        if (LOGGING) {
-            // Log all messages to show how the system works
-            messageListener = new PrintStreamMessageLogger(System.out);
+        // Log all messages to show how the system works
+        MessageListener messageListener = LOGGING ?
+                new PrintStreamMessageLogger(System.out) :
+                new NullMessageListener(); // no logging - the recommended setting in production
 
-            // Also log what commands the actors execute using this executor
-            workersThreadPool = messageListener.getListenedExecutor(realWorkersThreadPool);
-        } else {
-            // No logging; makes everything much faster
-            messageListener = new NullMessageListener();
-            workersThreadPool = realWorkersThreadPool;
-        }
+        // Also log what commands the actors execute using this executor
+        Executor workersThreadPool = messageListener.getListenedExecutor(workersThreadPoolImpl);
 
         // On failure, log the error and keep on processing more messages
         FailureHandler failureHandler = new PrintStreamFailureLogger(System.out);
@@ -79,7 +71,7 @@ public class Pi {
 
                 // Stop all actor threads and workers immediately
                 actorsThreadPool.shutdownNow();
-                realWorkersThreadPool.shutdownNow();
+                workersThreadPoolImpl.shutdownNow();
             }
         });
 
