@@ -8,7 +8,8 @@ VERSION=`cat build/version`
 
 ruby scripts/upload-maven-repository.rb staging https://oss.sonatype.org/service/local/staging/deploy/maven2
 
-mvn nexus:staging-close \
+# Cannot set version in parent POM, because it's not checked out to working directory when publishing
+mvn org.sonatype.plugins:nexus-maven-plugin:2.1:staging-close \
     --batch-mode \
     --errors \
     -Dnexus.url=https://oss.sonatype.org/ \
