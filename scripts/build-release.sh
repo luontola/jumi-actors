@@ -20,7 +20,7 @@ echo "$RELEASE_VERSION" > build/version
 echo "$RELEASE_REVISION" > build/revision
 echo "$RELEASE_NOTES" > build/release-notes
 
-mvn org.codehaus.mojo:versions-maven-plugin:1.3.1:set \
+mvn versions:set \
     --batch-mode \
     --errors \
     -DgenerateBackupPoms=false \

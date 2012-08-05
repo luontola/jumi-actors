@@ -8,7 +8,7 @@ VERSION=`cat build/version`
 
 ruby scripts/upload-maven-repository.rb staging https://oss.sonatype.org/service/local/staging/deploy/maven2
 
-mvn org.sonatype.plugins:nexus-maven-plugin:2.0.6:staging-close \
+mvn nexus:staging-close \
     --batch-mode \
     --errors \
     -Dnexus.url=https://oss.sonatype.org/ \
