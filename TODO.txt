@@ -142,7 +142,11 @@ TODO NEXT:
 				onVacantFor(timout), onProlongedVacancy, vacancyProlonged (!)
 			OK - exit if nobody connects within timeout from disconnect
 			OK - keep living if somebody connects
-			!! - exit if nobody connects within timeout from startup (two timeout settings?)
+			!! - rename TimeoutTest, also get a better name for RunnableExecutingTimeout; CommandExecutingTimeout?
+			- exit if nobody connects within timeout from startup (two timeout settings?)
+			- avoid unused threads in RunnableExecutingTimeout
+				- could instantiate it lazily on start, and shutdown (and set to null) on cancel
+				- or just create a Thread directly, using TimeUnit.sleep and Thread.interrupt
 			- use VacancyTimeout in Main
 		- check that implemented: RemoteSuiteLauncher, DaemonNetworkEndpoint, or are they needed at all and can be removed?
 	- remove the hack in fi.jumi.daemon.Main#exitWhenNotAnymoreInUse
