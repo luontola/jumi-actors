@@ -1,25 +1,5 @@
 
 TODO NEXT:
-- write user documentation for jumi-actors
-	OK - example: hello world (put on front page)
-	OK - example: pi (put in wiki), adapted from http://doc.akka.io/docs/akka/2.0.2/intro/getting-started-first-java.html
-	OK - write better javadocs for the published API
-	OK - check that maven central was synced
-	OK - release the latest jumi-actors
-	OK - www: maven dependency xml, latest version number, link to http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22fi.jumi%22
-	OK - user guide: also intro to thread-safety-checker and jumi-actors-maven-plugin
-	OK - advertise the release
-	!! - write a blog post: Continuous Delivery with Maven and Go into Maven Central
-
-- web site improvements
-	OK - javadocs for jumi-actors
-	- site for jumi-actors-maven-plugin
-		http://www.vineetmanohar.com/2009/04/how-to-auto-generate-maven-plugin-documentation/
-		http://stackoverflow.com/questions/2912665/maven-plugin-site
-		http://maven.apache.org/guides/mini/guide-site.html
-	- aggregated javadoc of all modules?
-		http://maven.apache.org/plugins/maven-javadoc-plugin/aggregate-mojo.html
-
 - investigate sporadic timeouts in RunningTestsTest
 	OK - improve the logging: now does not show messages that SuiteRunner sends to clients
 	OK - consider implemeting proper daemon shutdown sooner
@@ -163,22 +143,6 @@ TODO NEXT:
 			-> SuiteConfiguration (also rename core.config.Configuration -> core.bootstrap.DaemonConfiguration)
 		- replace JumiLauncher.start() and all setters with runTests(SuiteOptions)
 
-- write daemon output to log file
-	- use Process.getInputStream to write the log file in JumiLauncher's process
-	- update e2e tests to read the output from the log file
-	- upgrade to Java 7 (except jumi-actors et al?)
-		- check bytecode level in BuildTest
-		- update POMs: default language level to parent, override in specific modules
-		- double-check that bytecode manipulation generates stackmap frames when producing Java 7 bytecode
-			http://weblogs.java.net/blog/fabriziogiudici/archive/2012/05/07/understanding-subtle-new-behaviours-jdk-7
-			http://download.forge.objectweb.org/asm/asm4-guide.pdf
-				3.1.5 pages 39-41: stack map frames explained
-				3.2.1 page 44: ClassWriter options for computing them automatically (slower)
-	- use ProcessBuilder.redirectOutput to write the log file (else the process would hang when the launcher JVM exits)
-	- get rid of fi.jumi.launcher.remote.ProcessStartingDaemonSummoner#copyInBackground
-		- don't create background threads in the launcher automatically (the tests should create them explicitly, if any)
-		- also remove the hack in fi.jumi.test.ReleasingResourcesTest#launcher_stops_the_threads_it_started
-
 - migrate to Java 7
 	- find usages of File, migrate to Path
 		http://docs.oracle.com/javase/tutorial/essential/io/fileio.html
@@ -217,7 +181,8 @@ TODO NEXT:
 	- test: same toString as the original exception
 	- test: same StackTraceElements
 	- test: same toString & StackTraceElements also for cause
-	- test: same output of printStackTrace
+	- test: same toString & StackTraceElements also for suppressed (Java 7+)
+	- test: same output of printStackTrace (should pass, given the above tests)
 
 - end-to-end tests: setting the working directory for a test run
 
@@ -228,7 +193,7 @@ TODO NEXT:
 	- maybe testable by throwing exceptions from a driver or by producing non-valid .class files
 
 - misc refactoring
-	- rename TestClass to TestCase, wrap it in a value object, allow any files and not just .class (maybe just pretty-print classes)
+	- rename TestClass to TestCase (or a better term?), wrap it in a value object, allow any files and not just .class (maybe just pretty-print classes)
 		- in Java, "testclass" appears preferable over "fixture":
 		http://xunitpatterns.com/Testcase%20Class.html
 		http://xunitpatterns.com/XUnit%20Terminology%20Crossreference.html
@@ -308,6 +273,22 @@ TODO NEXT:
 			http://stackoverflow.com/questions/7445658/how-to-detect-if-the-console-does-support-ansi-escape-codes-in-python
 		- ANSI escape codes work in IDEA?
 			http://youtrack.jetbrains.net/issue/IDEA-68679
+
+- write daemon output to log file
+	- use Process.getInputStream to write the log file in JumiLauncher's process
+	- update e2e tests to read the output from the log file
+	- upgrade to Java 7 (except jumi-actors et al?)
+		- check bytecode level in BuildTest
+		- update POMs: default language level to parent, override in specific modules
+		- double-check that bytecode manipulation generates stackmap frames when producing Java 7 bytecode
+			http://weblogs.java.net/blog/fabriziogiudici/archive/2012/05/07/understanding-subtle-new-behaviours-jdk-7
+			http://download.forge.objectweb.org/asm/asm4-guide.pdf
+				3.1.5 pages 39-41: stack map frames explained
+				3.2.1 page 44: ClassWriter options for computing them automatically (slower)
+	- use ProcessBuilder.redirectOutput to write the log file (else the process would hang when the launcher JVM exits)
+	- get rid of fi.jumi.launcher.remote.ProcessStartingDaemonSummoner#copyInBackground
+		- don't create background threads in the launcher automatically (the tests should create them explicitly, if any)
+		- also remove the hack in fi.jumi.test.ReleasingResourcesTest#launcher_stops_the_threads_it_started
 
 - end-to-end tests: persistent daemon process
 	- should drive better design on launcher side
@@ -410,6 +391,14 @@ TODO NEXT:
 			https://repository.sonatype.org/content/sites/maven-sites/nexus-maven-plugin/
 	- update the version number of latest release to the web site
 	- update javadocs to the web site
+
+- web site improvements
+	- site for jumi-actors-maven-plugin
+		http://www.vineetmanohar.com/2009/04/how-to-auto-generate-maven-plugin-documentation/
+		http://stackoverflow.com/questions/2912665/maven-plugin-site
+		http://maven.apache.org/guides/mini/guide-site.html
+	- aggregated javadoc of all modules?
+		http://maven.apache.org/plugins/maven-javadoc-plugin/aggregate-mojo.html
 
 - write performance tests
 	- test: suite with a hundred test classes, each with a hundred tests, some of which also do printing; measure total time of running the suite
