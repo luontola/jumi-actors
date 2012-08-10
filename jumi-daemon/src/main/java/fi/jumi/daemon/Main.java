@@ -61,7 +61,7 @@ public class Main {
         ActorRef<CommandListener> coordinator =
                 actorThread.bindActor(CommandListener.class, new TestRunCoordinator(actorThread, testsThreadPool));
 
-        NetworkClient client = new NettyNetworkClient(true); // TODO: disable logging
+        NetworkClient client = new NettyNetworkClient();
         client.connect("127.0.0.1", config.launcherPort, new DaemonNetworkEndpoint(coordinator));
     }
 

@@ -17,13 +17,14 @@ import static org.junit.Assert.*;
 public class NettyNetworkCommunicationTest {
 
     private static final long TIMEOUT = 1000;
-    private static final long ASSERT_TIMEOUT = TIMEOUT - 500; // XXX: using a separate timeout, because JUnit doesn't give a stack trace on timeout
+    private static final long ASSERT_TIMEOUT = 500;
+    private static final boolean LOGGING = false;
 
     private final ExecutorService clientExecutor = Executors.newCachedThreadPool();
     private final ExecutorService serverExecutor = Executors.newCachedThreadPool();
 
-    private final NettyNetworkClient client = new NettyNetworkClient(true, clientExecutor);
-    private final NettyNetworkServer server = new NettyNetworkServer(true, serverExecutor); // TODO: remove logging once these tests are less flaky
+    private final NettyNetworkClient client = new NettyNetworkClient(LOGGING, clientExecutor);
+    private final NettyNetworkServer server = new NettyNetworkServer(LOGGING, serverExecutor);
 
     private final ClientNetworkEndpoint clientEndpoint = new ClientNetworkEndpoint();
     private final ServerNetworkEndpoint serverEndpoint = new ServerNetworkEndpoint();
@@ -152,20 +153,17 @@ public class NettyNetworkCommunicationTest {
 
         @Override
         public void onConnected(NetworkConnection connection, MessageSender<String> sender) {
-            System.err.println("ServerNetworkEndpoint.onConnected"); // TODO: remove logging
             this.connection.set(connection);
             toClient.set(sender);
         }
 
         @Override
         public void onMessage(Integer message) {
-            System.err.println("ServerNetworkEndpoint.onMessage"); // TODO: remove logging
             messagesReceived.add(message);
         }
 
         @Override
         public void onDisconnected() {
-            System.err.println("ServerNetworkEndpoint.onDisconnected"); // TODO: remove logging
             disconnected.countDown();
         }
     }
@@ -179,20 +177,17 @@ public class NettyNetworkCommunicationTest {
 
         @Override
         public void onConnected(NetworkConnection connection, MessageSender<Integer> sender) {
-            System.err.println("ClientNetworkEndpoint.onConnected"); // TODO: remove logging
             this.connection.set(connection);
             toServer.set(sender);
         }
 
         @Override
         public void onMessage(String message) {
-            System.err.println("ClientNetworkEndpoint.onMessage"); // TODO: remove logging
             messagesReceived.add(message);
         }
 
         @Override
         public void onDisconnected() {
-            System.err.println("ClientNetworkEndpoint.onDisconnected"); // TODO: remove logging
             disconnected.countDown();
         }
     }

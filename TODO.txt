@@ -5,7 +5,7 @@ TODO NEXT:
 	OK - consider implemeting proper daemon shutdown sooner
 	... - keep an eye on what happens
 		OK - 2012-08-04: call super from event handlers
-		- next try listening for open/close events instead of connected/disconnected; or override disconnectRequested
+		OK - 2012-08-10: next try listening for open/close events instead of connected/disconnected; or override disconnectRequested
 			elo 07, 2012 9:08:00 IP. fi.jumi.core.network.NettyNetworkServer
 			INFO: [id: 0x170278c5, /127.0.0.1:55340 => /127.0.0.1:55339] DISCONNECT     <- DownstreamChannelStateEvent instead of UpstreamChannelStateEvent!
 			elo 07, 2012 9:08:00 IP. fi.jumi.core.network.NettyNetworkClient
@@ -128,11 +128,11 @@ TODO NEXT:
 			OK - exit if nobody connects within timeout from disconnect
 			OK - keep living if somebody connects
 			!! - rename TimeoutTest, also get a better name for RunnableExecutingTimeout; CommandExecutingTimeout?
-			- exit if nobody connects within timeout from startup (two timeout settings?)
 			- avoid unused threads in RunnableExecutingTimeout
 				- could instantiate it lazily on start, and shutdown (and set to null) on cancel
 				- or just create a Thread directly, using TimeUnit.sleep and Thread.interrupt
-			- use VacancyTimeout in Main
+			- use VacancyTimeout in Main; create end-to-end test
+			- exit if nobody connects within timeout from startup (two timeout settings? doable with two Timeout instances)
 		- check that implemented: RemoteSuiteLauncher, DaemonNetworkEndpoint, or are they needed at all and can be removed?
 	- remove the hack in fi.jumi.daemon.Main#exitWhenNotAnymoreInUse
 	- print a message on daemon startup and shutdown; makes it easier to see from logs that when the JVM was restarted
@@ -193,6 +193,7 @@ TODO NEXT:
 	- maybe testable by throwing exceptions from a driver or by producing non-valid .class files
 
 - misc refactoring
+	- make JUnit print a thread dump when a test times out due to @Test(timeout)
 	- rename TestClass to TestCase (or a better term?), wrap it in a value object, allow any files and not just .class (maybe just pretty-print classes)
 		- in Java, "testclass" appears preferable over "fixture":
 		http://xunitpatterns.com/Testcase%20Class.html

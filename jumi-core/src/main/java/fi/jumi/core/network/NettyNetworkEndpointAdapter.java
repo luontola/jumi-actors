@@ -31,6 +31,9 @@ class NettyNetworkEndpointAdapter<In, Out> extends SimpleChannelHandler {
         super.messageReceived(ctx, e);
     }
 
+    // XXX: Sometimes the disconnecting is a downstream event and sometimes an upstream event,
+    // so we must override both channelDisconnected and disconnectRequested to avoid missing the event.
+
     @Override
     public void channelDisconnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
         endpoint.onDisconnected();
@@ -38,8 +41,15 @@ class NettyNetworkEndpointAdapter<In, Out> extends SimpleChannelHandler {
     }
 
     @Override
+    public void disconnectRequested(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
+        endpoint.onDisconnected();
+        super.disconnectRequested(ctx, e);
+    }
+
+    @Override
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
         // TODO: better error handling
+        System.err.println(getClass().getName() + ": " + e);
         e.getCause().printStackTrace();
         e.getChannel().close();
         super.exceptionCaught(ctx, e);

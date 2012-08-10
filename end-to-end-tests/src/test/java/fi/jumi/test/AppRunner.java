@@ -63,7 +63,6 @@ public class AppRunner implements TestRule {
         }
 
         JumiLauncher launcher = new CustomJumiLauncherBuilder()
-                .enableDebugLogging()
                 .build();
 
         if (TestSystemProperties.useThreadSafetyAgent()) {
