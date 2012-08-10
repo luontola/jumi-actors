@@ -33,12 +33,15 @@ public class DaemonProcessTest {
     @Ignore("not implemented")
     @Test(timeout = Timeouts.END_TO_END_TEST)
     public void daemon_process_will_exit_after_a_timeout_after_all_clients_disconnect() throws Exception {
+        // TODO: set idle timeout to SuiteOptions
         startDaemonProcess();
 
         launcher.close();
 
         assertEventually(daemonProcess, is(dead()), Timeouts.ASSERTION);
     }
+
+    // TODO: daemon process will exit if it cannot connect to the launcher on startup
 
     private void startDaemonProcess() throws Exception {
         app.runTests("unimportant");
