@@ -127,8 +127,8 @@ TODO NEXT:
 				onVacantFor(timout), onProlongedVacancy, vacancyProlonged (!)
 			OK - exit if nobody connects within timeout from disconnect
 			OK - keep living if somebody connects
-			!! - rename TimeoutTest, also get a better name for RunnableExecutingTimeout; CommandExecutingTimeout?
-			- avoid unused threads in RunnableExecutingTimeout
+			OK - rename TimeoutTest, also get a better name for RunnableExecutingTimeout; CommandExecutingTimeout?
+			!! - avoid unused threads in RunnableExecutingTimeout
 				- could instantiate it lazily on start, and shutdown (and set to null) on cancel
 				- or just create a Thread directly, using TimeUnit.sleep and Thread.interrupt
 			- use VacancyTimeout in Main; create end-to-end test

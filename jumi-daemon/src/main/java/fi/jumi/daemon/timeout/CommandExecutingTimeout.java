@@ -8,7 +8,7 @@ import javax.annotation.concurrent.ThreadSafe;
 import java.util.concurrent.*;
 
 @ThreadSafe
-public class RunnableExecutingTimeout implements Timeout {
+public class CommandExecutingTimeout implements Timeout {
 
     // XXX: doesn't work with corePoolSize = 0, so always creates a thread
     // Known bug, fixed in JDK 8(b08), 7u4(b13): http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=7091003
@@ -22,7 +22,7 @@ public class RunnableExecutingTimeout implements Timeout {
 
     private ScheduledFuture<?> scheduledCommand;
 
-    public RunnableExecutingTimeout(Runnable command, long timeout, TimeUnit unit) {
+    public CommandExecutingTimeout(Runnable command, long timeout, TimeUnit unit) {
         this.command = command;
         this.timeout = timeout;
         this.unit = unit;

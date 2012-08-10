@@ -10,7 +10,7 @@ import java.util.concurrent.*;
 
 import static org.junit.Assert.*;
 
-public class TimeoutTest {
+public class CommandExecutingTimeoutTest {
 
     private static final long TEST_TIMEOUT = 1000;
     private static final long ASSERT_TIMEOUT = 500;
@@ -19,7 +19,7 @@ public class TimeoutTest {
 
     @Test(timeout = TEST_TIMEOUT)
     public void runs_the_command_after_the_timeout() throws InterruptedException {
-        Timeout timeout = new RunnableExecutingTimeout(new SpyCommand(), 0, TimeUnit.MILLISECONDS);
+        Timeout timeout = new CommandExecutingTimeout(new SpyCommand(), 0, TimeUnit.MILLISECONDS);
 
         timeout.start();
 
@@ -28,7 +28,7 @@ public class TimeoutTest {
 
     @Test(timeout = TEST_TIMEOUT)
     public void does_not_run_the_command_if_cancelled_before_the_timeout() throws InterruptedException {
-        Timeout timeout = new RunnableExecutingTimeout(new SpyCommand(), ASSERT_TIMEOUT / 2, TimeUnit.MILLISECONDS);
+        Timeout timeout = new CommandExecutingTimeout(new SpyCommand(), ASSERT_TIMEOUT / 2, TimeUnit.MILLISECONDS);
 
         timeout.start();
         timeout.cancel();
