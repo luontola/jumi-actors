@@ -12,6 +12,7 @@ TODO NEXT:
 			INFO: [id: 0x7a51e6b8, /127.0.0.1:55340 :> /127.0.0.1:55339] DISCONNECTED
 			ClientNetworkEndpoint.onDisconnected
 		OK - 2012-08-10: listen for open/close events instead of connected/disconnected
+		!! - run "mvn verify" in a loop for a long time to see if it happens again
 
 !! - proper daemon shutdown
 	OK - expose the Process instance from launcher, use it to write e2e-tests (can assert that daemon is shut down)
@@ -129,10 +130,10 @@ TODO NEXT:
 			OK - exit if nobody connects within timeout from disconnect
 			OK - keep living if somebody connects
 			OK - rename TimeoutTest, also get a better name for RunnableExecutingTimeout; CommandExecutingTimeout?
-			!! - avoid unused threads in RunnableExecutingTimeout
-				- could instantiate it lazily on start, and shutdown (and set to null) on cancel
-				- or just create a Thread directly, using TimeUnit.sleep and Thread.interrupt
-			- use VacancyTimeout in Main; create end-to-end test
+			OK - avoid unused threads in RunnableExecutingTimeout
+				SKIP - could instantiate it lazily on start, and shutdown (and set to null) on cancel
+				OK - or just create a Thread directly, using TimeUnit.sleep and Thread.interrupt
+			!! - use VacancyTimeout in Main; create end-to-end test
 			- exit if nobody connects within timeout from startup (two timeout settings? doable with two Timeout instances)
 		- check that implemented: RemoteSuiteLauncher, DaemonNetworkEndpoint, or are they needed at all and can be removed?
 	- remove the hack in fi.jumi.daemon.Main#exitWhenNotAnymoreInUse

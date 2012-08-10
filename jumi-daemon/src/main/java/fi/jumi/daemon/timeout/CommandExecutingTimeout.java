@@ -5,36 +5,53 @@
 package fi.jumi.daemon.timeout;
 
 import javax.annotation.concurrent.ThreadSafe;
-import java.util.concurrent.*;
+import java.util.concurrent.TimeUnit;
 
 @ThreadSafe
 public class CommandExecutingTimeout implements Timeout {
 
-    // XXX: doesn't work with corePoolSize = 0, so always creates a thread
-    // Known bug, fixed in JDK 8(b08), 7u4(b13): http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=7091003
-    // The applied fix is to always start at least one thread, so there is no way to avoid starting a thread.
-    // The design of ScheduledThreadPoolExecutor requires it. See http://stackoverflow.com/a/4361081/62130
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-
-    private final Runnable command;
-    private final long timeout;
-    private final TimeUnit unit;
-
-    private ScheduledFuture<?> scheduledCommand;
+    private final Delayer delayedCommand;
+    private Thread scheduler;
 
     public CommandExecutingTimeout(Runnable command, long timeout, TimeUnit unit) {
-        this.command = command;
-        this.timeout = timeout;
-        this.unit = unit;
+        delayedCommand = new Delayer(command, timeout, unit);
     }
 
     @Override
     public synchronized void start() {
-        scheduledCommand = scheduler.schedule(command, timeout, unit);
+        assert scheduler == null;
+        scheduler = new Thread(delayedCommand, "Timeout");
+        scheduler.start();
     }
 
     @Override
     public synchronized void cancel() {
-        scheduledCommand.cancel(false);
+        assert scheduler != null;
+        scheduler.interrupt();
+        scheduler = null;
+    }
+
+    @ThreadSafe
+    private static class Delayer implements Runnable {
+
+        private final Runnable command;
+        private final long timeout;
+        private final TimeUnit unit;
+
+        public Delayer(Runnable command, long timeout, TimeUnit unit) {
+            this.command = command;
+            this.timeout = timeout;
+            this.unit = unit;
+        }
+
+        @Override
+        public void run() {
+            try {
+                unit.sleep(timeout);
+                command.run();
+            } catch (InterruptedException e) {
+                // timeout cancelled
+            }
+        }
     }
 }
