@@ -461,6 +461,9 @@
                         </executions>
                         <configuration>
                             <threads>4</threads>
+                            <jvmArgs>
+                                <arg>-ea</arg>
+                            </jvmArgs>
                             <targetClasses>
                                 <pattern>fi.jumi.*</pattern>
                             </targetClasses>
