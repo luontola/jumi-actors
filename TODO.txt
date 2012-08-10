@@ -5,12 +5,13 @@ TODO NEXT:
 	OK - consider implemeting proper daemon shutdown sooner
 	... - keep an eye on what happens
 		OK - 2012-08-04: call super from event handlers
-		OK - 2012-08-10: next try listening for open/close events instead of connected/disconnected; or override disconnectRequested
+		OK - 2012-08-10: override disconnectRequested in addition to channelDisconnected
 			elo 07, 2012 9:08:00 IP. fi.jumi.core.network.NettyNetworkServer
 			INFO: [id: 0x170278c5, /127.0.0.1:55340 => /127.0.0.1:55339] DISCONNECT     <- DownstreamChannelStateEvent instead of UpstreamChannelStateEvent!
 			elo 07, 2012 9:08:00 IP. fi.jumi.core.network.NettyNetworkClient
 			INFO: [id: 0x7a51e6b8, /127.0.0.1:55340 :> /127.0.0.1:55339] DISCONNECTED
 			ClientNetworkEndpoint.onDisconnected
+		OK - 2012-08-10: listen for open/close events instead of connected/disconnected
 
 !! - proper daemon shutdown
 	OK - expose the Process instance from launcher, use it to write e2e-tests (can assert that daemon is shut down)
