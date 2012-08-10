@@ -11,7 +11,9 @@ import java.util.concurrent.TimeUnit;
 public class CommandExecutingTimeout implements Timeout {
 
     private final Delayer delayedCommand;
-    private Thread scheduler;
+
+    // non-private for testing purposes
+    Thread scheduler;
 
     public CommandExecutingTimeout(Runnable command, long timeout, TimeUnit unit) {
         delayedCommand = new Delayer(command, timeout, unit);

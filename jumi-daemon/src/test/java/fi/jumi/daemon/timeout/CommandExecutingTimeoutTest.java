@@ -6,49 +6,66 @@ package fi.jumi.daemon.timeout;
 
 import org.junit.Test;
 
-import java.util.concurrent.*;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 public class CommandExecutingTimeoutTest {
 
     private static final long TEST_TIMEOUT = 1000;
-    private static final long ASSERT_TIMEOUT = 500;
 
-    private final CountDownLatch timedOut = new CountDownLatch(1);
+    private CommandExecutingTimeout timeout;
+    private final AtomicInteger numberOfTimeouts = new AtomicInteger(0);
 
     @Test(timeout = TEST_TIMEOUT)
     public void runs_the_command_after_the_timeout() throws InterruptedException {
-        Timeout timeout = new CommandExecutingTimeout(new SpyCommand(), 0, TimeUnit.MILLISECONDS);
+        timeout = new CommandExecutingTimeout(new SpyCommand(), 1, TimeUnit.MILLISECONDS);
 
         timeout.start();
 
-        assertTimesOut();
+        assertNumberOfTimeouts(1);
     }
 
     @Test(timeout = TEST_TIMEOUT)
     public void does_not_run_the_command_if_cancelled_before_the_timeout() throws InterruptedException {
-        Timeout timeout = new CommandExecutingTimeout(new SpyCommand(), ASSERT_TIMEOUT / 2, TimeUnit.MILLISECONDS);
+        timeout = new CommandExecutingTimeout(new SpyCommand(), 100, TimeUnit.MILLISECONDS);
 
         timeout.start();
         timeout.cancel();
 
-        assertDoesNotTimeOut();
+        assertNumberOfTimeouts(0);
+    }
+
+    @Test(timeout = TEST_TIMEOUT)
+    public void the_timeout_can_be_restarted() throws InterruptedException {
+        timeout = new CommandExecutingTimeout(new SpyCommand(), 10, TimeUnit.MILLISECONDS);
+
+        timeout.start();
+        timeout.cancel();
+        timeout.start();
+
+        assertNumberOfTimeouts(1);
     }
 
 
-    private void assertDoesNotTimeOut() throws InterruptedException {
-        assertFalse("expected to NOT time out, but it did", timedOut.await(1, TimeUnit.MILLISECONDS));
+    private void assertNumberOfTimeouts(int expected) throws InterruptedException {
+        waitForPossibleTimeout();
+        assertThat(numberOfTimeouts.get(), is(expected));
     }
 
-    private void assertTimesOut() throws InterruptedException {
-        assertTrue("expected to time out, but it did not", timedOut.await(ASSERT_TIMEOUT, TimeUnit.MILLISECONDS));
+    private void waitForPossibleTimeout() throws InterruptedException {
+        Thread thread = timeout.scheduler;
+        if (thread != null) {
+            thread.join();
+        }
     }
 
     private class SpyCommand implements Runnable {
         @Override
         public void run() {
-            timedOut.countDown();
+            numberOfTimeouts.incrementAndGet();
         }
     }
 }
