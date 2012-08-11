@@ -13,6 +13,18 @@ TODO NEXT:
 			ClientNetworkEndpoint.onDisconnected
 		OK - 2012-08-10: listen for open/close events instead of connected/disconnected
 		!! - run "mvn verify" in a loop for a long time to see if it happens again
+			while true; do mvn clean verify || break; done
+
+- fragile ReleasingResourcesTest.launcher_stops_the_threads_it_started; which "jumi-launcher-1" is it?
+	- add a static pool counter to PrefixedThreadFactory, "jumi-launcher-{pool}-thread-{thread}"
+	- should the pool counter be global or per pattern?
+	- rename to NamedThreadFactory
+	- update all usages to use pool counter
+	- temporarily enable actor logging in launcher, to see which launcher pool it uses
+	- print the state of the threads when they fail an assertion
+	- keep an eye on what happens
+		- try filtering based on Thread.isAlive() in fi.jumi.test.util.Threads#getActiveThreads
+		- try joining the thread, in case JVM doesn't update the state immediately
 
 !! - proper daemon shutdown
 	OK - expose the Process instance from launcher, use it to write e2e-tests (can assert that daemon is shut down)
@@ -136,15 +148,16 @@ TODO NEXT:
 			!! - use VacancyTimeout in Main
 				!! - DaemonProcessTest: daemon exits after the launcher disconnects
 					!! - JumiLauncher/SuiteOptions: configure jumi.idleTimeout=1
-					- exit if nobody connects within timeout from startup (unit test only?)
+					- exit after timeout
 					- cancel timeout if somebody connects again (unit test only? or implement reconnect first?)
 				- VacancyTimeout: daemon exits if it doesn't get connection to launcher
 					- JumiLauncher/SuiteOptions: configure jumi.startupTimeout=1
-					- two timeout settings
-					- use two Timeout instances
+					- exit if nobody connects within timeout from startup
+						- use two Timeout instances
 		- check that implemented: RemoteSuiteLauncher, DaemonNetworkEndpoint, or are they needed at all and can be removed?
 	- remove the hack in fi.jumi.daemon.Main#exitWhenNotAnymoreInUse
 	- print a message on daemon startup and shutdown; makes it easier to see from logs that when the JVM was restarted
+		- also print daemon version on startup, read from pom.properties
 	- refactor JumiLauncher
 		- create SuiteOptionsBuilder
 		- make SuiteOptions immutable
