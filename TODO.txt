@@ -15,16 +15,19 @@ TODO NEXT:
 		!! - run "mvn verify" in a loop for a long time to see if it happens again
 			while true; do mvn clean verify || break; done
 
-- fragile ReleasingResourcesTest.launcher_stops_the_threads_it_started; which "jumi-launcher-1" is it?
-	- add a static pool counter to PrefixedThreadFactory, "jumi-launcher-{pool}-thread-{thread}"
-	- should the pool counter be global or per pattern?
-	- rename to NamedThreadFactory
-	- update all usages to use pool counter
-	- temporarily enable actor logging in launcher, to see which launcher pool it uses
-	- print the state of the threads when they fail an assertion
-	- keep an eye on what happens
-		- try filtering based on Thread.isAlive() in fi.jumi.test.util.Threads#getActiveThreads
-		- try joining the thread, in case JVM doesn't update the state immediately
+- fragile ReleasingResourcesTest.launcher_stops_the_threads_it_started;
+	SKIP - which "jumi-launcher-1" is it?
+		- add a static pool counter to PrefixedThreadFactory, "jumi-launcher-{pool}-thread-{thread}"
+		- should the pool counter be global or per pattern?
+		- rename to NamedThreadFactory
+		- update all usages to use pool counter
+		- temporarily enable actor logging in launcher, to see which launcher pool it uses
+	OK - print the state of the threads when they fail an assertion
+	... - keep an eye on what happens
+		OK - try filtering based on Thread.isAlive() in fi.jumi.test.util.Threads#getActiveThreads
+		!! - try joining the thread, in case JVM doesn't update the state immediately
+			-> already join(1) appears to update the state
+			!! - join and filter based on isAlive
 
 !! - proper daemon shutdown
 	OK - expose the Process instance from launcher, use it to write e2e-tests (can assert that daemon is shut down)
