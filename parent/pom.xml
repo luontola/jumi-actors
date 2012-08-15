@@ -415,7 +415,7 @@
 
                 <plugin>
                     <artifactId>maven-invoker-plugin</artifactId>
-                    <version>1.6</version>
+                    <version>1.7</version>
                 </plugin>
 
                 <plugin>
@@ -437,7 +437,7 @@
                 <plugin>
                     <groupId>org.pitest</groupId>
                     <artifactId>pitest-maven</artifactId>
-                    <version>0.27</version>
+                    <version>0.28</version>
                 </plugin>
 
             </plugins>
@@ -474,6 +474,7 @@
                             <mutators>
                                 <mutator>ALL</mutator>
                             </mutators>
+                            <detectInlinedCode>true</detectInlinedCode>
                             <mutateStaticInitializers>true</mutateStaticInitializers>
                         </configuration>
                     </plugin>
