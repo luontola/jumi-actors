@@ -21,16 +21,19 @@ public class CommandExecutingTimeout implements Timeout {
 
     @Override
     public synchronized void start() {
-        assert scheduler == null;
+        if (scheduler != null) {
+            throw new IllegalStateException("already started");
+        }
         scheduler = new Thread(delayedCommand, "Timeout");
         scheduler.start();
     }
 
     @Override
     public synchronized void cancel() {
-        assert scheduler != null;
-        scheduler.interrupt();
-        scheduler = null;
+        if (scheduler != null) {
+            scheduler.interrupt();
+            scheduler = null;
+        }
     }
 
     @ThreadSafe

@@ -49,19 +49,4 @@ public class VacancyTimeoutTest {
     private void assertTimesOut() {
         assertTrue("expected to time out, but did not", spyTimeout.willTimeOut);
     }
-
-    private class SpyTimeout implements Timeout {
-
-        public boolean willTimeOut = false;
-
-        @Override
-        public void start() {
-            willTimeOut = true;
-        }
-
-        @Override
-        public void cancel() {
-            willTimeOut = false;
-        }
-    }
 }

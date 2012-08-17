@@ -4,7 +4,8 @@
 
 package fi.jumi.daemon.timeout;
 
-import org.junit.Test;
+import org.junit.*;
+import org.junit.rules.ExpectedException;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -15,6 +16,9 @@ import static org.hamcrest.Matchers.is;
 public class CommandExecutingTimeoutTest {
 
     private static final long TEST_TIMEOUT = 1000;
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     private CommandExecutingTimeout timeout;
     private final AtomicInteger numberOfTimeouts = new AtomicInteger(0);
@@ -47,6 +51,30 @@ public class CommandExecutingTimeoutTest {
         timeout.start();
 
         assertNumberOfTimeouts(1);
+    }
+
+    @Test(timeout = TEST_TIMEOUT)
+    public void cancelling_is_idempotent() throws InterruptedException {
+        timeout = new CommandExecutingTimeout(new SpyCommand(), 100, TimeUnit.MILLISECONDS);
+
+        timeout.cancel();
+        timeout.cancel();
+        timeout.start();
+        timeout.cancel();
+        timeout.cancel();
+
+        assertNumberOfTimeouts(0);
+    }
+
+    @Test(timeout = TEST_TIMEOUT)
+    public void cannot_start_many_times_without_cancelling_first() throws InterruptedException {
+        timeout = new CommandExecutingTimeout(new SpyCommand(), 10, TimeUnit.MILLISECONDS);
+
+        timeout.start();
+
+        thrown.expect(IllegalStateException.class);
+        thrown.expectMessage("already started");
+        timeout.start();
     }
 
 
