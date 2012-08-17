@@ -6,10 +6,14 @@ package fi.jumi.actors.benchmarks;
 
 import com.google.caliper.*;
 import fi.jumi.actors.*;
+import fi.jumi.actors.eventizers.dynamic.DynamicEventizerProvider;
+import fi.jumi.actors.listeners.*;
 
 import java.util.concurrent.*;
 
 /**
+ * Create a ring of actors and forward a message around the ring multiple times.
+ * <p/>
  * Based on http://blog.grayproductions.net/articles/erlang_message_passing/
  */
 public class RingBenchmark extends SimpleBenchmark {
@@ -24,7 +28,12 @@ public class RingBenchmark extends SimpleBenchmark {
 
     @Override
     protected void setUp() throws Exception {
-        MultiThreadedActors actors = Factory.createMultiThreadedActors(executor);
+        MultiThreadedActors actors = new MultiThreadedActors(
+                executor,
+                new DynamicEventizerProvider(),
+                new CrashEarlyFailureHandler(),
+                new NullMessageListener()
+        );
         ActorThread actorThread = actors.startActorThread();
 
         ring = actorThread.bindActor(Ring.class, new RingStart(actorThread) {

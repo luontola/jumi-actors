@@ -6,9 +6,14 @@ package fi.jumi.actors.benchmarks;
 
 import com.google.caliper.SimpleBenchmark;
 import fi.jumi.actors.*;
+import fi.jumi.actors.eventizers.dynamic.DynamicEventizerProvider;
+import fi.jumi.actors.listeners.*;
 
 import java.util.concurrent.*;
 
+/**
+ * Create the actors container, send and receive one message.
+ */
 public class WarmStartupBenchmark extends SimpleBenchmark {
 
     private final BusyWaitBarrier barrier = new BusyWaitBarrier();
@@ -16,7 +21,12 @@ public class WarmStartupBenchmark extends SimpleBenchmark {
 
     public void timeMultiThreadedActors(int reps) throws Exception {
         for (int i = 0; i < reps; i++) {
-            MultiThreadedActors actors = Factory.createMultiThreadedActors(executor);
+            MultiThreadedActors actors = new MultiThreadedActors(
+                    executor,
+                    new DynamicEventizerProvider(),
+                    new CrashEarlyFailureHandler(),
+                    new NullMessageListener()
+            );
             ActorThread actorThread = actors.startActorThread();
 
             ActorRef<Runnable> runnable = actorThread.bindActor(Runnable.class, new Runnable() {
@@ -34,7 +44,11 @@ public class WarmStartupBenchmark extends SimpleBenchmark {
 
     public void timeSingleThreadedActors(int reps) {
         for (int i = 0; i < reps; i++) {
-            SingleThreadedActors actors = Factory.createSingleThreadedActors();
+            SingleThreadedActors actors = new SingleThreadedActors(
+                    new DynamicEventizerProvider(),
+                    new CrashEarlyFailureHandler(),
+                    new NullMessageListener()
+            );
             ActorThread actorThread = actors.startActorThread();
 
             ActorRef<Runnable> runnable = actorThread.bindActor(Runnable.class, new Runnable() {
