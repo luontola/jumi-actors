@@ -12,6 +12,7 @@ import fi.jumi.core.config.Configuration;
 import fi.jumi.core.events.*;
 import fi.jumi.core.network.*;
 import fi.jumi.core.util.PrefixedThreadFactory;
+import fi.jumi.daemon.timeout.*;
 
 import javax.annotation.concurrent.*;
 import java.io.PrintStream;
@@ -19,6 +20,8 @@ import java.util.concurrent.*;
 
 @ThreadSafe
 public class Main {
+
+    private static final int DEFAULT_IDLE_TIMEOUT = 1;
 
     public static void main(String[] args) {
         exitWhenNotAnymoreInUse();
@@ -56,18 +59,20 @@ public class Main {
                 messageListener
         );
 
+        // timeouts for shutting down the system
+        // TODO: make the timeout configurable (default to a couple of seconds; with persistent daemon >15 min)
+        Timeout idleTimeout = new CommandExecutingTimeout(new SystemExit("timed out after everybody disconnected"), DEFAULT_IDLE_TIMEOUT, TimeUnit.MILLISECONDS);
+
         // bootstrap the system
         ActorThread actorThread = actors.startActorThread();
         ActorRef<CommandListener> coordinator =
                 actorThread.bindActor(CommandListener.class, new TestRunCoordinator(actorThread, testsThreadPool));
 
         NetworkClient client = new NettyNetworkClient();
-        client.connect("127.0.0.1", config.launcherPort, new DaemonNetworkEndpoint(coordinator));
+        client.connect("127.0.0.1", config.launcherPort, new DaemonNetworkEndpoint(coordinator, idleTimeout));
     }
 
-    private static void exitWhenNotAnymoreInUse() {
-        // TODO: implement timeouts etc. which will automatically close down the daemon once the launcher is no more
-
+    private static void exitWhenNotAnymoreInUse() { // TODO: remove me once we have idleTimeout and startupTimeout
         @Immutable
         class DelayedSystemExit implements Runnable {
             @Override

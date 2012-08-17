@@ -10,6 +10,7 @@ import fi.jumi.actors.queue.MessageSender;
 import fi.jumi.core.*;
 import fi.jumi.core.events.SuiteListenerEventizer;
 import fi.jumi.core.network.*;
+import fi.jumi.daemon.timeout.*;
 
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -17,15 +18,18 @@ import javax.annotation.concurrent.ThreadSafe;
 public class DaemonNetworkEndpoint implements NetworkEndpoint<Event<CommandListener>, Event<SuiteListener>> {
 
     private final ActorRef<CommandListener> coordinator;
+    private final VacancyTimeout connections;
 
-    public DaemonNetworkEndpoint(ActorRef<CommandListener> coordinator) {
+    public DaemonNetworkEndpoint(ActorRef<CommandListener> coordinator, Timeout idleTimeout) {
         this.coordinator = coordinator;
+        this.connections = new VacancyTimeout(idleTimeout);
     }
 
     @Override
     public void onConnected(NetworkConnection connection, MessageSender<Event<SuiteListener>> sender) {
+        connections.checkIn();
         // TODO: notify the coordinator on disconnect
-        SuiteListener listener = new SuiteListenerEventizer().newFrontend((MessageSender<Event<SuiteListener>>) sender);
+        SuiteListener listener = new SuiteListenerEventizer().newFrontend(sender);
         coordinator.tell().addSuiteListener(listener);
     }
 
@@ -36,6 +40,6 @@ public class DaemonNetworkEndpoint implements NetworkEndpoint<Event<CommandListe
 
     @Override
     public void onDisconnected() {
-        // TODO
+        connections.checkOut();
     }
 }

@@ -7,5 +7,5 @@ package fi.jumi.test;
 public class Timeouts {
 
     public static final int END_TO_END_TEST = 3000;
-    public static final int ASSERTION = 2000;
+    public static final int ASSERTION = 500;
 }

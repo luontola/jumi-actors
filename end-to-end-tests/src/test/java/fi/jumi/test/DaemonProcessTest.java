@@ -30,7 +30,6 @@ public class DaemonProcessTest {
         // TODO: assert on the message that the daemon prints on shutdown?
     }
 
-    @Ignore("not implemented")
     @Test(timeout = Timeouts.END_TO_END_TEST)
     public void daemon_process_will_exit_after_a_timeout_after_all_clients_disconnect() throws Exception {
         // TODO: set idle timeout to SuiteOptions

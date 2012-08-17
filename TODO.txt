@@ -150,11 +150,10 @@ TODO NEXT:
 				OK - or just create a Thread directly, using TimeUnit.sleep and Thread.interrupt
 			!! - use VacancyTimeout in Main
 				!! - DaemonProcessTest: daemon exits after the launcher disconnects
-					!! - start with fixed timeout?
-					- JumiLauncher/SuiteOptions: configure jumi.idleTimeout=1
-					- exit after timeout
+					OK - start with fixed timeout
+					!! - JumiLauncher/SuiteOptions: configure jumi.idleTimeout=1
 					- cancel timeout if somebody connects again (unit test only? or implement reconnect first?)
-				- VacancyTimeout: daemon exits if it doesn't get connection to launcher
+				- DaemonProcessTest: daemon exits if it doesn't get connection to launcher
 					- JumiLauncher/SuiteOptions: configure jumi.startupTimeout=1
 					- exit if nobody connects within timeout from startup
 						- use two Timeout instances
