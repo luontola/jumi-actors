@@ -29,23 +29,46 @@ public class ReleasingResourcesTest {
 
         startAndStopLauncher();
 
-        List<Thread> threadsAfter = Threads.getActiveThreads(threadGroup);
-        threadsAfter = new ArrayList<Thread>(threadsAfter);
-        ignoreThreadsWithName(threadsAfter, "Daemon Output Copier"); // XXX: remove after we get rid of ProcessStartingDaemonSummoner.copyInBackground()
+        List<Thread> threadsAfter =
+                ignoreThreadsWithName("Daemon Output Copier", // XXX: remove after we get rid of ProcessStartingDaemonSummoner.copyInBackground()
+                        removeAlmostDeadThreads(
+                                Threads.getActiveThreads(threadGroup)));
+
         assertThat(threadsAfter, containsAtMost(threadsBefore));
     }
 
-    private static void ignoreThreadsWithName(List<Thread> threads, String name) {
+    private static List<Thread> removeAlmostDeadThreads(List<Thread> maybeDyingThreads) {
+        // ThreadPoolExecutor.awaitTermination() waits only for a signal from the worker
+        // threads that they have finished processing all commands, but not that the threads
+        // are completely finished. There is a 0.01 probability of the thread being still
+        // alive due to that race condition.
+        ArrayList<Thread> aliveThreads = new ArrayList<Thread>();
+        for (Thread thread : maybeDyingThreads) {
+            try {
+                thread.join(1);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            if (thread.isAlive()) {
+                aliveThreads.add(thread);
+            }
+        }
+        return aliveThreads;
+    }
+
+    private static List<Thread> ignoreThreadsWithName(String name, List<Thread> threads) {
         // Another option would be to wait for the threads to stop and ignore
         // those that stop quickly. But would want JumiLauncher.close() already
         // to do that waiting to fully close everything, so let's not do it that way here.
-        for (Iterator<Thread> it = threads.iterator(); it.hasNext(); ) {
-            Thread thread = it.next();
+        List<Thread> results = new ArrayList<Thread>();
+        for (Thread thread : threads) {
             if (thread.getName().equals(name)) {
-                it.remove();
                 System.err.println("WARN: Ignoring thread " + thread);
+            } else {
+                results.add(thread);
             }
         }
+        return results;
     }
 
     @Test(timeout = Timeouts.END_TO_END_TEST)
