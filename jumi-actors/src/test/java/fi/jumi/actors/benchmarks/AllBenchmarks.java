@@ -13,4 +13,7 @@ public class AllBenchmarks {
         new Runner().run("-DringSize=1,10,100,1000,10000", "-DroundTrips=1000", RingBenchmark.class.getName());
         System.exit(0);
     }
+
+    // TODO: compare reflection vs code generation based eventizers
+    // TODO: compare against Akka Actors (ring and startup benchmarks)
 }
