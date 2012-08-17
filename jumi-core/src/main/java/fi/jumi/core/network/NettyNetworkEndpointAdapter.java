@@ -31,20 +31,13 @@ class NettyNetworkEndpointAdapter<In, Out> extends SimpleChannelHandler {
         super.messageReceived(ctx, e);
     }
 
-    // XXX: Sometimes the disconnecting is a downstream event and sometimes an upstream event,
-    // so we must override both channelDisconnected and disconnectRequested to avoid missing the event.
-    // But even that didn't catch the event every time, so let's try the close/closed event...
+    // Having both channelDisconnected and disconnectRequested handlers is not enough, because sometimes neither
+    // of those events comes, even though the channelConnected came. Using just channelClosed appears to be reliable.
 
     @Override
     public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
         endpoint.onDisconnected();
         super.channelClosed(ctx, e);
-    }
-
-    @Override
-    public void closeRequested(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
-        endpoint.onDisconnected();
-        super.closeRequested(ctx, e);
     }
 
     @Override
