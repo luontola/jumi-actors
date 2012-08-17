@@ -8,9 +8,9 @@ import fi.jumi.actors.*;
 import fi.jumi.actors.eventizers.dynamic.DynamicEventizerProvider;
 import fi.jumi.actors.listeners.*;
 
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
 
-class Util {
+class Factory {
 
     private static final boolean DEBUG = false;
 
@@ -33,13 +33,5 @@ class Util {
 
     private static MessageListener getMessageListener() {
         return DEBUG ? new PrintStreamMessageLogger(System.out) : new NullMessageListener();
-    }
-
-    public static void sync(CyclicBarrier barrier) {
-        try {
-            barrier.await();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }

@@ -11,30 +11,30 @@ import java.util.concurrent.*;
 
 public class WarmStartupBenchmark extends SimpleBenchmark {
 
-    private final CyclicBarrier barrier = new CyclicBarrier(2);
+    private final BusyWaitBarrier barrier = new BusyWaitBarrier();
+    private final ExecutorService executor = Executors.newCachedThreadPool();
 
     public void timeMultiThreadedActors(int reps) throws Exception {
         for (int i = 0; i < reps; i++) {
-            ExecutorService executor = Executors.newCachedThreadPool();
-            MultiThreadedActors actors = Util.createMultiThreadedActors(executor);
+            MultiThreadedActors actors = Factory.createMultiThreadedActors(executor);
             ActorThread actorThread = actors.startActorThread();
 
             ActorRef<Runnable> runnable = actorThread.bindActor(Runnable.class, new Runnable() {
                 @Override
                 public void run() {
-                    Util.sync(barrier);
+                    barrier.trigger();
                 }
             });
             runnable.tell().run();
-            Util.sync(barrier);
+            barrier.await();
 
-            executor.shutdownNow();
+            actorThread.stop();
         }
     }
 
     public void timeSingleThreadedActors(int reps) {
         for (int i = 0; i < reps; i++) {
-            SingleThreadedActors actors = Util.createSingleThreadedActors();
+            SingleThreadedActors actors = Factory.createSingleThreadedActors();
             ActorThread actorThread = actors.startActorThread();
 
             ActorRef<Runnable> runnable = actorThread.bindActor(Runnable.class, new Runnable() {

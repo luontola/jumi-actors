@@ -18,20 +18,21 @@ public class RingBenchmark extends SimpleBenchmark {
     @Param int roundTrips;
 
     private final CyclicBarrier barrier = new CyclicBarrier(2);
-
     private final ExecutorService executor = Executors.newCachedThreadPool();
-    private final MultiThreadedActors actors = Util.createMultiThreadedActors(executor);
-    private final ActorThread actorThread = actors.startActorThread();
+
     private ActorRef<Ring> ring;
 
     @Override
     protected void setUp() throws Exception {
+        MultiThreadedActors actors = Factory.createMultiThreadedActors(executor);
+        ActorThread actorThread = actors.startActorThread();
+
         ring = actorThread.bindActor(Ring.class, new RingStart(actorThread) {
             @Override
             public void forward(int roundTrips) {
                 super.forward(roundTrips);
                 if (roundTrips == 0) {
-                    Util.sync(barrier);
+                    sync(barrier);
                 }
             }
         });
@@ -46,7 +47,15 @@ public class RingBenchmark extends SimpleBenchmark {
     public void timeRingRoundTrips(int reps) {
         for (int i = 0; i < reps; i++) {
             ring.tell().forward(roundTrips);
-            Util.sync(barrier);
+            sync(barrier);
+        }
+    }
+
+    public static void sync(CyclicBarrier barrier) {
+        try {
+            barrier.await();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
