@@ -7,12 +7,13 @@ package fi.jumi.actors;
 import fi.jumi.actors.listeners.FailureHandler;
 
 import javax.annotation.concurrent.ThreadSafe;
-import java.util.*;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @ThreadSafe
 public class UncaughtExceptionCollector implements Thread.UncaughtExceptionHandler, FailureHandler {
 
-    private final List<Throwable> uncaughtExceptions = Collections.synchronizedList(new ArrayList<Throwable>());
+    private final List<Throwable> uncaughtExceptions = new CopyOnWriteArrayList<Throwable>();
 
     @Override
     public void uncaughtException(Thread t, Throwable e) {
