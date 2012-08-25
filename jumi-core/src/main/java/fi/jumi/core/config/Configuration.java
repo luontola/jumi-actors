@@ -6,6 +6,7 @@ package fi.jumi.core.config;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @NotThreadSafe
 public class Configuration {
@@ -17,9 +18,14 @@ public class Configuration {
 
     // system properties
     public static final String LOG_ACTOR_MESSAGES = "jumi.logActorMessages";
+    public static final String IDLE_TIMEOUT = "jumi.idleTimeout";
+
+    // default values
+    public static final long DEFAULT_IDLE_TIMEOUT = TimeUnit.SECONDS.toMillis(5); // TODO: increase to 15 min, after implementing persistent daemons
 
     public int launcherPort;
     public boolean logActorMessages;
+    public long idleTimeout;
 
     public static Configuration parse(String[] args, Properties systemProperties) {
         Configuration config = new Configuration();
@@ -49,6 +55,15 @@ public class Configuration {
 
     private static void parseSystemProperties(Configuration config, Properties systemProperties) {
         config.logActorMessages = getBoolean(LOG_ACTOR_MESSAGES, systemProperties);
+        config.idleTimeout = getLong(IDLE_TIMEOUT, systemProperties, DEFAULT_IDLE_TIMEOUT);
+    }
+
+    private static long getLong(String key, Properties properties, long defaultValue) {
+        String value = properties.getProperty(key);
+        if (value == null) {
+            return defaultValue;
+        }
+        return Long.parseLong(value);
     }
 
     private static boolean getBoolean(String key, Properties properties) {

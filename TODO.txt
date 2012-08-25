@@ -149,11 +149,12 @@ TODO NEXT:
 				SKIP - could instantiate it lazily on start, and shutdown (and set to null) on cancel
 				OK - or just create a Thread directly, using TimeUnit.sleep and Thread.interrupt
 			!! - use VacancyTimeout in Main
-				!! - DaemonProcessTest: daemon exits after the launcher disconnects
+				OK - DaemonProcessTest: daemon exits after the launcher disconnects
 					OK - start with fixed timeout
-					!! - JumiLauncher/SuiteOptions: configure jumi.idleTimeout=1
-					- cancel timeout if somebody connects again (unit test only? or implement reconnect first?)
-				- DaemonProcessTest: daemon exits if it doesn't get connection to launcher
+					OK - JumiLauncher/SuiteOptions: configure jumi.idleTimeout=1
+					SKIP - cancel timeout if somebody connects again (unit test only? or implement reconnect first?)
+				!! - DaemonProcessTest: daemon exits if it doesn't get connection to launcher
+					!! - create end-to-end test
 					- JumiLauncher/SuiteOptions: configure jumi.startupTimeout=1
 					- exit if nobody connects within timeout from startup
 						- use two Timeout instances
@@ -167,6 +168,8 @@ TODO NEXT:
 		- better name? SuiteSetup, SuiteConfig, SuiteConfiguration, SuiteArgs, SuiteParameters
 			-> SuiteConfiguration (also rename core.config.Configuration -> core.bootstrap.DaemonConfiguration)
 		- replace JumiLauncher.start() and all setters with runTests(SuiteOptions)
+		- remove fi.jumi.test.DaemonProcessTest#createLauncher
+	- refactor fi.jumi.core.config.Configuration to have generic parameters?
 
 - migrate to Java 7
 	- find usages of File, migrate to Path
@@ -344,6 +347,7 @@ TODO NEXT:
 	- spike communicating over memory-mapped files
 	- should drive better design on launcher side
 	- connect to existing process
+		- cancel idleTimeout if somebody connects again (unit test only?)
 	- if daemon dies unexpectedly (System.exit/halt, JVM crash etc.), report it and restart next time
 		http://vanillajava.blogspot.com/2011/12/test-complete-failure-of-jvm.html
 	- if daemon disconnects due to network problem, reconnect and resume where we were left?

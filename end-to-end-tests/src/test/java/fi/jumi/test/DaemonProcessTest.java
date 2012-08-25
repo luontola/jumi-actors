@@ -20,6 +20,12 @@ public class DaemonProcessTest {
     private JumiLauncher launcher;
     private Process daemonProcess;
 
+    @Before
+    public void createLauncher() {
+        // TODO: remove me once configuring happens with SuiteOptions, without calling methods on JumiLauncher
+        launcher = app.getLauncher();
+    }
+
     @Test(timeout = Timeouts.END_TO_END_TEST)
     public void daemon_process_can_be_closed_by_sending_it_a_shutdown_command() throws Exception {
         startDaemonProcess();
@@ -32,7 +38,7 @@ public class DaemonProcessTest {
 
     @Test(timeout = Timeouts.END_TO_END_TEST)
     public void daemon_process_will_exit_after_a_timeout_after_all_clients_disconnect() throws Exception {
-        // TODO: set idle timeout to SuiteOptions
+        launcher.setIdleTimeout(0);
         startDaemonProcess();
 
         launcher.close();
@@ -45,7 +51,6 @@ public class DaemonProcessTest {
     private void startDaemonProcess() throws Exception {
         app.runTests("unimportant");
         daemonProcess = app.getDaemonProcess();
-        launcher = app.getLauncher();
         assertThat(daemonProcess, is(alive()));
     }
 }

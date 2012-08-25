@@ -55,8 +55,22 @@ public class DaemonParametersTest {
         assertThat(daemonConfig().logActorMessages, is(true));
     }
 
+    @Test
+    public void can_configure_idle_timeout() {
+        launcher.start();
+
+        assertThat(daemonConfig().idleTimeout, is(Configuration.DEFAULT_IDLE_TIMEOUT));
+
+        launcher.setIdleTimeout(42L);
+        launcher.start();
+
+        assertThat(daemonConfig().idleTimeout, is(42L));
+    }
+
 
     // helpers
+
+    // XXX: complex setup; simplify after extracting configuration methods from JumiLauncher to SuiteOptions
 
     private Configuration daemonConfig() {
         SpyProcessStarter processStarter = new SpyProcessStarter();

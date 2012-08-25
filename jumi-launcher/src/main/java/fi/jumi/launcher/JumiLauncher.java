@@ -46,6 +46,8 @@ public class JumiLauncher implements Closeable {
         externalResources.close();
     }
 
+    // TODO: move these configuration methods to SuiteOptions, pass SuiteOptions as a parameter to start()
+
     public void addToClassPath(File file) {
         suiteOptions.classPath.add(file);
     }
@@ -60,5 +62,9 @@ public class JumiLauncher implements Closeable {
 
     public void enableMessageLogging() {
         suiteOptions.systemProperties.setProperty(Configuration.LOG_ACTOR_MESSAGES, "true");
+    }
+
+    public void setIdleTimeout(long idleTimeout) {
+        suiteOptions.systemProperties.setProperty(Configuration.IDLE_TIMEOUT, String.valueOf(idleTimeout));
     }
 }

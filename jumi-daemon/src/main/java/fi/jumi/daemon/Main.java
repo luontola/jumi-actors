@@ -21,8 +21,6 @@ import java.util.concurrent.*;
 @ThreadSafe
 public class Main {
 
-    private static final int DEFAULT_IDLE_TIMEOUT = 1;
-
     public static void main(String[] args) {
         exitWhenNotAnymoreInUse();
 
@@ -60,8 +58,8 @@ public class Main {
         );
 
         // timeouts for shutting down the system
-        // TODO: make the timeout configurable (default to a couple of seconds; with persistent daemon >15 min)
-        Timeout idleTimeout = new CommandExecutingTimeout(new SystemExit("timed out after everybody disconnected"), DEFAULT_IDLE_TIMEOUT, TimeUnit.MILLISECONDS);
+        Timeout idleTimeout = new CommandExecutingTimeout(
+                new SystemExit("timed out after everybody disconnected"), config.idleTimeout, TimeUnit.MILLISECONDS);
 
         // bootstrap the system
         ActorThread actorThread = actors.startActorThread();
