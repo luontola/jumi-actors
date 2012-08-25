@@ -240,6 +240,8 @@ TODO NEXT:
 
 - misc refactoring
 	- make JUnit print a thread dump when a test times out due to @Test(timeout)
+	- evaluate whether some of the concurrent tests could be made simpler by using MultithreadedTC
+		http://code.google.com/p/multithreadedtc/
 	- rename TestClass to TestCase (or a better term?), wrap it in a value object, allow any files and not just .class (maybe just pretty-print classes)
 		- in Java, "testclass" appears preferable over "fixture":
 		- suggestions: pack, (group), (bundle), file
@@ -339,11 +341,13 @@ TODO NEXT:
 		- also remove the hack in fi.jumi.test.ReleasingResourcesTest#launcher_stops_the_threads_it_started
 
 - end-to-end tests: persistent daemon process
+	- spike communicating over memory-mapped files
 	- should drive better design on launcher side
 	- connect to existing process
 	- if daemon dies unexpectedly (System.exit/halt, JVM crash etc.), report it and restart next time
 		http://vanillajava.blogspot.com/2011/12/test-complete-failure-of-jvm.html
 	- if daemon disconnects due to network problem, reconnect and resume where we were left?
+		- should not exit the JVM (due to idle timeout) while tests are running
 	- make it reliable
 
 - communicate using memory-mapped files?
@@ -426,6 +430,7 @@ TODO NEXT:
 		announce [M]
 			update-www
 			send-emails
+	- upgrade to Go 12.3
 	- enable deployment for all except end-to-end tests and the aggregate pom: jumi-api, jumi-core, jumi-daemon, jumi-launcher
 	- create jumi-integration and add it to the pipeline
 		- integration tests for Specsy
