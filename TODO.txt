@@ -153,11 +153,14 @@ TODO NEXT:
 					OK - start with fixed timeout
 					OK - JumiLauncher/SuiteOptions: configure jumi.idleTimeout=1
 					SKIP - cancel timeout if somebody connects again (unit test only? or implement reconnect first?)
+					!! - unit tests in ConfigurationTest
 				!! - DaemonProcessTest: daemon exits if it doesn't get connection to launcher
-					!! - create end-to-end test
+					!! - create end-to-end test (fake the port number? close the socket right away?)
+						See unassigned ports, e.g. 10 or 1023: http://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers
 					- JumiLauncher/SuiteOptions: configure jumi.startupTimeout=1
 					- exit if nobody connects within timeout from startup
 						- use two Timeout instances
+				- better names for parameters? startupTerminationTimeout, startupExitTimeout, jumi.termination.startupTimeout, jumi.daemon.startupTimeout
 		- check that implemented: RemoteSuiteLauncher, DaemonNetworkEndpoint, or are they needed at all and can be removed?
 	- remove the hack in fi.jumi.daemon.Main#exitWhenNotAnymoreInUse
 	- print a message on daemon startup and shutdown; makes it easier to see from logs that when the JVM was restarted
