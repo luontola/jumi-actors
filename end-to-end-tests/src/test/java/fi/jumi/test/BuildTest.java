@@ -7,8 +7,7 @@ package fi.jumi.test;
 import fi.jumi.launcher.daemon.EmbeddedDaemonJar;
 import fi.jumi.test.PartiallyParameterized.NonParameterized;
 import fi.jumi.test.util.XmlUtils;
-import org.hamcrest.Matcher;
-import org.hamcrest.core.CombinableMatcher;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
@@ -180,11 +179,8 @@ public class BuildTest {
     @SuppressWarnings({"unchecked"})
     public void none_of_the_artifacts_may_contain_classes_from_external_libraries_without_shading_them() {
         for (String content : expectedContents) {
-            // XXX: doesn't work inlined, Java's/Hamcrest's generics are broken (and FEST-Assert doesn't have "or")
-            Matcher m1 = startsWith(POM_FILES);
-            Matcher m2 = startsWith(BASE_PACKAGE);
-            CombinableMatcher matcher = either(m2).or(m1);
-            assertThat("artifact " + artifactId, content, matcher);
+            assertThat("artifact " + artifactId, content, Matchers.<String>
+                    either(startsWith(BASE_PACKAGE)).or(startsWith(POM_FILES)));
         }
     }
 
