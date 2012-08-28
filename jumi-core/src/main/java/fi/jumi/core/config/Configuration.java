@@ -18,44 +18,48 @@ public class Configuration {
 
     // system properties
     public static final String LOG_ACTOR_MESSAGES = "jumi.logActorMessages";
+    public static final String STARTUP_TIMEOUT = "jumi.startupTimeout";
     public static final String IDLE_TIMEOUT = "jumi.idleTimeout";
 
     // default values
+    public static final long DEFAULT_STARTUP_TIMEOUT = TimeUnit.SECONDS.toMillis(30);
     public static final long DEFAULT_IDLE_TIMEOUT = TimeUnit.SECONDS.toMillis(5); // TODO: increase to 15 min, after implementing persistent daemons
 
     public int launcherPort;
     public boolean logActorMessages;
+    public long startupTimeout;
     public long idleTimeout;
 
     public static Configuration parse(String[] args, Properties systemProperties) {
         Configuration config = new Configuration();
-        parseCommandLineArguments(config, args);
-        parseSystemProperties(config, systemProperties);
-        checkRequiredParameters(config);
+        config.parseCommandLineArguments(args);
+        config.parseSystemProperties(systemProperties);
+        config.checkRequiredParameters();
         return config;
     }
 
-    private static void parseCommandLineArguments(Configuration config, String[] args) {
+    private void parseCommandLineArguments(String[] args) {
         Iterator<String> it = Arrays.asList(args).iterator();
         while (it.hasNext()) {
             String parameter = it.next();
             if (parameter.equals(LAUNCHER_PORT)) {
-                config.launcherPort = Integer.parseInt(it.next());
+                launcherPort = Integer.parseInt(it.next());
             } else {
                 throw new IllegalArgumentException("unsupported parameter: " + parameter);
             }
         }
     }
 
-    private static void checkRequiredParameters(Configuration config) {
-        if (config.launcherPort <= 0) {
-            throw new IllegalArgumentException("missing required parameter: " + Configuration.LAUNCHER_PORT);
-        }
+    private void parseSystemProperties(Properties systemProperties) {
+        logActorMessages = getBoolean(LOG_ACTOR_MESSAGES, systemProperties);
+        startupTimeout = getLong(STARTUP_TIMEOUT, systemProperties, DEFAULT_STARTUP_TIMEOUT);
+        idleTimeout = getLong(IDLE_TIMEOUT, systemProperties, DEFAULT_IDLE_TIMEOUT);
     }
 
-    private static void parseSystemProperties(Configuration config, Properties systemProperties) {
-        config.logActorMessages = getBoolean(LOG_ACTOR_MESSAGES, systemProperties);
-        config.idleTimeout = getLong(IDLE_TIMEOUT, systemProperties, DEFAULT_IDLE_TIMEOUT);
+    private void checkRequiredParameters() {
+        if (launcherPort <= 0) {
+            throw new IllegalArgumentException("missing required parameter: " + Configuration.LAUNCHER_PORT);
+        }
     }
 
     private static long getLong(String key, Properties properties, long defaultValue) {

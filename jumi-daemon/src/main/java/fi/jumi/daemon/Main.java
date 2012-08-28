@@ -29,7 +29,7 @@ public class Main {
 
         // timeouts for shutting down this daemon process
         Timeout startupTimeout = new CommandExecutingTimeout(
-                new SystemExit("timed out before anybody connected"), 300, TimeUnit.MILLISECONDS // TODO: make configurable
+                new SystemExit("timed out before anybody connected"), config.startupTimeout, TimeUnit.MILLISECONDS
         );
         startupTimeout.start();
         Timeout idleTimeout = new CommandExecutingTimeout(

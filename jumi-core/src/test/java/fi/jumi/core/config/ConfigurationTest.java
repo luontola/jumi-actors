@@ -44,6 +44,7 @@ public class ConfigurationTest {
 
     // system properties
 
+    // TODO: duplicated with fi.jumi.launcher.DaemonParametersTest?
     @Test
     public void logging_actor_messages_can_be_enabled() {
         Configuration config = parseSystemProperties(Configuration.LOG_ACTOR_MESSAGES, "true");

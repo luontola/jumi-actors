@@ -64,6 +64,10 @@ public class JumiLauncher implements Closeable {
         suiteOptions.systemProperties.setProperty(Configuration.LOG_ACTOR_MESSAGES, "true");
     }
 
+    public void setStartupTimeout(long startupTimeout) {
+        suiteOptions.systemProperties.setProperty(Configuration.STARTUP_TIMEOUT, String.valueOf(startupTimeout));
+    }
+
     public void setIdleTimeout(long idleTimeout) {
         suiteOptions.systemProperties.setProperty(Configuration.IDLE_TIMEOUT, String.valueOf(idleTimeout));
     }

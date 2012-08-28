@@ -67,6 +67,18 @@ public class DaemonParametersTest {
         assertThat(daemonConfig().idleTimeout, is(42L));
     }
 
+    @Test
+    public void can_configure_startup_timeout() {
+        launcher.start();
+
+        assertThat(daemonConfig().startupTimeout, is(Configuration.DEFAULT_STARTUP_TIMEOUT));
+
+        launcher.setStartupTimeout(42L);
+        launcher.start();
+
+        assertThat(daemonConfig().startupTimeout, is(42L));
+    }
+
 
     // helpers
 

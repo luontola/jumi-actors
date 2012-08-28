@@ -125,12 +125,12 @@ TODO NEXT:
 					OK - JumiLauncher/SuiteOptions: configure jumi.idleTimeout=1
 					SKIP - cancel timeout if somebody connects again (unit test only? or implement reconnect first?)
 					!! - unit tests in ConfigurationTest
-				!! - DaemonProcessTest: daemon exits if it doesn't get connection to launcher
+				OK - DaemonProcessTest: daemon exits if it doesn't get connection to launcher
 					OK - create end-to-end test (fake the port number? close the socket right away?)
 						See unassigned ports, e.g. 10 or 1023: http://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers
 					OK - exit if nobody connects within timeout from startup (at first use fixed timeout)
-					!! - JumiLauncher/SuiteOptions: configure jumi.startupTimeout=1
-				- better names for parameters? startupTerminationTimeout, startupExitTimeout, jumi.termination.startupTimeout, jumi.daemon.startupTimeout
+					OK - JumiLauncher/SuiteOptions: configure jumi.startupTimeout=1
+				!! - better names for parameters? startupTerminationTimeout, startupExitTimeout, jumi.termination.startupTimeout, jumi.daemon.startupTimeout
 		- check that implemented: RemoteSuiteLauncher, DaemonNetworkEndpoint, or are they needed at all and can be removed?
 	- remove the hack in fi.jumi.daemon.Main#exitWhenNotAnymoreInUse
 	- print a message on daemon startup and shutdown; makes it easier to see from logs that when the JVM was restarted
@@ -142,6 +142,8 @@ TODO NEXT:
 			-> SuiteConfiguration (also rename core.config.Configuration -> core.bootstrap.DaemonConfiguration)
 		- replace JumiLauncher.start() and all setters with runTests(SuiteOptions)
 		- remove fi.jumi.test.DaemonProcessTest#createLauncher
+	- remove duplication between fi.jumi.core.config.ConfigurationTest and fi.jumi.launcher.DaemonParametersTest
+	- see if there duplication between fi.jumi.core.config.Configuration and SuiteOptions; remove it
 	- refactor fi.jumi.core.config.Configuration to have generic parameters?
 
 - migrate to Java 7
