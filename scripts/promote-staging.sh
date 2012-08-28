@@ -8,7 +8,8 @@ VERSION=`cat build/version`
 
 ruby scripts/upload-maven-repository.rb staging https://oss.sonatype.org/service/local/staging/deploy/maven2
 
-# Cannot set version in parent POM, because it's not checked out to working directory when publishing
+# The POM is not checked out to working directory when this script is run,
+# so we must say manually that which artifact's open staging repository to close.
 mvn org.sonatype.plugins:nexus-maven-plugin:2.1:staging-close \
     --batch-mode \
     --errors \
