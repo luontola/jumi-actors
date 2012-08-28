@@ -17,9 +17,9 @@ public class Configuration {
     public static final String LAUNCHER_PORT = "--launcher-port";
 
     // system properties
-    public static final String LOG_ACTOR_MESSAGES = "jumi.logActorMessages";
-    public static final String STARTUP_TIMEOUT = "jumi.startupTimeout";
-    public static final String IDLE_TIMEOUT = "jumi.idleTimeout";
+    public static final String LOG_ACTOR_MESSAGES = "jumi.actors.logMessages";
+    public static final String STARTUP_TIMEOUT = "jumi.daemon.startupTimeout";
+    public static final String IDLE_TIMEOUT = "jumi.daemon.idleTimeout";
 
     // default values
     public static final long DEFAULT_STARTUP_TIMEOUT = TimeUnit.SECONDS.toMillis(30);

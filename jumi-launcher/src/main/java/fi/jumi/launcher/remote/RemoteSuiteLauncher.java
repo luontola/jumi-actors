@@ -57,7 +57,8 @@ public class RemoteSuiteLauncher implements SuiteLauncher, DaemonListener {
 
     @Override
     public void onDisconnected() {
-        // TODO
+        // TODO: Should we reconnect or something? For now let's defer implementing this, because
+        // this feature might not be needed if we switch to communicating over memory-mapped files.
     }
 
 

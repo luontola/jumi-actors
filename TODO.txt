@@ -4,7 +4,7 @@ TODO NEXT:
 	OK - expose the Process instance from launcher, use it to write e2e-tests (can assert that daemon is shut down)
 		OK - expose the Process instance to tests (use a proxy ProcessLauncher in AppRunner?)
 		OK - in other tests, wait for the process to close
-	!! - send shutdown command to daemon from launcher
+	OK - send shutdown command to daemon from launcher
 		OK - DaemonProcessTest
 		OK - decouple DaemonConnector.listenForDaemonConnection and the suite startup command
 		OK - introduce a launcher-side actor for communicating with the daemon
@@ -70,7 +70,7 @@ TODO NEXT:
 			OK - check code coverage
 		OK - using the above way of sending commands, implement sending the shutdown command
 	SKIP - AppRunner: after receiving the last suite event, send the shutdown command
-	!! - exit after a timeout if no client connects to daemon or the client disconnects
+	OK - exit after a timeout if no client connects to daemon or the client disconnects
 		OK - launcher: disconnect from daemon
 			OK - network: disconnect command
 			OK - launcher: release resources on close()
@@ -108,7 +108,7 @@ TODO NEXT:
 		OK - NetworkEndpointFactory for NetworkServer#listenOnAnyPort
 			OK - hook the factory in
 			OK - tests for multiple connections
-		!! - create a timeout in daemon
+		OK - create a timeout in daemon
 			OK - create utility, names:
 				VacantTimeout, VacancyTimeout (!), DesertionTimeout
 				checkIn/checkOut (!)
@@ -119,20 +119,20 @@ TODO NEXT:
 			OK - avoid unused threads in RunnableExecutingTimeout
 				SKIP - could instantiate it lazily on start, and shutdown (and set to null) on cancel
 				OK - or just create a Thread directly, using TimeUnit.sleep and Thread.interrupt
-			!! - use VacancyTimeout in Main
+			OK - use VacancyTimeout in Main
 				OK - DaemonProcessTest: daemon exits after the launcher disconnects
 					OK - start with fixed timeout
 					OK - JumiLauncher/SuiteOptions: configure jumi.idleTimeout=1
 					SKIP - cancel timeout if somebody connects again (unit test only? or implement reconnect first?)
-					!! - unit tests in ConfigurationTest
+					SKIP - unit tests in ConfigurationTest
 				OK - DaemonProcessTest: daemon exits if it doesn't get connection to launcher
 					OK - create end-to-end test (fake the port number? close the socket right away?)
 						See unassigned ports, e.g. 10 or 1023: http://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers
 					OK - exit if nobody connects within timeout from startup (at first use fixed timeout)
 					OK - JumiLauncher/SuiteOptions: configure jumi.startupTimeout=1
-				!! - better names for parameters? startupTerminationTimeout, startupExitTimeout, jumi.termination.startupTimeout, jumi.daemon.startupTimeout
-		- check that implemented: RemoteSuiteLauncher, DaemonNetworkEndpoint, or are they needed at all and can be removed?
-	- remove the hack in fi.jumi.daemon.Main#exitWhenNotAnymoreInUse
+				OK - better names for parameters? startupTerminationTimeout, startupExitTimeout, jumi.termination.startupTimeout, jumi.daemon.startupTimeout
+		OK - check that implemented: RemoteSuiteLauncher, DaemonNetworkEndpoint, or are they needed at all and can be removed?
+	!! - remove the hack in fi.jumi.daemon.Main#exitWhenNotAnymoreInUse
 	- print a message on daemon startup and shutdown; makes it easier to see from logs that when the JVM was restarted
 		- make is possible to assert what the daemon prints (plug a spy in AppRunner's createDaemonOutputListener)
 		- add assertions to DaemonProcessTest
