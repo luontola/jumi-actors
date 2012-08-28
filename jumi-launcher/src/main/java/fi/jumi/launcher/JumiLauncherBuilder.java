@@ -70,7 +70,7 @@ public class JumiLauncherBuilder {
     }
 
     protected File getSettingsDirectory() {
-        return new File(".jumi"); // TODO: put into user home
+        return new File(".jumi"); // TODO: put into user home; also update fi.jumi.launcher.daemon.DirBasedSteward.settingsDir
     }
 
 

@@ -144,11 +144,20 @@ TODO NEXT:
 			-> SuiteConfiguration (also rename core.config.Configuration -> core.bootstrap.DaemonConfiguration)
 		- replace JumiLauncher.start() and all setters with runTests(SuiteOptions)
 		- remove fi.jumi.test.DaemonProcessTest#createLauncher
+	- simplify the setup in DaemonParametersTest: don't instantiate JumiLauncher, use only SuiteOptions and Configuration
 	- remove duplication between fi.jumi.core.config.ConfigurationTest and fi.jumi.launcher.DaemonParametersTest
 	- see if there duplication between fi.jumi.core.config.Configuration and SuiteOptions; remove it
 	- refactor fi.jumi.core.config.Configuration to have generic parameters?
 
 - migrate to Java 7
+	- change language level in all modules except jumi-actors et al?
+		- check bytecode level in BuildTest
+		- update POMs: default language level to parent, override in specific modules
+		- double-check that bytecode manipulation generates stackmap frames when parsing & producing Java 7 bytecode
+			http://weblogs.java.net/blog/fabriziogiudici/archive/2012/05/07/understanding-subtle-new-behaviours-jdk-7
+			http://download.forge.objectweb.org/asm/asm4-guide.pdf
+				3.1.5 pages 39-41: stack map frames explained
+				3.2.1 page 44: ClassWriter options for computing them automatically (slower)
 	- find usages of File, migrate to Path
 		http://docs.oracle.com/javase/tutorial/essential/io/fileio.html
 		http://docs.oracle.com/javase/tutorial/essential/io/legacy.html
@@ -308,14 +317,7 @@ TODO NEXT:
 - write daemon output to log file
 	- use Process.getInputStream to write the log file in JumiLauncher's process
 	- update e2e tests to read the output from the log file
-	- upgrade to Java 7 (except jumi-actors et al?)
-		- check bytecode level in BuildTest
-		- update POMs: default language level to parent, override in specific modules
-		- double-check that bytecode manipulation generates stackmap frames when producing Java 7 bytecode
-			http://weblogs.java.net/blog/fabriziogiudici/archive/2012/05/07/understanding-subtle-new-behaviours-jdk-7
-			http://download.forge.objectweb.org/asm/asm4-guide.pdf
-				3.1.5 pages 39-41: stack map frames explained
-				3.2.1 page 44: ClassWriter options for computing them automatically (slower)
+	- upgrade to Java 7
 	- use ProcessBuilder.redirectOutput to write the log file (else the process would hang when the launcher JVM exits)
 	- get rid of fi.jumi.launcher.remote.ProcessStartingDaemonSummoner#copyInBackground
 		- don't create background threads in the launcher automatically (the tests should create them explicitly, if any)

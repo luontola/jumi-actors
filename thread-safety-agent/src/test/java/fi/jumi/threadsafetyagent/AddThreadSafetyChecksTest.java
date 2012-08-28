@@ -17,6 +17,7 @@ import static fi.jumi.threadsafetyagent.ThreadUtil.runInNewThread;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
+@SuppressWarnings({"UnusedDeclaration", "ThrowableResultOfMethodCallIgnored"})
 public class AddThreadSafetyChecksTest {
 
     private static final String DUMMY_EXCEPTION = "dummy exception";
@@ -161,9 +162,9 @@ public class AddThreadSafetyChecksTest {
 
     // line number helpers
 
-    private static int getDummyExceptionLineNumber(Runnable notIstrumented) {
-        Throwable t = getDummyExceptionThrownBy(notIstrumented);
-        return getLineNumber(notIstrumented.getClass(), "run", t);
+    private static int getDummyExceptionLineNumber(Runnable notInstrumented) {
+        Throwable t = getDummyExceptionThrownBy(notInstrumented);
+        return getLineNumber(notInstrumented.getClass(), "run", t);
     }
 
     private static int getThreadSafetyCheckerExceptionLineNumber(Runnable instrumented) {
@@ -171,9 +172,9 @@ public class AddThreadSafetyChecksTest {
         return getLineNumber(instrumented.getClass(), "run", t.getCause());
     }
 
-    private static Throwable getDummyExceptionThrownBy(Runnable notIstrumented) { // TODO: remove duplication?
+    private static Throwable getDummyExceptionThrownBy(Runnable notInstrumented) {
         try {
-            notIstrumented.run();
+            notInstrumented.run();
             return null;
         } catch (Exception e) {
             assertThat("class should NOT have been instrumented", e.getMessage(), is(DUMMY_EXCEPTION));

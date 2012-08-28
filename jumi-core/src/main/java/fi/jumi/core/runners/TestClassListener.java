@@ -9,8 +9,6 @@ import fi.jumi.core.runs.RunId;
 
 public interface TestClassListener {
 
-    // TODO: consider eliminating redundant parameters
-
     void onTestFound(TestId testId, String name);
 
     void onRunStarted(RunId runId);

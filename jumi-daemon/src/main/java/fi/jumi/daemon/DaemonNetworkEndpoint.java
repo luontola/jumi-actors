@@ -32,7 +32,7 @@ public class DaemonNetworkEndpoint implements NetworkEndpoint<Event<CommandListe
         startupTimeout.cancel();
         connections.checkIn();
 
-        // TODO: notify the coordinator on disconnect
+        // TODO: Notify the coordinator on disconnect? Defer implementing for now, in case memory-mapped files make this obsolete.
         SuiteListener listener = new SuiteListenerEventizer().newFrontend(sender);
         coordinator.tell().addSuiteListener(listener);
     }

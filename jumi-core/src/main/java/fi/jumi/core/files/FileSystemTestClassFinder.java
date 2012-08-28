@@ -32,7 +32,6 @@ public class FileSystemTestClassFinder implements TestClassFinder {
             listener.tell().onTestClassFound(testClass);
 
         } catch (MalformedURLException e) {
-            // TODO: use sneaky throw? http://blog.jayway.com/2010/01/29/sneaky-throw/
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {
             // no class matching the pattern; fail silently
