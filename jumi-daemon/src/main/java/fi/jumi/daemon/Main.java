@@ -27,6 +27,15 @@ public class Main {
 
         Configuration config = Configuration.parse(args, System.getProperties());
 
+        // timeouts for shutting down this daemon process
+        Timeout startupTimeout = new CommandExecutingTimeout(
+                new SystemExit("timed out before anybody connected"), 300, TimeUnit.MILLISECONDS // TODO: make configurable
+        );
+        startupTimeout.start();
+        Timeout idleTimeout = new CommandExecutingTimeout(
+                new SystemExit("timed out after everybody disconnected"), config.idleTimeout, TimeUnit.MILLISECONDS
+        );
+
         // logging configuration
         PrintStream logOutput = System.out;
         FailureHandler failureHandler = new PrintStreamFailureLogger(logOutput);
@@ -58,17 +67,13 @@ public class Main {
                 messageListener
         );
 
-        // timeouts for shutting down the system
-        Timeout idleTimeout = new CommandExecutingTimeout(
-                new SystemExit("timed out after everybody disconnected"), config.idleTimeout, TimeUnit.MILLISECONDS);
-
         // bootstrap the system
         ActorThread actorThread = actors.startActorThread();
         ActorRef<CommandListener> coordinator =
                 actorThread.bindActor(CommandListener.class, new TestRunCoordinator(actorThread, testsThreadPool));
 
         NetworkClient client = new NettyNetworkClient();
-        client.connect("127.0.0.1", config.launcherPort, new DaemonNetworkEndpoint(coordinator, idleTimeout));
+        client.connect("127.0.0.1", config.launcherPort, new DaemonNetworkEndpoint(coordinator, startupTimeout, idleTimeout));
     }
 
     private static void exitWhenNotAnymoreInUse() { // TODO: remove me once we have idleTimeout and startupTimeout

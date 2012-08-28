@@ -18,16 +18,20 @@ import javax.annotation.concurrent.ThreadSafe;
 public class DaemonNetworkEndpoint implements NetworkEndpoint<Event<CommandListener>, Event<SuiteListener>> {
 
     private final ActorRef<CommandListener> coordinator;
+    private final Timeout startupTimeout;
     private final VacancyTimeout connections;
 
-    public DaemonNetworkEndpoint(ActorRef<CommandListener> coordinator, Timeout idleTimeout) {
+    public DaemonNetworkEndpoint(ActorRef<CommandListener> coordinator, Timeout startupTimeout, Timeout idleTimeout) {
         this.coordinator = coordinator;
+        this.startupTimeout = startupTimeout;
         this.connections = new VacancyTimeout(idleTimeout);
     }
 
     @Override
     public void onConnected(NetworkConnection connection, MessageSender<Event<SuiteListener>> sender) {
+        startupTimeout.cancel();
         connections.checkIn();
+
         // TODO: notify the coordinator on disconnect
         SuiteListener listener = new SuiteListenerEventizer().newFrontend(sender);
         coordinator.tell().addSuiteListener(listener);

@@ -44,7 +44,6 @@ public class DaemonProcessTest {
         assertEventually(daemonProcess, is(dead()), Timeouts.ASSERTION);
     }
 
-    @Ignore("not implemented")
     @Test(timeout = Timeouts.END_TO_END_TEST)
     public void daemon_process_will_exit_if_it_cannot_connect_to_the_launcher_on_startup() throws Exception {
         app.setMockNetworkServer(new NonFunctionalNetworkServer());
