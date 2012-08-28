@@ -14,7 +14,7 @@ import fi.jumi.core.network.*;
 import fi.jumi.core.util.PrefixedThreadFactory;
 import fi.jumi.daemon.timeout.*;
 
-import javax.annotation.concurrent.*;
+import javax.annotation.concurrent.ThreadSafe;
 import java.io.PrintStream;
 import java.util.concurrent.*;
 
@@ -23,7 +23,6 @@ public class Main {
 
     public static void main(String[] args) {
         System.out.println("Jumi Daemon starting up..."); // TODO: write a test for this and also print version number
-        exitWhenNotAnymoreInUse();
 
         Configuration config = Configuration.parse(args, System.getProperties());
 
@@ -74,26 +73,5 @@ public class Main {
 
         NetworkClient client = new NettyNetworkClient();
         client.connect("127.0.0.1", config.launcherPort, new DaemonNetworkEndpoint(coordinator, startupTimeout, idleTimeout));
-    }
-
-    private static void exitWhenNotAnymoreInUse() { // TODO: remove me once we have idleTimeout and startupTimeout
-        @Immutable
-        class DelayedSystemExit implements Runnable {
-            @Override
-            public void run() {
-                int delayMillis = 2 * 1000;
-                try {
-                    Thread.sleep(delayMillis);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                System.out.println(getClass().getName()
-                        + ": the system has been running " + delayMillis + " ms; exiting the JVM now");
-                System.exit(0);
-            }
-        }
-        Thread t = new Thread(new DelayedSystemExit());
-        t.setDaemon(true);
-        t.start();
     }
 }
