@@ -45,9 +45,9 @@ public class Main {
         // thread pool configuration
         Executor actorsThreadPool = // messages already logged by the Actors implementation
                 Executors.newCachedThreadPool(new PrefixedThreadFactory("jumi-actors-"));
-        // TODO: do not create unlimited numbers of threads; make it by default CPUs+1 or something
+        // TODO: make the number of test threads by default the number of CPUs + 1 or similar
         Executor testsThreadPool = messageListener.getListenedExecutor(
-                Executors.newCachedThreadPool(new PrefixedThreadFactory("jumi-tests-")));
+                Executors.newFixedThreadPool(4, new PrefixedThreadFactory("jumi-tests-")));
 
         // actors configuration
         // TODO: not all of these eventizers might be needed - create a statistics gathering EventizerProvider

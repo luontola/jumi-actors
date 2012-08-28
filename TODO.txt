@@ -219,6 +219,7 @@ TODO NEXT:
 	- add the benchmark results to the web site
 
 - misc refactoring
+	- make the number of test threads by default the number of CPUs + 1 or similar
 	- make JUnit print a thread dump when a test times out due to @Test(timeout)
 	- evaluate whether some of the concurrent tests could be made simpler by using MultithreadedTC
 		http://code.google.com/p/multithreadedtc/
