@@ -134,6 +134,8 @@ TODO NEXT:
 		- check that implemented: RemoteSuiteLauncher, DaemonNetworkEndpoint, or are they needed at all and can be removed?
 	- remove the hack in fi.jumi.daemon.Main#exitWhenNotAnymoreInUse
 	- print a message on daemon startup and shutdown; makes it easier to see from logs that when the JVM was restarted
+		- make is possible to assert what the daemon prints (plug a spy in AppRunner's createDaemonOutputListener)
+		- add assertions to DaemonProcessTest
 		- also print daemon version on startup, read from pom.properties
 	- refactor JumiLauncher
 		- create SuiteOptionsBuilder

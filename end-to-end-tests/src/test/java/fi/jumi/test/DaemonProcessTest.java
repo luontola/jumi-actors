@@ -30,7 +30,7 @@ public class DaemonProcessTest {
         launcher.shutdownDaemon();
 
         assertEventually(daemonProcess, is(dead()), Timeouts.ASSERTION);
-        // TODO: assert on the message that the daemon prints on shutdown?
+        // TODO: assert on the message that the daemon prints on shutdown
     }
 
     @Test(timeout = Timeouts.END_TO_END_TEST)
@@ -42,6 +42,7 @@ public class DaemonProcessTest {
         launcher.close();
 
         assertEventually(daemonProcess, is(dead()), Timeouts.ASSERTION);
+        // TODO: assert on the message that the daemon prints on shutdown
     }
 
     @Test(timeout = Timeouts.END_TO_END_TEST)
@@ -53,6 +54,7 @@ public class DaemonProcessTest {
         startDaemonProcessAsynchronously();
 
         assertEventually(daemonProcess, is(dead()), Timeouts.ASSERTION);
+        // TODO: assert on the message that the daemon prints on shutdown
     }
 
 
