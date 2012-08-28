@@ -4,7 +4,7 @@
 
 package fi.jumi.test;
 
-import fi.jumi.core.network.FutureValue;
+import fi.jumi.core.network.*;
 import fi.jumi.core.runs.RunId;
 import fi.jumi.core.util.Strings;
 import fi.jumi.launcher.*;
@@ -29,11 +29,16 @@ public class AppRunner implements TestRule {
 
     private final SpyProcessStarter processStarter = new SpyProcessStarter(new SystemProcessStarter());
     private final ByteArrayOutputStream out = new ByteArrayOutputStream();
+    private NetworkServer mockNetworkServer = null;
 
     private JumiLauncher launcher;
     private TextUIParser ui;
 
     public AppRunner() {
+    }
+
+    public void setMockNetworkServer(NetworkServer mockNetworkServer) {
+        this.mockNetworkServer = mockNetworkServer;
     }
 
     public JumiLauncher getLauncher() {
@@ -57,13 +62,21 @@ public class AppRunner implements TestRule {
             }
 
             @Override
+            protected NetworkServer createNetworkServer() {
+                if (mockNetworkServer != null) {
+                    return mockNetworkServer;
+                }
+                return super.createNetworkServer();
+            }
+
+            @Override
             protected Writer createDaemonOutputListener() {
                 return new SystemOutWriter();
             }
         }
 
-        JumiLauncher launcher = new CustomJumiLauncherBuilder()
-                .build();
+        JumiLauncherBuilder builder = new CustomJumiLauncherBuilder();
+        JumiLauncher launcher = builder.build();
 
         if (TestSystemProperties.useThreadSafetyAgent()) {
             String threadSafetyAgent = TestEnvironment.getProjectJar("thread-safety-agent").getAbsolutePath();
@@ -83,10 +96,7 @@ public class AppRunner implements TestRule {
     }
 
     public void runTests(String testsToInclude) throws Exception {
-        JumiLauncher launcher = getLauncher();
-        launcher.addToClassPath(TestEnvironment.getSampleClasses());
-        launcher.setTestsToInclude(testsToInclude);
-        launcher.start();
+        startTests(testsToInclude);
 
         TextUI ui = new TextUI(new PrintStream(out), new PrintStream(out), launcher.getEventStream());
         ui.updateUntilFinished();
@@ -94,6 +104,13 @@ public class AppRunner implements TestRule {
         String output = out.toString();
         printTextUIOutput(output);
         this.ui = new TextUIParser(output);
+    }
+
+    public void startTests(String testsToInclude) {
+        JumiLauncher launcher = getLauncher();
+        launcher.addToClassPath(TestEnvironment.getSampleClasses());
+        launcher.setTestsToInclude(testsToInclude);
+        launcher.start();
     }
 
     private static void printTextUIOutput(String output) {
