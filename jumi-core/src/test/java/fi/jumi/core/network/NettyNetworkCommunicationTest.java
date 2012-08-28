@@ -18,7 +18,7 @@ public class NettyNetworkCommunicationTest {
 
     private static final long TIMEOUT = 1000;
     private static final long ASSERT_TIMEOUT = 500;
-    private static final boolean LOGGING = true;
+    private static final boolean LOGGING = false;
 
     private final ExecutorService clientExecutor = Executors.newCachedThreadPool();
     private final ExecutorService serverExecutor = Executors.newCachedThreadPool();

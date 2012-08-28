@@ -1,34 +1,5 @@
 
 TODO NEXT:
-- investigate sporadic timeouts in RunningTestsTest
-	OK - improve the logging: now does not show messages that SuiteRunner sends to clients
-	OK - consider implemeting proper daemon shutdown sooner
-	... - keep an eye on what happens
-		OK - 2012-08-04: call super from event handlers
-		OK - 2012-08-10: override disconnectRequested in addition to channelDisconnected
-			elo 07, 2012 9:08:00 IP. fi.jumi.core.network.NettyNetworkServer
-			INFO: [id: 0x170278c5, /127.0.0.1:55340 => /127.0.0.1:55339] DISCONNECT     <- DownstreamChannelStateEvent instead of UpstreamChannelStateEvent!
-			elo 07, 2012 9:08:00 IP. fi.jumi.core.network.NettyNetworkClient
-			INFO: [id: 0x7a51e6b8, /127.0.0.1:55340 :> /127.0.0.1:55339] DISCONNECTED
-			ClientNetworkEndpoint.onDisconnected
-		OK - 2012-08-10: listen for open/close events instead of connected/disconnected
-		!! - run "mvn verify" in a loop for a long time to see if it happens again
-			while true; do mvn clean verify || break; done
-
-- fragile ReleasingResourcesTest.launcher_stops_the_threads_it_started;
-	SKIP - which "jumi-launcher-1" is it?
-		- add a static pool counter to PrefixedThreadFactory, "jumi-launcher-{pool}-thread-{thread}"
-		- should the pool counter be global or per pattern?
-		- rename to NamedThreadFactory
-		- update all usages to use pool counter
-		- temporarily enable actor logging in launcher, to see which launcher pool it uses
-	OK - print the state of the threads when they fail an assertion
-	... - keep an eye on what happens
-		OK - try filtering based on Thread.isAlive() in fi.jumi.test.util.Threads#getActiveThreads
-		OK - try joining the thread, in case JVM doesn't update the state immediately
-			-> already join(1) appears to update the state
-			OK - join and filter based on isAlive
-
 !! - proper daemon shutdown
 	OK - expose the Process instance from launcher, use it to write e2e-tests (can assert that daemon is shut down)
 		OK - expose the Process instance to tests (use a proxy ProcessLauncher in AppRunner?)
