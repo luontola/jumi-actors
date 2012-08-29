@@ -9,9 +9,11 @@ import fi.jumi.launcher.JumiLauncher;
 import org.junit.*;
 
 import java.io.IOException;
+import java.util.Scanner;
 
 import static fi.jumi.core.util.AsyncAssert.assertEventually;
 import static fi.jumi.test.util.ProcessMatchers.*;
+import static org.fest.assertions.Assertions.assertThat;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -24,13 +26,20 @@ public class DaemonProcessTest {
     private Process daemonProcess;
 
     @Test(timeout = Timeouts.END_TO_END_TEST)
+    public void daemon_process_prints_the_program_name_and_version_number_on_startup() throws Exception {
+        startDaemonProcess();
+
+        assertThat(firstLine(app.getCurrentDaemonOutput())).matches("Jumi " + BuildTest.VERSION_PATTERN + " starting up");
+    }
+
+    @Test(timeout = Timeouts.END_TO_END_TEST)
     public void daemon_process_can_be_closed_by_sending_it_a_shutdown_command() throws Exception {
         startDaemonProcess();
 
         launcher.shutdownDaemon();
 
         assertEventually(daemonProcess, is(dead()), Timeouts.ASSERTION);
-        assertThat(app.getDaemonOutput(), containsString("The system will now exit: ordered to shut down"));
+        assertThat(app.getFinishedDaemonOutput(), containsString("The system will now exit: ordered to shut down"));
     }
 
     @Test(timeout = Timeouts.END_TO_END_TEST)
@@ -42,7 +51,7 @@ public class DaemonProcessTest {
         launcher.close();
 
         assertEventually(daemonProcess, is(dead()), Timeouts.ASSERTION);
-        assertThat(app.getDaemonOutput(), containsString("The system will now exit: timed out after everybody disconnected"));
+        assertThat(app.getFinishedDaemonOutput(), containsString("The system will now exit: timed out after everybody disconnected"));
     }
 
     @Test(timeout = Timeouts.END_TO_END_TEST)
@@ -54,7 +63,7 @@ public class DaemonProcessTest {
         startDaemonProcessAsynchronously();
 
         assertEventually(daemonProcess, is(dead()), Timeouts.ASSERTION);
-        assertThat(app.getDaemonOutput(), containsString("The system will now exit: timed out before anybody connected"));
+        assertThat(app.getFinishedDaemonOutput(), containsString("The system will now exit: timed out before anybody connected"));
     }
 
 
@@ -74,6 +83,10 @@ public class DaemonProcessTest {
         launcher = app.getLauncher();
         daemonProcess = app.getDaemonProcess();
         assertThat(daemonProcess, is(alive()));
+    }
+
+    private static String firstLine(String output) {
+        return new Scanner(output).nextLine();
     }
 
     private static class NonFunctionalNetworkServer implements NetworkServer {

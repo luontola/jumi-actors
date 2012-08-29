@@ -46,6 +46,10 @@ public class BuildTest {
             "fi/jumi/threadsafetyagent/",
     };
 
+    public static final String RELEASE_VERSION_PATTERN = "\\d+\\.\\d+\\.\\d+";
+    public static final String SNAPSHOT_VERSION_PATTERN = "\\d+\\.\\d+-SNAPSHOT";
+    public static final String VERSION_PATTERN = "(" + RELEASE_VERSION_PATTERN + "|" + SNAPSHOT_VERSION_PATTERN + ")";
+
     private final String artifactId;
     private final List<String> expectedDependencies;
     private final List<String> expectedContents;
@@ -147,11 +151,11 @@ public class BuildTest {
     }
 
     private static boolean isRelease(String version) {
-        return version.matches("\\d+\\.\\d+\\.\\d+");
+        return version.matches(RELEASE_VERSION_PATTERN);
     }
 
     private static boolean isSnapshot(String version) {
-        return version.matches("\\d+\\.\\d+-SNAPSHOT");
+        return version.matches(SNAPSHOT_VERSION_PATTERN);
     }
 
     private Properties getMavenArtifactProperties(String filename) throws IOException {

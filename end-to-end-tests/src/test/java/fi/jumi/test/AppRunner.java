@@ -92,8 +92,12 @@ public class AppRunner implements TestRule {
         return processStarter.lastProcess.get();
     }
 
-    public String getDaemonOutput() throws InterruptedException {
+    public String getFinishedDaemonOutput() throws InterruptedException {
         daemonOutput.await();
+        return getCurrentDaemonOutput();
+    }
+
+    public String getCurrentDaemonOutput() throws InterruptedException {
         return daemonOutput.toString();
     }
 

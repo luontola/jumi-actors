@@ -15,7 +15,7 @@ import fi.jumi.core.util.PrefixedThreadFactory;
 import fi.jumi.daemon.timeout.*;
 
 import javax.annotation.concurrent.ThreadSafe;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.concurrent.*;
 
 @ThreadSafe
@@ -25,8 +25,8 @@ public class Main {
     private static final SystemExit SHUTDOWN_ON_IDLE_TIMEOUT = new SystemExit("timed out after everybody disconnected");
     private static final SystemExit SHUTDOWN_ON_USER_COMMAND = new SystemExit("ordered to shut down");
 
-    public static void main(String[] args) {
-        System.out.println("Jumi Daemon starting up..."); // TODO: write a test for this and also print version number
+    public static void main(String[] args) throws IOException {
+        System.out.println("Jumi " + DaemonArtifact.getVersion() + " starting up");
 
         Configuration config = Configuration.parse(args, System.getProperties());
 
