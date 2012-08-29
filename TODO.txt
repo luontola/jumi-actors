@@ -143,9 +143,10 @@ TODO NEXT:
 		OK - remove duplication between fi.jumi.core.config.ConfigurationTest and fi.jumi.launcher.DaemonParametersTest
 		OK - simplify the setup in DaemonParametersTest: don't instantiate JumiLauncher, use only SuiteOptions and Configuration
 		!! - create SuiteOptionsBuilder
-			- use in ConfigurationTest
-			- use in AppRunner
-		- make SuiteOptions immutable
+			!! - consider separating the classes which convert parameters to/from system properties vs. which hold/configure the parameters
+			- consider separate classes for daemon-scoped vs. suite-scoped parameters (defer until persistent daemons?)
+			- use builder in ConfigurationTest, AppRunner
+			- make SuiteOptions immutable
 		- better name? SuiteSetup, SuiteConfig, SuiteConfiguration, SuiteArgs, SuiteParameters
 			-> SuiteConfiguration (also rename core.config.Configuration -> core.bootstrap.DaemonConfiguration)
 		- see if there duplication between fi.jumi.core.config.Configuration and SuiteOptions; remove it
