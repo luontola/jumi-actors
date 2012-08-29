@@ -44,7 +44,6 @@ public class ConfigurationTest {
 
     // system properties
 
-    // TODO: duplicated with fi.jumi.launcher.DaemonParametersTest?
     @Test
     public void logging_actor_messages_can_be_enabled() {
         Configuration config = parseSystemProperties(Configuration.LOG_ACTOR_MESSAGES, "true");
@@ -59,8 +58,44 @@ public class ConfigurationTest {
         assertThat(config.logActorMessages, is(false));
     }
 
+    @Test
+    public void startup_timeout_can_be_changed() {
+        SuiteOptions options = new SuiteOptions();
+        options.setStartupTimeout(42L);
+        Configuration config = parseSuiteOptions(options);
+
+        assertThat(config.startupTimeout, is(42L));
+    }
+
+    @Test
+    public void startup_timeout_has_a_default_value() {
+        Configuration config = defaultConfig();
+
+        assertThat(config.startupTimeout, is(Configuration.DEFAULT_STARTUP_TIMEOUT));
+    }
+
+    @Test
+    public void idle_timeout_can_be_changed() {
+        SuiteOptions options = new SuiteOptions();
+        options.setIdleTimeout(42L);
+        Configuration config = parseSuiteOptions(options);
+
+        assertThat(config.idleTimeout, is(42L));
+    }
+
+    @Test
+    public void idle_timeout_has_a_default_value() {
+        Configuration config = defaultConfig();
+
+        assertThat(config.idleTimeout, is(Configuration.DEFAULT_IDLE_TIMEOUT));
+    }
+
 
     // helpers
+
+    private static Configuration parseSuiteOptions(SuiteOptions options) {
+        return Configuration.parse(dummyArgs(), options.systemProperties);
+    }
 
     private Configuration parseArgs(String... args) {
         return Configuration.parse(args, new Properties());

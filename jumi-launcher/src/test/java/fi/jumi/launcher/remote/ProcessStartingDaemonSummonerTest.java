@@ -5,13 +5,15 @@
 package fi.jumi.launcher.remote;
 
 import fi.jumi.actors.ActorRef;
+import fi.jumi.core.config.*;
 import fi.jumi.core.network.*;
-import fi.jumi.launcher.*;
+import fi.jumi.launcher.FakeProcess;
 import fi.jumi.launcher.daemon.Steward;
 import fi.jumi.launcher.process.*;
 import org.junit.Test;
 
 import java.io.*;
+import java.util.Properties;
 
 import static fi.jumi.core.util.AsyncAssert.assertEventually;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -43,7 +45,12 @@ public class ProcessStartingDaemonSummonerTest {
 
         daemonSummoner.connectToDaemon(suiteOptions, dummyListener);
 
-        assertThat(processStarter.lastArgs, is(hasItemInArray("123")));
+        Configuration daemonConfig = parseDaemonArguments(processStarter.lastArgs);
+        assertThat(daemonConfig.launcherPort, is(123));
+    }
+
+    private static Configuration parseDaemonArguments(String[] args) {
+        return Configuration.parse(args, new Properties());
     }
 
     @Test

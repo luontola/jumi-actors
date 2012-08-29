@@ -8,6 +8,7 @@ import fi.jumi.actors.ActorRef;
 import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.*;
 import fi.jumi.core.SuiteListener;
+import fi.jumi.core.config.SuiteOptions;
 import fi.jumi.launcher.remote.SuiteLauncher;
 
 import javax.annotation.concurrent.ThreadSafe;

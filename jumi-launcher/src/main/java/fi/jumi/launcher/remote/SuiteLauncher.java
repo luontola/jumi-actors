@@ -7,7 +7,7 @@ package fi.jumi.launcher.remote;
 import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.MessageSender;
 import fi.jumi.core.SuiteListener;
-import fi.jumi.launcher.SuiteOptions;
+import fi.jumi.core.config.SuiteOptions;
 
 public interface SuiteLauncher {
 

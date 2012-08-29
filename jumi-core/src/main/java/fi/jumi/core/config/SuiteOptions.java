@@ -2,9 +2,7 @@
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
-package fi.jumi.launcher;
-
-import fi.jumi.core.config.Configuration;
+package fi.jumi.core.config;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.io.File;

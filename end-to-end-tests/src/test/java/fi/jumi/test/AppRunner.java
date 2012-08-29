@@ -4,6 +4,7 @@
 
 package fi.jumi.test;
 
+import fi.jumi.core.config.SuiteOptions;
 import fi.jumi.core.network.*;
 import fi.jumi.core.runs.RunId;
 import fi.jumi.core.util.Strings;
