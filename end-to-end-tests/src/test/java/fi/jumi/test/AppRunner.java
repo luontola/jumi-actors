@@ -10,6 +10,7 @@ import fi.jumi.core.util.Strings;
 import fi.jumi.launcher.*;
 import fi.jumi.launcher.process.*;
 import fi.jumi.launcher.ui.TextUI;
+import fi.jumi.test.util.*;
 import org.apache.commons.io.FileUtils;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
@@ -28,7 +29,7 @@ public class AppRunner implements TestRule {
     private final File sandboxDir = new File(TestEnvironment.getSandboxDir(), UUID.randomUUID().toString());
 
     private final SpyProcessStarter processStarter = new SpyProcessStarter(new SystemProcessStarter());
-    private final ByteArrayOutputStream out = new ByteArrayOutputStream();
+    private final CloseAwaitableStringWriter daemonOutput = new CloseAwaitableStringWriter();
     private NetworkServer mockNetworkServer = null;
 
     private JumiLauncher launcher;
@@ -71,7 +72,7 @@ public class AppRunner implements TestRule {
 
             @Override
             protected Writer createDaemonOutputListener() {
-                return new SystemOutWriter();
+                return new WriterMultiplexer(new SystemOutWriter(), daemonOutput);
             }
         }
 
@@ -91,6 +92,11 @@ public class AppRunner implements TestRule {
         return processStarter.lastProcess.get();
     }
 
+    public String getDaemonOutput() throws InterruptedException {
+        daemonOutput.await();
+        return daemonOutput.toString();
+    }
+
     public void runTests(Class<?> clazz) throws Exception {
         runTests(clazz.getName());
     }
@@ -98,10 +104,11 @@ public class AppRunner implements TestRule {
     public void runTests(String testsToInclude) throws Exception {
         startTests(testsToInclude);
 
-        TextUI ui = new TextUI(new PrintStream(out), new PrintStream(out), launcher.getEventStream());
+        ByteArrayOutputStream outputBuffer = new ByteArrayOutputStream();
+        TextUI ui = new TextUI(new PrintStream(outputBuffer), new PrintStream(outputBuffer), launcher.getEventStream());
         ui.updateUntilFinished();
 
-        String output = out.toString();
+        String output = outputBuffer.toString();
         printTextUIOutput(output);
         this.ui = new TextUIParser(output);
     }
@@ -223,23 +230,6 @@ public class AppRunner implements TestRule {
             Process process = processStarter.startJavaProcess(jvmArgs);
             lastProcess.set(process);
             return process;
-        }
-    }
-
-    private static class SystemOutWriter extends Writer {
-        @Override
-        public void write(char[] cbuf, int off, int len) {
-            System.out.print(new String(cbuf, off, len));
-        }
-
-        @Override
-        public void flush() {
-            System.out.flush();
-        }
-
-        @Override
-        public void close() {
-            flush();
         }
     }
 }

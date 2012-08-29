@@ -21,6 +21,10 @@ import java.util.concurrent.*;
 @ThreadSafe
 public class Main {
 
+    private static final SystemExit SHUTDOWN_ON_STARTUP_TIMEOUT = new SystemExit("timed out before anybody connected");
+    private static final SystemExit SHUTDOWN_ON_IDLE_TIMEOUT = new SystemExit("timed out after everybody disconnected");
+    private static final SystemExit SHUTDOWN_ON_USER_COMMAND = new SystemExit("ordered to shut down");
+
     public static void main(String[] args) {
         System.out.println("Jumi Daemon starting up..."); // TODO: write a test for this and also print version number
 
@@ -28,11 +32,11 @@ public class Main {
 
         // timeouts for shutting down this daemon process
         Timeout startupTimeout = new CommandExecutingTimeout(
-                new SystemExit("timed out before anybody connected"), config.startupTimeout, TimeUnit.MILLISECONDS
+                SHUTDOWN_ON_STARTUP_TIMEOUT, config.startupTimeout, TimeUnit.MILLISECONDS
         );
         startupTimeout.start();
         Timeout idleTimeout = new CommandExecutingTimeout(
-                new SystemExit("timed out after everybody disconnected"), config.idleTimeout, TimeUnit.MILLISECONDS
+                SHUTDOWN_ON_IDLE_TIMEOUT, config.idleTimeout, TimeUnit.MILLISECONDS
         );
 
         // logging configuration
@@ -69,7 +73,7 @@ public class Main {
         // bootstrap the system
         ActorThread actorThread = actors.startActorThread();
         ActorRef<CommandListener> coordinator =
-                actorThread.bindActor(CommandListener.class, new TestRunCoordinator(actorThread, testsThreadPool));
+                actorThread.bindActor(CommandListener.class, new TestRunCoordinator(actorThread, testsThreadPool, SHUTDOWN_ON_USER_COMMAND));
 
         NetworkClient client = new NettyNetworkClient();
         client.connect("127.0.0.1", config.launcherPort, new DaemonNetworkEndpoint(coordinator, startupTimeout, idleTimeout));

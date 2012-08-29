@@ -17,17 +17,23 @@ import java.util.concurrent.Executor;
 @NotThreadSafe
 public class TestRunCoordinator implements CommandListener {
 
+    // TODO: this class is untested and its role is unclear
+
     private final ActorThread actorThread;
     private final Executor testExecutor;
+    private final Runnable shutdownHook;
+
     private SuiteListener listener = null;
 
-    public TestRunCoordinator(ActorThread actorThread, Executor testExecutor) {
+    public TestRunCoordinator(ActorThread actorThread, Executor testExecutor, Runnable shutdownHook) {
         this.testExecutor = testExecutor;
         this.actorThread = actorThread;
+        this.shutdownHook = shutdownHook;
     }
 
     @Override
     public void addSuiteListener(SuiteListener listener) {
+        // XXX: Setters like this are messy. Could we get rid of this after moving to memory-mapped files?
         this.listener = listener;
     }
 
@@ -43,7 +49,6 @@ public class TestRunCoordinator implements CommandListener {
 
     @Override
     public void shutdown() {
-        System.out.println("Daemon told to exit; shutting down now!");
-        System.exit(0);
+        shutdownHook.run();
     }
 }

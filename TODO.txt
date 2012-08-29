@@ -134,9 +134,9 @@ TODO NEXT:
 		OK - check that implemented: RemoteSuiteLauncher, DaemonNetworkEndpoint, or are they needed at all and can be removed?
 	OK - remove the hack in fi.jumi.daemon.Main#exitWhenNotAnymoreInUse
 	!! - print a message on daemon startup and shutdown; makes it easier to see from logs that when the JVM was restarted
-		- make is possible to assert what the daemon prints (plug a spy in AppRunner's createDaemonOutputListener)
-		- add assertions to DaemonProcessTest
-		- also print daemon version on startup, read from pom.properties
+		OK - make is possible to assert what the daemon prints (plug a spy in AppRunner's createDaemonOutputListener)
+		OK - add assertions to DaemonProcessTest
+		!! - also print daemon version on startup, read from pom.properties
 	- refactor JumiLauncher
 		- create SuiteOptionsBuilder
 		- make SuiteOptions immutable
@@ -228,6 +228,7 @@ TODO NEXT:
 	- add the benchmark results to the web site
 
 - misc refactoring
+	- use ~/.jumi directory for the daemon jar
 	- make the number of test threads by default the number of CPUs + 1 or similar
 	- make JUnit print a thread dump when a test times out due to @Test(timeout)
 	- evaluate whether some of the concurrent tests could be made simpler by using MultithreadedTC
@@ -314,6 +315,8 @@ TODO NEXT:
 
 - write daemon output to log file
 	- use Process.getInputStream to write the log file in JumiLauncher's process
+		- write log to JUMI_HOME/run/*/console.log
+		- default JUMI_HOME to ~/.jumi
 	- update e2e tests to read the output from the log file
 	- upgrade to Java 7
 	- use ProcessBuilder.redirectOutput to write the log file (else the process would hang when the launcher JVM exits)
@@ -349,6 +352,10 @@ TODO NEXT:
 		- probably requires polling to get informed about updates
 	- need to find out how to do synchronization
 		http://stackoverflow.com/questions/4743380/controlling-read-writes-to-memory-mapped-files-windows
+	- after implementing, consider refactoring the following places:
+		fi.jumi.core.TestRunCoordinator#addSuiteListener
+		fi.jumi.daemon.DaemonNetworkEndpoint#onConnected
+		fi.jumi.launcher.remote.RemoteSuiteLauncher#onDisconnected
 
 - refactor jumi-actors-maven-plugin
 	- DummyListenerToEvent: rename sender to target

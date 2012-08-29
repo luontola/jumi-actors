@@ -13,7 +13,7 @@ import java.io.IOException;
 import static fi.jumi.core.util.AsyncAssert.assertEventually;
 import static fi.jumi.test.util.ProcessMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 public class DaemonProcessTest {
 
@@ -30,7 +30,7 @@ public class DaemonProcessTest {
         launcher.shutdownDaemon();
 
         assertEventually(daemonProcess, is(dead()), Timeouts.ASSERTION);
-        // TODO: assert on the message that the daemon prints on shutdown
+        assertThat(app.getDaemonOutput(), containsString("The system will now exit: ordered to shut down"));
     }
 
     @Test(timeout = Timeouts.END_TO_END_TEST)
@@ -42,7 +42,7 @@ public class DaemonProcessTest {
         launcher.close();
 
         assertEventually(daemonProcess, is(dead()), Timeouts.ASSERTION);
-        // TODO: assert on the message that the daemon prints on shutdown
+        assertThat(app.getDaemonOutput(), containsString("The system will now exit: timed out after everybody disconnected"));
     }
 
     @Test(timeout = Timeouts.END_TO_END_TEST)
@@ -54,7 +54,7 @@ public class DaemonProcessTest {
         startDaemonProcessAsynchronously();
 
         assertEventually(daemonProcess, is(dead()), Timeouts.ASSERTION);
-        // TODO: assert on the message that the daemon prints on shutdown
+        assertThat(app.getDaemonOutput(), containsString("The system will now exit: timed out before anybody connected"));
     }
 
 
