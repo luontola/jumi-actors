@@ -8,19 +8,16 @@ import fi.jumi.actors.ActorRef;
 import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.*;
 import fi.jumi.core.SuiteListener;
-import fi.jumi.core.config.Configuration;
 import fi.jumi.launcher.remote.SuiteLauncher;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.*;
-import java.util.Arrays;
 
 @ThreadSafe
 public class JumiLauncher implements Closeable {
 
     private final MessageQueue<Event<SuiteListener>> eventQueue = new MessageQueue<Event<SuiteListener>>();
 
-    private final SuiteOptions suiteOptions = new SuiteOptions();
     private final ActorRef<SuiteLauncher> suiteLauncher;
     private final Closeable externalResources;
 
@@ -33,8 +30,8 @@ public class JumiLauncher implements Closeable {
         return eventQueue;
     }
 
-    public void start() {
-        suiteLauncher.tell().runTests(suiteOptions, eventQueue);
+    public void start(SuiteOptions suiteOptions) {
+        suiteLauncher.tell().runTests(suiteOptions.copy(), eventQueue);
     }
 
     public void shutdownDaemon() {
@@ -44,31 +41,5 @@ public class JumiLauncher implements Closeable {
     @Override
     public void close() throws IOException {
         externalResources.close();
-    }
-
-    // TODO: move these configuration methods to SuiteOptions, pass SuiteOptions as a parameter to start()
-
-    public void addToClassPath(File file) {
-        suiteOptions.classPath.add(file);
-    }
-
-    public void setTestsToInclude(String pattern) {
-        suiteOptions.testsToIncludePattern = pattern;
-    }
-
-    public void addJvmOptions(String... jvmOptions) {
-        suiteOptions.jvmOptions.addAll(Arrays.asList(jvmOptions));
-    }
-
-    public void enableMessageLogging() {
-        suiteOptions.systemProperties.setProperty(Configuration.LOG_ACTOR_MESSAGES, "true");
-    }
-
-    public void setStartupTimeout(long startupTimeout) {
-        suiteOptions.systemProperties.setProperty(Configuration.STARTUP_TIMEOUT, String.valueOf(startupTimeout));
-    }
-
-    public void setIdleTimeout(long idleTimeout) {
-        suiteOptions.systemProperties.setProperty(Configuration.IDLE_TIMEOUT, String.valueOf(idleTimeout));
     }
 }

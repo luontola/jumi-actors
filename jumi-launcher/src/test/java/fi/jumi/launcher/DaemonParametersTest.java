@@ -33,48 +33,49 @@ public class DaemonParametersTest {
     private final SpySuiteLauncher suiteRemote = new SpySuiteLauncher();
 
     private final JumiLauncher launcher = new JumiLauncher(ActorRef.<SuiteLauncher>wrap(suiteRemote), null);
+    private final SuiteOptions suiteOptions = new SuiteOptions();
 
     @Test
     public void tells_daemon_process_the_launcher_port_number() throws Exception {
         daemonConnector.portToReturn = 123;
 
-        launcher.start();
+        launcher.start(suiteOptions);
 
         assertThat(daemonConfig().launcherPort, is(123));
     }
 
     @Test
     public void can_enable_message_logging() throws Exception {
-        launcher.start();
+        launcher.start(suiteOptions);
 
         assertThat(daemonConfig().logActorMessages, is(false));
 
-        launcher.enableMessageLogging();
-        launcher.start();
+        suiteOptions.enableMessageLogging();
+        launcher.start(suiteOptions);
 
         assertThat(daemonConfig().logActorMessages, is(true));
     }
 
     @Test
     public void can_configure_idle_timeout() {
-        launcher.start();
+        launcher.start(suiteOptions);
 
         assertThat(daemonConfig().idleTimeout, is(Configuration.DEFAULT_IDLE_TIMEOUT));
 
-        launcher.setIdleTimeout(42L);
-        launcher.start();
+        suiteOptions.setIdleTimeout(42L);
+        launcher.start(suiteOptions);
 
         assertThat(daemonConfig().idleTimeout, is(42L));
     }
 
     @Test
     public void can_configure_startup_timeout() {
-        launcher.start();
+        launcher.start(suiteOptions);
 
         assertThat(daemonConfig().startupTimeout, is(Configuration.DEFAULT_STARTUP_TIMEOUT));
 
-        launcher.setStartupTimeout(42L);
-        launcher.start();
+        suiteOptions.setStartupTimeout(42L);
+        launcher.start(suiteOptions);
 
         assertThat(daemonConfig().startupTimeout, is(42L));
     }

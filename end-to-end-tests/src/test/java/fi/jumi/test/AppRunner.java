@@ -34,8 +34,16 @@ public class AppRunner implements TestRule {
 
     private JumiLauncher launcher;
     private TextUIParser ui;
+    public SuiteOptions suiteOptions = new SuiteOptions();
 
     public AppRunner() {
+        if (TestSystemProperties.useThreadSafetyAgent()) {
+            String threadSafetyAgent = TestEnvironment.getProjectJar("thread-safety-agent").getAbsolutePath();
+            suiteOptions.addJvmOptions("-javaagent:" + threadSafetyAgent);
+        }
+        suiteOptions.enableMessageLogging();
+        suiteOptions.addToClassPath(TestEnvironment.getSampleClasses());
+        suiteOptions = suiteOptions.copy(); // XXX: workaround for thread-safety-checker; JUnit calls runs timeoutable tests in a separate thread
     }
 
     public void setMockNetworkServer(NetworkServer mockNetworkServer) {
@@ -77,15 +85,7 @@ public class AppRunner implements TestRule {
         }
 
         JumiLauncherBuilder builder = new CustomJumiLauncherBuilder();
-        JumiLauncher launcher = builder.build();
-
-        if (TestSystemProperties.useThreadSafetyAgent()) {
-            String threadSafetyAgent = TestEnvironment.getProjectJar("thread-safety-agent").getAbsolutePath();
-            launcher.addJvmOptions("-javaagent:" + threadSafetyAgent);
-        }
-
-        launcher.enableMessageLogging();
-        return launcher;
+        return builder.build();
     }
 
     public Process getDaemonProcess() throws Exception {
@@ -119,9 +119,8 @@ public class AppRunner implements TestRule {
 
     public void startTests(String testsToInclude) {
         JumiLauncher launcher = getLauncher();
-        launcher.addToClassPath(TestEnvironment.getSampleClasses());
-        launcher.setTestsToInclude(testsToInclude);
-        launcher.start();
+        suiteOptions.setTestsToInclude(testsToInclude);
+        launcher.start(suiteOptions);
     }
 
     private static void printTextUIOutput(String output) {

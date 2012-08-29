@@ -138,12 +138,14 @@ TODO NEXT:
 		OK - add assertions to DaemonProcessTest
 		OK - also print daemon version on startup, read from pom.properties
 	!! - refactor JumiLauncher
-		!! - create SuiteOptionsBuilder
+		OK - replace JumiLauncher.start() and all setters with runTests(SuiteOptions)
+		!! - remove fi.jumi.test.DaemonProcessTest#createLauncher
+		- create SuiteOptionsBuilder
+			- use in fi.jumi.launcher.DaemonParametersTest
+			- use in fi.jumi.test.AppRunner
 		- make SuiteOptions immutable
 		- better name? SuiteSetup, SuiteConfig, SuiteConfiguration, SuiteArgs, SuiteParameters
 			-> SuiteConfiguration (also rename core.config.Configuration -> core.bootstrap.DaemonConfiguration)
-		- replace JumiLauncher.start() and all setters with runTests(SuiteOptions)
-		- remove fi.jumi.test.DaemonProcessTest#createLauncher
 	- simplify the setup in DaemonParametersTest: don't instantiate JumiLauncher, use only SuiteOptions and Configuration
 	- remove duplication between fi.jumi.core.config.ConfigurationTest and fi.jumi.launcher.DaemonParametersTest
 	- see if there duplication between fi.jumi.core.config.Configuration and SuiteOptions; remove it
