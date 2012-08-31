@@ -22,6 +22,7 @@ public class Configuration {
     public static final String IDLE_TIMEOUT = "jumi.daemon.idleTimeout";
 
     // default values
+    public static final boolean DEFAULT_MESSAGE_LOGGING = false;
     public static final long DEFAULT_STARTUP_TIMEOUT = TimeUnit.SECONDS.toMillis(30);
     public static final long DEFAULT_IDLE_TIMEOUT = TimeUnit.SECONDS.toMillis(5); // TODO: increase to 15 min, after implementing persistent daemons
 

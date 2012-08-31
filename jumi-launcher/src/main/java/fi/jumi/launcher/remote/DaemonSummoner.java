@@ -5,9 +5,9 @@
 package fi.jumi.launcher.remote;
 
 import fi.jumi.actors.ActorRef;
-import fi.jumi.core.config.SuiteOptions;
+import fi.jumi.core.config.SuiteConfiguration;
 
 public interface DaemonSummoner {
 
-    void connectToDaemon(SuiteOptions suiteOptions, ActorRef<DaemonListener> listener);
+    void connectToDaemon(SuiteConfiguration suiteConfiguration, ActorRef<DaemonListener> listener);
 }

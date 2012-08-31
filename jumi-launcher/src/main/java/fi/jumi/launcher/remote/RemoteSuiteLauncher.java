@@ -8,7 +8,7 @@ import fi.jumi.actors.*;
 import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.MessageSender;
 import fi.jumi.core.*;
-import fi.jumi.core.config.SuiteOptions;
+import fi.jumi.core.config.SuiteConfiguration;
 import fi.jumi.core.events.CommandListenerEventizer;
 import fi.jumi.core.network.NetworkConnection;
 
@@ -20,7 +20,7 @@ public class RemoteSuiteLauncher implements SuiteLauncher, DaemonListener {
     private final ActorThread currentThread;
     private final ActorRef<DaemonSummoner> daemonSummoner;
 
-    private SuiteOptions suiteOptions;
+    private SuiteConfiguration suiteConfiguration;
     private MessageSender<Event<SuiteListener>> suiteListener;
     private CommandListener daemon;
 
@@ -30,10 +30,10 @@ public class RemoteSuiteLauncher implements SuiteLauncher, DaemonListener {
     }
 
     @Override
-    public void runTests(SuiteOptions suiteOptions, MessageSender<Event<SuiteListener>> suiteListener) {
-        this.suiteOptions = suiteOptions;
+    public void runTests(SuiteConfiguration suiteConfiguration, MessageSender<Event<SuiteListener>> suiteListener) {
+        this.suiteConfiguration = suiteConfiguration;
         this.suiteListener = suiteListener;
-        daemonSummoner.tell().connectToDaemon(suiteOptions, self());
+        daemonSummoner.tell().connectToDaemon(suiteConfiguration, self());
     }
 
     @Override
@@ -47,7 +47,7 @@ public class RemoteSuiteLauncher implements SuiteLauncher, DaemonListener {
     @Override
     public void onConnected(NetworkConnection connection, MessageSender<Event<CommandListener>> daemon) {
         this.daemon = new CommandListenerEventizer().newFrontend(daemon);
-        this.daemon.runTests(suiteOptions.classPath, suiteOptions.testsToIncludePattern);
+        this.daemon.runTests(suiteConfiguration.getClassPath(), suiteConfiguration.getTestsToIncludePattern());
     }
 
     @Override

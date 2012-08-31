@@ -8,7 +8,7 @@ import fi.jumi.actors.ActorRef;
 import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.*;
 import fi.jumi.core.SuiteListener;
-import fi.jumi.core.config.SuiteOptions;
+import fi.jumi.core.config.SuiteConfiguration;
 import fi.jumi.launcher.remote.SuiteLauncher;
 
 import javax.annotation.concurrent.ThreadSafe;
@@ -31,8 +31,8 @@ public class JumiLauncher implements Closeable {
         return eventQueue;
     }
 
-    public void start(SuiteOptions suiteOptions) {
-        suiteLauncher.tell().runTests(suiteOptions.copy(), eventQueue);
+    public void start(SuiteConfiguration suiteConfiguration) {
+        suiteLauncher.tell().runTests(suiteConfiguration, eventQueue);
     }
 
     public void shutdownDaemon() {

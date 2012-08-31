@@ -4,12 +4,16 @@
 
 package fi.jumi.launcher.process;
 
+import fi.jumi.core.util.Immutables;
+
 import javax.annotation.concurrent.Immutable;
 import java.io.File;
 import java.util.*;
 
 @Immutable
 public class JvmArgs {
+
+    // TODO: make private, or keep public to ease testing?
 
     public final File workingDir;
     public final File javaHome;
@@ -21,33 +25,15 @@ public class JvmArgs {
     public JvmArgs(File workingDir,
                    File javaHome,
                    List<String> jvmOptions,
-                   Properties systemProperties,
+                   Map<String, String> systemProperties,
                    File executableJar,
                    String[] programArgs) {
         this.workingDir = workingDir;
         this.javaHome = javaHome;
-        this.jvmOptions = toImmutableList(jvmOptions);
-        this.systemProperties = toImmutableMap(systemProperties);
+        this.jvmOptions = Immutables.list(jvmOptions);
+        this.systemProperties = Immutables.map(systemProperties);
         this.executableJar = executableJar;
-        this.programArgs = toImmutableList(programArgs);
-    }
-
-    private static List<String> toImmutableList(List<String> mutable) {
-        return Collections.unmodifiableList(new ArrayList<String>(mutable));
-    }
-
-    private static List<String> toImmutableList(String[] mutable) {
-        ArrayList<String> list = new ArrayList<String>();
-        Collections.addAll(list, mutable);
-        return Collections.unmodifiableList(list);
-    }
-
-    private static Map<String, String> toImmutableMap(Properties mutable) {
-        Map<String, String> map = new HashMap<String, String>();
-        for (Map.Entry<Object, Object> entry : mutable.entrySet()) {
-            map.put((String) entry.getKey(), (String) entry.getValue());
-        }
-        return Collections.unmodifiableMap(map);
+        this.programArgs = Immutables.list(programArgs);
     }
 
     public File getWorkingDir() {

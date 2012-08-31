@@ -60,9 +60,11 @@ public class ConfigurationTest {
 
     @Test
     public void startup_timeout_can_be_changed() {
-        SuiteOptions options = new SuiteOptions();
-        options.setStartupTimeout(42L);
-        Configuration config = parseSuiteOptions(options);
+        SuiteConfiguration suiteConfig = new SuiteConfigurationBuilder()
+                .setStartupTimeout(42L)
+                .build();
+
+        Configuration config = parseSuiteOptions(suiteConfig);
 
         assertThat(config.startupTimeout, is(42L));
     }
@@ -76,9 +78,11 @@ public class ConfigurationTest {
 
     @Test
     public void idle_timeout_can_be_changed() {
-        SuiteOptions options = new SuiteOptions();
-        options.setIdleTimeout(42L);
-        Configuration config = parseSuiteOptions(options);
+        SuiteConfiguration suiteConfig = new SuiteConfigurationBuilder()
+                .setIdleTimeout(42L)
+                .build();
+
+        Configuration config = parseSuiteOptions(suiteConfig);
 
         assertThat(config.idleTimeout, is(42L));
     }
@@ -93,8 +97,16 @@ public class ConfigurationTest {
 
     // helpers
 
-    private static Configuration parseSuiteOptions(SuiteOptions options) {
-        return Configuration.parse(dummyArgs(), options.systemProperties);
+    private static Configuration parseSuiteOptions(SuiteConfiguration configuration) {
+        return Configuration.parse(dummyArgs(), toProperties(configuration.toDaemonSystemProperties()));
+    }
+
+    private static Properties toProperties(Map<String, String> map) {
+        Properties properties = new Properties();
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            properties.setProperty(entry.getKey(), entry.getValue());
+        }
+        return properties;
     }
 
     private Configuration parseArgs(String... args) {

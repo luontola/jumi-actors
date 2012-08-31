@@ -49,8 +49,8 @@ public class JvmArgsTest {
 
     @Test
     public void passes_system_properties_as_JVM_options() {
-        Properties p = new Properties();
-        p.setProperty("foo", "bar");
+        Map<String, String> p = new HashMap<String, String>();
+        p.put("foo", "bar");
 
         List<String> command = newBuilder()
                 .systemProperties(p)

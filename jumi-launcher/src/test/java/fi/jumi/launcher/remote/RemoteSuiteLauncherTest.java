@@ -8,7 +8,7 @@ import fi.jumi.actors.ActorRef;
 import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.*;
 import fi.jumi.core.*;
-import fi.jumi.core.config.SuiteOptions;
+import fi.jumi.core.config.*;
 import fi.jumi.core.events.CommandListenerEventizer;
 import fi.jumi.launcher.FakeActorThread;
 import org.junit.*;
@@ -32,25 +32,26 @@ public class RemoteSuiteLauncherTest {
     private final RemoteSuiteLauncher suiteLauncher =
             new RemoteSuiteLauncher(new FakeActorThread(), ActorRef.<DaemonSummoner>wrap(daemonSummoner));
 
-    private final SuiteOptions suiteOptions = new SuiteOptions();
     private final MessageQueue<Event<SuiteListener>> suiteListener = new MessageQueue<Event<SuiteListener>>();
 
     @Test
     public void sends_RunTests_command_to_the_daemon_when_it_connects() {
-        suiteOptions.classPath.add(new File("dependency.jar"));
-        suiteOptions.testsToIncludePattern = "*Test";
+        SuiteConfiguration config = new SuiteConfigurationBuilder()
+                .addToClassPath(new File("dependency.jar"))
+                .setTestsToIncludePattern("*Test")
+                .build();
 
-        suiteLauncher.runTests(suiteOptions, suiteListener);
+        suiteLauncher.runTests(config, suiteListener);
         callback().tell().onConnected(null, senderToDaemon);
 
-        verify(daemon).runTests(suiteOptions.classPath, suiteOptions.testsToIncludePattern);
+        verify(daemon).runTests(config.getClassPath(), config.getTestsToIncludePattern());
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void forwards_messages_from_daemon_to_the_SuiteListener() {
         Event<SuiteListener> expectedEvent = mock(Event.class);
-        suiteLauncher.runTests(suiteOptions, suiteListener);
+        suiteLauncher.runTests(dummyConfig(), suiteListener);
         callback().tell().onConnected(null, senderToDaemon);
 
         callback().tell().onMessage(expectedEvent);
@@ -60,7 +61,7 @@ public class RemoteSuiteLauncherTest {
 
     @Test
     public void can_send_shutdown_command_to_the_daemon() {
-        suiteLauncher.runTests(suiteOptions, suiteListener);
+        suiteLauncher.runTests(dummyConfig(), suiteListener);
         callback().tell().onConnected(null, senderToDaemon);
 
         suiteLauncher.shutdownDaemon();
@@ -79,6 +80,10 @@ public class RemoteSuiteLauncherTest {
 
     // helpers
 
+    private static SuiteConfiguration dummyConfig() {
+        return new SuiteConfigurationBuilder().build();
+    }
+
     private ActorRef<DaemonListener> callback() {
         return daemonSummoner.lastListener;
     }
@@ -88,7 +93,7 @@ public class RemoteSuiteLauncherTest {
         public ActorRef<DaemonListener> lastListener;
 
         @Override
-        public void connectToDaemon(SuiteOptions suiteOptions, ActorRef<DaemonListener> listener) {
+        public void connectToDaemon(SuiteConfiguration suiteConfiguration, ActorRef<DaemonListener> listener) {
             lastListener = listener;
         }
     }

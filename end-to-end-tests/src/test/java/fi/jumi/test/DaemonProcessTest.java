@@ -45,7 +45,7 @@ public class DaemonProcessTest {
     @Test(timeout = Timeouts.END_TO_END_TEST)
     public void daemon_process_will_exit_after_a_timeout_after_all_clients_disconnect() throws Exception {
         launcher = app.getLauncher();
-        app.suiteOptions.setIdleTimeout(0);
+        app.suiteBuilder.setIdleTimeout(0);
         startDaemonProcess();
 
         launcher.close();
@@ -58,7 +58,7 @@ public class DaemonProcessTest {
     public void daemon_process_will_exit_if_it_cannot_connect_to_the_launcher_on_startup() throws Exception {
         app.setMockNetworkServer(new NonFunctionalNetworkServer());
         launcher = app.getLauncher();
-        app.suiteOptions.setStartupTimeout(0);
+        app.suiteBuilder.setStartupTimeout(0);
 
         startDaemonProcessAsynchronously();
 

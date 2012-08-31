@@ -7,11 +7,11 @@ package fi.jumi.launcher.remote;
 import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.MessageSender;
 import fi.jumi.core.SuiteListener;
-import fi.jumi.core.config.SuiteOptions;
+import fi.jumi.core.config.SuiteConfiguration;
 
 public interface SuiteLauncher {
 
-    void runTests(SuiteOptions suiteOptions, MessageSender<Event<SuiteListener>> suiteListener);
+    void runTests(SuiteConfiguration suiteConfiguration, MessageSender<Event<SuiteListener>> suiteListener);
 
     void shutdownDaemon();
 }

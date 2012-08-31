@@ -4,7 +4,7 @@
 
 package fi.jumi.test;
 
-import fi.jumi.core.config.SuiteOptions;
+import fi.jumi.core.config.SuiteConfigurationBuilder;
 import fi.jumi.core.network.*;
 import fi.jumi.core.runs.RunId;
 import fi.jumi.core.util.Strings;
@@ -35,17 +35,7 @@ public class AppRunner implements TestRule {
 
     private JumiLauncher launcher;
     private TextUIParser ui;
-    public SuiteOptions suiteOptions = new SuiteOptions();
-
-    public AppRunner() {
-        if (TestSystemProperties.useThreadSafetyAgent()) {
-            String threadSafetyAgent = TestEnvironment.getProjectJar("thread-safety-agent").getAbsolutePath();
-            suiteOptions.addJvmOptions("-javaagent:" + threadSafetyAgent);
-        }
-        suiteOptions.enableMessageLogging();
-        suiteOptions.addToClassPath(TestEnvironment.getSampleClasses());
-        suiteOptions = suiteOptions.copy(); // XXX: workaround for thread-safety-checker; JUnit calls runs timeoutable tests in a separate thread
-    }
+    public final SuiteConfigurationBuilder suiteBuilder = new SuiteConfigurationBuilder();
 
     public void setMockNetworkServer(NetworkServer mockNetworkServer) {
         this.mockNetworkServer = mockNetworkServer;
@@ -119,9 +109,16 @@ public class AppRunner implements TestRule {
     }
 
     public void startTests(String testsToInclude) {
-        JumiLauncher launcher = getLauncher();
-        suiteOptions.setTestsToInclude(testsToInclude);
-        launcher.start(suiteOptions);
+        // XXX: needs to be done here instead of the constructor, because of how JUnit runs timeouting tests in a separate thread, and this builder is not thread-safe, which will be caught by the thread-safety-checker
+        if (TestSystemProperties.useThreadSafetyAgent()) {
+            String threadSafetyAgent = TestEnvironment.getProjectJar("thread-safety-agent").getAbsolutePath();
+            suiteBuilder.addJvmOptions("-javaagent:" + threadSafetyAgent);
+        }
+        suiteBuilder.enableMessageLogging();
+        suiteBuilder.addToClassPath(TestEnvironment.getSampleClasses());
+        suiteBuilder.setTestsToIncludePattern(testsToInclude);
+
+        getLauncher().start(suiteBuilder.build());
     }
 
     private static void printTextUIOutput(String output) {
