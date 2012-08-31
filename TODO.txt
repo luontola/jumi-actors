@@ -151,6 +151,14 @@ TODO NEXT:
 				- DaemonConfigurationTest
 				- avoid creating system properties for default values
 				- SuiteConfigurationTest
+			- create DaemonConfiguration.toProgramArgs
+				- ProcessStartingDaemonSummoner needs to add the port to DaemonConfiguration
+					- create copy constructor: `new DaemonConfigurationBuilder(daemonConfiguration)`
+					- move setting defaults to `new DaemonConfiguration()`
+					- make `new DaemonConfigurationBuilder()` use `this(new DaemonConfiguration())`
+				- remove duplication of using LAUNCHER_PORT directly:
+					fi.jumi.launcher.remote.ProcessStartingDaemonSummoner#connectToDaemon
+					fi.jumi.core.config.DaemonConfigurationTest
 			- send SuiteConfiguration to fi.jumi.core.CommandListener#runTests
 		- better name? SuiteSetup, SuiteConfig, SuiteConfiguration, SuiteArgs, SuiteParameters
 			-> SuiteConfiguration (also rename core.config.Configuration -> core.bootstrap.DaemonConfiguration)
