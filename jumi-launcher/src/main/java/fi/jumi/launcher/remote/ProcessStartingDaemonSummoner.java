@@ -37,7 +37,9 @@ public class ProcessStartingDaemonSummoner implements DaemonSummoner {
     }
 
     @Override
-    public void connectToDaemon(SuiteConfiguration suiteConfiguration, ActorRef<DaemonListener> listener) {
+    public void connectToDaemon(SuiteConfiguration suiteConfiguration,
+                                DaemonConfiguration daemonConfiguration,
+                                ActorRef<DaemonListener> listener) {
         // XXX: should we handle multiple connections properly, even though we are expecting only one?
         int port = daemonConnector.listenOnAnyPort(new OneTimeDaemonListenerFactory(listener));
 
@@ -46,8 +48,8 @@ public class ProcessStartingDaemonSummoner implements DaemonSummoner {
                     .executableJar(steward.getDaemonJar())
                     .workingDir(new File(".")) // TODO: get the working directory from suite options
                     .jvmOptions(suiteConfiguration.getJvmOptions())
-                    .systemProperties(suiteConfiguration.toDaemonSystemProperties())
-                    .programArgs(Configuration.LAUNCHER_PORT, String.valueOf(port))
+                    .systemProperties(daemonConfiguration.toSystemProperties())
+                    .programArgs(DaemonConfigurationConverter.LAUNCHER_PORT, String.valueOf(port)) // TODO: create DaemonConfiguration.toProgramArgs()?
                     .toJvmArgs();
             Process process = processStarter.startJavaProcess(jvmArgs);
             copyInBackground(process.getInputStream(), outputListener); // TODO: write the output to a log file using OS pipes, read it from there with AppRunner

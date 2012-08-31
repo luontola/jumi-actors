@@ -37,27 +37,28 @@ public class ProcessStartingDaemonSummonerTest {
     );
 
     private final SuiteConfiguration dummySuiteConfiguration = new SuiteConfigurationBuilder().build();
+    private final DaemonConfiguration dummyDaemonConfiguration = new DaemonConfigurationBuilder().build();
     private final ActorRef<DaemonListener> dummyListener = ActorRef.wrap(null);
 
     @Test
     public void tells_to_daemon_the_socket_to_contact() {
         daemonConnector.portToReturn = 123;
 
-        daemonSummoner.connectToDaemon(dummySuiteConfiguration, dummyListener);
+        daemonSummoner.connectToDaemon(dummySuiteConfiguration, dummyDaemonConfiguration, dummyListener);
 
-        Configuration daemonConfig = parseDaemonArguments(processStarter.lastArgs);
-        assertThat(daemonConfig.launcherPort, is(123));
+        DaemonConfiguration daemonConfig = parseDaemonArguments(processStarter.lastArgs);
+        assertThat(daemonConfig.launcherPort(), is(123));
     }
 
-    private static Configuration parseDaemonArguments(String[] args) {
-        return Configuration.parse(args, new Properties());
+    private static DaemonConfiguration parseDaemonArguments(String[] args) {
+        return DaemonConfigurationConverter.parse(args, new Properties());
     }
 
     @Test
     public void tells_to_output_listener_what_the_daemon_prints() {
         processStarter.processToReturn.inputStream = new ByteArrayInputStream("hello".getBytes());
 
-        daemonSummoner.connectToDaemon(dummySuiteConfiguration, dummyListener);
+        daemonSummoner.connectToDaemon(dummySuiteConfiguration, dummyDaemonConfiguration, dummyListener);
 
         assertEventually(outputListener, hasToString("hello"), TIMEOUT);
     }

@@ -8,7 +8,7 @@ import fi.jumi.actors.*;
 import fi.jumi.actors.eventizers.ComposedEventizerProvider;
 import fi.jumi.actors.listeners.*;
 import fi.jumi.core.*;
-import fi.jumi.core.config.Configuration;
+import fi.jumi.core.config.*;
 import fi.jumi.core.events.*;
 import fi.jumi.core.network.*;
 import fi.jumi.core.util.PrefixedThreadFactory;
@@ -28,21 +28,21 @@ public class Main {
     public static void main(String[] args) throws IOException {
         System.out.println("Jumi " + DaemonArtifact.getVersion() + " starting up");
 
-        Configuration config = Configuration.parse(args, System.getProperties());
+        DaemonConfiguration config = DaemonConfigurationConverter.parse(args, System.getProperties());
 
         // timeouts for shutting down this daemon process
         Timeout startupTimeout = new CommandExecutingTimeout(
-                SHUTDOWN_ON_STARTUP_TIMEOUT, config.startupTimeout, TimeUnit.MILLISECONDS
+                SHUTDOWN_ON_STARTUP_TIMEOUT, config.startupTimeout(), TimeUnit.MILLISECONDS
         );
         startupTimeout.start();
         Timeout idleTimeout = new CommandExecutingTimeout(
-                SHUTDOWN_ON_IDLE_TIMEOUT, config.idleTimeout, TimeUnit.MILLISECONDS
+                SHUTDOWN_ON_IDLE_TIMEOUT, config.idleTimeout(), TimeUnit.MILLISECONDS
         );
 
         // logging configuration
         PrintStream logOutput = System.out;
         FailureHandler failureHandler = new PrintStreamFailureLogger(logOutput);
-        MessageListener messageListener = config.logActorMessages
+        MessageListener messageListener = config.logActorMessages()
                 ? new PrintStreamMessageLogger(logOutput)
                 : new NullMessageListener();
 
@@ -76,6 +76,6 @@ public class Main {
                 actorThread.bindActor(CommandListener.class, new TestRunCoordinator(actorThread, testsThreadPool, SHUTDOWN_ON_USER_COMMAND));
 
         NetworkClient client = new NettyNetworkClient();
-        client.connect("127.0.0.1", config.launcherPort, new DaemonNetworkEndpoint(coordinator, startupTimeout, idleTimeout));
+        client.connect("127.0.0.1", config.launcherPort(), new DaemonNetworkEndpoint(coordinator, startupTimeout, idleTimeout));
     }
 }

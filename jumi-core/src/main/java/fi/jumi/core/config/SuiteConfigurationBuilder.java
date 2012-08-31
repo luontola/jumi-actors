@@ -17,11 +17,7 @@ public class SuiteConfigurationBuilder {
     private final List<String> jvmOptions = new ArrayList<String>();
     private String testsToIncludePattern;
 
-    private boolean daemonMessageLogging = Configuration.DEFAULT_MESSAGE_LOGGING;
-    private long daemonStartupTimeout = Configuration.DEFAULT_STARTUP_TIMEOUT;
-    private long daemonIdleTimeout = Configuration.DEFAULT_IDLE_TIMEOUT;
-
-    public List<File> getClassPath() {
+    public List<File> classPath() {
         return classPath;
     }
 
@@ -30,48 +26,21 @@ public class SuiteConfigurationBuilder {
         return this;
     }
 
-    public String getTestsToIncludePattern() {
+    public String testsToIncludePattern() {
         return testsToIncludePattern;
     }
 
-    public SuiteConfigurationBuilder setTestsToIncludePattern(String pattern) {
+    public SuiteConfigurationBuilder testsToIncludePattern(String pattern) {
         testsToIncludePattern = pattern;
         return this;
     }
 
-    public List<String> getJvmOptions() {
+    public List<String> jvmOptions() {
         return jvmOptions;
     }
 
     public SuiteConfigurationBuilder addJvmOptions(String... jvmOptions) {
         this.jvmOptions.addAll(Arrays.asList(jvmOptions));
-        return this;
-    }
-
-    public boolean isDaemonMessageLogging() {
-        return daemonMessageLogging;
-    }
-
-    public SuiteConfigurationBuilder enableMessageLogging() {
-        daemonMessageLogging = true;
-        return this;
-    }
-
-    public long getDaemonStartupTimeout() {
-        return daemonStartupTimeout;
-    }
-
-    public SuiteConfigurationBuilder setStartupTimeout(long startupTimeout) {
-        daemonStartupTimeout = startupTimeout;
-        return this;
-    }
-
-    public long getDaemonIdleTimeout() {
-        return daemonIdleTimeout;
-    }
-
-    public SuiteConfigurationBuilder setIdleTimeout(long idleTimeout) {
-        daemonIdleTimeout = idleTimeout;
         return this;
     }
 

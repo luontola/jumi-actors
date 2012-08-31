@@ -8,7 +8,7 @@ import fi.jumi.core.util.Immutables;
 
 import javax.annotation.concurrent.Immutable;
 import java.io.File;
-import java.util.*;
+import java.util.List;
 
 @Immutable
 public class SuiteConfiguration {
@@ -17,19 +17,10 @@ public class SuiteConfiguration {
     private final List<String> jvmOptions;
     private final String testsToIncludePattern;
 
-    private final boolean daemonMessageLogging;
-    private final long daemonStartupTimeout;
-    private final long daemonIdleTimeout;
-
     SuiteConfiguration(SuiteConfigurationBuilder builder) {
-        classPath = Immutables.list(builder.getClassPath());
-        jvmOptions = Immutables.list(builder.getJvmOptions());
-        testsToIncludePattern = builder.getTestsToIncludePattern();
-
-        // TODO: separate daemon configuration to its own class?
-        daemonMessageLogging = builder.isDaemonMessageLogging();
-        daemonStartupTimeout = builder.getDaemonStartupTimeout();
-        daemonIdleTimeout = builder.getDaemonIdleTimeout();
+        classPath = Immutables.list(builder.classPath());
+        jvmOptions = Immutables.list(builder.jvmOptions());
+        testsToIncludePattern = builder.testsToIncludePattern();
     }
 
     public List<File> getClassPath() {
@@ -42,26 +33,5 @@ public class SuiteConfiguration {
 
     public String getTestsToIncludePattern() {
         return testsToIncludePattern;
-    }
-
-    public Map<String, String> toDaemonSystemProperties() {
-        Map<String, String> map = new HashMap<String, String>();
-        // TODO: don't set when default
-        map.put(Configuration.LOG_ACTOR_MESSAGES, "" + daemonMessageLogging);
-        map.put(Configuration.STARTUP_TIMEOUT, String.valueOf(daemonStartupTimeout));
-        map.put(Configuration.IDLE_TIMEOUT, String.valueOf(daemonIdleTimeout));
-        return map;
-    }
-
-    public boolean isDaemonMessageLogging() {
-        return daemonMessageLogging;
-    }
-
-    public long getDaemonStartupTimeout() {
-        return daemonStartupTimeout;
-    }
-
-    public long getDaemonIdleTimeout() {
-        return daemonIdleTimeout;
     }
 }

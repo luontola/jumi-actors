@@ -8,7 +8,7 @@ import fi.jumi.actors.*;
 import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.MessageSender;
 import fi.jumi.core.*;
-import fi.jumi.core.config.SuiteConfiguration;
+import fi.jumi.core.config.*;
 import fi.jumi.core.events.CommandListenerEventizer;
 import fi.jumi.core.network.NetworkConnection;
 
@@ -30,10 +30,12 @@ public class RemoteSuiteLauncher implements SuiteLauncher, DaemonListener {
     }
 
     @Override
-    public void runTests(SuiteConfiguration suiteConfiguration, MessageSender<Event<SuiteListener>> suiteListener) {
+    public void runTests(SuiteConfiguration suiteConfiguration,
+                         DaemonConfiguration daemonConfiguration,
+                         MessageSender<Event<SuiteListener>> suiteListener) {
         this.suiteConfiguration = suiteConfiguration;
         this.suiteListener = suiteListener;
-        daemonSummoner.tell().connectToDaemon(suiteConfiguration, self());
+        daemonSummoner.tell().connectToDaemon(suiteConfiguration, daemonConfiguration, self());
     }
 
     @Override

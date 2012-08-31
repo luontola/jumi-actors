@@ -4,7 +4,7 @@
 
 package fi.jumi.test;
 
-import fi.jumi.core.config.SuiteConfigurationBuilder;
+import fi.jumi.core.config.*;
 import fi.jumi.core.network.*;
 import fi.jumi.core.runs.RunId;
 import fi.jumi.core.util.Strings;
@@ -35,7 +35,9 @@ public class AppRunner implements TestRule {
 
     private JumiLauncher launcher;
     private TextUIParser ui;
+
     public final SuiteConfigurationBuilder suiteBuilder = new SuiteConfigurationBuilder();
+    public final DaemonConfigurationBuilder daemonBuilder = new DaemonConfigurationBuilder();
 
     public void setMockNetworkServer(NetworkServer mockNetworkServer) {
         this.mockNetworkServer = mockNetworkServer;
@@ -114,11 +116,11 @@ public class AppRunner implements TestRule {
             String threadSafetyAgent = TestEnvironment.getProjectJar("thread-safety-agent").getAbsolutePath();
             suiteBuilder.addJvmOptions("-javaagent:" + threadSafetyAgent);
         }
-        suiteBuilder.enableMessageLogging();
+        daemonBuilder.logActorMessages(true);
         suiteBuilder.addToClassPath(TestEnvironment.getSampleClasses());
-        suiteBuilder.setTestsToIncludePattern(testsToInclude);
+        suiteBuilder.testsToIncludePattern(testsToInclude);
 
-        getLauncher().start(suiteBuilder.build());
+        getLauncher().start(suiteBuilder.build(), daemonBuilder.build());
     }
 
     private static void printTextUIOutput(String output) {

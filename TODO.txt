@@ -145,9 +145,13 @@ TODO NEXT:
 		!! - create SuiteOptionsBuilder
 			OK - use builder in ConfigurationTest, AppRunner
 			OK - make SuiteOptions immutable
-			!! - consider separate classes for daemon-scoped vs. suite-scoped parameters (defer until persistent daemons?)
-			- consider separating the classes which convert parameters to/from system properties vs. which hold/configure the parameters
-			- unit tests for them all
+			OK - consider separate classes for daemon-scoped vs. suite-scoped parameters (defer until persistent daemons?)
+			OK - consider separating the classes which convert parameters to/from system properties vs. which hold/configure the parameters
+			!! - unit tests for them all
+				- DaemonConfigurationTest
+				- avoid creating system properties for default values
+				- SuiteConfigurationTest
+			- send SuiteConfiguration to fi.jumi.core.CommandListener#runTests
 		- better name? SuiteSetup, SuiteConfig, SuiteConfiguration, SuiteArgs, SuiteParameters
 			-> SuiteConfiguration (also rename core.config.Configuration -> core.bootstrap.DaemonConfiguration)
 		- see if there duplication between fi.jumi.core.config.Configuration and SuiteOptions; remove it

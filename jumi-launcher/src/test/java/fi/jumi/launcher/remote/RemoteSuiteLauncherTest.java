@@ -28,6 +28,7 @@ public class RemoteSuiteLauncherTest {
     private final CommandListener daemon = mock(CommandListener.class);
     private final MessageSender<Event<CommandListener>> senderToDaemon = new CommandListenerEventizer().newBackend(daemon);
     private final SpyDaemonSummoner daemonSummoner = new SpyDaemonSummoner();
+    private final DaemonConfiguration dummyDaemonConfiguration = new DaemonConfigurationBuilder().build();
 
     private final RemoteSuiteLauncher suiteLauncher =
             new RemoteSuiteLauncher(new FakeActorThread(), ActorRef.<DaemonSummoner>wrap(daemonSummoner));
@@ -38,10 +39,10 @@ public class RemoteSuiteLauncherTest {
     public void sends_RunTests_command_to_the_daemon_when_it_connects() {
         SuiteConfiguration config = new SuiteConfigurationBuilder()
                 .addToClassPath(new File("dependency.jar"))
-                .setTestsToIncludePattern("*Test")
+                .testsToIncludePattern("*Test")
                 .build();
 
-        suiteLauncher.runTests(config, suiteListener);
+        suiteLauncher.runTests(config, dummyDaemonConfiguration, suiteListener);
         callback().tell().onConnected(null, senderToDaemon);
 
         verify(daemon).runTests(config.getClassPath(), config.getTestsToIncludePattern());
@@ -51,7 +52,7 @@ public class RemoteSuiteLauncherTest {
     @SuppressWarnings("unchecked")
     public void forwards_messages_from_daemon_to_the_SuiteListener() {
         Event<SuiteListener> expectedEvent = mock(Event.class);
-        suiteLauncher.runTests(dummyConfig(), suiteListener);
+        suiteLauncher.runTests(dummyConfig(), dummyDaemonConfiguration, suiteListener);
         callback().tell().onConnected(null, senderToDaemon);
 
         callback().tell().onMessage(expectedEvent);
@@ -61,7 +62,7 @@ public class RemoteSuiteLauncherTest {
 
     @Test
     public void can_send_shutdown_command_to_the_daemon() {
-        suiteLauncher.runTests(dummyConfig(), suiteListener);
+        suiteLauncher.runTests(dummyConfig(), dummyDaemonConfiguration, suiteListener);
         callback().tell().onConnected(null, senderToDaemon);
 
         suiteLauncher.shutdownDaemon();
@@ -93,7 +94,9 @@ public class RemoteSuiteLauncherTest {
         public ActorRef<DaemonListener> lastListener;
 
         @Override
-        public void connectToDaemon(SuiteConfiguration suiteConfiguration, ActorRef<DaemonListener> listener) {
+        public void connectToDaemon(SuiteConfiguration suiteConfiguration,
+                                    DaemonConfiguration daemonConfiguration,
+                                    ActorRef<DaemonListener> listener) {
             lastListener = listener;
         }
     }
