@@ -49,6 +49,9 @@
     <inspection_tool class="PointlessArithmeticExpression" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="m_ignoreExpressionsContainingConstants" value="true" />
     </inspection_tool>
+    <inspection_tool class="PointlessBooleanExpression" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="m_ignoreExpressionsContainingConstants" value="true" />
+    </inspection_tool>
     <inspection_tool class="RawUseOfParameterizedType" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="ignoreObjectConstruction" value="true" />
       <option name="ignoreTypeCasts" value="false" />

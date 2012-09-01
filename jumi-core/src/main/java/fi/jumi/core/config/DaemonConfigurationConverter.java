@@ -22,10 +22,15 @@ public class DaemonConfigurationConverter {
 
     public static Map<String, String> toSystemProperties(DaemonConfiguration config) {
         Map<String, String> map = new HashMap<String, String>();
-        // TODO: don't set when default
-        map.put(LOG_ACTOR_MESSAGES, "" + config.logActorMessages());
-        map.put(STARTUP_TIMEOUT, String.valueOf(config.startupTimeout()));
-        map.put(IDLE_TIMEOUT, String.valueOf(config.idleTimeout()));
+        if (config.logActorMessages() != DaemonConfiguration.DEFAULT_LOG_ACTOR_MESSAGES) {
+            map.put(LOG_ACTOR_MESSAGES, "" + config.logActorMessages());
+        }
+        if (config.startupTimeout() != DaemonConfiguration.DEFAULT_STARTUP_TIMEOUT) {
+            map.put(STARTUP_TIMEOUT, String.valueOf(config.startupTimeout()));
+        }
+        if (config.idleTimeout() != DaemonConfiguration.DEFAULT_IDLE_TIMEOUT) {
+            map.put(IDLE_TIMEOUT, String.valueOf(config.idleTimeout()));
+        }
         return map;
     }
 

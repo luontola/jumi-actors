@@ -9,6 +9,7 @@ import org.junit.rules.ExpectedException;
 
 import java.util.*;
 
+import static org.fest.assertions.Assertions.assertThat;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -88,6 +89,15 @@ public class DaemonConfigurationTest {
     @Test
     public void idle_timeout_has_a_default_value() {
         assertThat(configuration().idleTimeout(), is(DaemonConfiguration.DEFAULT_IDLE_TIMEOUT));
+    }
+
+    @Test
+    public void no_system_properties_are_produced_for_parameters_at_their_default_values() {
+        DaemonConfiguration defaultValues = builder.build();
+
+        Map<String, String> systemProperties = defaultValues.toSystemProperties();
+
+        assertThat(systemProperties).isEmpty();
     }
 
 
