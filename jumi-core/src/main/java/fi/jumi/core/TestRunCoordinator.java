@@ -5,13 +5,12 @@
 package fi.jumi.core;
 
 import fi.jumi.actors.*;
+import fi.jumi.core.config.SuiteConfiguration;
 import fi.jumi.core.drivers.*;
 import fi.jumi.core.files.*;
 import fi.jumi.core.runners.SuiteRunner;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import java.io.File;
-import java.util.List;
 import java.util.concurrent.Executor;
 
 @NotThreadSafe
@@ -38,8 +37,11 @@ public class TestRunCoordinator implements CommandListener {
     }
 
     @Override
-    public void runTests(final List<File> classPath, final String testsToIncludePattern) {
-        TestClassFinder testClassFinder = new FileSystemTestClassFinder(classPath, testsToIncludePattern);
+    public void runTests(SuiteConfiguration suiteConfiguration) {
+        TestClassFinder testClassFinder = new FileSystemTestClassFinder(
+                suiteConfiguration.classPath(),
+                suiteConfiguration.includedTestsPattern()
+        );
         DriverFinder driverFinder = new RunViaAnnotationDriverFinder();
 
         ActorRef<Startable> suiteRunner = actorThread.bindActor(Startable.class,

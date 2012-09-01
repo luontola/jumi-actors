@@ -142,7 +142,7 @@ TODO NEXT:
 		OK - remove fi.jumi.test.DaemonProcessTest#createLauncher
 		OK - remove duplication between fi.jumi.core.config.ConfigurationTest and fi.jumi.launcher.DaemonParametersTest
 		OK - simplify the setup in DaemonParametersTest: don't instantiate JumiLauncher, use only SuiteOptions and Configuration
-		!! - create SuiteOptionsBuilder
+		OK - create SuiteOptionsBuilder
 			OK - use builder in ConfigurationTest, AppRunner
 			OK - make SuiteOptions immutable
 			OK - consider separate classes for daemon-scoped vs. suite-scoped parameters (defer until persistent daemons?)
@@ -163,11 +163,11 @@ TODO NEXT:
 				OK - Phase Change Pattern (new idea!)
 					OK - daemonConfig = daemonConfig.melt().launcherPort(port).freeze();
 					OK - update also SuiteConfiguration
-		!! - better name? SuiteSetup, SuiteConfig, SuiteConfiguration, SuiteArgs, SuiteParameters
+		OK - better name? SuiteSetup, SuiteConfig, SuiteConfiguration, SuiteArgs, SuiteParameters
 			-> SuiteConfiguration (also rename core.config.Configuration -> core.bootstrap.DaemonConfiguration)
-		- send SuiteConfiguration to fi.jumi.core.CommandListener#runTests
-		- see if there duplication between fi.jumi.core.config.Configuration and SuiteOptions; remove it
-		- refactor DaemonConfigurationConverter to have generic parameters?
+		OK - send SuiteConfiguration to fi.jumi.core.CommandListener#runTests
+		OK - see if there duplication between fi.jumi.core.config.Configuration and SuiteOptions; remove it
+		!! - refactor DaemonConfigurationConverter to have generic parameters?
 
 - migrate to Java 7
 	- change language level in all modules except jumi-actors et al?

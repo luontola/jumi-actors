@@ -46,7 +46,7 @@ public class RemoteSuiteLauncherTest {
         suiteLauncher.runTests(config, dummyDaemonConfig, suiteListener);
         callback().tell().onConnected(null, senderToDaemon);
 
-        verify(daemon).runTests(config.classPath(), config.includedTestsPattern());
+        verify(daemon).runTests(config);
     }
 
     @Test

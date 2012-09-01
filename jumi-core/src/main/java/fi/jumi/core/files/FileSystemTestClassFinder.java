@@ -15,11 +15,11 @@ import java.util.List;
 public class FileSystemTestClassFinder implements TestClassFinder {
 
     private final List<File> classPath;
-    private final String testsToIncludePattern;
+    private final String includedTestsPattern;
 
-    public FileSystemTestClassFinder(List<File> classPath, String testsToIncludePattern) {
+    public FileSystemTestClassFinder(List<File> classPath, String includedTestsPattern) {
         this.classPath = classPath;
-        this.testsToIncludePattern = testsToIncludePattern;
+        this.includedTestsPattern = includedTestsPattern;
     }
 
     @Override
@@ -28,7 +28,7 @@ public class FileSystemTestClassFinder implements TestClassFinder {
             // TODO: find all test classes from classpath
             // TODO: class loader might need to be dependency injected
             URLClassLoader loader = new URLClassLoader(asUrls(classPath));
-            Class<?> testClass = loader.loadClass(testsToIncludePattern);
+            Class<?> testClass = loader.loadClass(includedTestsPattern);
             listener.tell().onTestClassFound(testClass);
 
         } catch (MalformedURLException e) {

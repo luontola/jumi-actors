@@ -4,14 +4,13 @@
 
 package fi.jumi.core;
 
-import java.io.File;
-import java.util.List;
+import fi.jumi.core.config.SuiteConfiguration;
 
 public interface CommandListener {
 
     void addSuiteListener(SuiteListener listener);
 
-    void runTests(List<File> classPath, String testsToIncludePattern);
+    void runTests(SuiteConfiguration suiteConfiguration);
 
     void shutdown();
 }

@@ -7,11 +7,11 @@ package fi.jumi.core.config;
 import fi.jumi.core.util.Immutables;
 
 import javax.annotation.concurrent.Immutable;
-import java.io.File;
+import java.io.*;
 import java.util.*;
 
 @Immutable
-public class SuiteConfiguration {
+public class SuiteConfiguration implements Serializable {
 
     public static final String DEFAULT_INCLUDED_TESTS_PATTERN = "<TODO>"; // TODO
 
