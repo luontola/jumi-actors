@@ -17,22 +17,31 @@ public class DaemonConfigurationTest {
     @Rule
     public final ExpectedException thrown = ExpectedException.none();
 
+    private final DaemonConfigurationBuilder builder = new DaemonConfigurationBuilder();
+
+    @Before
+    public void initializeRequiredParameters() {
+        builder.launcherPort(new Random().nextInt(100) + 1);
+    }
+
 
     // command line arguments
 
     @Test
     public void launcher_port_is_configurable() {
-        // TODO: remove duplication with fi.jumi.launcher.remote.ProcessStartingDaemonSummoner.connectToDaemon()
-        DaemonConfiguration config = parseArgs(DaemonConfigurationConverter.LAUNCHER_PORT, "123");
+        builder.launcherPort(123);
 
-        assertThat(config.launcherPort(), is(123));
+        assertThat(configuration().launcherPort(), is(123));
     }
 
     @Test
     public void launcher_port_is_required() {
+        // TODO: use default from new DaemonConfiguration()
+        builder.launcherPort(new DaemonConfigurationBuilder().build().launcherPort());
+
         thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage("missing required parameter: " + DaemonConfigurationConverter.LAUNCHER_PORT);
-        parseArgs();
+        configuration();
     }
 
     @Test
@@ -47,59 +56,48 @@ public class DaemonConfigurationTest {
 
     @Test
     public void logging_actor_messages_can_be_enabled() {
-        DaemonConfiguration config = parseSystemProperties(DaemonConfigurationConverter.LOG_ACTOR_MESSAGES, "true");
+        builder.logActorMessages(true);
 
-        assertThat(config.logActorMessages(), is(true));
+        assertThat(configuration().logActorMessages(), is(true));
     }
 
     @Test
     public void logging_actor_messages_defaults_to_disabled() {
-        DaemonConfiguration config = defaultConfig();
-
-        assertThat(config.logActorMessages(), is(false));
+        assertThat(configuration().logActorMessages(), is(false));
     }
 
     @Test
     public void startup_timeout_can_be_changed() {
-        DaemonConfiguration original = new DaemonConfigurationBuilder()
-                .startupTimeout(42L)
-                .build();
+        builder.startupTimeout(42L);
 
-        DaemonConfiguration config = parseSuiteOptions(original);
-
-        assertThat(config.startupTimeout(), is(42L));
+        assertThat(configuration().startupTimeout(), is(42L));
     }
 
     @Test
     public void startup_timeout_has_a_default_value() {
-        DaemonConfiguration config = defaultConfig();
-
-        assertThat(config.startupTimeout(), is(DaemonConfiguration.DEFAULT_STARTUP_TIMEOUT));
+        assertThat(configuration().startupTimeout(), is(DaemonConfiguration.DEFAULT_STARTUP_TIMEOUT));
     }
 
     @Test
     public void idle_timeout_can_be_changed() {
-        DaemonConfiguration original = new DaemonConfigurationBuilder()
-                .idleTimeout(42L)
-                .build();
+        builder.idleTimeout(42L);
 
-        DaemonConfiguration converted = parseSuiteOptions(original);
-
-        assertThat(converted.idleTimeout(), is(42L));
+        assertThat(configuration().idleTimeout(), is(42L));
     }
 
     @Test
     public void idle_timeout_has_a_default_value() {
-        DaemonConfiguration config = defaultConfig();
-
-        assertThat(config.idleTimeout(), is(DaemonConfiguration.DEFAULT_IDLE_TIMEOUT));
+        assertThat(configuration().idleTimeout(), is(DaemonConfiguration.DEFAULT_IDLE_TIMEOUT));
     }
 
 
     // helpers
 
-    private static DaemonConfiguration parseSuiteOptions(DaemonConfiguration daemonConfiguration) {
-        return DaemonConfigurationConverter.parse(dummyArgs(), toProperties(DaemonConfigurationConverter.toSystemProperties(daemonConfiguration)));
+    private DaemonConfiguration configuration() {
+        DaemonConfiguration config = builder.build();
+        Map<String, String> systemProperties = config.toSystemProperties();
+        String[] args = config.toProgramArgs();
+        return DaemonConfigurationConverter.parse(args, toProperties(systemProperties));
     }
 
     private static Properties toProperties(Map<String, String> map) {
@@ -112,20 +110,5 @@ public class DaemonConfigurationTest {
 
     private DaemonConfiguration parseArgs(String... args) {
         return DaemonConfigurationConverter.parse(args, new Properties());
-    }
-
-    private DaemonConfiguration parseSystemProperties(String key, String value) {
-        Properties p = new Properties();
-        p.setProperty(key, value);
-        return DaemonConfigurationConverter.parse(dummyArgs(), p);
-    }
-
-    private DaemonConfiguration defaultConfig() {
-        return DaemonConfigurationConverter.parse(dummyArgs(), new Properties());
-    }
-
-    private static String[] dummyArgs() {
-        int launcherPort = new Random().nextInt(100) + 1;
-        return new String[]{DaemonConfigurationConverter.LAUNCHER_PORT, "" + launcherPort};
     }
 }

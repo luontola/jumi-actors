@@ -28,6 +28,10 @@ public class DaemonConfiguration {
         idleTimeout = builder.idleTimeout();
     }
 
+    public String[] toProgramArgs() {
+        return new String[]{DaemonConfigurationConverter.LAUNCHER_PORT, String.valueOf(launcherPort())};
+    }
+
     public Map<String, String> toSystemProperties() {
         return DaemonConfigurationConverter.toSystemProperties(this);
     }

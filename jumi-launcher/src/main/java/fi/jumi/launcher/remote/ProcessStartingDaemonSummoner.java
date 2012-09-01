@@ -43,13 +43,21 @@ public class ProcessStartingDaemonSummoner implements DaemonSummoner {
         // XXX: should we handle multiple connections properly, even though we are expecting only one?
         int port = daemonConnector.listenOnAnyPort(new OneTimeDaemonListenerFactory(listener));
 
+        // TODO: use the phase change pattern
+        daemonConfiguration = new DaemonConfigurationBuilder()
+                .launcherPort(port)
+                .logActorMessages(daemonConfiguration.logActorMessages())
+                .startupTimeout(daemonConfiguration.startupTimeout())
+                .idleTimeout(daemonConfiguration.idleTimeout())
+                .build();
+
         try {
             JvmArgs jvmArgs = new JvmArgsBuilder()
                     .executableJar(steward.getDaemonJar())
                     .workingDir(new File(".")) // TODO: get the working directory from suite options
                     .jvmOptions(suiteConfiguration.getJvmOptions())
                     .systemProperties(daemonConfiguration.toSystemProperties())
-                    .programArgs(DaemonConfigurationConverter.LAUNCHER_PORT, String.valueOf(port)) // TODO: create DaemonConfiguration.toProgramArgs()?
+                    .programArgs(daemonConfiguration.toProgramArgs())
                     .toJvmArgs();
             Process process = processStarter.startJavaProcess(jvmArgs);
             copyInBackground(process.getInputStream(), outputListener); // TODO: write the output to a log file using OS pipes, read it from there with AppRunner
