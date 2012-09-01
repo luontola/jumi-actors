@@ -159,6 +159,8 @@ TODO NEXT:
 				- remove duplication of using LAUNCHER_PORT directly:
 					fi.jumi.launcher.remote.ProcessStartingDaemonSummoner#connectToDaemon
 					fi.jumi.core.config.DaemonConfigurationTest
+				- Phase Change Pattern (new idea!)
+					daemonConfig = daemonConfig.melt().launcherPort(port).freeze();
 			- send SuiteConfiguration to fi.jumi.core.CommandListener#runTests
 		- better name? SuiteSetup, SuiteConfig, SuiteConfiguration, SuiteArgs, SuiteParameters
 			-> SuiteConfiguration (also rename core.config.Configuration -> core.bootstrap.DaemonConfiguration)
