@@ -15,23 +15,23 @@ public class SuiteConfiguration {
 
     private final List<File> classPath;
     private final List<String> jvmOptions;
-    private final String testsToIncludePattern;
+    private final String includedTestsPattern;
 
     SuiteConfiguration(SuiteConfigurationBuilder builder) {
         classPath = Immutables.list(builder.classPath());
         jvmOptions = Immutables.list(builder.jvmOptions());
-        testsToIncludePattern = builder.testsToIncludePattern();
+        includedTestsPattern = builder.includedTestsPattern();
     }
 
-    public List<File> getClassPath() {
+    public List<File> classPath() {
         return classPath;
     }
 
-    public List<String> getJvmOptions() {
+    public List<String> jvmOptions() {
         return jvmOptions;
     }
 
-    public String getTestsToIncludePattern() {
-        return testsToIncludePattern;
+    public String includedTestsPattern() {
+        return includedTestsPattern;
     }
 }

@@ -49,7 +49,7 @@ public class RemoteSuiteLauncher implements SuiteLauncher, DaemonListener {
     @Override
     public void onConnected(NetworkConnection connection, MessageSender<Event<CommandListener>> daemon) {
         this.daemon = new CommandListenerEventizer().newFrontend(daemon);
-        this.daemon.runTests(suiteConfiguration.getClassPath(), suiteConfiguration.getTestsToIncludePattern());
+        this.daemon.runTests(suiteConfiguration.classPath(), suiteConfiguration.includedTestsPattern());
     }
 
     @Override

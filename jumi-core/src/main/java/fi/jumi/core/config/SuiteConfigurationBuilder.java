@@ -11,11 +11,13 @@ import java.util.*;
 @NotThreadSafe
 public class SuiteConfigurationBuilder {
 
+    public static final String DEFAULT_INCLUDED_TESTS_PATTERN = "<TODO>"; // TODO
+
     // TODO: support for main and test class paths
 
     private final List<File> classPath = new ArrayList<File>();
     private final List<String> jvmOptions = new ArrayList<String>();
-    private String testsToIncludePattern;
+    private String includedTestsPattern = DEFAULT_INCLUDED_TESTS_PATTERN;
 
     public List<File> classPath() {
         return classPath;
@@ -26,12 +28,12 @@ public class SuiteConfigurationBuilder {
         return this;
     }
 
-    public String testsToIncludePattern() {
-        return testsToIncludePattern;
+    public String includedTestsPattern() {
+        return includedTestsPattern;
     }
 
-    public SuiteConfigurationBuilder testsToIncludePattern(String pattern) {
-        testsToIncludePattern = pattern;
+    public SuiteConfigurationBuilder includedTestsPattern(String includedTestsPattern) {
+        this.includedTestsPattern = includedTestsPattern;
         return this;
     }
 

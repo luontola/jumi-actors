@@ -55,7 +55,7 @@ public class ProcessStartingDaemonSummoner implements DaemonSummoner {
             JvmArgs jvmArgs = new JvmArgsBuilder()
                     .executableJar(steward.getDaemonJar())
                     .workingDir(new File(".")) // TODO: get the working directory from suite options
-                    .jvmOptions(suiteConfiguration.getJvmOptions())
+                    .jvmOptions(suiteConfiguration.jvmOptions())
                     .systemProperties(daemonConfiguration.toSystemProperties())
                     .programArgs(daemonConfiguration.toProgramArgs())
                     .toJvmArgs();

@@ -39,13 +39,13 @@ public class RemoteSuiteLauncherTest {
     public void sends_RunTests_command_to_the_daemon_when_it_connects() {
         SuiteConfiguration config = new SuiteConfigurationBuilder()
                 .addToClassPath(new File("dependency.jar"))
-                .testsToIncludePattern("*Test")
+                .includedTestsPattern("*Test")
                 .build();
 
         suiteLauncher.runTests(config, dummyDaemonConfiguration, suiteListener);
         callback().tell().onConnected(null, senderToDaemon);
 
-        verify(daemon).runTests(config.getClassPath(), config.getTestsToIncludePattern());
+        verify(daemon).runTests(config.classPath(), config.includedTestsPattern());
     }
 
     @Test

@@ -147,15 +147,15 @@ TODO NEXT:
 			OK - make SuiteOptions immutable
 			OK - consider separate classes for daemon-scoped vs. suite-scoped parameters (defer until persistent daemons?)
 			OK - consider separating the classes which convert parameters to/from system properties vs. which hold/configure the parameters
-			!! - unit tests for them all
+			OK - unit tests for them all
 				OK - DaemonConfigurationTest
-				!! - avoid creating system properties for default values
-				- SuiteConfigurationTest
-			- create DaemonConfiguration.toProgramArgs
+				OK - avoid creating system properties for default values
+				OK - SuiteConfigurationTest
+			!! - create DaemonConfiguration.toProgramArgs
 				OK - remove duplication of using LAUNCHER_PORT directly:
 					OK - fi.jumi.launcher.remote.ProcessStartingDaemonSummoner#connectToDaemon
 					OK - fi.jumi.core.config.DaemonConfigurationTest
-				- ProcessStartingDaemonSummoner needs to add the port to DaemonConfiguration
+				!! - ProcessStartingDaemonSummoner needs to add the port to DaemonConfiguration
 					- create copy constructor: `new DaemonConfigurationBuilder(daemonConfiguration)`
 					- move setting defaults to `new DaemonConfiguration()`
 					- make `new DaemonConfigurationBuilder()` use `this(new DaemonConfiguration())`

@@ -118,7 +118,7 @@ public class AppRunner implements TestRule {
         }
         daemonBuilder.logActorMessages(true);
         suiteBuilder.addToClassPath(TestEnvironment.getSampleClasses());
-        suiteBuilder.testsToIncludePattern(testsToInclude);
+        suiteBuilder.includedTestsPattern(testsToInclude);
 
         getLauncher().start(suiteBuilder.build(), daemonBuilder.build());
     }
