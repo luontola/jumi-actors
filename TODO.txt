@@ -151,7 +151,7 @@ TODO NEXT:
 				OK - DaemonConfigurationTest
 				OK - avoid creating system properties for default values
 				OK - SuiteConfigurationTest
-			!! - create DaemonConfiguration.toProgramArgs
+			OK - create DaemonConfiguration.toProgramArgs
 				OK - remove duplication of using LAUNCHER_PORT directly:
 					OK - fi.jumi.launcher.remote.ProcessStartingDaemonSummoner#connectToDaemon
 					OK - fi.jumi.core.config.DaemonConfigurationTest
@@ -160,12 +160,12 @@ TODO NEXT:
 					OK - move setting defaults to `new DaemonConfiguration()`
 					OK - make `new DaemonConfigurationBuilder()` use `this(new DaemonConfiguration())`
 					OK - refactor fi.jumi.core.config.DaemonConfigurationTest#launcher_port_is_required
-				!! - Phase Change Pattern (new idea!)
+				OK - Phase Change Pattern (new idea!)
 					OK - daemonConfig = daemonConfig.melt().launcherPort(port).freeze();
-					!! - update also SuiteConfiguration
-			- send SuiteConfiguration to fi.jumi.core.CommandListener#runTests
-		- better name? SuiteSetup, SuiteConfig, SuiteConfiguration, SuiteArgs, SuiteParameters
+					OK - update also SuiteConfiguration
+		!! - better name? SuiteSetup, SuiteConfig, SuiteConfiguration, SuiteArgs, SuiteParameters
 			-> SuiteConfiguration (also rename core.config.Configuration -> core.bootstrap.DaemonConfiguration)
+		- send SuiteConfiguration to fi.jumi.core.CommandListener#runTests
 		- see if there duplication between fi.jumi.core.config.Configuration and SuiteOptions; remove it
 		- refactor DaemonConfigurationConverter to have generic parameters?
 
@@ -190,6 +190,7 @@ TODO NEXT:
 		- consider using Java 7's glob/regex patterns
 			http://docs.oracle.com/javase/tutorial/essential/io/fileOps.html#glob
 			http://docs.oracle.com/javase/7/docs/api/java/nio/file/FileSystem.html#getPathMatcher(java.lang.String)
+	- set a good default value for fi.jumi.core.config.SuiteConfiguration#includedTestsPattern
 
 - end-to-end tests: reporting test output
 	- capture System.out/err

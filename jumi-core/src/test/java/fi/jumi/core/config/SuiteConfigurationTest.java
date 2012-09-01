@@ -4,7 +4,7 @@
 
 package fi.jumi.core.config;
 
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.File;
 
@@ -13,7 +13,13 @@ import static org.hamcrest.Matchers.*;
 
 public class SuiteConfigurationTest {
 
-    private final SuiteConfigurationBuilder builder = new SuiteConfigurationBuilder();
+    private SuiteConfigurationBuilder builder = new SuiteConfigurationBuilder();
+
+    @Before
+    public void setup() {
+        // make sure that melting makes all fields back mutable
+        builder = builder.freeze().melt();
+    }
 
 
     // classPath
@@ -57,13 +63,13 @@ public class SuiteConfigurationTest {
 
     @Test
     public void included_tests_pattern_has_a_default_value() {
-        assertThat(configuration().includedTestsPattern(), is(SuiteConfigurationBuilder.DEFAULT_INCLUDED_TESTS_PATTERN));
+        assertThat(configuration().includedTestsPattern(), is(SuiteConfiguration.DEFAULT_INCLUDED_TESTS_PATTERN));
     }
 
 
     // helpers
 
     private SuiteConfiguration configuration() {
-        return builder.build();
+        return builder.freeze();
     }
 }

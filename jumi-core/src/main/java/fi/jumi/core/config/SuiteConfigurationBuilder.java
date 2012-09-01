@@ -11,13 +11,26 @@ import java.util.*;
 @NotThreadSafe
 public class SuiteConfigurationBuilder {
 
-    public static final String DEFAULT_INCLUDED_TESTS_PATTERN = "<TODO>"; // TODO
+    private final List<File> classPath;
+    private final List<String> jvmOptions;
+    private String includedTestsPattern;
 
-    // TODO: support for main and test class paths
+    public SuiteConfigurationBuilder() {
+        this(new SuiteConfiguration());
+    }
 
-    private final List<File> classPath = new ArrayList<File>();
-    private final List<String> jvmOptions = new ArrayList<String>();
-    private String includedTestsPattern = DEFAULT_INCLUDED_TESTS_PATTERN;
+    SuiteConfigurationBuilder(SuiteConfiguration src) {
+        classPath = new ArrayList<File>(src.classPath());
+        jvmOptions = new ArrayList<String>(src.jvmOptions());
+        includedTestsPattern = src.includedTestsPattern();
+    }
+
+    public SuiteConfiguration freeze() {
+        return new SuiteConfiguration(this);
+    }
+
+
+    // getters and setters
 
     public List<File> classPath() {
         return classPath;
@@ -44,9 +57,5 @@ public class SuiteConfigurationBuilder {
     public SuiteConfigurationBuilder addJvmOptions(String... jvmOptions) {
         this.jvmOptions.addAll(Arrays.asList(jvmOptions));
         return this;
-    }
-
-    public SuiteConfiguration build() {
-        return new SuiteConfiguration(this);
     }
 }

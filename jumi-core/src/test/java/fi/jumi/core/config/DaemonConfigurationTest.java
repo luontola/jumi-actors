@@ -18,11 +18,11 @@ public class DaemonConfigurationTest {
     @Rule
     public final ExpectedException thrown = ExpectedException.none();
 
-
     private DaemonConfigurationBuilder builder = new DaemonConfigurationBuilder();
 
     @Before
     public void setup() {
+        // initialize required parameters to avoid failing unrelated tests
         builder.launcherPort(new Random().nextInt(100) + 1);
 
         // make sure that melting makes all fields back mutable
