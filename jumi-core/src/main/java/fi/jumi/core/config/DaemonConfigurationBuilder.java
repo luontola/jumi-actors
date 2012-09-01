@@ -9,10 +9,28 @@ import javax.annotation.concurrent.NotThreadSafe;
 @NotThreadSafe
 public class DaemonConfigurationBuilder {
 
-    private int launcherPort = -1;
-    private boolean logActorMessages = DaemonConfiguration.DEFAULT_LOG_ACTOR_MESSAGES;
-    private long startupTimeout = DaemonConfiguration.DEFAULT_STARTUP_TIMEOUT;
-    private long idleTimeout = DaemonConfiguration.DEFAULT_IDLE_TIMEOUT;
+    private int launcherPort;
+    private boolean logActorMessages;
+    private long startupTimeout;
+    private long idleTimeout;
+
+    public DaemonConfigurationBuilder() {
+        this(new DaemonConfiguration());
+    }
+
+    DaemonConfigurationBuilder(DaemonConfiguration src) {
+        launcherPort = src.launcherPort();
+        logActorMessages = src.logActorMessages();
+        startupTimeout = src.startupTimeout();
+        idleTimeout = src.idleTimeout();
+    }
+
+    public DaemonConfiguration freeze() {
+        return new DaemonConfiguration(this);
+    }
+
+
+    // getters and setters
 
     public int launcherPort() {
         return launcherPort;
@@ -48,9 +66,5 @@ public class DaemonConfigurationBuilder {
     public DaemonConfigurationBuilder idleTimeout(long idleTimeout) {
         this.idleTimeout = idleTimeout;
         return this;
-    }
-
-    public DaemonConfiguration build() {
-        return new DaemonConfiguration(this);
     }
 }

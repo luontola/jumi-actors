@@ -18,11 +18,15 @@ public class DaemonConfigurationTest {
     @Rule
     public final ExpectedException thrown = ExpectedException.none();
 
-    private final DaemonConfigurationBuilder builder = new DaemonConfigurationBuilder();
+
+    private DaemonConfigurationBuilder builder = new DaemonConfigurationBuilder();
 
     @Before
-    public void initializeRequiredParameters() {
+    public void setup() {
         builder.launcherPort(new Random().nextInt(100) + 1);
+
+        // make sure that melting makes all fields back mutable
+        builder = builder.freeze().melt();
     }
 
 
@@ -37,8 +41,8 @@ public class DaemonConfigurationTest {
 
     @Test
     public void launcher_port_is_required() {
-        // TODO: use default from new DaemonConfiguration()
-        builder.launcherPort(new DaemonConfigurationBuilder().build().launcherPort());
+        int uninitializedValue = new DaemonConfiguration().launcherPort();
+        builder.launcherPort(uninitializedValue);
 
         thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage("missing required parameter: " + DaemonConfigurationConverter.LAUNCHER_PORT);
@@ -93,7 +97,7 @@ public class DaemonConfigurationTest {
 
     @Test
     public void no_system_properties_are_produced_for_parameters_at_their_default_values() {
-        DaemonConfiguration defaultValues = builder.build();
+        DaemonConfiguration defaultValues = builder.freeze();
 
         Map<String, String> systemProperties = defaultValues.toSystemProperties();
 
@@ -104,7 +108,7 @@ public class DaemonConfigurationTest {
     // helpers
 
     private DaemonConfiguration configuration() {
-        DaemonConfiguration config = builder.build();
+        DaemonConfiguration config = builder.freeze();
         Map<String, String> systemProperties = config.toSystemProperties();
         String[] args = config.toProgramArgs();
         return DaemonConfigurationConverter.parse(args, toProperties(systemProperties));

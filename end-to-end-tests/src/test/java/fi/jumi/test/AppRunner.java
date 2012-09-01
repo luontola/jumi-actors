@@ -120,7 +120,7 @@ public class AppRunner implements TestRule {
         suiteBuilder.addToClassPath(TestEnvironment.getSampleClasses());
         suiteBuilder.includedTestsPattern(testsToInclude);
 
-        getLauncher().start(suiteBuilder.build(), daemonBuilder.build());
+        getLauncher().start(suiteBuilder.build(), daemonBuilder.freeze());
     }
 
     private static void printTextUIOutput(String output) {

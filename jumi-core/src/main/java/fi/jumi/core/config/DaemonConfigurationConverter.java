@@ -39,7 +39,7 @@ public class DaemonConfigurationConverter {
         parseCommandLineArguments(builder, args);
         parseSystemProperties(builder, systemProperties);
         checkRequiredParameters(builder);
-        return builder.build();
+        return builder.freeze();
     }
 
     private static void parseCommandLineArguments(DaemonConfigurationBuilder builder, String[] args) {

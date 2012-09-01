@@ -11,21 +11,31 @@ import java.util.concurrent.TimeUnit;
 @Immutable
 public class DaemonConfiguration {
 
-    // default values
     public static final boolean DEFAULT_LOG_ACTOR_MESSAGES = false;
     public static final long DEFAULT_STARTUP_TIMEOUT = TimeUnit.SECONDS.toMillis(30);
     public static final long DEFAULT_IDLE_TIMEOUT = TimeUnit.SECONDS.toMillis(5); // TODO: increase to 15 min, after implementing persistent daemons
 
-    private final boolean logActorMessages;
     private final int launcherPort;
+    private final boolean logActorMessages;
     private final long startupTimeout;
     private final long idleTimeout;
 
-    DaemonConfiguration(DaemonConfigurationBuilder builder) {
-        logActorMessages = builder.logActorMessages();
-        launcherPort = builder.launcherPort();
-        startupTimeout = builder.startupTimeout();
-        idleTimeout = builder.idleTimeout();
+    public DaemonConfiguration() {
+        launcherPort = -1;
+        logActorMessages = DEFAULT_LOG_ACTOR_MESSAGES;
+        startupTimeout = DEFAULT_STARTUP_TIMEOUT;
+        idleTimeout = DEFAULT_IDLE_TIMEOUT;
+    }
+
+    DaemonConfiguration(DaemonConfigurationBuilder src) {
+        launcherPort = src.launcherPort();
+        logActorMessages = src.logActorMessages();
+        startupTimeout = src.startupTimeout();
+        idleTimeout = src.idleTimeout();
+    }
+
+    public DaemonConfigurationBuilder melt() {
+        return new DaemonConfigurationBuilder(this);
     }
 
     public String[] toProgramArgs() {
@@ -36,12 +46,15 @@ public class DaemonConfiguration {
         return DaemonConfigurationConverter.toSystemProperties(this);
     }
 
-    public boolean logActorMessages() {
-        return logActorMessages;
-    }
+
+    // getters
 
     public int launcherPort() {
         return launcherPort;
+    }
+
+    public boolean logActorMessages() {
+        return logActorMessages;
     }
 
     public long startupTimeout() {

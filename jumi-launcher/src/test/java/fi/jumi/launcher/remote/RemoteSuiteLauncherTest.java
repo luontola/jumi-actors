@@ -28,7 +28,7 @@ public class RemoteSuiteLauncherTest {
     private final CommandListener daemon = mock(CommandListener.class);
     private final MessageSender<Event<CommandListener>> senderToDaemon = new CommandListenerEventizer().newBackend(daemon);
     private final SpyDaemonSummoner daemonSummoner = new SpyDaemonSummoner();
-    private final DaemonConfiguration dummyDaemonConfiguration = new DaemonConfigurationBuilder().build();
+    private final DaemonConfiguration dummyDaemonConfiguration = new DaemonConfigurationBuilder().freeze();
 
     private final RemoteSuiteLauncher suiteLauncher =
             new RemoteSuiteLauncher(new FakeActorThread(), ActorRef.<DaemonSummoner>wrap(daemonSummoner));

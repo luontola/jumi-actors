@@ -42,14 +42,9 @@ public class ProcessStartingDaemonSummoner implements DaemonSummoner {
                                 ActorRef<DaemonListener> listener) {
         // XXX: should we handle multiple connections properly, even though we are expecting only one?
         int port = daemonConnector.listenOnAnyPort(new OneTimeDaemonListenerFactory(listener));
-
-        // TODO: use the phase change pattern
-        daemonConfiguration = new DaemonConfigurationBuilder()
+        daemonConfiguration = daemonConfiguration.melt()
                 .launcherPort(port)
-                .logActorMessages(daemonConfiguration.logActorMessages())
-                .startupTimeout(daemonConfiguration.startupTimeout())
-                .idleTimeout(daemonConfiguration.idleTimeout())
-                .build();
+                .freeze();
 
         try {
             JvmArgs jvmArgs = new JvmArgsBuilder()

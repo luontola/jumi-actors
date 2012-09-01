@@ -155,18 +155,19 @@ TODO NEXT:
 				OK - remove duplication of using LAUNCHER_PORT directly:
 					OK - fi.jumi.launcher.remote.ProcessStartingDaemonSummoner#connectToDaemon
 					OK - fi.jumi.core.config.DaemonConfigurationTest
-				!! - ProcessStartingDaemonSummoner needs to add the port to DaemonConfiguration
-					- create copy constructor: `new DaemonConfigurationBuilder(daemonConfiguration)`
-					- move setting defaults to `new DaemonConfiguration()`
-					- make `new DaemonConfigurationBuilder()` use `this(new DaemonConfiguration())`
-					- refactor fi.jumi.core.config.DaemonConfigurationTest#launcher_port_is_required
-				- Phase Change Pattern (new idea!)
-					- daemonConfig = daemonConfig.melt().launcherPort(port).freeze();
+				OK - ProcessStartingDaemonSummoner needs to add the port to DaemonConfiguration
+					OK - create copy constructor: `new DaemonConfigurationBuilder(daemonConfiguration)`
+					OK - move setting defaults to `new DaemonConfiguration()`
+					OK - make `new DaemonConfigurationBuilder()` use `this(new DaemonConfiguration())`
+					OK - refactor fi.jumi.core.config.DaemonConfigurationTest#launcher_port_is_required
+				!! - Phase Change Pattern (new idea!)
+					OK - daemonConfig = daemonConfig.melt().launcherPort(port).freeze();
+					!! - update also SuiteConfiguration
 			- send SuiteConfiguration to fi.jumi.core.CommandListener#runTests
 		- better name? SuiteSetup, SuiteConfig, SuiteConfiguration, SuiteArgs, SuiteParameters
 			-> SuiteConfiguration (also rename core.config.Configuration -> core.bootstrap.DaemonConfiguration)
 		- see if there duplication between fi.jumi.core.config.Configuration and SuiteOptions; remove it
-		- refactor fi.jumi.core.config.Configuration to have generic parameters?
+		- refactor DaemonConfigurationConverter to have generic parameters?
 
 - migrate to Java 7
 	- change language level in all modules except jumi-actors et al?

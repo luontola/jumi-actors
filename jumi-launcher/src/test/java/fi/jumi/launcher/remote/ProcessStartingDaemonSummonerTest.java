@@ -37,7 +37,7 @@ public class ProcessStartingDaemonSummonerTest {
     );
 
     private final SuiteConfiguration dummySuiteConfiguration = new SuiteConfigurationBuilder().build();
-    private final DaemonConfiguration dummyDaemonConfiguration = new DaemonConfigurationBuilder().build();
+    private final DaemonConfiguration dummyDaemonConfiguration = new DaemonConfigurationBuilder().freeze();
     private final ActorRef<DaemonListener> dummyListener = ActorRef.wrap(null);
 
     @Test
