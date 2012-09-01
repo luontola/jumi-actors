@@ -26,10 +26,10 @@ public class SuiteConfiguration implements Serializable {
         includedTestsPattern = DEFAULT_INCLUDED_TESTS_PATTERN;
     }
 
-    SuiteConfiguration(SuiteConfigurationBuilder builder) {
-        classPath = Immutables.list(builder.classPath());
-        jvmOptions = Immutables.list(builder.jvmOptions());
-        includedTestsPattern = builder.includedTestsPattern();
+    SuiteConfiguration(SuiteConfigurationBuilder src) {
+        classPath = Immutables.list(src.classPath());
+        jvmOptions = Immutables.list(src.jvmOptions());
+        includedTestsPattern = src.includedTestsPattern();
     }
 
     public SuiteConfigurationBuilder melt() {

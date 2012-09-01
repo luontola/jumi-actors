@@ -30,7 +30,16 @@ public class DaemonConfigurationTest {
     }
 
 
-    // command line arguments
+    // ## Command Line Arguments ##
+
+    @Test
+    public void rejects_unsupported_command_line_arguments() {
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("unsupported parameter: --foo");
+        parseArgs("--foo");
+    }
+
+    // launcherPort
 
     @Test
     public void launcher_port_is_configurable() {
@@ -49,15 +58,19 @@ public class DaemonConfigurationTest {
         configuration();
     }
 
+
+    // ## System Properties ##
+
     @Test
-    public void rejects_unsupported_command_line_arguments() {
-        thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("unsupported parameter: --foo");
-        parseArgs("--foo");
+    public void no_system_properties_are_produced_for_parameters_at_their_default_values() {
+        DaemonConfiguration defaultValues = builder.freeze();
+
+        Map<String, String> systemProperties = defaultValues.toSystemProperties();
+
+        assertThat(systemProperties).isEmpty();
     }
 
-
-    // system properties
+    // logActorMessages
 
     @Test
     public void logging_actor_messages_can_be_enabled() {
@@ -71,6 +84,8 @@ public class DaemonConfigurationTest {
         assertThat(configuration().logActorMessages(), is(false));
     }
 
+    // startupTimeout
+
     @Test
     public void startup_timeout_can_be_changed() {
         builder.startupTimeout(42L);
@@ -83,6 +98,8 @@ public class DaemonConfigurationTest {
         assertThat(configuration().startupTimeout(), is(DaemonConfiguration.DEFAULT_STARTUP_TIMEOUT));
     }
 
+    // idleTimeout
+
     @Test
     public void idle_timeout_can_be_changed() {
         builder.idleTimeout(42L);
@@ -93,15 +110,6 @@ public class DaemonConfigurationTest {
     @Test
     public void idle_timeout_has_a_default_value() {
         assertThat(configuration().idleTimeout(), is(DaemonConfiguration.DEFAULT_IDLE_TIMEOUT));
-    }
-
-    @Test
-    public void no_system_properties_are_produced_for_parameters_at_their_default_values() {
-        DaemonConfiguration defaultValues = builder.freeze();
-
-        Map<String, String> systemProperties = defaultValues.toSystemProperties();
-
-        assertThat(systemProperties).isEmpty();
     }
 
 
