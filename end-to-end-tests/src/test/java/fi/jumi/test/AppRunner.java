@@ -169,7 +169,7 @@ public class AppRunner implements TestRule {
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                setUp();
+                setup();
                 try {
                     base.evaluate();
                 } finally {
@@ -179,7 +179,7 @@ public class AppRunner implements TestRule {
         };
     }
 
-    private void setUp() {
+    private void setup() {
         assertTrue("Unable to create " + sandboxDir, sandboxDir.mkdirs());
     }
 
