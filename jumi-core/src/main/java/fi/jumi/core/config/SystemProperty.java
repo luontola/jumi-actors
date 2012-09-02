@@ -12,40 +12,49 @@ public class SystemProperty {
     private final String beanProperty;
     private final String systemProperty;
     private final DaemonConfiguration defaults;
+    private final Method getter;
+    private final Class<?> type;
 
     public SystemProperty(String beanProperty, String systemProperty, DaemonConfiguration defaults) {
         this.beanProperty = beanProperty;
         this.systemProperty = systemProperty;
         this.defaults = defaults;
+        try {
+            getter = defaults.getClass().getMethod(beanProperty);
+            type = getter.getReturnType();
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public void toSystemProperty(DaemonConfiguration config, Map<String, String> map) {
+    public void toSystemProperty(DaemonConfiguration source, Map<String, String> target) {
+        Object value = get(source);
+        Object defaultValue = get(defaults);
+
+        if (!value.equals(defaultValue)) {
+            target.put(systemProperty, String.valueOf(value));
+        }
+    }
+
+    public void parseSystemProperty(DaemonConfigurationBuilder target, Properties source) {
+        String value = source.getProperty(systemProperty);
+        if (value != null) {
+            set(target, value);
+        }
+    }
+
+    private Object get(DaemonConfiguration source) {
         try {
-            // TODO: remove duplication
-            Method get = defaults.getClass().getMethod(beanProperty);
-
-            Object value = get.invoke(config);
-            Object defaultValue = get.invoke(defaults);
-            if (!value.equals(defaultValue)) {
-                map.put(systemProperty, String.valueOf(value));
-            }
-
+            return getter.invoke(source);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void parseSystemProperty(DaemonConfigurationBuilder builder, Properties systemProperties) {
+    private void set(DaemonConfigurationBuilder target, String value) {
         try {
-            // TODO: remove duplication
-            Method get = builder.getClass().getMethod(beanProperty);
-            Class<?> type = get.getReturnType();
-            Method set = builder.getClass().getMethod(beanProperty, type);
-
-            String value = systemProperties.getProperty(systemProperty);
-            if (value != null) {
-                set.invoke(builder, parse(type, value));
-            }
+            Method setter = target.getClass().getMethod(beanProperty, type);
+            setter.invoke(target, parse(type, value));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
