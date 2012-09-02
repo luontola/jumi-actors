@@ -22,10 +22,12 @@ public class JvmArgs {
     public final File executableJar;
     public final List<String> programArgs;
 
+    // TODO: pass builder to constructor? would reduce the number of these parameters
+
     public JvmArgs(File workingDir,
                    File javaHome,
                    List<String> jvmOptions,
-                   Map<String, String> systemProperties,
+                   Properties systemProperties,
                    File executableJar,
                    String[] programArgs) {
         this.workingDir = workingDir;

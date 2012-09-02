@@ -14,7 +14,7 @@ public class JvmArgsBuilder {
     private File workingDir;
     private File javaHome = new File(System.getProperty("java.home"));
     private List<String> jvmOptions = new ArrayList<String>();
-    private Map<String, String> systemProperties = new HashMap<String, String>();
+    private Properties systemProperties = new Properties();
     private File executableJar;
     private String[] programArgs = new String[0];
 
@@ -33,7 +33,7 @@ public class JvmArgsBuilder {
         return this;
     }
 
-    public JvmArgsBuilder systemProperties(Map<String, String> systemProperties) {
+    public JvmArgsBuilder systemProperties(Properties systemProperties) {
         this.systemProperties = systemProperties;
         return this;
     }

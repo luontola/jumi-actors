@@ -5,7 +5,7 @@
 package fi.jumi.core.config;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Properties;
 
 public class SystemProperty {
 
@@ -27,12 +27,12 @@ public class SystemProperty {
         }
     }
 
-    public void toSystemProperty(DaemonConfiguration source, Map<String, String> target) {
+    public void toSystemProperty(DaemonConfiguration source, Properties target) {
         Object value = get(source);
         Object defaultValue = get(defaults);
 
         if (!value.equals(defaultValue)) {
-            target.put(systemProperty, String.valueOf(value));
+            target.setProperty(systemProperty, String.valueOf(value));
         }
     }
 

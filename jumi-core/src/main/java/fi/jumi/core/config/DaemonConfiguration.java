@@ -52,12 +52,12 @@ public class DaemonConfiguration {
         return new String[]{LAUNCHER_PORT, String.valueOf(launcherPort())};
     }
 
-    public Map<String, String> toSystemProperties() {
-        Map<String, String> map = new HashMap<String, String>();
+    public Properties toSystemProperties() {
+        Properties systemProperties = new Properties();
         for (SystemProperty property : PROPERTIES) {
-            property.toSystemProperty(this, map);
+            property.toSystemProperty(this, systemProperties);
         }
-        return map;
+        return systemProperties;
     }
 
 

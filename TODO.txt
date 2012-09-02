@@ -1,6 +1,6 @@
 
 TODO NEXT:
-!! - proper daemon shutdown
+OK - proper daemon shutdown
 	OK - expose the Process instance from launcher, use it to write e2e-tests (can assert that daemon is shut down)
 		OK - expose the Process instance to tests (use a proxy ProcessLauncher in AppRunner?)
 		OK - in other tests, wait for the process to close
@@ -137,7 +137,7 @@ TODO NEXT:
 		OK - make is possible to assert what the daemon prints (plug a spy in AppRunner's createDaemonOutputListener)
 		OK - add assertions to DaemonProcessTest
 		OK - also print daemon version on startup, read from pom.properties
-	!! - refactor JumiLauncher & SuiteOptions
+	OK - refactor JumiLauncher & SuiteOptions
 		OK - replace JumiLauncher.start() and all setters with runTests(SuiteOptions)
 		OK - remove fi.jumi.test.DaemonProcessTest#createLauncher
 		OK - remove duplication between fi.jumi.core.config.ConfigurationTest and fi.jumi.launcher.DaemonParametersTest
@@ -167,10 +167,10 @@ TODO NEXT:
 			-> SuiteConfiguration (also rename core.config.Configuration -> core.bootstrap.DaemonConfiguration)
 		OK - send SuiteConfiguration to fi.jumi.core.CommandListener#runTests
 		OK - see if there duplication between fi.jumi.core.config.Configuration and SuiteOptions; remove it
-		!! - refactor DaemonConfigurationConverter to have generic parameters?
+		OK - refactor DaemonConfigurationConverter to have generic parameters?
 			OK - generic conversion of system properties
 			SKIP - generic conversion of command line arguments
-			- use Properties for system properties, until fi.jumi.launcher.process.JvmArgs#JvmArgs
+			OK - use Properties for system properties, until fi.jumi.launcher.process.JvmArgs#JvmArgs
 
 - migrate to Java 7
 	- change language level in all modules except jumi-actors et al?

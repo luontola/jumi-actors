@@ -66,7 +66,7 @@ public class DaemonConfigurationTest {
     public void no_system_properties_are_produced_for_parameters_at_their_default_values() {
         DaemonConfiguration defaultValues = builder.freeze();
 
-        Map<String, String> systemProperties = defaultValues.toSystemProperties();
+        Properties systemProperties = defaultValues.toSystemProperties();
 
         assertThat(systemProperties).isEmpty();
     }
@@ -119,19 +119,11 @@ public class DaemonConfigurationTest {
     private DaemonConfiguration configuration() {
         DaemonConfiguration config = builder.freeze();
         String[] args = config.toProgramArgs();
-        Properties systemProperties = toProperties(config.toSystemProperties());
+        Properties systemProperties = config.toSystemProperties();
 
         return new DaemonConfigurationBuilder()
                 .parseProgramArgs(args)
                 .parseSystemProperties(systemProperties)
                 .freeze();
-    }
-
-    private static Properties toProperties(Map<String, String> map) {
-        Properties properties = new Properties();
-        for (Map.Entry<String, String> entry : map.entrySet()) {
-            properties.setProperty(entry.getKey(), entry.getValue());
-        }
-        return properties;
     }
 }
