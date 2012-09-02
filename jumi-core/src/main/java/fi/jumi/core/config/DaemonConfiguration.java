@@ -11,9 +11,7 @@ import java.util.concurrent.TimeUnit;
 @Immutable
 public class DaemonConfiguration {
 
-    public static final boolean DEFAULT_LOG_ACTOR_MESSAGES = false;
-    public static final long DEFAULT_STARTUP_TIMEOUT = TimeUnit.SECONDS.toMillis(30);
-    public static final long DEFAULT_IDLE_TIMEOUT = TimeUnit.SECONDS.toMillis(5); // TODO: increase to 15 min, after implementing persistent daemons
+    public static final DaemonConfiguration DEFAULTS = new DaemonConfiguration();
 
     private final int launcherPort;
     private final boolean logActorMessages;
@@ -22,9 +20,9 @@ public class DaemonConfiguration {
 
     public DaemonConfiguration() {
         launcherPort = 0;
-        logActorMessages = DEFAULT_LOG_ACTOR_MESSAGES;
-        startupTimeout = DEFAULT_STARTUP_TIMEOUT;
-        idleTimeout = DEFAULT_IDLE_TIMEOUT;
+        logActorMessages = false;
+        startupTimeout = TimeUnit.SECONDS.toMillis(30);
+        idleTimeout = TimeUnit.SECONDS.toMillis(5);  // TODO: increase to 15 min, after implementing persistent daemons
     }
 
     DaemonConfiguration(DaemonConfigurationBuilder src) {

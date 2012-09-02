@@ -22,13 +22,13 @@ public class DaemonConfigurationConverter {
 
     public static Map<String, String> toSystemProperties(DaemonConfiguration config) {
         Map<String, String> map = new HashMap<String, String>();
-        if (config.logActorMessages() != DaemonConfiguration.DEFAULT_LOG_ACTOR_MESSAGES) {
+        if (config.logActorMessages() != DaemonConfiguration.DEFAULTS.logActorMessages()) {
             map.put(LOG_ACTOR_MESSAGES, "" + config.logActorMessages());
         }
-        if (config.startupTimeout() != DaemonConfiguration.DEFAULT_STARTUP_TIMEOUT) {
+        if (config.startupTimeout() != DaemonConfiguration.DEFAULTS.startupTimeout()) {
             map.put(STARTUP_TIMEOUT, String.valueOf(config.startupTimeout()));
         }
-        if (config.idleTimeout() != DaemonConfiguration.DEFAULT_IDLE_TIMEOUT) {
+        if (config.idleTimeout() != DaemonConfiguration.DEFAULTS.idleTimeout()) {
             map.put(IDLE_TIMEOUT, String.valueOf(config.idleTimeout()));
         }
         return map;
@@ -56,8 +56,8 @@ public class DaemonConfigurationConverter {
 
     private static void parseSystemProperties(DaemonConfigurationBuilder builder, Properties systemProperties) {
         builder.logActorMessages(getBoolean(LOG_ACTOR_MESSAGES, systemProperties));
-        builder.startupTimeout(getLong(STARTUP_TIMEOUT, systemProperties, DaemonConfiguration.DEFAULT_STARTUP_TIMEOUT));
-        builder.idleTimeout(getLong(IDLE_TIMEOUT, systemProperties, DaemonConfiguration.DEFAULT_IDLE_TIMEOUT));
+        builder.startupTimeout(getLong(STARTUP_TIMEOUT, systemProperties, DaemonConfiguration.DEFAULTS.startupTimeout()));
+        builder.idleTimeout(getLong(IDLE_TIMEOUT, systemProperties, DaemonConfiguration.DEFAULTS.idleTimeout()));
     }
 
     private static void checkRequiredParameters(DaemonConfigurationBuilder builder) {

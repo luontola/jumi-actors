@@ -13,7 +13,7 @@ import java.util.*;
 @Immutable
 public class SuiteConfiguration implements Serializable {
 
-    public static final String DEFAULT_INCLUDED_TESTS_PATTERN = "<TODO>"; // TODO
+    public static final SuiteConfiguration DEFAULTS = new SuiteConfiguration();
 
     // TODO: support for main and test class paths
     private final List<File> classPath;
@@ -23,7 +23,7 @@ public class SuiteConfiguration implements Serializable {
     public SuiteConfiguration() {
         classPath = Collections.emptyList();
         jvmOptions = Collections.emptyList();
-        includedTestsPattern = DEFAULT_INCLUDED_TESTS_PATTERN;
+        includedTestsPattern = "<TODO>"; // TODO
     }
 
     SuiteConfiguration(SuiteConfigurationBuilder src) {

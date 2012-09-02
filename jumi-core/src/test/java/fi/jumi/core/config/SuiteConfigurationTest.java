@@ -63,7 +63,7 @@ public class SuiteConfigurationTest {
 
     @Test
     public void included_tests_pattern_has_a_default_value() {
-        assertThat(configuration().includedTestsPattern(), is(SuiteConfiguration.DEFAULT_INCLUDED_TESTS_PATTERN));
+        assertThat(configuration().includedTestsPattern(), is(SuiteConfiguration.DEFAULTS.includedTestsPattern()));
     }
 
 

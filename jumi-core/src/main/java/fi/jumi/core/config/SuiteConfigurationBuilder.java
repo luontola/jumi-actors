@@ -16,7 +16,7 @@ public class SuiteConfigurationBuilder {
     private String includedTestsPattern;
 
     public SuiteConfigurationBuilder() {
-        this(new SuiteConfiguration());
+        this(SuiteConfiguration.DEFAULTS);
     }
 
     SuiteConfigurationBuilder(SuiteConfiguration src) {

@@ -11,9 +11,11 @@ import java.util.*;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 public class DaemonConfigurationTest {
+
+    private static final long ONE_SECOND = 1000L;
 
     @Rule
     public final ExpectedException thrown = ExpectedException.none();
@@ -50,8 +52,7 @@ public class DaemonConfigurationTest {
 
     @Test
     public void launcher_port_is_required() {
-        int uninitializedValue = new DaemonConfiguration().launcherPort();
-        builder.launcherPort(uninitializedValue);
+        builder.launcherPort(DaemonConfiguration.DEFAULTS.launcherPort());
 
         thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage("missing required parameter: " + DaemonConfigurationConverter.LAUNCHER_PORT);
@@ -95,7 +96,7 @@ public class DaemonConfigurationTest {
 
     @Test
     public void startup_timeout_has_a_default_value() {
-        assertThat(configuration().startupTimeout(), is(DaemonConfiguration.DEFAULT_STARTUP_TIMEOUT));
+        assertThat(configuration().startupTimeout(), is(greaterThanOrEqualTo(ONE_SECOND)));
     }
 
     // idleTimeout
@@ -109,7 +110,7 @@ public class DaemonConfigurationTest {
 
     @Test
     public void idle_timeout_has_a_default_value() {
-        assertThat(configuration().idleTimeout(), is(DaemonConfiguration.DEFAULT_IDLE_TIMEOUT));
+        assertThat(configuration().idleTimeout(), is(greaterThanOrEqualTo(ONE_SECOND)));
     }
 
 

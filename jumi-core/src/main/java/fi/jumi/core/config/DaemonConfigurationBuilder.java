@@ -15,7 +15,7 @@ public class DaemonConfigurationBuilder {
     private long idleTimeout;
 
     public DaemonConfigurationBuilder() {
-        this(new DaemonConfiguration());
+        this(DaemonConfiguration.DEFAULTS);
     }
 
     DaemonConfigurationBuilder(DaemonConfiguration src) {
