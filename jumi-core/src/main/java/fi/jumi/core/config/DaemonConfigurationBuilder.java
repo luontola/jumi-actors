@@ -5,6 +5,7 @@
 package fi.jumi.core.config;
 
 import javax.annotation.concurrent.NotThreadSafe;
+import java.util.Properties;
 
 @NotThreadSafe
 public class DaemonConfigurationBuilder {
@@ -23,6 +24,12 @@ public class DaemonConfigurationBuilder {
         logActorMessages = src.logActorMessages();
         startupTimeout = src.startupTimeout();
         idleTimeout = src.idleTimeout();
+    }
+
+    public void parseSystemProperties(Properties systemProperties) {
+        for (SystemProperty property : DaemonConfiguration.PROPERTIES) {
+            property.parseSystemProperty(this, systemProperties);
+        }
     }
 
     public DaemonConfiguration freeze() {

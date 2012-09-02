@@ -5,13 +5,19 @@
 package fi.jumi.core.config;
 
 import javax.annotation.concurrent.Immutable;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Immutable
 public class DaemonConfiguration {
 
     public static final DaemonConfiguration DEFAULTS = new DaemonConfiguration();
+
+    public static final SystemProperty IDLE_TIMEOUT = new SystemProperty("idleTimeout", "jumi.daemon.idleTimeout", DEFAULTS);
+    public static final SystemProperty STARTUP_TIMEOUT = new SystemProperty("startupTimeout", "jumi.daemon.startupTimeout", DEFAULTS);
+    public static final SystemProperty LOG_ACTOR_MESSAGES = new SystemProperty("logActorMessages", "jumi.daemon.logActorMessages", DEFAULTS);
+
+    public static final List<SystemProperty> PROPERTIES = Arrays.asList(LOG_ACTOR_MESSAGES, STARTUP_TIMEOUT, IDLE_TIMEOUT);
 
     private final int launcherPort;
     private final boolean logActorMessages;
@@ -41,7 +47,11 @@ public class DaemonConfiguration {
     }
 
     public Map<String, String> toSystemProperties() {
-        return DaemonConfigurationConverter.toSystemProperties(this);
+        Map<String, String> map = new HashMap<String, String>();
+        for (SystemProperty property : PROPERTIES) {
+            property.toSystemProperty(this, map);
+        }
+        return map;
     }
 
 
