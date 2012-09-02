@@ -13,7 +13,6 @@ import fi.jumi.launcher.process.*;
 import org.junit.Test;
 
 import java.io.*;
-import java.util.Properties;
 
 import static fi.jumi.core.util.AsyncAssert.assertEventually;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -51,7 +50,9 @@ public class ProcessStartingDaemonSummonerTest {
     }
 
     private static DaemonConfiguration parseDaemonArguments(String[] args) {
-        return DaemonConfigurationConverter.parse(args, new Properties());
+        return new DaemonConfigurationBuilder()
+                .parseProgramArgs(args)
+                .freeze();
     }
 
     @Test

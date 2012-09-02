@@ -13,10 +13,13 @@ public class DaemonConfiguration {
 
     public static final DaemonConfiguration DEFAULTS = new DaemonConfiguration();
 
+    // command line arguments
+    // TODO: generic way for representing command line arguments, after we have two or more arguments
+    public static final String LAUNCHER_PORT = "--launcher-port";
+
     public static final SystemProperty IDLE_TIMEOUT = new SystemProperty("idleTimeout", "jumi.daemon.idleTimeout", DEFAULTS);
     public static final SystemProperty STARTUP_TIMEOUT = new SystemProperty("startupTimeout", "jumi.daemon.startupTimeout", DEFAULTS);
     public static final SystemProperty LOG_ACTOR_MESSAGES = new SystemProperty("logActorMessages", "jumi.daemon.logActorMessages", DEFAULTS);
-
     public static final List<SystemProperty> PROPERTIES = Arrays.asList(LOG_ACTOR_MESSAGES, STARTUP_TIMEOUT, IDLE_TIMEOUT);
 
     private final int launcherPort;
@@ -42,8 +45,11 @@ public class DaemonConfiguration {
         return new DaemonConfigurationBuilder(this);
     }
 
+
+    // conversions
+
     public String[] toProgramArgs() {
-        return new String[]{DaemonConfigurationConverter.LAUNCHER_PORT, String.valueOf(launcherPort())};
+        return new String[]{LAUNCHER_PORT, String.valueOf(launcherPort())};
     }
 
     public Map<String, String> toSystemProperties() {

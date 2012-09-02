@@ -28,7 +28,10 @@ public class Main {
     public static void main(String[] args) throws IOException {
         System.out.println("Jumi " + DaemonArtifact.getVersion() + " starting up");
 
-        DaemonConfiguration config = DaemonConfigurationConverter.parse(args, System.getProperties());
+        DaemonConfiguration config = new DaemonConfigurationBuilder()
+                .parseProgramArgs(args)
+                .parseSystemProperties(System.getProperties())
+                .freeze();
 
         // timeouts for shutting down this daemon process
         Timeout startupTimeout = new CommandExecutingTimeout(

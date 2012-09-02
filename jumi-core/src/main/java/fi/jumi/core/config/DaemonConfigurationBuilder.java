@@ -5,7 +5,7 @@
 package fi.jumi.core.config;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import java.util.Properties;
+import java.util.*;
 
 @NotThreadSafe
 public class DaemonConfigurationBuilder {
@@ -26,14 +26,39 @@ public class DaemonConfigurationBuilder {
         idleTimeout = src.idleTimeout();
     }
 
-    public void parseSystemProperties(Properties systemProperties) {
-        for (SystemProperty property : DaemonConfiguration.PROPERTIES) {
-            property.parseSystemProperty(this, systemProperties);
+    public DaemonConfiguration freeze() {
+        return new DaemonConfiguration(this);
+    }
+
+
+    // conversions
+
+    public DaemonConfigurationBuilder parseProgramArgs(String... args) {
+        // TODO: extract generic code, once we have two or more command line arguments
+        Iterator<String> it = Arrays.asList(args).iterator();
+        while (it.hasNext()) {
+            String parameter = it.next();
+            if (parameter.equals(DaemonConfiguration.LAUNCHER_PORT)) {
+                launcherPort(Integer.parseInt(it.next()));
+            } else {
+                throw new IllegalArgumentException("unsupported parameter: " + parameter);
+            }
+        }
+        checkRequiredParameters();
+        return this;
+    }
+
+    private void checkRequiredParameters() {
+        if (launcherPort() <= 0) {
+            throw new IllegalArgumentException("missing required parameter: " + DaemonConfiguration.LAUNCHER_PORT);
         }
     }
 
-    public DaemonConfiguration freeze() {
-        return new DaemonConfiguration(this);
+    public DaemonConfigurationBuilder parseSystemProperties(Properties systemProperties) {
+        for (SystemProperty property : DaemonConfiguration.PROPERTIES) {
+            property.parseSystemProperty(this, systemProperties);
+        }
+        return this;
     }
 
 

@@ -169,7 +169,8 @@ TODO NEXT:
 		OK - see if there duplication between fi.jumi.core.config.Configuration and SuiteOptions; remove it
 		!! - refactor DaemonConfigurationConverter to have generic parameters?
 			OK - generic conversion of system properties
-			!! - generic conversion of command line arguments
+			SKIP - generic conversion of command line arguments
+			- use Properties for system properties, until fi.jumi.launcher.process.JvmArgs#JvmArgs
 
 - migrate to Java 7
 	- change language level in all modules except jumi-actors et al?

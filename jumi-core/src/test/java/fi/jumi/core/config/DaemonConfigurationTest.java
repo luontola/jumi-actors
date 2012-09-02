@@ -38,7 +38,7 @@ public class DaemonConfigurationTest {
     public void rejects_unsupported_command_line_arguments() {
         thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage("unsupported parameter: --foo");
-        parseArgs("--foo");
+        builder.parseProgramArgs("--foo");
     }
 
     // launcherPort
@@ -55,7 +55,7 @@ public class DaemonConfigurationTest {
         builder.launcherPort(DaemonConfiguration.DEFAULTS.launcherPort());
 
         thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("missing required parameter: " + DaemonConfigurationConverter.LAUNCHER_PORT);
+        thrown.expectMessage("missing required parameter: " + DaemonConfiguration.LAUNCHER_PORT);
         configuration();
     }
 
@@ -118,9 +118,13 @@ public class DaemonConfigurationTest {
 
     private DaemonConfiguration configuration() {
         DaemonConfiguration config = builder.freeze();
-        Map<String, String> systemProperties = config.toSystemProperties();
         String[] args = config.toProgramArgs();
-        return DaemonConfigurationConverter.parse(args, toProperties(systemProperties));
+        Properties systemProperties = toProperties(config.toSystemProperties());
+
+        return new DaemonConfigurationBuilder()
+                .parseProgramArgs(args)
+                .parseSystemProperties(systemProperties)
+                .freeze();
     }
 
     private static Properties toProperties(Map<String, String> map) {
@@ -129,9 +133,5 @@ public class DaemonConfigurationTest {
             properties.setProperty(entry.getKey(), entry.getValue());
         }
         return properties;
-    }
-
-    private DaemonConfiguration parseArgs(String... args) {
-        return DaemonConfigurationConverter.parse(args, new Properties());
     }
 }
