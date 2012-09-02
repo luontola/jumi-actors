@@ -7,7 +7,9 @@ package fi.jumi.core.config;
 import java.lang.reflect.Method;
 import java.util.Properties;
 
-public class SystemProperty {
+class SystemProperty {
+
+    // TODO: make generic and decouple from DaemonConfiguration?
 
     private final String beanProperty;
     private final String systemProperty;
