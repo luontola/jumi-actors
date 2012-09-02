@@ -4,9 +4,11 @@
 
 package fi.jumi.core.config;
 
+import javax.annotation.concurrent.Immutable;
 import java.lang.reflect.Method;
 import java.util.Properties;
 
+@Immutable
 class SystemProperty {
 
     // TODO: make generic and decouple from DaemonConfiguration?
