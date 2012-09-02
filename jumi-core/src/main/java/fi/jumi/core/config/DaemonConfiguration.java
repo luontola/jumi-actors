@@ -21,7 +21,7 @@ public class DaemonConfiguration {
     private final long idleTimeout;
 
     public DaemonConfiguration() {
-        launcherPort = -1;
+        launcherPort = 0;
         logActorMessages = DEFAULT_LOG_ACTOR_MESSAGES;
         startupTimeout = DEFAULT_STARTUP_TIMEOUT;
         idleTimeout = DEFAULT_IDLE_TIMEOUT;
