@@ -1,180 +1,7 @@
 
-TODO NEXT:
-OK - proper daemon shutdown
-	OK - expose the Process instance from launcher, use it to write e2e-tests (can assert that daemon is shut down)
-		OK - expose the Process instance to tests (use a proxy ProcessLauncher in AppRunner?)
-		OK - in other tests, wait for the process to close
-	OK - send shutdown command to daemon from launcher
-		OK - DaemonProcessTest
-		OK - decouple DaemonConnector.listenForDaemonConnection and the suite startup command
-		OK - introduce a launcher-side actor for communicating with the daemon
-			order of events:
-			* startDaemon(system properties, jvm options): Future connected
-				- launcher listens of connection from daemon
-				- launcher starts the daemon process
-				- launcher receives connection from daemon
-			* runTests(tests to run)
-				- launcher sends CommandListener#runTests to daemon
-			OK - put together something works
-			OK - DaemonConnector: don't expose Channel; use DaemonConnection instead? clean up DaemonRemoteImpl.connectToDaemon()
-				OK - create DaemonConnectionListener#onMessageFromDaemon
-				OK - pass ActorRef<DaemonConnectionListener> to DaemonConnector#listenForDaemonConnection and SocketDaemonConnector.DaemonConnectorHandler
-				OK - in DaemonConnectorHandler, call DaemonConnectionListener#onMessageFromDaemon
-				OK - remove eventQueue from DaemonConnector#listenForDaemonConnection
-				OK - in DaemonConnectorHandler, call DaemonConnectionListener#onDaemonConnected
-				OK - remove Future from DaemonConnector#listenForDaemonConnection
-			OK - DaemonRemoteImpl: eventQueue should not be here
-			OK - move creating actors out of JumiLauncher#start?
-		OK - ideas for names:
-			DaemonRemote -> DaemonSummoner
-			DaemonRemoteImpl -> DaemonCreatingSummoner, DaemonBreedingSummoner, ProcessStartingDaemonSummoner
-			SuiteRemote -> SuiteLauncher
-			SuiteRemoteImpl -> RemoteSuiteLauncher (vs LocalSuiteLauncher)
-			DaemonConnection -> Daemon, ToDaemon
-			DaemonConnectionListener -> DaemonListener, FromDaemon
-			NettyDaemonConnection -> SocketDaemon
-			HomeManager -> Steward
-			- check package dependencies and reorder
-		OK - unit tests
-			OK - clean up RemoteSuiteLauncherTest
-				OK - enable both tests ("connect to daemon" doesn't need to be mentioned)
-				OK - no raw actors as fields in test
-				SKIP - handle disconnect? or later when having persistent daemons?
-			OK - write ProcessStartingDaemonSummonerTest
-				OK - tells to daemon the socket to contact
-				OK - tells to listener what the daemon prints (later through tailing a log file)
-			OK - write SocketDaemonConnectorTest
-				OK - roundtrip test
-				OK - extract SocketLauncherConnector from daemon.Main#connectToLauncher
-				OK - should both connection endpoints be in jumi-core?
-					OK - decouple server/client choice from launcher/daemon choice
-					OK - rename generic classes: DaemonConnector, SocketDaemonConnector
-					OK - move to core.network
-					OK - check where the application specific classes should be
-					OK - move network tests to core, make more generic: SocketDaemonConnectorTest
-					OK - remove dependency launcher -> daemon
-					OK - inline DaemonNetworkEndpoint or SocketMessagesToDaemon?
-					OK - have a second look at DaemonParametersTest
-			OK - write DirBasedStewardTest
-				OK - copies the embedded daemon JAR to the settings dir
-				OK - does not copy the daemon JAR if it has already been copied
-			OK - write SystemProcessStarterTest
-				OK - extract startJavaProcess's parameters to a JvmArgs? would be unit testable as value object
-				OK - starts an executable JAR
-				OK - passes program arguments as is
-				OK - passes JVM options as is
-				OK - passes system properties as JVM options
-				OK - uses specified working directory
-				OK - uses specified java home
-				OK - defaults to current java home
-			OK - check code coverage
-		OK - using the above way of sending commands, implement sending the shutdown command
-	SKIP - AppRunner: after receiving the last suite event, send the shutdown command
-	OK - exit after a timeout if no client connects to daemon or the client disconnects
-		OK - launcher: disconnect from daemon
-			OK - network: disconnect command
-			OK - launcher: release resources on close()
-				OK - stop actors
-					OK - extract JumiLauncherBuilder from AppRunner
-					OK - JumiLauncherTest: override method in builder, check that resource is released on close()
-				OK - shutdown executors
-				SKIP - JumiLauncherTest: dynamic test for checking missing tests for dependencies that have close/stop/shutdown methods?
-				SKIP - disconnect from daemon (doable by closing all sockets)
-				OK - close all sockets
-					SKIP - monitor open sockets by hooking into Netty
-					OK - or how hard would it be to hook a custom SocketImpl?
-						java.net.Socket#setSocketImplFactory
-						java.net.ServerSocket#setSocketFactory
-						http://www.javaspecialists.eu/archive/Issue169.html
-						http://java.dzone.com/news/socket-monitoring-now-using
-					OK - network: implement closing all channels
-						org.jboss.netty.channel.group.ChannelGroup
-						org.jboss.netty.channel.socket.ClientSocketChannelFactory
-						org.jboss.netty.channel.socket.ServerSocketChannelFactory
-						SKIP - expose the number of open connections from NetworkClient and NetworkServer
-							- test: increment on listen
-							- test: increment on connect
-							- test: decrement on disconnect
-							- test: decrement on close
-						OK - add close() to NetworkClient and NetworkServer
-						OK - call org.jboss.netty.channel.ChannelFactory#releaseExternalResources
-						OK - in JumiLauncher, call close() on NetworkClient and NetworkServer
-						OK - remove fi.jumi.launcher.remote.SuiteLauncher#disconnectFromDaemon
-						OK - extract JumiLauncherBuilder from AppRunner
-				OK - make ReleasingResourcesTest pass
-			OK - noop if already disconnected
-		OK - launcher: shutdown actors and executors
-		OK - network: notify about disconnect
-		OK - NetworkEndpointFactory for NetworkServer#listenOnAnyPort
-			OK - hook the factory in
-			OK - tests for multiple connections
-		OK - create a timeout in daemon
-			OK - create utility, names:
-				VacantTimeout, VacancyTimeout (!), DesertionTimeout
-				checkIn/checkOut (!)
-				onVacantFor(timout), onProlongedVacancy, vacancyProlonged (!)
-			OK - exit if nobody connects within timeout from disconnect
-			OK - keep living if somebody connects
-			OK - rename TimeoutTest, also get a better name for RunnableExecutingTimeout; CommandExecutingTimeout?
-			OK - avoid unused threads in RunnableExecutingTimeout
-				SKIP - could instantiate it lazily on start, and shutdown (and set to null) on cancel
-				OK - or just create a Thread directly, using TimeUnit.sleep and Thread.interrupt
-			OK - use VacancyTimeout in Main
-				OK - DaemonProcessTest: daemon exits after the launcher disconnects
-					OK - start with fixed timeout
-					OK - JumiLauncher/SuiteOptions: configure jumi.idleTimeout=1
-					SKIP - cancel timeout if somebody connects again (unit test only? or implement reconnect first?)
-					SKIP - unit tests in ConfigurationTest
-				OK - DaemonProcessTest: daemon exits if it doesn't get connection to launcher
-					OK - create end-to-end test (fake the port number? close the socket right away?)
-						See unassigned ports, e.g. 10 or 1023: http://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers
-					OK - exit if nobody connects within timeout from startup (at first use fixed timeout)
-					OK - JumiLauncher/SuiteOptions: configure jumi.startupTimeout=1
-				OK - better names for parameters? startupTerminationTimeout, startupExitTimeout, jumi.termination.startupTimeout, jumi.daemon.startupTimeout
-		OK - check that implemented: RemoteSuiteLauncher, DaemonNetworkEndpoint, or are they needed at all and can be removed?
-	OK - remove the hack in fi.jumi.daemon.Main#exitWhenNotAnymoreInUse
-	OK - print a message on daemon startup and shutdown; makes it easier to see from logs that when the JVM was restarted
-		OK - make is possible to assert what the daemon prints (plug a spy in AppRunner's createDaemonOutputListener)
-		OK - add assertions to DaemonProcessTest
-		OK - also print daemon version on startup, read from pom.properties
-	OK - refactor JumiLauncher & SuiteOptions
-		OK - replace JumiLauncher.start() and all setters with runTests(SuiteOptions)
-		OK - remove fi.jumi.test.DaemonProcessTest#createLauncher
-		OK - remove duplication between fi.jumi.core.config.ConfigurationTest and fi.jumi.launcher.DaemonParametersTest
-		OK - simplify the setup in DaemonParametersTest: don't instantiate JumiLauncher, use only SuiteOptions and Configuration
-		OK - create SuiteOptionsBuilder
-			OK - use builder in ConfigurationTest, AppRunner
-			OK - make SuiteOptions immutable
-			OK - consider separate classes for daemon-scoped vs. suite-scoped parameters (defer until persistent daemons?)
-			OK - consider separating the classes which convert parameters to/from system properties vs. which hold/configure the parameters
-			OK - unit tests for them all
-				OK - DaemonConfigurationTest
-				OK - avoid creating system properties for default values
-				OK - SuiteConfigurationTest
-			OK - create DaemonConfiguration.toProgramArgs
-				OK - remove duplication of using LAUNCHER_PORT directly:
-					OK - fi.jumi.launcher.remote.ProcessStartingDaemonSummoner#connectToDaemon
-					OK - fi.jumi.core.config.DaemonConfigurationTest
-				OK - ProcessStartingDaemonSummoner needs to add the port to DaemonConfiguration
-					OK - create copy constructor: `new DaemonConfigurationBuilder(daemonConfiguration)`
-					OK - move setting defaults to `new DaemonConfiguration()`
-					OK - make `new DaemonConfigurationBuilder()` use `this(new DaemonConfiguration())`
-					OK - refactor fi.jumi.core.config.DaemonConfigurationTest#launcher_port_is_required
-				OK - Phase Change Pattern (new idea!)
-					OK - daemonConfig = daemonConfig.melt().launcherPort(port).freeze();
-					OK - update also SuiteConfiguration
-		OK - better name? SuiteSetup, SuiteConfig, SuiteConfiguration, SuiteArgs, SuiteParameters
-			-> SuiteConfiguration (also rename core.config.Configuration -> core.bootstrap.DaemonConfiguration)
-		OK - send SuiteConfiguration to fi.jumi.core.CommandListener#runTests
-		OK - see if there duplication between fi.jumi.core.config.Configuration and SuiteOptions; remove it
-		OK - refactor DaemonConfigurationConverter to have generic parameters?
-			OK - generic conversion of system properties
-			SKIP - generic conversion of command line arguments
-			OK - use Properties for system properties, until fi.jumi.launcher.process.JvmArgs#JvmArgs
-
-- migrate to Java 7
-	- change language level in all modules except jumi-actors et al?
-		- check bytecode level in BuildTest
+!! - migrate to Java 7
+	!! - change language level in all modules (except jumi-actors et al)
+		!! - check bytecode level in BuildTest
 		- update POMs: default language level to parent, override in specific modules
 		- double-check that bytecode manipulation generates stackmap frames when parsing & producing Java 7 bytecode
 			http://weblogs.java.net/blog/fabriziogiudici/archive/2012/05/07/understanding-subtle-new-behaviours-jdk-7
@@ -255,6 +82,7 @@ OK - proper daemon shutdown
 	- use ~/.jumi directory for the daemon jar
 	- make the number of test threads by default the number of CPUs + 1 or similar
 	- make JUnit print a thread dump when a test times out due to @Test(timeout)
+		- improve JUnit's test timeouts to show a stack trace of the timed out test, to help debugging sporadic timeouts in RunningTestsTest
 	- evaluate whether some of the concurrent tests could be made simpler by using MultithreadedTC
 		http://code.google.com/p/multithreadedtc/
 	- rename TestClass to TestCase (or a better term?), wrap it in a value object, allow any files and not just .class (maybe just pretty-print classes)
@@ -265,13 +93,11 @@ OK - proper daemon shutdown
 	- BuildTest: make sure that jumi-daemon.jar contains everything from jumi-api.jar no matter what
 		- test the test by adding an unused class to jumi-api
 		- add includes if necessary: http://maven.apache.org/plugins/maven-shade-plugin/examples/includes-excludes.html
-	- network layer: implement closing connections, shutting down executors
 	- fix Maven's pomPropertiesFile element, get rid of the current workaround of a separate build.properties
 		http://jira.codehaus.org/browse/MSHARED-154
 		http://stackoverflow.com/questions/10102818/custom-values-in-maven-pom-properties-file
 		<archive> element: http://maven.apache.org/plugins/maven-jar-plugin/jar-mojo.html
 		<pomPropertiesFile> element: http://maven.apache.org/shared/maven-archiver/index.html
-	- improve JUnit's test timeouts to show a stack trace of the timed out test, to help debugging sporadic timeouts in RunningTestsTest
 	- unit tests for fi.jumi.core.results
 	- combine DuplicateOnTestFoundEventFilter and SuiteListenerAdapter, rename to SuiteEventNormalizer/RunEventNormalizer
 	- there might be unnecessary eventizers in fi.jumi.daemon.Main and /jumi-core/pom.xml
@@ -288,16 +114,10 @@ OK - proper daemon shutdown
 			suite
 			classes
 			runs
-	- kill daemon before removing temp files: fi.jumi.test.AppRunner#tearDown
-	- SuiteRunner has a cyclic dependency with TestRunCoordinator
 	- organize the project so that it's possible to run unit tests separate from end-to-end tests
 		- put end-to-end tests in their own package, test.fi.jumi?
 		- or use JUnit categories, maybe with a custom runner?
 		- or use ClasspathSuite?
-	- test execution might be best implemented using regular thread pools instead of actors
-		- CPU bound threads should use an optimal number of threads per core
-		- they take no input when running, so no actor handle needs to be created for them
-		OK - the thing which coordinates a test class's workers might need to be an actor (it receives events from the tests), but it should also be able to exit itself when it has done its work
 	- bullet proofing the public api, cross-references from javadocs to tests (a new xref tag?)
 		- testId in onTestFinished must be correspond last onTestStarted, correctly nested
 		- testId in onFailure must equal the currently running test
@@ -313,7 +133,11 @@ OK - proper daemon shutdown
 		3. replace the main artifact
 			http://mojo.codehaus.org/build-helper-maven-plugin/attach-artifact-mojo.html
 	- seems that Eventizer.newBackend is not used; keep it for symmetry or remove it?
-	- consider logging with http://code.google.com/p/minlog/
+	- consider logging with MinLog http://code.google.com/p/minlog/
+		or create our own clone, since it's just one file (and )
+		- actors: extract AbstractMessageLogger from PrintStreamMessageLogger
+		- create logger specific implementation of AbstractMessageLogger
+		- customize MinLog's output to use microsecond accuracy, similar to PrintStreamMessageLogger
 
 - improving TextUI
 	OK - spacing between test runs (empty line or horizontal bar?)
