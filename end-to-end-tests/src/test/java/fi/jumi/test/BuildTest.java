@@ -42,7 +42,7 @@ public class BuildTest {
             "fi/jumi/launcher/INTERNAL/",
             // generated classes
             "fi/jumi/core/events/",
-            // ignore, because the ThreadSafetyAgent anyways won't checked itself
+            // ignore, because the ThreadSafetyAgent anyways won't check itself
             "fi/jumi/threadsafetyagent/",
     };
 

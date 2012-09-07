@@ -1,7 +1,8 @@
 
 !! - migrate to Java 7
-	!! - change language level in all modules (except jumi-actors et al)
-		!! - check bytecode level in BuildTest
+	!! - refactor the long tests in BuildTest
+	- change language level in all modules (except jumi-actors et al)
+		- check bytecode level in BuildTest
 		- update POMs: default language level to parent, override in specific modules
 		- double-check that bytecode manipulation generates stackmap frames when parsing & producing Java 7 bytecode
 			http://weblogs.java.net/blog/fabriziogiudici/archive/2012/05/07/understanding-subtle-new-behaviours-jdk-7
@@ -13,14 +14,6 @@
 		http://docs.oracle.com/javase/tutorial/essential/io/legacy.html
 	- find "new .*<", migrate to diamon operator
 	- find "finally", migrate to try-with-resources
-
-- end-to-end tests: running multiple test classes
-	- it's not sure whether SuiteRunner works correctly when there are many test classes
-	- test class inclusion patterns (*Test, Test*, some.package.*, some.package.** etc.)
-		- consider using Java 7's glob/regex patterns
-			http://docs.oracle.com/javase/tutorial/essential/io/fileOps.html#glob
-			http://docs.oracle.com/javase/7/docs/api/java/nio/file/FileSystem.html#getPathMatcher(java.lang.String)
-	- set a good default value for fi.jumi.core.config.SuiteConfiguration#includedTestsPattern
 
 - end-to-end tests: reporting test output
 	- capture System.out/err
@@ -38,6 +31,23 @@
 			! - or just use a CGLIB proxy (net.sf.cglib.proxy.MethodInterceptor which synchronizes and delegates to real PrintStream, except net.sf.cglib.proxy.NoOp for Object's methods)
 	- tell launcher that what encoding the stdout/stderr use
 		- test: one daemon using ISO-8859-1 and another using UTF-8 to print åäö, the output should be the same
+
+- move SimpleUnit into its own module; a usable example, a seedwork (http://www.martinfowler.com/bliki/Seedwork.html)
+
+- first release (for testing framework developers)
+	- write known limitations to release notes (to through all TODO comments and notes)
+	- publish a build
+	- create a demo video for framework developers
+	- advertise publicly
+	- contact selected testing framework developers directly
+
+- end-to-end tests: running multiple test classes
+	- it's not sure whether SuiteRunner works correctly when there are many test classes
+	- test class inclusion patterns (*Test, Test*, some.package.*, some.package.** etc.)
+		- consider using Java 7's glob/regex patterns
+			http://docs.oracle.com/javase/tutorial/essential/io/fileOps.html#glob
+			http://docs.oracle.com/javase/7/docs/api/java/nio/file/FileSystem.html#getPathMatcher(java.lang.String)
+	- set a good default value for fi.jumi.core.config.SuiteConfiguration#includedTestsPattern
 
 - SuiteListener#onFailure cannot rely on the exception class from existing in the caller's class loader
 	- introduce ExceptionSafetyGloves?
