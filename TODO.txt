@@ -9,7 +9,9 @@
 			http://download.forge.objectweb.org/asm/asm4-guide.pdf
 				3.1.5 pages 39-41: stack map frames explained
 				3.2.1 page 44: ClassWriter options for computing them automatically (slower)
-	- check how many ASM versions we have on classpath
+	OK - check how many ASM versions we have on classpath
+		-> caliper depends on ASM 3 (only test scope)
+	- block "asm:*" artifacts with maven-enforcer-plugin?
 	- find usages of File, migrate to Path
 		http://docs.oracle.com/javase/tutorial/essential/io/fileio.html
 		http://docs.oracle.com/javase/tutorial/essential/io/legacy.html

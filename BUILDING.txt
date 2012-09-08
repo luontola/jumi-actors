@@ -25,3 +25,4 @@ Some other useful commands
 
     mvn versions:display-plugin-updates
     mvn versions:display-dependency-updates
+    mvn com.ning.maven.plugins:maven-duplicate-finder-plugin:1.0.2:check
