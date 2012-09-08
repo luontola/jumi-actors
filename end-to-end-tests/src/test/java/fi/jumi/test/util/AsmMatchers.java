@@ -10,7 +10,7 @@ import org.objectweb.asm.tree.ClassNode;
 public class AsmMatchers {
 
     public static Matcher<ClassNode> anInterface() {
-        return new TypeSafeMatcher<ClassNode>() {
+        return new ClassNodeMatcher() {
 
             @Override
             protected boolean matchesSafely(ClassNode item) {
@@ -25,7 +25,7 @@ public class AsmMatchers {
     }
 
     public static Matcher<ClassNode> syntheticClass() {
-        return new TypeSafeMatcher<ClassNode>() {
+        return new ClassNodeMatcher() {
             @Override
             protected boolean matchesSafely(ClassNode item) {
                 return AsmUtils.isSynthetic(item);
@@ -39,7 +39,7 @@ public class AsmMatchers {
     }
 
     public static Matcher<ClassNode> nameStartsWithOneOf(final String[] prefixes) {
-        return new TypeSafeMatcher<ClassNode>() {
+        return new ClassNodeMatcher() {
 
             @Override
             protected boolean matchesSafely(ClassNode item) {
@@ -57,5 +57,46 @@ public class AsmMatchers {
                         .appendValueList("", ", ", "", prefixes);
             }
         };
+    }
+
+    public static Matcher<ClassNode> hasClassVersion(final Matcher<Integer> versionMatcher) {
+        return new ClassNodeMatcher() {
+
+            @Override
+            protected boolean matchesSafely(ClassNode item) {
+                return versionMatcher.matches(item.version);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("has class version ")
+                        .appendDescriptionOf(versionMatcher);
+            }
+
+            @Override
+            protected void describeMismatchSafely(ClassNode item, Description mismatchDescription) {
+                mismatchDescription.appendText("was version ")
+                        .appendValue(item.version);
+            }
+        };
+    }
+
+    public static CompositeMatcher<ClassNode> newClassNodeCompositeMatcher() {
+        return new ClassNodeCompositeMatcher();
+    }
+
+    private static class ClassNodeCompositeMatcher extends CompositeMatcher<ClassNode> {
+
+        @Override
+        protected String describeItem(ClassNode item) {
+            return item.name;
+        }
+    }
+
+    private static abstract class ClassNodeMatcher extends TypeSafeMatcher<ClassNode> {
+        @Override
+        protected void describeMismatchSafely(ClassNode item, Description mismatchDescription) {
+            mismatchDescription.appendText("was <class ").appendText(item.name).appendText(">");
+        }
     }
 }

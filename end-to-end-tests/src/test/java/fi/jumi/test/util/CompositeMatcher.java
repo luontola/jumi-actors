@@ -6,41 +6,40 @@ package fi.jumi.test.util;
 
 import com.google.common.base.Joiner;
 import org.hamcrest.*;
-import org.objectweb.asm.tree.ClassNode;
 
 import java.util.*;
 
-public class CompositeMatcher {
+public class CompositeMatcher<T> {
 
-    private final List<Matcher<ClassNode>> exclusions = new ArrayList<Matcher<ClassNode>>();
-    private Matcher<ClassNode> assertion;
+    private final List<Matcher<T>> exclusions = new ArrayList<Matcher<T>>();
+    private Matcher<T> assertion;
     private List<String> errorMessages = new ArrayList<String>();
     private StackTraceElement[] errorStackTrace;
 
-    public CompositeMatcher assertThatIt(Matcher<ClassNode> matcher) {
+    public CompositeMatcher<T> assertThatIt(Matcher<T> matcher) {
         assertion = matcher;
         return this;
     }
 
-    public CompositeMatcher excludeIf(Matcher<ClassNode> matcher) {
+    public CompositeMatcher<T> excludeIf(Matcher<T> matcher) {
         exclusions.add(matcher);
         return this;
     }
 
-    public void check(ClassNode cn) {
-        if (isIncluded(cn)) {
+    public void check(T item) {
+        if (isIncluded(item)) {
             try {
-                MatcherAssert.assertThat(cn, assertion);
+                MatcherAssert.assertThat(item, assertion);
             } catch (AssertionError e) {
-                errorMessages.add(e.getMessage());
+                errorMessages.add(describeItem(item) + "\n" + e.getMessage().trim());
                 errorStackTrace = e.getStackTrace();
             }
         }
     }
 
-    private boolean isIncluded(ClassNode cn) {
-        for (Matcher<ClassNode> exclusion : exclusions) {
-            if (exclusion.matches(cn)) {
+    private boolean isIncluded(T item) {
+        for (Matcher<T> exclusion : exclusions) {
+            if (exclusion.matches(item)) {
                 return false;
             }
         }
@@ -51,8 +50,12 @@ public class CompositeMatcher {
         if (errorMessages.isEmpty()) {
             return;
         }
-        AssertionError e = new AssertionError(Joiner.on("").join(errorMessages));
+        AssertionError e = new AssertionError("\n" + Joiner.on("\n\n").join(errorMessages));
         e.setStackTrace(errorStackTrace);
         throw e;
+    }
+
+    protected String describeItem(T item) {
+        return String.valueOf(item);
     }
 }

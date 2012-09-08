@@ -7,10 +7,11 @@ package fi.jumi.test;
 import fi.jumi.launcher.daemon.EmbeddedDaemonJar;
 import fi.jumi.test.PartiallyParameterized.NonParameterized;
 import fi.jumi.test.util.*;
-import org.hamcrest.Matchers;
+import org.hamcrest.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 import org.w3c.dom.*;
 
@@ -52,11 +53,13 @@ public class BuildTest {
     public static final String VERSION_PATTERN = "(" + RELEASE_VERSION_PATTERN + "|" + SNAPSHOT_VERSION_PATTERN + ")";
 
     private final String artifactId;
+    private final Matcher<Integer> expectedClassVersion;
     private final List<String> expectedDependencies;
     private final List<String> expectedContents;
 
-    public BuildTest(String artifactId, List<String> expectedDependencies, List<String> expectedContents) {
+    public BuildTest(String artifactId, Matcher<Integer> expectedClassVersion, List<String> expectedDependencies, List<String> expectedContents) {
         this.artifactId = artifactId;
+        this.expectedClassVersion = expectedClassVersion;
         this.expectedDependencies = expectedDependencies;
         this.expectedContents = expectedContents;
     }
@@ -64,20 +67,24 @@ public class BuildTest {
     @Parameters
     @SuppressWarnings("unchecked")
     public static Collection<Object[]> data() {
+        // TODO: upgrade shaded dependencies to Java 6/7 to benefit from their faster class loading
         return asList(new Object[][]{
                 {"jumi-actors",
+                        isOneOf(Opcodes.V1_6),
                         asList(),
                         asList(
                                 POM_FILES,
                                 BASE_PACKAGE + "actors/")
                 },
                 {"jumi-api",
+                        isOneOf(Opcodes.V1_6),
                         asList(),
                         asList(
                                 POM_FILES,
                                 BASE_PACKAGE + "api/")
                 },
                 {"jumi-core",
+                        isOneOf(Opcodes.V1_5, Opcodes.V1_6),
                         asList(
                                 "fi.jumi:jumi-actors",
                                 "fi.jumi:jumi-api"),
@@ -86,6 +93,7 @@ public class BuildTest {
                                 BASE_PACKAGE + "core/")
                 },
                 {"jumi-daemon",
+                        isOneOf(Opcodes.V1_5, Opcodes.V1_6),
                         asList(),
                         asList(
                                 POM_FILES,
@@ -95,6 +103,7 @@ public class BuildTest {
                                 BASE_PACKAGE + "daemon/")
                 },
                 {"jumi-launcher",
+                        isOneOf(Opcodes.V1_6),
                         asList(
                                 "fi.jumi:jumi-core"),
                         asList(
@@ -102,6 +111,7 @@ public class BuildTest {
                                 BASE_PACKAGE + "launcher/")
                 },
                 {"thread-safety-agent",
+                        isOneOf(Opcodes.V1_5, Opcodes.V1_6),
                         asList(),
                         asList(
                                 POM_FILES,
@@ -190,14 +200,25 @@ public class BuildTest {
     }
 
     @Test
+    public void all_classes_must_use_the_specified_bytecode_version() {
+        CompositeMatcher<ClassNode> matcher = newClassNodeCompositeMatcher()
+                .assertThatIt(hasClassVersion(expectedClassVersion));
+
+        checkAllClasses(matcher, TestEnvironment.getProjectJar(artifactId));
+    }
+
+    @Test
     public void all_classes_must_be_annotated_with_JSR305_concurrent_annotations() throws Exception {
-        CompositeMatcher matcher = new CompositeMatcher()
+        CompositeMatcher<ClassNode> matcher = newClassNodeCompositeMatcher()
                 .excludeIf(is(anInterface()))
                 .excludeIf(is(syntheticClass()))
                 .excludeIf(nameStartsWithOneOf(DOES_NOT_NEED_JSR305_ANNOTATIONS))
                 .assertThatIt(is(annotatedWithOneOf(Immutable.class, NotThreadSafe.class, ThreadSafe.class)));
 
-        File jarFile = TestEnvironment.getProjectJar(artifactId);
+        checkAllClasses(matcher, TestEnvironment.getProjectJar(artifactId));
+    }
+
+    private static void checkAllClasses(CompositeMatcher<ClassNode> matcher, File jarFile) {
         for (ClassNode classNode : JarFileUtils.classesIn(jarFile)) {
             matcher.check(classNode);
         }
