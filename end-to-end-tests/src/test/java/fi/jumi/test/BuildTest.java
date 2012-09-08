@@ -6,7 +6,7 @@ package fi.jumi.test;
 
 import fi.jumi.launcher.daemon.EmbeddedDaemonJar;
 import fi.jumi.test.PartiallyParameterized.NonParameterized;
-import fi.jumi.test.util.XmlUtils;
+import fi.jumi.test.util.*;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,7 +21,8 @@ import java.net.*;
 import java.util.*;
 import java.util.jar.*;
 
-import static fi.jumi.test.util.AsmUtils.*;
+import static fi.jumi.test.util.AsmMatchers.*;
+import static fi.jumi.test.util.AsmUtils.annotatedWithOneOf;
 import static java.util.Arrays.asList;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -190,46 +191,17 @@ public class BuildTest {
 
     @Test
     public void all_classes_must_be_annotated_with_JSR305_concurrent_annotations() throws Exception {
-        File jarFile = TestEnvironment.getProjectJar(artifactId);
-        JarInputStream in = new JarInputStream(new FileInputStream(jarFile));
-        JarEntry entry;
-        AssertionError errors = null;
-        while ((entry = in.getNextJarEntry()) != null) {
-            if (!shouldHaveJsr305ConcurrencyAnnotation(entry)) {
-                continue;
-            }
-            ClassNode cn = readClass(in);
-            if (isInterface(cn)) {
-                continue;
-            }
-            if (isSynthetic(cn)) {
-                continue;
-            }
-            try {
-                assertThat(cn, is(annotatedWithOneOf(Immutable.class, NotThreadSafe.class, ThreadSafe.class)));
-            } catch (AssertionError e) {
-                errors = (AssertionError) e.initCause(errors);
-            }
-        }
-        if (errors != null) {
-            throw errors;
-        }
-        in.close();
-    }
+        CompositeMatcher matcher = new CompositeMatcher()
+                .excludeIf(is(anInterface()))
+                .excludeIf(is(syntheticClass()))
+                .excludeIf(nameStartsWithOneOf(DOES_NOT_NEED_JSR305_ANNOTATIONS))
+                .assertThatIt(is(annotatedWithOneOf(Immutable.class, NotThreadSafe.class, ThreadSafe.class)));
 
-    private static boolean shouldHaveJsr305ConcurrencyAnnotation(JarEntry entry) {
-        if (entry.isDirectory()) {
-            return false;
+        File jarFile = TestEnvironment.getProjectJar(artifactId);
+        for (ClassNode classNode : JarFileUtils.classesIn(jarFile)) {
+            matcher.check(classNode);
         }
-        if (!entry.getName().endsWith(".class")) {
-            return false;
-        }
-        for (String prefix : DOES_NOT_NEED_JSR305_ANNOTATIONS) {
-            if (entry.getName().startsWith(prefix)) {
-                return false;
-            }
-        }
-        return true;
+        matcher.rethrowErrors();
     }
 
 

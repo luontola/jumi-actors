@@ -1,8 +1,8 @@
 
 !! - migrate to Java 7
-	!! - refactor the long tests in BuildTest
-	- change language level in all modules (except jumi-actors et al)
-		- check bytecode level in BuildTest
+	OK - refactor the long tests in BuildTest
+	!! - change language level in all modules (except jumi-actors et al)
+		!! - check bytecode level in BuildTest
 		- update POMs: default language level to parent, override in specific modules
 		- double-check that bytecode manipulation generates stackmap frames when parsing & producing Java 7 bytecode
 			http://weblogs.java.net/blog/fabriziogiudici/archive/2012/05/07/understanding-subtle-new-behaviours-jdk-7
