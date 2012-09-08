@@ -22,7 +22,7 @@
     <dependencies>
 
         <dependency>
-            <!-- TODO: should the test data be in a different module; then they could have both main and test sources -->
+            <!-- TODO: should the test data be in a different module? then they could have both main and test sources -->
             <groupId>fi.jumi</groupId>
             <artifactId>jumi-api</artifactId>
         </dependency>
@@ -39,17 +39,29 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Misc -->
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <scope>test</scope>
         </dependency>
 
+        <!-- Bytecode Analyzing -->
+
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-debug-all</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- Annotations -->
 
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
@@ -102,7 +114,8 @@
                             <value>true</value>
                         </property>
                     </systemProperties>
-                    <argLine>"-javaagent:${test.projectArtifactsDir}/thread-safety-agent-${project.version}.jar"</argLine>
+                    <argLine>"-javaagent:${test.projectArtifactsDir}/thread-safety-agent-${project.version}.jar"
+                    </argLine>
                 </configuration>
                 <executions>
                     <execution>

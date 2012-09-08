@@ -27,6 +27,7 @@
     <orderEntry type="library" scope="TEST" name="Maven: io.netty:netty:3.5.5.Final" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: commons-io:commons-io:2.4" level="project" />
     <orderEntry type="module" module-name="jumi-core" scope="TEST" />
+    <orderEntry type="library" scope="TEST" name="Maven: com.google.guava:guava:13.0.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.ow2.asm:asm-debug-all:4.0" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.findbugs:jsr305:2.0.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: com.intellij:annotations:9.0.4" level="project" />
