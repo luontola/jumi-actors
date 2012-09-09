@@ -229,6 +229,18 @@
 		fi.jumi.launcher.remote.RemoteSuiteLauncher#onDisconnected
 
 - refactor jumi-actors-maven-plugin
+	- find a way to read the compiler language level from maven-compiler-plugin, instead of configuring it separately for this plugin
+		http://maven.apache.org/ref/3.0.4/maven-core/apidocs/org/apache/maven/project/MavenProject.html
+			getPlugin
+		http://maven.apache.org/ref/3.0.4/maven-core/apidocs/org/apache/maven/plugin/BuildPluginManager.html
+		http://maven.apache.org/ref/3.0.4/maven-core/apidocs/org/apache/maven/plugin/MavenPluginManager.html
+			getConfiguredMojo
+		http://maven.apache.org/ref/2.2.1/maven-core/apidocs/org/apache/maven/plugin/PluginManager.html (deprecated)
+			getPluginDefinitionForPrefix
+			getPluginComponent
+		http://stackoverflow.com/questions/526733/maven-plugin-executing-another-plugin
+		http://timmoore.github.com/mojo-executor/
+		http://stackoverflow.com/questions/4243686/how-to-programatically-invoke-a-maven-dependency-plugin/5761554#5761554
 	- DummyListenerToEvent: rename sender to target
 	- EventToDummyListener: rename listener to target
 	- switch to using Eclipse JDT DOM for code generation, create an internal DSL as necessary (factory methods to avoid setter hell)
