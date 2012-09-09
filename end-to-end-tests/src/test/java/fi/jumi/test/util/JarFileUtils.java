@@ -41,6 +41,8 @@ public class JarFileUtils {
         private final JarInputStream in;
 
         public ClassNodeIterator(Path jarFile) throws IOException {
+            // TODO: iterate this JAR using FileSystem instead of JarInputStream?
+            // http://docs.oracle.com/javase/7/docs/technotes/guides/io/fsp/zipfilesystemprovider.html
             in = new JarInputStream(Files.newInputStream(jarFile));
         }
 
