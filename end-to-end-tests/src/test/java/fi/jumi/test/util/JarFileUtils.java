@@ -8,8 +8,9 @@ import com.google.common.collect.AbstractIterator;
 import org.objectweb.asm.tree.ClassNode;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.*;
-import java.util.Iterator;
+import java.util.*;
 import java.util.jar.*;
 
 public class JarFileUtils {
@@ -25,6 +26,14 @@ public class JarFileUtils {
                 }
             }
         };
+    }
+
+    public static void walkZipFile(Path jarFile, SimpleFileVisitor<Path> visitor) throws IOException {
+        URI uri = URI.create("jar:" + jarFile.toUri());
+        HashMap<String, String> env = new HashMap<>();
+        try (FileSystem fs = FileSystems.newFileSystem(uri, env)) {
+            Files.walkFileTree(fs.getPath("/"), visitor);
+        }
     }
 
     private static class ClassNodeIterator extends AbstractIterator<ClassNode> {

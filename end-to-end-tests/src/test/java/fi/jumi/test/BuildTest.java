@@ -20,7 +20,6 @@ import javax.annotation.concurrent.*;
 import javax.xml.xpath.*;
 import java.io.*;
 import java.net.*;
-import java.nio.file.FileSystem;
 import java.nio.file.*;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -275,32 +274,23 @@ public class BuildTest {
         }
     }
 
-    private static void assertJarContainsOnly(Path jar, final List<String> whitelist) throws IOException {
-        try {
-            URI uri = URI.create("jar:" + jar.toUri());
-            HashMap<String, String> env = new HashMap<>();
-            try (FileSystem fs = FileSystems.newFileSystem(uri, env)) {
-
-                Files.walkFileTree(fs.getPath("/"), new SimpleFileVisitor<Path>() {
-                    @Override
-                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                        assertIsWhitelisted(file, whitelist);
-                        return FileVisitResult.CONTINUE;
-                    }
-                });
+    private static void assertJarContainsOnly(final Path jarFile, final List<String> whitelist) throws IOException {
+        JarFileUtils.walkZipFile(jarFile, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                assertTrue(jarFile + " contained a not allowed entry: " + file,
+                        isWhitelisted(file, whitelist));
+                return FileVisitResult.CONTINUE;
             }
-
-        } catch (AssertionError e) {
-            throw (AssertionError) new AssertionError(jar + " " + e.getMessage()).initCause(e);
-        }
+        });
     }
 
-    private static void assertIsWhitelisted(Path file, List<String> whitelist) {
+    private static boolean isWhitelisted(Path file, List<String> whitelist) {
         boolean allowed = false;
         for (String s : whitelist) {
             allowed |= file.startsWith("/" + s);
         }
-        assertTrue("contained a not allowed entry: " + file, allowed);
+        return allowed;
     }
 
     private static InputSupplier<InputStream> asSupplier(final InputStream in) {
