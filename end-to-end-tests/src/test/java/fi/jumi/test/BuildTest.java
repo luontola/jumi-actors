@@ -4,6 +4,7 @@
 
 package fi.jumi.test;
 
+import com.google.common.io.*;
 import fi.jumi.launcher.daemon.EmbeddedDaemonJar;
 import fi.jumi.test.PartiallyParameterized.NonParameterized;
 import fi.jumi.test.util.*;
@@ -19,9 +20,11 @@ import javax.annotation.concurrent.*;
 import javax.xml.xpath.*;
 import java.io.*;
 import java.net.*;
+import java.nio.file.FileSystem;
 import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
-import java.util.jar.*;
 
 import static fi.jumi.test.util.AsmMatchers.*;
 import static fi.jumi.test.util.AsmUtils.annotatedWithOneOf;
@@ -35,6 +38,7 @@ import static org.junit.Assume.assumeTrue;
 @RunWith(PartiallyParameterized.class)
 public class BuildTest {
 
+    private static final String MANIFEST = "META-INF/MANIFEST.MF";
     private static final String POM_FILES = "META-INF/maven/fi.jumi/";
     private static final String BASE_PACKAGE = "fi/jumi/";
 
@@ -74,47 +78,58 @@ public class BuildTest {
                         asList(Opcodes.V1_6),
                         asList(),
                         asList(
+                                MANIFEST,
                                 POM_FILES,
                                 BASE_PACKAGE + "actors/")
                 },
+
                 {"jumi-api",
                         asList(Opcodes.V1_7),
                         asList(),
                         asList(
+                                MANIFEST,
                                 POM_FILES,
                                 BASE_PACKAGE + "api/")
                 },
+
                 {"jumi-core",
                         asList(Opcodes.V1_5, Opcodes.V1_7),
                         asList(
                                 "fi.jumi:jumi-actors",
                                 "fi.jumi:jumi-api"),
                         asList(
+                                MANIFEST,
                                 POM_FILES,
                                 BASE_PACKAGE + "core/")
                 },
+
                 {"jumi-daemon",
                         asList(Opcodes.V1_5, Opcodes.V1_6, Opcodes.V1_7),
                         asList(),
                         asList(
+                                MANIFEST,
                                 POM_FILES,
                                 BASE_PACKAGE + "actors/",
                                 BASE_PACKAGE + "api/",
                                 BASE_PACKAGE + "core/",
                                 BASE_PACKAGE + "daemon/")
                 },
+
                 {"jumi-launcher",
                         asList(Opcodes.V1_6, Opcodes.V1_7),
                         asList(
                                 "fi.jumi:jumi-core"),
                         asList(
+                                MANIFEST,
                                 POM_FILES,
                                 BASE_PACKAGE + "launcher/")
                 },
+
                 {"thread-safety-agent",
                         asList(Opcodes.V1_5, Opcodes.V1_6),
                         asList(),
                         asList(
+                                MANIFEST,
                                 POM_FILES,
                                 BASE_PACKAGE + "threadsafetyagent/")
                 },
@@ -155,11 +170,16 @@ public class BuildTest {
 
     @Test
     @NonParameterized
-    public void embedded_daemon_jar_contains_only_jumi_classes() throws IOException {
-        assertJarContainsOnly(new EmbeddedDaemonJar().getDaemonJarAsStream(), asList(
-                POM_FILES,
-                BASE_PACKAGE
-        ));
+    public void embedded_daemon_jar_is_exactly_the_same_as_the_published_daemon_jar() throws IOException {
+        EmbeddedDaemonJar embeddedJar = new EmbeddedDaemonJar();
+        Path publishedJar = TestEnvironment.getProjectJar("jumi-daemon");
+
+        try (InputStream in1 = embeddedJar.getDaemonJarAsStream();
+             InputStream in2 = Files.newInputStream(publishedJar)) {
+
+            assertTrue("the embedded daemon JAR was not equal to " + publishedJar,
+                    ByteStreams.equal(asSupplier(in1), asSupplier(in2)));
+        }
     }
 
     @Test
@@ -173,7 +193,9 @@ public class BuildTest {
     public void none_of_the_artifacts_may_contain_classes_from_external_libraries_without_shading_them() {
         for (String content : expectedContents) {
             assertThat("artifact " + artifactId, content, Matchers.<String>
-                    either(startsWith(BASE_PACKAGE)).or(startsWith(POM_FILES)));
+                    either(startsWith(BASE_PACKAGE))
+                    .or(startsWith(POM_FILES))
+                    .or(startsWith(MANIFEST)));
         }
     }
 
@@ -253,31 +275,41 @@ public class BuildTest {
         }
     }
 
-    private static void assertJarContainsOnly(Path jar, List<String> whitelist) throws IOException {
+    private static void assertJarContainsOnly(Path jar, final List<String> whitelist) throws IOException {
         try {
-            try (InputStream in = Files.newInputStream(jar)) {
-                assertJarContainsOnly(in, whitelist);
+            URI uri = URI.create("jar:" + jar.toUri());
+            HashMap<String, String> env = new HashMap<>();
+            try (FileSystem fs = FileSystems.newFileSystem(uri, env)) {
+
+                Files.walkFileTree(fs.getPath("/"), new SimpleFileVisitor<Path>() {
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                        assertIsWhitelisted(file, whitelist);
+                        return FileVisitResult.CONTINUE;
+                    }
+                });
             }
+
         } catch (AssertionError e) {
             throw (AssertionError) new AssertionError(jar + " " + e.getMessage()).initCause(e);
         }
     }
 
-    private static void assertJarContainsOnly(InputStream jarAsStream, List<String> whitelist) throws IOException {
-        JarInputStream in = new JarInputStream(jarAsStream);
-        JarEntry entry;
-        while ((entry = in.getNextJarEntry()) != null) {
-            assertIsWhitelisted(entry, whitelist);
-        }
-    }
-
-    private static void assertIsWhitelisted(JarEntry entry, List<String> whitelist) {
+    private static void assertIsWhitelisted(Path file, List<String> whitelist) {
         boolean allowed = false;
         for (String s : whitelist) {
-            allowed |= entry.getName().startsWith(s);
-            allowed |= s.startsWith(entry.getName());
+            allowed |= file.startsWith("/" + s);
         }
-        assertTrue("contained a not allowed entry: " + entry, allowed);
+        assertTrue("contained a not allowed entry: " + file, allowed);
+    }
+
+    private static InputSupplier<InputStream> asSupplier(final InputStream in) {
+        return new InputSupplier<InputStream>() {
+            @Override
+            public InputStream getInput() {
+                return in;
+            }
+        };
     }
 
     private static List<String> getRuntimeDependencies(Document doc) throws XPathExpressionException {
