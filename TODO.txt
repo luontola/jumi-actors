@@ -9,6 +9,7 @@
 			http://download.forge.objectweb.org/asm/asm4-guide.pdf
 				3.1.5 pages 39-41: stack map frames explained
 				3.2.1 page 44: ClassWriter options for computing them automatically (slower)
+		OK - BuildTest: detect when running in IDEA (maybe detect when doing a release) and use the class version relaxation only then
 	OK - find usages of File, migrate to Path
 		OK - production sources
 		OK - test sources
@@ -22,11 +23,6 @@
 		OK - find "new .*<", migrate to diamond operator
 		OK - make jumi-actors-maven-plugin compile using the project language level
 	!! - find "finally", migrate to try-with-resources
-	OK - BuildTest: detect when running in IDEA (maybe detect when doing a release) and use the class version relaxation only then
-	- extract actors to their own project; IDEA can't handle well mixing language levels in the same project
-	- BuildTest: make the class version checks stricter (don't use Java 7 for actors)
-	- IDEA should warn about use of wrong APIs
-	- we have many ASM versions we have on classpath (caliper depends on ASM 3), block "asm:*" artifacts with maven-enforcer-plugin?
 
 - end-to-end tests: reporting test output
 	- capture System.out/err
@@ -102,6 +98,11 @@
 	- add the benchmark results to the web site
 
 - misc refactoring
+	- aftermath of upgrading to Java 7
+		- extract actors to their own project; IDEA can't handle well mixing language levels in the same project
+		- BuildTest: enable all_classes_must_use_the_specified_bytecode_version also when building in IDEA
+		- IDEA should warn about the use of APIs newer than the module language level
+		- we have many ASM versions we have on classpath (caliper depends on ASM 3), block "asm:*" artifacts with maven-enforcer-plugin?
 	- use ~/.jumi directory for the daemon jar
 	- make the number of test threads by default the number of CPUs + 1 or similar
 	- make JUnit print a thread dump when a test times out due to @Test(timeout)
