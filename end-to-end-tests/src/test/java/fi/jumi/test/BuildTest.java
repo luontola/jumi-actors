@@ -7,7 +7,7 @@ package fi.jumi.test;
 import fi.jumi.launcher.daemon.EmbeddedDaemonJar;
 import fi.jumi.test.PartiallyParameterized.NonParameterized;
 import fi.jumi.test.util.*;
-import org.hamcrest.*;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
@@ -53,13 +53,13 @@ public class BuildTest {
     public static final String VERSION_PATTERN = "(" + RELEASE_VERSION_PATTERN + "|" + SNAPSHOT_VERSION_PATTERN + ")";
 
     private final String artifactId;
-    private final Matcher<Integer> expectedClassVersion;
+    private final Integer[] expectedClassVersion;
     private final List<String> expectedDependencies;
     private final List<String> expectedContents;
 
-    public BuildTest(String artifactId, Matcher<Integer> expectedClassVersion, List<String> expectedDependencies, List<String> expectedContents) {
+    public BuildTest(String artifactId, List<Integer> expectedClassVersion, List<String> expectedDependencies, List<String> expectedContents) {
         this.artifactId = artifactId;
-        this.expectedClassVersion = expectedClassVersion;
+        this.expectedClassVersion = expectedClassVersion.toArray(new Integer[expectedClassVersion.size()]);
         this.expectedDependencies = expectedDependencies;
         this.expectedContents = expectedContents;
     }
@@ -70,21 +70,21 @@ public class BuildTest {
         // TODO: upgrade shaded dependencies to Java 6/7 to benefit from their faster class loading
         return asList(new Object[][]{
                 {"jumi-actors",
-                        isOneOf(Opcodes.V1_6),
+                        asList(Opcodes.V1_6),
                         asList(),
                         asList(
                                 POM_FILES,
                                 BASE_PACKAGE + "actors/")
                 },
                 {"jumi-api",
-                        isOneOf(Opcodes.V1_6),
+                        asList(Opcodes.V1_6),
                         asList(),
                         asList(
                                 POM_FILES,
                                 BASE_PACKAGE + "api/")
                 },
                 {"jumi-core",
-                        isOneOf(Opcodes.V1_5, Opcodes.V1_6),
+                        asList(Opcodes.V1_5, Opcodes.V1_6),
                         asList(
                                 "fi.jumi:jumi-actors",
                                 "fi.jumi:jumi-api"),
@@ -93,7 +93,7 @@ public class BuildTest {
                                 BASE_PACKAGE + "core/")
                 },
                 {"jumi-daemon",
-                        isOneOf(Opcodes.V1_5, Opcodes.V1_6),
+                        asList(Opcodes.V1_5, Opcodes.V1_6),
                         asList(),
                         asList(
                                 POM_FILES,
@@ -103,7 +103,7 @@ public class BuildTest {
                                 BASE_PACKAGE + "daemon/")
                 },
                 {"jumi-launcher",
-                        isOneOf(Opcodes.V1_6),
+                        asList(Opcodes.V1_6),
                         asList(
                                 "fi.jumi:jumi-core"),
                         asList(
@@ -111,7 +111,7 @@ public class BuildTest {
                                 BASE_PACKAGE + "launcher/")
                 },
                 {"thread-safety-agent",
-                        isOneOf(Opcodes.V1_5, Opcodes.V1_6),
+                        asList(Opcodes.V1_5, Opcodes.V1_6),
                         asList(),
                         asList(
                                 POM_FILES,
@@ -202,7 +202,7 @@ public class BuildTest {
     @Test
     public void all_classes_must_use_the_specified_bytecode_version() {
         CompositeMatcher<ClassNode> matcher = newClassNodeCompositeMatcher()
-                .assertThatIt(hasClassVersion(expectedClassVersion));
+                .assertThatIt(hasClassVersion(isOneOf(expectedClassVersion)));
 
         checkAllClasses(matcher, TestEnvironment.getProjectJar(artifactId));
     }
