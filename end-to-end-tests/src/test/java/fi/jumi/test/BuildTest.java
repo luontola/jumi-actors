@@ -77,14 +77,14 @@ public class BuildTest {
                                 BASE_PACKAGE + "actors/")
                 },
                 {"jumi-api",
-                        asList(Opcodes.V1_6),
+                        asList(Opcodes.V1_7),
                         asList(),
                         asList(
                                 POM_FILES,
                                 BASE_PACKAGE + "api/")
                 },
                 {"jumi-core",
-                        asList(Opcodes.V1_5, Opcodes.V1_6),
+                        asList(Opcodes.V1_5, Opcodes.V1_7),
                         asList(
                                 "fi.jumi:jumi-actors",
                                 "fi.jumi:jumi-api"),
@@ -93,7 +93,7 @@ public class BuildTest {
                                 BASE_PACKAGE + "core/")
                 },
                 {"jumi-daemon",
-                        asList(Opcodes.V1_5, Opcodes.V1_6),
+                        asList(Opcodes.V1_5, Opcodes.V1_6, Opcodes.V1_7),
                         asList(),
                         asList(
                                 POM_FILES,
@@ -103,7 +103,7 @@ public class BuildTest {
                                 BASE_PACKAGE + "daemon/")
                 },
                 {"jumi-launcher",
-                        asList(Opcodes.V1_6),
+                        asList(Opcodes.V1_6, Opcodes.V1_7),
                         asList(
                                 "fi.jumi:jumi-core"),
                         asList(
@@ -222,7 +222,13 @@ public class BuildTest {
         for (ClassNode classNode : JarFileUtils.classesIn(jarFile)) {
             matcher.check(classNode);
         }
-        matcher.rethrowErrors();
+        try {
+            matcher.rethrowErrors();
+        } catch (AssertionError e) {
+            // XXX: get the parameterized runner improved so that it would be easier to see which of the parameters broke a test
+            System.err.println("Found errors in " + jarFile);
+            throw e;
+        }
     }
 
 
