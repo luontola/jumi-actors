@@ -145,7 +145,7 @@ public class AppRunner implements TestRule {
 
     public void checkContainsRun(String... startAndEndEvents) {
         List<String> expected = Arrays.asList(startAndEndEvents);
-        List<List<String>> actuals = new ArrayList<List<String>>();
+        List<List<String>> actuals = new ArrayList<>();
         for (RunId runId : ui.getRunIds()) {
             actuals.add(ui.getTestStartAndEndEvents(runId));
         }
@@ -222,7 +222,7 @@ public class AppRunner implements TestRule {
     public static class SpyProcessStarter implements ProcessStarter {
 
         private final ProcessStarter processStarter;
-        public final FutureValue<Process> lastProcess = new FutureValue<Process>();
+        public final FutureValue<Process> lastProcess = new FutureValue<>();
 
         public SpyProcessStarter(ProcessStarter processStarter) {
             this.processStarter = processStarter;

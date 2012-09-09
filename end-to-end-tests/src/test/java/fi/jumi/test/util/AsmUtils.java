@@ -23,7 +23,7 @@ public class AsmUtils {
     // checking annotations
 
     public static Matcher<ClassNode> annotatedWithOneOf(final Class<?>... expectedAnnotations) {
-        final List<String> expected = new ArrayList<String>();
+        final List<String> expected = new ArrayList<>();
         for (Class<?> annotation : expectedAnnotations) {
             expected.add(annotation.getName());
         }
@@ -50,7 +50,7 @@ public class AsmUtils {
     }
 
     private static List<String> getAnnotations(ClassNode cn) {
-        List<String> classNames = new ArrayList<String>();
+        List<String> classNames = new ArrayList<>();
         for (AnnotationNode annotation : asAnnotationNodeList(cn.visibleAnnotations)) {
             classNames.add(getClassName(annotation));
         }

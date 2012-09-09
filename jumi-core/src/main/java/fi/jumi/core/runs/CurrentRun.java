@@ -16,7 +16,7 @@ public class CurrentRun {
 
     private final ActorRef<TestClassListener> listener;
     private final RunIdSequence runIdSequence;
-    private final InheritableThreadLocal<RunContext> currentRun = new InheritableThreadLocal<RunContext>();
+    private final InheritableThreadLocal<RunContext> currentRun = new InheritableThreadLocal<>();
 
     public CurrentRun(ActorRef<TestClassListener> listener, RunIdSequence runIdSequence) {
         this.listener = listener;

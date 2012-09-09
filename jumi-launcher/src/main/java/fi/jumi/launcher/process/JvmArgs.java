@@ -43,7 +43,7 @@ public class JvmArgs {
     }
 
     public List<String> toCommand() {
-        List<String> command = new ArrayList<String>();
+        List<String> command = new ArrayList<>();
         command.add(javaHome.resolve("bin/java").toAbsolutePath().toString());
         command.addAll(jvmOptions);
         command.addAll(asJvmOptions(systemProperties));
@@ -54,7 +54,7 @@ public class JvmArgs {
     }
 
     private static List<String> asJvmOptions(Map<String, String> systemProperties) {
-        List<String> jvmOptions = new ArrayList<String>();
+        List<String> jvmOptions = new ArrayList<>();
         for (Map.Entry<String, String> p : systemProperties.entrySet()) {
             jvmOptions.add("-D" + p.getKey() + "=" + p.getValue());
         }

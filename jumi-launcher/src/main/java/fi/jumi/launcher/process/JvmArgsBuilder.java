@@ -13,7 +13,7 @@ public class JvmArgsBuilder {
 
     private Path workingDir;
     private Path javaHome = Paths.get(System.getProperty("java.home"));
-    private List<String> jvmOptions = new ArrayList<String>();
+    private List<String> jvmOptions = new ArrayList<>();
     private Properties systemProperties = new Properties();
     private Path executableJar;
     private String[] programArgs = new String[0];

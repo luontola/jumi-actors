@@ -20,7 +20,7 @@ public class TextUITest {
 
     private static final String SUMMARY_LINE = "Pass";
 
-    private final MessageQueue<Event<SuiteListener>> stream = new MessageQueue<Event<SuiteListener>>();
+    private final MessageQueue<Event<SuiteListener>> stream = new MessageQueue<>();
     private final SuiteListener listener = new SuiteListenerToEvent(stream);
     private final EventBuilder suite = new EventBuilder(listener);
 

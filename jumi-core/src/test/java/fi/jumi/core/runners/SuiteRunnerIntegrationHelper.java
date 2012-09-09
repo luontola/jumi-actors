@@ -17,7 +17,7 @@ import java.util.concurrent.Executor;
 
 public abstract class SuiteRunnerIntegrationHelper {
 
-    private final SpyListener<SuiteListener> spy = new SpyListener<SuiteListener>(SuiteListener.class);
+    private final SpyListener<SuiteListener> spy = new SpyListener<>(SuiteListener.class);
     protected final SuiteListener expect = spy.getListener();
 
     private final FailureHandler failureHandler = new CrashEarlyFailureHandler();

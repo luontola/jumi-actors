@@ -44,7 +44,7 @@ public class RunIdSequenceTest {
     private static List<RunId> generateRunIdsSequentially(int count) {
         RunIdSequence sequence = new RunIdSequence();
 
-        List<RunId> results = new ArrayList<RunId>();
+        List<RunId> results = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             results.add(sequence.nextRunId());
         }
@@ -55,7 +55,7 @@ public class RunIdSequenceTest {
         final RunIdSequence sequence = new RunIdSequence();
         ExecutorService executor = Executors.newFixedThreadPool(10);
 
-        List<Future<RunId>> futures = new ArrayList<Future<RunId>>();
+        List<Future<RunId>> futures = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             futures.add(executor.submit(new Callable<RunId>() {
                 @Override
@@ -65,7 +65,7 @@ public class RunIdSequenceTest {
             }));
         }
 
-        List<RunId> results = new ArrayList<RunId>();
+        List<RunId> results = new ArrayList<>();
         for (Future<RunId> future : futures) {
             results.add(future.get(1000, TimeUnit.MILLISECONDS));
         }

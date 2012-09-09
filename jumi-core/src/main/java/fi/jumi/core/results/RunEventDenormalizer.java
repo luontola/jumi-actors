@@ -15,7 +15,7 @@ import java.util.*;
 public class RunEventDenormalizer implements SuiteListener {
 
     private final RunVisitor visitor;
-    private final Deque<TestId> runningTests = new ArrayDeque<TestId>();
+    private final Deque<TestId> runningTests = new ArrayDeque<>();
     private String testClass;
 
     public RunEventDenormalizer(RunVisitor visitor) {

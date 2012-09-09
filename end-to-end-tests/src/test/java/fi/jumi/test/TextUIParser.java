@@ -28,7 +28,7 @@ public class TextUIParser {
     private static final int TOTAL_COUNT = 4;
 
     private final String fullOutput;
-    private final Map<RunId, RunParsed> runsById = new HashMap<RunId, RunParsed>();
+    private final Map<RunId, RunParsed> runsById = new HashMap<>();
     private int passingCount;
     private int failingCount;
     private int totalCount;
@@ -77,7 +77,7 @@ public class TextUIParser {
     }
 
     public Set<RunId> getRunIds() {
-        return new HashSet<RunId>(runsById.keySet());
+        return new HashSet<>(runsById.keySet());
     }
 
     public String getRunOutput(RunId runId) {
@@ -114,7 +114,7 @@ public class TextUIParser {
         }
 
         private List<String> getTestStartAndEndEvents() {
-            ArrayList<String> events = new ArrayList<String>();
+            ArrayList<String> events = new ArrayList<>();
             Matcher m = Pattern.compile(TEST_START_OR_END, Pattern.MULTILINE).matcher(output);
             while (m.find()) {
                 String prefix = m.group(SYMBOL);

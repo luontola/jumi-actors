@@ -146,9 +146,9 @@ public class NettyNetworkCommunicationTest {
 
     private static class ServerNetworkEndpoint implements NetworkEndpoint<Integer, String> {
 
-        public final FutureValue<NetworkConnection> connection = new FutureValue<NetworkConnection>();
-        public final FutureValue<MessageSender<String>> toClient = new FutureValue<MessageSender<String>>();
-        public final BlockingQueue<Integer> messagesReceived = new LinkedBlockingQueue<Integer>();
+        public final FutureValue<NetworkConnection> connection = new FutureValue<>();
+        public final FutureValue<MessageSender<String>> toClient = new FutureValue<>();
+        public final BlockingQueue<Integer> messagesReceived = new LinkedBlockingQueue<>();
         public final CountDownLatch disconnected = new CountDownLatch(1);
 
         @Override
@@ -170,9 +170,9 @@ public class NettyNetworkCommunicationTest {
 
     private static class ClientNetworkEndpoint implements NetworkEndpoint<String, Integer> {
 
-        public final FutureValue<NetworkConnection> connection = new FutureValue<NetworkConnection>();
-        public final FutureValue<MessageSender<Integer>> toServer = new FutureValue<MessageSender<Integer>>();
-        public final BlockingQueue<String> messagesReceived = new LinkedBlockingQueue<String>();
+        public final FutureValue<NetworkConnection> connection = new FutureValue<>();
+        public final FutureValue<MessageSender<Integer>> toServer = new FutureValue<>();
+        public final BlockingQueue<String> messagesReceived = new LinkedBlockingQueue<>();
         public final CountDownLatch disconnected = new CountDownLatch(1);
 
         @Override
@@ -196,7 +196,7 @@ public class NettyNetworkCommunicationTest {
         private final BlockingQueue<ServerNetworkEndpoint> serverEndpoints;
 
         public StubServerNetworkEndpointFactory(ServerNetworkEndpoint... serverEndpoints) {
-            this.serverEndpoints = new ArrayBlockingQueue<ServerNetworkEndpoint>(serverEndpoints.length);
+            this.serverEndpoints = new ArrayBlockingQueue<>(serverEndpoints.length);
             Collections.addAll(this.serverEndpoints, serverEndpoints);
         }
 

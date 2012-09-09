@@ -14,8 +14,8 @@ public class SpyListener<T> implements InvocationHandler {
     static final String ERROR_MARKER = "     ^^^^^^^^^^^^^^";
 
     private final Class<T> listenerType;
-    private final List<Call> expectations = new ArrayList<Call>();
-    private final List<Call> actualCalls = new ArrayList<Call>();
+    private final List<Call> expectations = new ArrayList<>();
+    private final List<Call> actualCalls = new ArrayList<>();
     private List<Call> current = expectations;
 
     public SpyListener(Class<T> listenerType) {

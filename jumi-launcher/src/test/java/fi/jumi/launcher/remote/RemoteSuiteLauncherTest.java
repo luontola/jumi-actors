@@ -34,7 +34,7 @@ public class RemoteSuiteLauncherTest {
     private final RemoteSuiteLauncher suiteLauncher =
             new RemoteSuiteLauncher(new FakeActorThread(), ActorRef.<DaemonSummoner>wrap(daemonSummoner));
 
-    private final MessageQueue<Event<SuiteListener>> suiteListener = new MessageQueue<Event<SuiteListener>>();
+    private final MessageQueue<Event<SuiteListener>> suiteListener = new MessageQueue<>();
 
     @Test
     public void sends_RunTests_command_to_the_daemon_when_it_connects() {

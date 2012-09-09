@@ -30,7 +30,7 @@ public class CollectionMatchers {
             }
 
             private Collection<T> getUnexpected(Collection<T> actual) {
-                Collection<T> unexpected = new ArrayList<T>(actual);
+                Collection<T> unexpected = new ArrayList<>(actual);
                 unexpected.removeAll(expected);
                 return unexpected;
             }

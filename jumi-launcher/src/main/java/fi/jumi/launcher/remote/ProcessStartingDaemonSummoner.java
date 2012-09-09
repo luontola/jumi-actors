@@ -85,7 +85,7 @@ public class ProcessStartingDaemonSummoner implements DaemonSummoner {
     @ThreadSafe
     private static class OneTimeDaemonListenerFactory implements NetworkEndpointFactory<Event<SuiteListener>, Event<CommandListener>> {
 
-        private final BlockingQueue<ActorRef<DaemonListener>> oneTimeListener = new ArrayBlockingQueue<ActorRef<DaemonListener>>(1);
+        private final BlockingQueue<ActorRef<DaemonListener>> oneTimeListener = new ArrayBlockingQueue<>(1);
 
         public OneTimeDaemonListenerFactory(ActorRef<DaemonListener> listener) {
             this.oneTimeListener.add(listener);

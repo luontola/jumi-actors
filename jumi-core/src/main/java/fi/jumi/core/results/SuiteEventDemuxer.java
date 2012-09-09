@@ -16,8 +16,8 @@ import java.util.*;
 @NotThreadSafe
 public class SuiteEventDemuxer implements MessageSender<Event<SuiteListener>> {
 
-    private final Map<GlobalTestId, String> testNames = new HashMap<GlobalTestId, String>();
-    private final Map<RunId, RunState> runs = new HashMap<RunId, RunState>();
+    private final Map<GlobalTestId, String> testNames = new HashMap<>();
+    private final Map<RunId, RunState> runs = new HashMap<>();
     private final InternalDemuxer internalDemuxer = new InternalDemuxer();
 
     private Event<SuiteListener> currentMessage;
@@ -81,7 +81,7 @@ public class SuiteEventDemuxer implements MessageSender<Event<SuiteListener>> {
 
     @NotThreadSafe
     private static class RunState {
-        public final List<Event<SuiteListener>> events = new ArrayList<Event<SuiteListener>>();
+        public final List<Event<SuiteListener>> events = new ArrayList<>();
     }
 
     @NotThreadSafe

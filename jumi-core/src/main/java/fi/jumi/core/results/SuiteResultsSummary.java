@@ -13,8 +13,8 @@ import java.util.*;
 @NotThreadSafe
 public class SuiteResultsSummary implements RunVisitor {
 
-    private final Set<GlobalTestId> failedTests = new HashSet<GlobalTestId>();
-    private final Set<GlobalTestId> allTests = new HashSet<GlobalTestId>();
+    private final Set<GlobalTestId> failedTests = new HashSet<>();
+    private final Set<GlobalTestId> allTests = new HashSet<>();
 
     public int getPassingTests() {
         return getTotalTests() - getFailingTests();

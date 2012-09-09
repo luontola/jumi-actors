@@ -11,7 +11,7 @@ import static org.hamcrest.Matchers.*;
 
 public class SpyListenerTest {
 
-    private final SpyListener<DummyListener> spy = new SpyListener<DummyListener>(DummyListener.class);
+    private final SpyListener<DummyListener> spy = new SpyListener<>(DummyListener.class);
     private final DummyListener listener = spy.getListener();
 
     @Test

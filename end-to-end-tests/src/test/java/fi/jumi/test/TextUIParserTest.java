@@ -23,7 +23,7 @@ public class TextUIParserTest {
     private static final RunId RUN_1 = new RunId(1);
     private static final RunId RUN_2 = new RunId(2);
 
-    private final MessageQueue<Event<SuiteListener>> stream = new MessageQueue<Event<SuiteListener>>();
+    private final MessageQueue<Event<SuiteListener>> stream = new MessageQueue<>();
     private final SuiteListener listener = new SuiteListenerToEvent(stream);
 
     @Test

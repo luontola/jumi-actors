@@ -17,7 +17,7 @@ import java.io.*;
 @ThreadSafe
 public class JumiLauncher implements Closeable {
 
-    private final MessageQueue<Event<SuiteListener>> eventQueue = new MessageQueue<Event<SuiteListener>>();
+    private final MessageQueue<Event<SuiteListener>> eventQueue = new MessageQueue<>();
 
     private final ActorRef<SuiteLauncher> suiteLauncher;
     private final Closeable externalResources;

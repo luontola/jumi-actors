@@ -49,7 +49,7 @@ public class NettyNetworkClient implements NetworkClient {
                         new ObjectEncoder(),
                         new ObjectDecoder(ClassResolvers.softCachingResolver(getClass().getClassLoader())),
                         new LoggingHandler(NettyNetworkClient.class, logLevel),
-                        new NettyNetworkEndpointAdapter<In, Out>(endpoint),
+                        new NettyNetworkEndpointAdapter<>(endpoint),
                         new AddToChannelGroupHandler(allChannels));
             }
         }

@@ -18,7 +18,9 @@
 		http://docs.oracle.com/javase/7/docs/technotes/guides/io/fsp/zipfilesystemprovider.html
 		fi.jumi.test.util.JarFileUtils#classesIn
 		fi.jumi.test.BuildTest#assertJarContainsOnly
-	!! - find "new .*<", migrate to diamon operator
+	!! - use the diamond operator
+		OK - find "new .*<", migrate to diamond operator
+		!! - make jumi-actors-maven-plugin compile using the project language level
 	- find "finally", migrate to try-with-resources
 	OK - BuildTest: detect when running in IDEA (maybe detect when doing a release) and use the class version relaxation only then
 	- extract actors to their own project; IDEA can't handle well mixing language levels in the same project

@@ -34,7 +34,7 @@ public class SimpleUnit implements Driver {
     }
 
     private static List<Method> getTestMethods(Class<?> testClass) {
-        List<Method> results = new ArrayList<Method>();
+        List<Method> results = new ArrayList<>();
         for (Method method : testClass.getMethods()) {
             if (method.getName().startsWith("test")) {
                 results.add(method);

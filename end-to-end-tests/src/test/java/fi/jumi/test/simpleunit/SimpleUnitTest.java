@@ -45,7 +45,7 @@ public class SimpleUnitTest {
 
     @Test
     public void reports_test_execution() throws InterruptedException {
-        SpyListener<TestClassListener> spy = new SpyListener<TestClassListener>(TestClassListener.class);
+        SpyListener<TestClassListener> spy = new SpyListener<>(TestClassListener.class);
         TestClassListener listener = spy.getListener();
 
         listener.onTestFound(TestId.ROOT, "OnePassingTest");
@@ -65,7 +65,7 @@ public class SimpleUnitTest {
 
     @Test
     public void reports_test_failure() throws InterruptedException {
-        SpyListener<TestClassListener> spy = new SpyListener<TestClassListener>(TestClassListener.class);
+        SpyListener<TestClassListener> spy = new SpyListener<>(TestClassListener.class);
         TestClassListener listener = spy.getListener();
 
         listener.onTestFound(TestId.ROOT, "OneFailingTest");
@@ -86,7 +86,7 @@ public class SimpleUnitTest {
 
     @Test
     public void reports_failures_in_constructor() throws InterruptedException {
-        SpyListener<TestClassListener> spy = new SpyListener<TestClassListener>(TestClassListener.class);
+        SpyListener<TestClassListener> spy = new SpyListener<>(TestClassListener.class);
         TestClassListener listener = spy.getListener();
 
         listener.onTestFound(TestId.ROOT, "FailureInConstructorTest");
@@ -105,7 +105,7 @@ public class SimpleUnitTest {
 
     @Test
     public void reports_illegal_test_method_signatures() throws InterruptedException {
-        SpyListener<TestClassListener> spy = new SpyListener<TestClassListener>(TestClassListener.class);
+        SpyListener<TestClassListener> spy = new SpyListener<>(TestClassListener.class);
         TestClassListener listener = spy.getListener();
 
         listener.onTestFound(TestId.ROOT, "IllegalTestMethodSignatureTest");
@@ -126,7 +126,7 @@ public class SimpleUnitTest {
 
     @Test
     public void reports_an_error_if_the_test_class_contains_no_test_methods() throws InterruptedException {
-        SpyListener<TestClassListener> spy = new SpyListener<TestClassListener>(TestClassListener.class);
+        SpyListener<TestClassListener> spy = new SpyListener<>(TestClassListener.class);
         TestClassListener listener = spy.getListener();
 
         listener.onTestFound(TestId.ROOT, "NoTestMethodsTest");

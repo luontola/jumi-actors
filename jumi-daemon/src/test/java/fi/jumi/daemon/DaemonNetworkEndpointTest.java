@@ -19,7 +19,7 @@ import static org.mockito.Mockito.mock;
 public class DaemonNetworkEndpointTest {
 
     private final NetworkConnection unimportantConnection = mock(NetworkConnection.class);
-    private final MessageQueue<Event<SuiteListener>> unimportantSender = new MessageQueue<Event<SuiteListener>>();
+    private final MessageQueue<Event<SuiteListener>> unimportantSender = new MessageQueue<>();
     private final SpyTimeout startupTimeout = new SpyTimeout();
     private final SpyTimeout idleTimeout = new SpyTimeout();
 

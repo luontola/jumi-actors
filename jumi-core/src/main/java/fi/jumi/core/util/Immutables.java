@@ -11,21 +11,21 @@ import java.util.*;
 public class Immutables {
 
     public static <T> List<T> list(List<T> mutable) {
-        return Collections.unmodifiableList(new ArrayList<T>(mutable));
+        return Collections.unmodifiableList(new ArrayList<>(mutable));
     }
 
     public static <T> List<T> list(T[] mutable) {
-        ArrayList<T> list = new ArrayList<T>();
+        ArrayList<T> list = new ArrayList<>();
         Collections.addAll(list, mutable);
         return Collections.unmodifiableList(list);
     }
 
     public static <K, V> Map<K, V> map(Map<K, V> mutable) {
-        return Collections.unmodifiableMap(new HashMap<K, V>(mutable));
+        return Collections.unmodifiableMap(new HashMap<>(mutable));
     }
 
     public static Map<String, String> map(Properties mutable) {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         for (Map.Entry<Object, Object> entry : mutable.entrySet()) {
             map.put((String) entry.getKey(), (String) entry.getValue());
         }

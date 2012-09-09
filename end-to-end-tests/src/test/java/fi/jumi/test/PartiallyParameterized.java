@@ -30,7 +30,7 @@ public class PartiallyParameterized extends Parameterized {
     }
 
     private static List<String> getNonParameterizedMethods(Class<?> klass) {
-        List<String> nonParameterizedMethods = new ArrayList<String>();
+        List<String> nonParameterizedMethods = new ArrayList<>();
         for (Method method : klass.getMethods()) {
             if (method.getAnnotation(NonParameterized.class) != null) {
                 nonParameterizedMethods.add(method.getName());

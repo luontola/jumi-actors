@@ -13,7 +13,7 @@ public class EventBuilder {
 
     private final SuiteListener listener;
 
-    private final Map<RunId, String> testClassesByRunId = new HashMap<RunId, String>();
+    private final Map<RunId, String> testClassesByRunId = new HashMap<>();
     private int nextRunId = RunId.FIRST_ID;
 
     public EventBuilder(SuiteListener listener) {

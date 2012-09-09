@@ -44,7 +44,7 @@ public class TestIdTest {
 
     @Test
     public void hashCode_has_good_dispersion() {
-        List<TestId> values = new ArrayList<TestId>();
+        List<TestId> values = new ArrayList<>();
         values.add(TestId.of());
         values.add(TestId.of(0));
         values.add(TestId.of(1));
@@ -59,7 +59,7 @@ public class TestIdTest {
         values.add(TestId.of(1, 2));
         values.add(TestId.of(2, 1));
 
-        Set<Integer> uniqueHashCodes = new HashSet<Integer>();
+        Set<Integer> uniqueHashCodes = new HashSet<>();
         for (TestId value : values) {
             uniqueHashCodes.add(value.hashCode());
         }
@@ -81,7 +81,7 @@ public class TestIdTest {
                 TestId.of(2)
         );
 
-        List<TestId> actualOrder = new ArrayList<TestId>(expectedOrder);
+        List<TestId> actualOrder = new ArrayList<>(expectedOrder);
         Collections.shuffle(actualOrder);
         Collections.sort(actualOrder);
 

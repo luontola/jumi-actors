@@ -21,8 +21,8 @@ public class SuiteConfigurationBuilder {
     }
 
     SuiteConfigurationBuilder(SuiteConfiguration src) {
-        classPath = new ArrayList<URI>(src.classPath());
-        jvmOptions = new ArrayList<String>(src.jvmOptions());
+        classPath = new ArrayList<>(src.classPath());
+        jvmOptions = new ArrayList<>(src.jvmOptions());
         includedTestsPattern = src.includedTestsPattern();
     }
 

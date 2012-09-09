@@ -9,7 +9,7 @@ import java.util.*;
 
 public class MethodCallSpy implements InvocationHandler {
 
-    public final List<String> methodCalls = new ArrayList<String>();
+    public final List<String> methodCalls = new ArrayList<>();
 
     public <T> T createProxyTo(Class<T> anInterface) {
         return anInterface.cast(Proxy.newProxyInstance(

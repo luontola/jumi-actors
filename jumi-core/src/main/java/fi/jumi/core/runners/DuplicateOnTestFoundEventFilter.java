@@ -14,7 +14,7 @@ import java.util.*;
 public class DuplicateOnTestFoundEventFilter implements TestClassListener {
 
     private final TestClassListener target;
-    private final Map<TestId, String> tests = new HashMap<TestId, String>();
+    private final Map<TestId, String> tests = new HashMap<>();
 
     public DuplicateOnTestFoundEventFilter(TestClassListener target) {
         this.target = target;

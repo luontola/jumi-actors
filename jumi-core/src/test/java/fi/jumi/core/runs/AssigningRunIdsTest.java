@@ -115,7 +115,7 @@ public class AssigningRunIdsTest {
     }
 
     private static void execute(Runnable... tasks) throws Exception {
-        List<Future<?>> futures = new ArrayList<Future<?>>();
+        List<Future<?>> futures = new ArrayList<>();
         ExecutorService executor = Executors.newCachedThreadPool();
         try {
             for (Runnable task : tasks) {

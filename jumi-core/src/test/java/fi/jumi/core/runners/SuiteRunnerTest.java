@@ -100,7 +100,7 @@ public class SuiteRunnerTest extends SuiteRunnerIntegrationHelper {
     }
 
     private static class FakeDriverFinder implements DriverFinder {
-        private final Map<Class<?>, Driver> driverMapping = new HashMap<Class<?>, Driver>();
+        private final Map<Class<?>, Driver> driverMapping = new HashMap<>();
 
         @Override
         public Driver findTestClassDriver(Class<?> testClass) {

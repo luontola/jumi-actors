@@ -307,7 +307,7 @@ public class BuildTest {
                 "/project/dependencies/dependency[not(scope) or scope='compile' or scope='runtime']",
                 doc, XPathConstants.NODESET);
 
-        List<String> results = new ArrayList<String>();
+        List<String> results = new ArrayList<>();
         for (int i = 0; i < nodes.getLength(); i++) {
             Node dependency = nodes.item(i);
 

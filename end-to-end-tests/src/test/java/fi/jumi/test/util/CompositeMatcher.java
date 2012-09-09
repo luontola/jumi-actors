@@ -11,9 +11,9 @@ import java.util.*;
 
 public class CompositeMatcher<T> {
 
-    private final List<Matcher<T>> exclusions = new ArrayList<Matcher<T>>();
+    private final List<Matcher<T>> exclusions = new ArrayList<>();
     private Matcher<T> assertion;
-    private List<String> errorMessages = new ArrayList<String>();
+    private List<String> errorMessages = new ArrayList<>();
     private StackTraceElement[] errorStackTrace;
 
     public CompositeMatcher<T> assertThatIt(Matcher<T> matcher) {

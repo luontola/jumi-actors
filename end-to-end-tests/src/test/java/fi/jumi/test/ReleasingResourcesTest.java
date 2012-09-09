@@ -42,7 +42,7 @@ public class ReleasingResourcesTest {
         // threads that they have finished processing all commands, but not that the threads
         // are completely finished. There is a 0.01 probability of the thread being still
         // alive due to that race condition.
-        ArrayList<Thread> aliveThreads = new ArrayList<Thread>();
+        ArrayList<Thread> aliveThreads = new ArrayList<>();
         for (Thread thread : maybeDyingThreads) {
             try {
                 thread.join(1);
@@ -60,7 +60,7 @@ public class ReleasingResourcesTest {
         // Another option would be to wait for the threads to stop and ignore
         // those that stop quickly. But would want JumiLauncher.close() already
         // to do that waiting to fully close everything, so let's not do it that way here.
-        List<Thread> results = new ArrayList<Thread>();
+        List<Thread> results = new ArrayList<>();
         for (Thread thread : threads) {
             if (thread.getName().equals(name)) {
                 System.err.println("WARN: Ignoring thread " + thread);
