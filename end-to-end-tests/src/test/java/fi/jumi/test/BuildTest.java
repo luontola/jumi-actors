@@ -68,13 +68,9 @@ public class BuildTest {
     @SuppressWarnings("unchecked")
     public static Collection<Object[]> data() {
         // TODO: upgrade shaded dependencies to Java 6/7 to benefit from their faster class loading
-
-        // XXX: compiling with IDEA compiles all modules with the same language level; fix this test after moving actors to their own module
-        final int XXX_WORKAROUND_FOR_IDEA_COMPILER_NOT_OBEYING_MODULE_LANGUAGE_LEVEL = Opcodes.V1_7;
-
         return asList(new Object[][]{
                 {"jumi-actors",
-                        asList(Opcodes.V1_6, XXX_WORKAROUND_FOR_IDEA_COMPILER_NOT_OBEYING_MODULE_LANGUAGE_LEVEL),
+                        asList(Opcodes.V1_6),
                         asList(),
                         asList(
                                 POM_FILES,
@@ -115,7 +111,7 @@ public class BuildTest {
                                 BASE_PACKAGE + "launcher/")
                 },
                 {"thread-safety-agent",
-                        asList(Opcodes.V1_5, Opcodes.V1_6, XXX_WORKAROUND_FOR_IDEA_COMPILER_NOT_OBEYING_MODULE_LANGUAGE_LEVEL),
+                        asList(Opcodes.V1_5, Opcodes.V1_6),
                         asList(),
                         asList(
                                 POM_FILES,
@@ -150,11 +146,63 @@ public class BuildTest {
 
     @Test
     public void release_jar_contains_build_properties_with_the_Git_revision_ID() throws IOException {
-        String version = getPomProperties().getProperty("version");
-        assumeTrue(isRelease(version));
+        assumeReleaseBuild();
 
         Properties p = getBuildProperties();
         assertThat(p.getProperty("revision")).as("revision").matches("[0-9a-f]{40}");
+    }
+
+    @Test
+    @NonParameterized
+    public void embedded_daemon_jar_contains_only_jumi_classes() throws IOException {
+        assertJarContainsOnly(new EmbeddedDaemonJar().getDaemonJarAsStream(), asList(
+                POM_FILES,
+                BASE_PACKAGE
+        ));
+    }
+
+    @Test
+    public void none_of_the_artifacts_may_have_dependencies_to_external_libraries() {
+        for (String dependency : expectedDependencies) {
+            assertThat("artifact " + artifactId, dependency, startsWith("fi.jumi:"));
+        }
+    }
+
+    @Test
+    public void none_of_the_artifacts_may_contain_classes_from_external_libraries_without_shading_them() {
+        for (String content : expectedContents) {
+            assertThat("artifact " + artifactId, content, Matchers.<String>
+                    either(startsWith(BASE_PACKAGE)).or(startsWith(POM_FILES)));
+        }
+    }
+
+    @Test
+    public void all_classes_must_use_the_specified_bytecode_version() throws IOException {
+        assumeReleaseBuild(); // XXX: compiling with IDEA compiles all modules with the same language level, so let's ignore this test when building in the IDE
+
+        CompositeMatcher<ClassNode> matcher = newClassNodeCompositeMatcher()
+                .assertThatIt(hasClassVersion(isOneOf(expectedClassVersion)));
+
+        checkAllClasses(matcher, TestEnvironment.getProjectJar(artifactId));
+    }
+
+    @Test
+    public void all_classes_must_be_annotated_with_JSR305_concurrent_annotations() throws Exception {
+        CompositeMatcher<ClassNode> matcher = newClassNodeCompositeMatcher()
+                .excludeIf(is(anInterface()))
+                .excludeIf(is(syntheticClass()))
+                .excludeIf(nameStartsWithOneOf(DOES_NOT_NEED_JSR305_ANNOTATIONS))
+                .assertThatIt(is(annotatedWithOneOf(Immutable.class, NotThreadSafe.class, ThreadSafe.class)));
+
+        checkAllClasses(matcher, TestEnvironment.getProjectJar(artifactId));
+    }
+
+
+    // helper methods
+
+    private void assumeReleaseBuild() throws IOException {
+        String version = getPomProperties().getProperty("version");
+        assumeTrue(isRelease(version));
     }
 
     private Properties getBuildProperties() throws IOException {
@@ -178,48 +226,17 @@ public class BuildTest {
         return readPropertiesFromJar(jarFile, POM_FILES + artifactId + "/" + filename);
     }
 
-    @Test
-    @NonParameterized
-    public void embedded_daemon_jar_contains_only_jumi_classes() throws IOException {
-        assertJarContainsOnly(new EmbeddedDaemonJar().getDaemonJarAsStream(), asList(
-                POM_FILES,
-                BASE_PACKAGE
-        ));
-    }
-
-    @Test
-    public void none_of_the_artifacts_may_have_dependencies_to_external_libraries() {
-        for (String dependency : expectedDependencies) {
-            assertThat("artifact " + artifactId, dependency, startsWith("fi.jumi:"));
+    private static Properties readPropertiesFromJar(File jarFile, String resource) throws IOException {
+        URLClassLoader cl = new URLClassLoader(new URL[]{jarFile.toURI().toURL()});
+        InputStream in = cl.getResourceAsStream(resource);
+        assertNotNull("resource not found: " + resource, in);
+        try {
+            Properties p = new Properties();
+            p.load(in);
+            return p;
+        } finally {
+            in.close();
         }
-    }
-
-    @Test
-    @SuppressWarnings({"unchecked"})
-    public void none_of_the_artifacts_may_contain_classes_from_external_libraries_without_shading_them() {
-        for (String content : expectedContents) {
-            assertThat("artifact " + artifactId, content, Matchers.<String>
-                    either(startsWith(BASE_PACKAGE)).or(startsWith(POM_FILES)));
-        }
-    }
-
-    @Test
-    public void all_classes_must_use_the_specified_bytecode_version() {
-        CompositeMatcher<ClassNode> matcher = newClassNodeCompositeMatcher()
-                .assertThatIt(hasClassVersion(isOneOf(expectedClassVersion)));
-
-        checkAllClasses(matcher, TestEnvironment.getProjectJar(artifactId));
-    }
-
-    @Test
-    public void all_classes_must_be_annotated_with_JSR305_concurrent_annotations() throws Exception {
-        CompositeMatcher<ClassNode> matcher = newClassNodeCompositeMatcher()
-                .excludeIf(is(anInterface()))
-                .excludeIf(is(syntheticClass()))
-                .excludeIf(nameStartsWithOneOf(DOES_NOT_NEED_JSR305_ANNOTATIONS))
-                .assertThatIt(is(annotatedWithOneOf(Immutable.class, NotThreadSafe.class, ThreadSafe.class)));
-
-        checkAllClasses(matcher, TestEnvironment.getProjectJar(artifactId));
     }
 
     private static void checkAllClasses(CompositeMatcher<ClassNode> matcher, File jarFile) {
@@ -232,22 +249,6 @@ public class BuildTest {
             // XXX: get the parameterized runner improved so that it would be easier to see which of the parameters broke a test
             System.err.println("Found errors in " + jarFile);
             throw e;
-        }
-    }
-
-
-    // helper methods
-
-    private static Properties readPropertiesFromJar(File jarFile, String resource) throws IOException {
-        URLClassLoader cl = new URLClassLoader(new URL[]{jarFile.toURI().toURL()});
-        InputStream in = cl.getResourceAsStream(resource);
-        assertNotNull("resource not found: " + resource, in);
-        try {
-            Properties p = new Properties();
-            p.load(in);
-            return p;
-        } finally {
-            in.close();
         }
     }
 

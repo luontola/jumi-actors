@@ -16,6 +16,7 @@
 		http://docs.oracle.com/javase/tutorial/essential/io/legacy.html
 	- find "new .*<", migrate to diamon operator
 	- find "finally", migrate to try-with-resources
+	OK - BuildTest: detect when running in IDEA (maybe detect when doing a release) and use the class version relaxation only then
 	- extract actors to their own project; IDEA can't handle well mixing language levels in the same project
 	- BuildTest: make the class version checks stricter (don't use Java 7 for actors)
 	- IDEA should warn about use of wrong APIs
