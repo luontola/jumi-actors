@@ -9,12 +9,12 @@
 			http://download.forge.objectweb.org/asm/asm4-guide.pdf
 				3.1.5 pages 39-41: stack map frames explained
 				3.2.1 page 44: ClassWriter options for computing them automatically (slower)
-	!! - find usages of File, migrate to Path
+	OK - find usages of File, migrate to Path
 		OK - production sources
-		!! - test sources
+		OK - test sources
 		http://docs.oracle.com/javase/tutorial/essential/io/fileio.html
 		http://docs.oracle.com/javase/tutorial/essential/io/legacy.html
-	- iterate JARs using FileSystem instead of JarInputStream
+	!! - iterate JARs using FileSystem instead of JarInputStream
 		http://docs.oracle.com/javase/7/docs/technotes/guides/io/fsp/zipfilesystemprovider.html
 		fi.jumi.test.util.JarFileUtils#classesIn
 		fi.jumi.test.BuildTest#assertJarContainsOnly

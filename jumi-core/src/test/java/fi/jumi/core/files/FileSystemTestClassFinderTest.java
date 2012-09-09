@@ -6,11 +6,11 @@ package fi.jumi.core.files;
 
 import fi.jumi.actors.ActorRef;
 import fi.jumi.core.files.dummies.DummyTest;
-import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
-import java.io.*;
-import java.net.URL;
+import java.io.IOException;
+import java.net.*;
+import java.nio.file.*;
 import java.util.Arrays;
 
 import static org.mockito.Mockito.*;
@@ -36,18 +36,24 @@ public class FileSystemTestClassFinderTest {
     }
 
     private void findTestsMatchingPattern(String pattern) {
-        File classesDir = getClassesDirectory(getClass());
-        FileSystemTestClassFinder finder = new FileSystemTestClassFinder(Arrays.asList(classesDir.toPath().toUri()), pattern);
+        Path classesDir = getClassesDirectory(getClass());
+        FileSystemTestClassFinder finder = new FileSystemTestClassFinder(Arrays.asList(classesDir.toUri()), pattern);
         finder.findTestClasses(ActorRef.wrap(listener));
     }
 
-    private static File getClassesDirectory(Class<?> clazz) {
-        URL classFile = clazz.getResource(clazz.getSimpleName() + ".class");
-        File file = FileUtils.toFile(classFile);
-        int directoryDepth = clazz.getName().split("\\.").length;
-        for (int i = 0; i < directoryDepth; i++) {
-            file = file.getParentFile();
+    private static Path getClassesDirectory(Class<?> clazz) {
+        try {
+            URL classFile = clazz.getResource(clazz.getSimpleName() + ".class");
+            Path path = Paths.get(classFile.toURI());
+
+            int directoryDepth = clazz.getName().split("\\.").length;
+            for (int i = 0; i < directoryDepth; i++) {
+                path = path.getParent();
+            }
+            return path;
+
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
         }
-        return file;
     }
 }

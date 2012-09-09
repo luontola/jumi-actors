@@ -9,6 +9,7 @@ import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.*;
+import java.nio.file.Path;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -27,10 +28,10 @@ public class DirBasedStewardTest {
     public void copies_the_embedded_daemon_JAR_to_the_settings_dir() throws IOException {
         DirBasedSteward steward = new DirBasedSteward(stubDaemonJar, tempDir.getRoot().toPath());
 
-        File daemonJar = steward.getDaemonJar().toFile();
+        Path daemonJar = steward.getDaemonJar();
 
-        assertThat(daemonJar.getName(), is(expectedName));
-        assertThat(FileUtils.readFileToByteArray(daemonJar), is(expectedContent));
+        assertThat(daemonJar.getFileName().toString(), is(expectedName));
+        assertThat(FileUtils.readFileToByteArray(daemonJar.toFile()), is(expectedContent));
     }
 
     @Test

@@ -7,7 +7,6 @@ package fi.jumi.launcher.process;
 import org.hamcrest.*;
 import org.junit.Test;
 
-import java.io.File;
 import java.nio.file.*;
 import java.util.*;
 
@@ -81,7 +80,7 @@ public class JvmArgsTest {
                 .toJvmArgs()
                 .toCommand();
 
-        assertThat(command.get(0), is(new File("custom-jre/bin/java").getAbsolutePath()));
+        assertThat(command.get(0), is(Paths.get("custom-jre/bin/java").toAbsolutePath().toString()));
     }
 
     @Test
@@ -90,7 +89,7 @@ public class JvmArgsTest {
                 .toJvmArgs()
                 .toCommand();
 
-        assertThat(command.get(0), is(new File(System.getProperty("java.home"), "bin/java").getAbsolutePath()));
+        assertThat(command.get(0), is(Paths.get(System.getProperty("java.home")).resolve("bin/java").toString()));
     }
 
 
@@ -99,7 +98,7 @@ public class JvmArgsTest {
     private JvmArgsBuilder newBuilder() {
         // dummy values for required parameters
         return new JvmArgsBuilder()
-                .executableJar(new File("dummy.jar").toPath());
+                .executableJar(Paths.get("dummy.jar"));
     }
 
     private static Matcher<List<String>> containsSubSequence(String... expectedSubSequence) {
