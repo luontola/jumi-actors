@@ -19,6 +19,12 @@ public class AddThreadSafetyChecks extends ClassVisitor {
     private String myClassName;
     private Label lastGeneratedCode;
 
+    // TODO: keep an eye on what to do with stackmap frames when parsing & producing Java 7 bytecode
+    // http://weblogs.java.net/blog/fabriziogiudici/archive/2012/05/07/understanding-subtle-new-behaviours-jdk-7
+    // http://download.forge.objectweb.org/asm/asm4-guide.pdf
+    //     3.1.5 pages 39-41: stack map frames explained
+    //     3.2.1 page 44: ClassWriter options for computing them automatically (slower)
+
     public AddThreadSafetyChecks(ClassVisitor cv) {
         super(Opcodes.ASM4, cv);
     }

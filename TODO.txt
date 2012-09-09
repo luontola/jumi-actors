@@ -1,15 +1,15 @@
 
 !! - migrate to Java 7
 	OK - refactor the long tests in BuildTest
-	!! - change language level in all modules (except jumi-actors et al)
+	OK - change language level in all modules (except jumi-actors et al)
 		OK - check bytecode level in BuildTest
-		!! - update POMs: default language level to parent, override in specific modules
-		- double-check that bytecode manipulation generates stackmap frames when parsing & producing Java 7 bytecode
+		OK - update POMs: default language level to parent, override in specific modules
+		OK - double-check that bytecode manipulation generates stackmap frames when parsing & producing Java 7 bytecode
 			http://weblogs.java.net/blog/fabriziogiudici/archive/2012/05/07/understanding-subtle-new-behaviours-jdk-7
 			http://download.forge.objectweb.org/asm/asm4-guide.pdf
 				3.1.5 pages 39-41: stack map frames explained
 				3.2.1 page 44: ClassWriter options for computing them automatically (slower)
-	- find usages of File, migrate to Path
+	!! - find usages of File, migrate to Path
 		http://docs.oracle.com/javase/tutorial/essential/io/fileio.html
 		http://docs.oracle.com/javase/tutorial/essential/io/legacy.html
 	- find "new .*<", migrate to diamon operator
