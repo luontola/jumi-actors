@@ -4,7 +4,7 @@ Release Notes
 
 ### next release
 
-- TBD
+- Jumi Actors Maven Plugin: the Java compiler's language level can now be configured
 
 ### Jumi 0.1.64 (2012-07-10)
 

@@ -23,6 +23,24 @@ import java.util.*;
  */
 public class GenerateEventStubsMojo extends AbstractMojo {
 
+    // TODO: is there a way to get these source and target parameters from the maven-compiler-plugin's configuration?
+
+    /**
+     * The -source argument for the Java compiler.
+     *
+     * @parameter property="maven.compiler.source" default-value="1.6"
+     * @required
+     */
+    public String source;
+
+    /**
+     * The -target argument for the Java compiler.
+     *
+     * @parameter property="maven.compiler.target" default-value="1.6"
+     * @required
+     */
+    public String target;
+
     /**
      * @parameter default-value="${project.build.sourceEncoding}"
      * @required
@@ -130,8 +148,8 @@ public class GenerateEventStubsMojo extends AbstractMojo {
         config.setIncludes(includes);
         config.setOutputLocation(targetDir.getAbsolutePath());
         config.setSourceEncoding(encoding);
-        config.setSourceVersion("1.6"); // TODO: use the current project's setting
-        config.setTargetVersion("1.6"); // TODO: use the current project's setting
+        config.setSourceVersion(source);
+        config.setTargetVersion(target);
         config.setClasspathEntries(Arrays.asList(projectClasspath));
 
         try {
