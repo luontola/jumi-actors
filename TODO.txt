@@ -16,6 +16,7 @@
 	- find "finally", migrate to try-with-resources
 	- extract actors to their own project; IDEA can't handle well mixing language levels in the same project
 	- BuildTest: make the class version checks stricter (don't use Java 7 for actors)
+	- IDEA should warn about use of wrong APIs
 	- we have many ASM versions we have on classpath (caliper depends on ASM 3), block "asm:*" artifacts with maven-enforcer-plugin?
 
 - end-to-end tests: reporting test output
