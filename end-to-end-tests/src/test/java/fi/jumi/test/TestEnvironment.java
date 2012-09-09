@@ -4,16 +4,18 @@
 
 package fi.jumi.test;
 
+import com.google.common.collect.Iterables;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
-import java.util.Properties;
+import java.nio.file.*;
+import java.util.*;
 
 public class TestEnvironment {
 
-    private static final File PROJECT_ARTIFACTS_DIR;
-    private static final File SANDBOX_DIR;
-    private static final File SAMPLE_CLASSES;
+    private static final Path PROJECT_ARTIFACTS_DIR;
+    private static final Path SANDBOX_DIR;
+    private static final Path SAMPLE_CLASSES;
 
     static {
         Properties testing = new Properties();
@@ -25,35 +27,34 @@ public class TestEnvironment {
         } finally {
             IOUtils.closeQuietly(in);
         }
-        PROJECT_ARTIFACTS_DIR = new File(testing.getProperty("test.projectArtifactsDir")).getAbsoluteFile();
-        SANDBOX_DIR = new File(testing.getProperty("test.sandbox")).getAbsoluteFile();
-        SAMPLE_CLASSES = new File(testing.getProperty("test.sampleClasses")).getAbsoluteFile();
+        PROJECT_ARTIFACTS_DIR = Paths.get(testing.getProperty("test.projectArtifactsDir")).toAbsolutePath();
+        SANDBOX_DIR = Paths.get(testing.getProperty("test.sandbox")).toAbsolutePath();
+        SAMPLE_CLASSES = Paths.get(testing.getProperty("test.sampleClasses")).toAbsolutePath();
     }
 
-    public static File getProjectJar(String artifactId) {
-        return getProjectArtifact(artifactId, ".jar");
+    public static Path getProjectJar(String artifactId) throws IOException {
+        return getProjectArtifact(artifactId + "-*.jar");
     }
 
-    public static File getProjectPom(String artifactId) {
-        return getProjectArtifact(artifactId, ".pom");
+    public static Path getProjectPom(String artifactId) throws IOException {
+        return getProjectArtifact(artifactId + "-*.pom");
     }
 
-    private static File getProjectArtifact(final String prefix, final String suffix) {
-        File[] files = PROJECT_ARTIFACTS_DIR.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.startsWith(prefix) && name.endsWith(suffix);
+    private static Path getProjectArtifact(String glob) throws IOException {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(PROJECT_ARTIFACTS_DIR, glob)) {
+            try {
+                return Iterables.getOnlyElement(stream);
+            } catch (NoSuchElementException | IllegalArgumentException e) {
+                throw new IllegalArgumentException("could not find the artifact " + glob, e);
             }
-        });
-        assert files.length == 1 : "expected one " + prefix + "*" + suffix + " artifact but got " + files.length;
-        return files[0];
+        }
     }
 
-    public static File getSandboxDir() {
+    public static Path getSandboxDir() {
         return SANDBOX_DIR;
     }
 
-    public static File getSampleClasses() {
+    public static Path getSampleClasses() {
         return SAMPLE_CLASSES;
     }
 }

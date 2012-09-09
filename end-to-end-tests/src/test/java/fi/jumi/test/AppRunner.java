@@ -27,7 +27,7 @@ import static org.hamcrest.Matchers.*;
 public class AppRunner implements TestRule {
 
     // TODO: use a proper sandbox utility
-    private final Path sandboxDir = TestEnvironment.getSandboxDir().toPath().resolve(UUID.randomUUID().toString());
+    private final Path sandboxDir = TestEnvironment.getSandboxDir().resolve(UUID.randomUUID().toString());
 
     private final SpyProcessStarter processStarter = new SpyProcessStarter(new SystemProcessStarter());
     private final CloseAwaitableStringWriter daemonOutput = new CloseAwaitableStringWriter();
@@ -110,14 +110,14 @@ public class AppRunner implements TestRule {
         this.ui = new TextUIParser(output);
     }
 
-    public void startTests(String testsToInclude) {
+    public void startTests(String testsToInclude) throws IOException {
         // XXX: needs to be done here instead of the constructor, because of how JUnit runs timeouting tests in a separate thread, and this builder is not thread-safe, which will be caught by the thread-safety-checker
         if (TestSystemProperties.useThreadSafetyAgent()) {
-            String threadSafetyAgent = TestEnvironment.getProjectJar("thread-safety-agent").getAbsolutePath();
+            Path threadSafetyAgent = TestEnvironment.getProjectJar("thread-safety-agent");
             suiteBuilder.addJvmOptions("-javaagent:" + threadSafetyAgent);
         }
         daemonBuilder.logActorMessages(true);
-        suiteBuilder.addToClassPath(TestEnvironment.getSampleClasses().toPath());
+        suiteBuilder.addToClassPath(TestEnvironment.getSampleClasses());
         suiteBuilder.includedTestsPattern(testsToInclude);
 
         getLauncher().start(suiteBuilder.freeze(), daemonBuilder.freeze());

@@ -19,6 +19,7 @@ import javax.annotation.concurrent.*;
 import javax.xml.xpath.*;
 import java.io.*;
 import java.net.*;
+import java.nio.file.*;
 import java.util.*;
 import java.util.jar.*;
 
@@ -122,7 +123,7 @@ public class BuildTest {
 
     @Test
     public void pom_contains_only_allowed_dependencies() throws Exception {
-        File pomFile = TestEnvironment.getProjectPom(artifactId);
+        Path pomFile = TestEnvironment.getProjectPom(artifactId);
         Document pom = XmlUtils.parseXml(pomFile);
         List<String> dependencies = getRuntimeDependencies(pom);
         assertThat("dependencies of " + artifactId, dependencies, is(expectedDependencies));
@@ -130,7 +131,7 @@ public class BuildTest {
 
     @Test
     public void jar_contains_only_allowed_files() throws Exception {
-        File jarFile = TestEnvironment.getProjectJar(artifactId);
+        Path jarFile = TestEnvironment.getProjectJar(artifactId);
         assertJarContainsOnly(jarFile, expectedContents);
     }
 
@@ -222,12 +223,12 @@ public class BuildTest {
     }
 
     private Properties getMavenArtifactProperties(String filename) throws IOException {
-        File jarFile = TestEnvironment.getProjectJar(artifactId);
+        Path jarFile = TestEnvironment.getProjectJar(artifactId);
         return readPropertiesFromJar(jarFile, POM_FILES + artifactId + "/" + filename);
     }
 
-    private static Properties readPropertiesFromJar(File jarFile, String resource) throws IOException {
-        URLClassLoader cl = new URLClassLoader(new URL[]{jarFile.toURI().toURL()});
+    private static Properties readPropertiesFromJar(Path jarFile, String resource) throws IOException {
+        URLClassLoader cl = new URLClassLoader(new URL[]{jarFile.toUri().toURL()});
         InputStream in = cl.getResourceAsStream(resource);
         assertNotNull("resource not found: " + resource, in);
         try {
@@ -239,7 +240,7 @@ public class BuildTest {
         }
     }
 
-    private static void checkAllClasses(CompositeMatcher<ClassNode> matcher, File jarFile) {
+    private static void checkAllClasses(CompositeMatcher<ClassNode> matcher, Path jarFile) {
         for (ClassNode classNode : JarFileUtils.classesIn(jarFile)) {
             matcher.check(classNode);
         }
@@ -252,9 +253,11 @@ public class BuildTest {
         }
     }
 
-    private static void assertJarContainsOnly(File jar, List<String> whitelist) throws IOException {
+    private static void assertJarContainsOnly(Path jar, List<String> whitelist) throws IOException {
         try {
-            assertJarContainsOnly(new FileInputStream(jar), whitelist);
+            try (InputStream in = Files.newInputStream(jar)) {
+                assertJarContainsOnly(in, whitelist);
+            }
         } catch (AssertionError e) {
             throw (AssertionError) new AssertionError(jar + " " + e.getMessage()).initCause(e);
         }

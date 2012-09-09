@@ -7,13 +7,14 @@ package fi.jumi.test.util;
 import com.google.common.collect.AbstractIterator;
 import org.objectweb.asm.tree.ClassNode;
 
-import java.io.*;
+import java.io.IOException;
+import java.nio.file.*;
 import java.util.Iterator;
 import java.util.jar.*;
 
 public class JarFileUtils {
 
-    public static Iterable<ClassNode> classesIn(final File jarFile) {
+    public static Iterable<ClassNode> classesIn(final Path jarFile) {
         return new Iterable<ClassNode>() {
             @Override
             public Iterator<ClassNode> iterator() {
@@ -30,8 +31,8 @@ public class JarFileUtils {
 
         private final JarInputStream in;
 
-        public ClassNodeIterator(File jarFile) throws IOException {
-            in = new JarInputStream(new FileInputStream(jarFile));
+        public ClassNodeIterator(Path jarFile) throws IOException {
+            in = new JarInputStream(Files.newInputStream(jarFile));
         }
 
         @Override

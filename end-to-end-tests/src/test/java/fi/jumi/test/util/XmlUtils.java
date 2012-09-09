@@ -1,4 +1,4 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -10,14 +10,14 @@ import org.w3c.dom.*;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.*;
-import java.io.File;
+import java.nio.file.Path;
 
 public class XmlUtils {
 
-    public static Document parseXml(File file) throws Exception {
+    public static Document parseXml(Path file) throws Exception {
         DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
         domFactory.setNamespaceAware(false);
-        return domFactory.newDocumentBuilder().parse(file);
+        return domFactory.newDocumentBuilder().parse(file.toFile());
     }
 
     public static String xpath(@Language("XPath") String expression, Node node) throws XPathExpressionException {
