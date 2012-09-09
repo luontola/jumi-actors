@@ -18,16 +18,16 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import java.io.*;
+import java.nio.file.*;
 import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertTrue;
 
 public class AppRunner implements TestRule {
 
     // TODO: use a proper sandbox utility
-    private final File sandboxDir = new File(TestEnvironment.getSandboxDir(), UUID.randomUUID().toString());
+    private final Path sandboxDir = TestEnvironment.getSandboxDir().toPath().resolve(UUID.randomUUID().toString());
 
     private final SpyProcessStarter processStarter = new SpyProcessStarter(new SystemProcessStarter());
     private final CloseAwaitableStringWriter daemonOutput = new CloseAwaitableStringWriter();
@@ -54,8 +54,8 @@ public class AppRunner implements TestRule {
         class CustomJumiLauncherBuilder extends JumiLauncherBuilder {
 
             @Override
-            protected File getSettingsDirectory() {
-                return new File(sandboxDir, "jumi-home");
+            protected Path getSettingsDirectory() {
+                return sandboxDir.resolve("jumi-home");
             }
 
             @Override
@@ -117,7 +117,7 @@ public class AppRunner implements TestRule {
             suiteBuilder.addJvmOptions("-javaagent:" + threadSafetyAgent);
         }
         daemonBuilder.logActorMessages(true);
-        suiteBuilder.addToClassPath(TestEnvironment.getSampleClasses());
+        suiteBuilder.addToClassPath(TestEnvironment.getSampleClasses().toPath());
         suiteBuilder.includedTestsPattern(testsToInclude);
 
         getLauncher().start(suiteBuilder.freeze(), daemonBuilder.freeze());
@@ -179,8 +179,8 @@ public class AppRunner implements TestRule {
         };
     }
 
-    private void setup() {
-        assertTrue("Unable to create " + sandboxDir, sandboxDir.mkdirs());
+    private void setup() throws IOException {
+        Files.createDirectories(sandboxDir);
     }
 
     private void tearDown() {
@@ -200,7 +200,7 @@ public class AppRunner implements TestRule {
             }
         }
         try {
-            FileUtils.forceDelete(sandboxDir);
+            FileUtils.forceDelete(sandboxDir.toFile());
         } catch (IOException e) {
             System.err.println("WARNING: " + e.getMessage());
         }

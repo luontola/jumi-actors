@@ -5,13 +5,14 @@
 package fi.jumi.core.config;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import java.io.File;
+import java.net.URI;
+import java.nio.file.Path;
 import java.util.*;
 
 @NotThreadSafe
 public class SuiteConfigurationBuilder {
 
-    private final List<File> classPath;
+    private final List<URI> classPath;
     private final List<String> jvmOptions;
     private String includedTestsPattern;
 
@@ -20,7 +21,7 @@ public class SuiteConfigurationBuilder {
     }
 
     SuiteConfigurationBuilder(SuiteConfiguration src) {
-        classPath = new ArrayList<File>(src.classPath());
+        classPath = new ArrayList<URI>(src.classPath());
         jvmOptions = new ArrayList<String>(src.jvmOptions());
         includedTestsPattern = src.includedTestsPattern();
     }
@@ -32,11 +33,15 @@ public class SuiteConfigurationBuilder {
 
     // getters and setters
 
-    public List<File> classPath() {
+    public List<URI> classPath() {
         return classPath;
     }
 
-    public SuiteConfigurationBuilder addToClassPath(File file) {
+    public SuiteConfigurationBuilder addToClassPath(Path file) {
+        return addToClassPath(file.toUri());
+    }
+
+    public SuiteConfigurationBuilder addToClassPath(URI file) {
         classPath.add(file);
         return this;
     }

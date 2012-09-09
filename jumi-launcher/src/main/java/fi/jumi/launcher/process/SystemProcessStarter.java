@@ -13,7 +13,7 @@ public class SystemProcessStarter implements ProcessStarter {
     @Override
     public Process startJavaProcess(JvmArgs jvmArgs) throws IOException {
         ProcessBuilder builder = new ProcessBuilder();
-        builder.directory(jvmArgs.getWorkingDir());
+        builder.directory(jvmArgs.getWorkingDir().toFile());
         builder.redirectErrorStream(true);
         builder.command(jvmArgs.toCommand());
         return builder.start();

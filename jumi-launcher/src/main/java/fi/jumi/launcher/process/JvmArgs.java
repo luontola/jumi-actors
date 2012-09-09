@@ -7,7 +7,7 @@ package fi.jumi.launcher.process;
 import fi.jumi.core.util.Immutables;
 
 import javax.annotation.concurrent.Immutable;
-import java.io.File;
+import java.nio.file.Path;
 import java.util.*;
 
 @Immutable
@@ -15,20 +15,20 @@ public class JvmArgs {
 
     // TODO: make private, or keep public to ease testing?
 
-    public final File workingDir;
-    public final File javaHome;
+    public final Path workingDir;
+    public final Path javaHome;
     public final List<String> jvmOptions;
     public final Map<String, String> systemProperties;
-    public final File executableJar;
+    public final Path executableJar;
     public final List<String> programArgs;
 
     // TODO: pass builder to constructor? would reduce the number of these parameters
 
-    public JvmArgs(File workingDir,
-                   File javaHome,
+    public JvmArgs(Path workingDir,
+                   Path javaHome,
                    List<String> jvmOptions,
                    Properties systemProperties,
-                   File executableJar,
+                   Path executableJar,
                    String[] programArgs) {
         this.workingDir = workingDir;
         this.javaHome = javaHome;
@@ -38,17 +38,17 @@ public class JvmArgs {
         this.programArgs = Immutables.list(programArgs);
     }
 
-    public File getWorkingDir() {
+    public Path getWorkingDir() {
         return workingDir;
     }
 
     public List<String> toCommand() {
         List<String> command = new ArrayList<String>();
-        command.add(new File(javaHome, "bin/java").getAbsolutePath());
+        command.add(javaHome.resolve("bin/java").toAbsolutePath().toString());
         command.addAll(jvmOptions);
         command.addAll(asJvmOptions(systemProperties));
         command.add("-jar");
-        command.add(executableJar.getAbsolutePath());
+        command.add(executableJar.toAbsolutePath().toString());
         command.addAll(programArgs);
         return command;
     }

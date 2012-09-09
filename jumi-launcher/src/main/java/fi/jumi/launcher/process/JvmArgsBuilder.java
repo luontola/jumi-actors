@@ -5,25 +5,25 @@
 package fi.jumi.launcher.process;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import java.io.File;
+import java.nio.file.*;
 import java.util.*;
 
 @NotThreadSafe
 public class JvmArgsBuilder {
 
-    private File workingDir;
-    private File javaHome = new File(System.getProperty("java.home"));
+    private Path workingDir;
+    private Path javaHome = Paths.get(System.getProperty("java.home"));
     private List<String> jvmOptions = new ArrayList<String>();
     private Properties systemProperties = new Properties();
-    private File executableJar;
+    private Path executableJar;
     private String[] programArgs = new String[0];
 
-    public JvmArgsBuilder workingDir(File workingDir) {
+    public JvmArgsBuilder workingDir(Path workingDir) {
         this.workingDir = workingDir;
         return this;
     }
 
-    public JvmArgsBuilder javaHome(File javaHome) {
+    public JvmArgsBuilder javaHome(Path javaHome) {
         this.javaHome = javaHome;
         return this;
     }
@@ -38,7 +38,7 @@ public class JvmArgsBuilder {
         return this;
     }
 
-    public JvmArgsBuilder executableJar(File executableJar) {
+    public JvmArgsBuilder executableJar(Path executableJar) {
         this.executableJar = executableJar;
         return this;
     }

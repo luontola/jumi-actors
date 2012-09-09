@@ -14,7 +14,7 @@ import fi.jumi.launcher.FakeActorThread;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 
-import java.io.File;
+import java.nio.file.Paths;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -39,7 +39,7 @@ public class RemoteSuiteLauncherTest {
     @Test
     public void sends_RunTests_command_to_the_daemon_when_it_connects() {
         SuiteConfiguration config = new SuiteConfigurationBuilder()
-                .addToClassPath(new File("dependency.jar"))
+                .addToClassPath(Paths.get("dependency.jar"))
                 .includedTestsPattern("*Test")
                 .freeze();
 

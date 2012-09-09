@@ -16,6 +16,7 @@ import org.apache.commons.io.output.NullWriter;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.io.*;
+import java.nio.file.*;
 import java.util.concurrent.*;
 
 @NotThreadSafe
@@ -69,8 +70,8 @@ public class JumiLauncherBuilder {
         return this;
     }
 
-    protected File getSettingsDirectory() {
-        return new File(".jumi"); // TODO: put into user home; also update fi.jumi.launcher.daemon.DirBasedSteward.settingsDir
+    protected Path getSettingsDirectory() {
+        return Paths.get(".jumi"); // TODO: put into user home; also update fi.jumi.launcher.daemon.DirBasedSteward.settingsDir
     }
 
 

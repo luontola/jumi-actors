@@ -8,28 +8,29 @@ import org.apache.commons.io.IOUtils;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.io.*;
+import java.nio.file.*;
 
 @NotThreadSafe
 public class DirBasedSteward implements Steward {
 
     private final DaemonJar daemonJar;
-    private final File settingsDir; // TODO: default to "~/.jumi" (create default constructor?)
+    private final Path settingsDir; // TODO: default to "~/.jumi" (create default constructor?)
 
-    public DirBasedSteward(DaemonJar daemonJar, File settingsDir) {
+    public DirBasedSteward(DaemonJar daemonJar, Path settingsDir) {
         this.daemonJar = daemonJar;
         this.settingsDir = settingsDir;
     }
 
     @Override
-    public File getSettingsDir() {
+    public Path getSettingsDir() {
         return settingsDir;
     }
 
     @Override
-    public File getDaemonJar() {
+    public Path getDaemonJar() {
         try {
-            File extractedJar = new File(settingsDir, "lib/" + daemonJar.getDaemonJarName());
-            if (!extractedJar.exists()) {
+            Path extractedJar = settingsDir.resolve("lib/" + daemonJar.getDaemonJarName());
+            if (!Files.exists(extractedJar)) {
                 InputStream embeddedJar = daemonJar.getDaemonJarAsStream();
                 copyToFile(embeddedJar, extractedJar);
             }
@@ -39,24 +40,15 @@ public class DirBasedSteward implements Steward {
         }
     }
 
-    private static void copyToFile(InputStream in, File destination) throws IOException {
-        ensureDirExists(destination.getParentFile());
+    private static void copyToFile(InputStream in, Path destination) throws IOException {
+        Files.createDirectories(destination.getParent());
         OutputStream out = null;
         try {
-            out = new FileOutputStream(destination);
+            out = Files.newOutputStream(destination);
             IOUtils.copy(in, out);
         } finally {
             IOUtils.closeQuietly(out);
             IOUtils.closeQuietly(in);
-        }
-    }
-
-    private static void ensureDirExists(File dir) throws IOException {
-        if (dir.isDirectory()) {
-            return;
-        }
-        if (!dir.mkdirs()) {
-            throw new IOException("Unable to create directory: " + dir);
         }
     }
 }

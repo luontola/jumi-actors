@@ -6,7 +6,7 @@ package fi.jumi.core.config;
 
 import org.junit.*;
 
-import java.io.File;
+import java.nio.file.Paths;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -26,9 +26,9 @@ public class SuiteConfigurationTest {
 
     @Test
     public void class_path_can_be_changed() {
-        builder.addToClassPath(new File("foo.jar"));
+        builder.addToClassPath(Paths.get("foo.jar"));
 
-        assertThat(configuration().classPath(), contains(new File("foo.jar")));
+        assertThat(configuration().classPath(), contains(Paths.get("foo.jar").toUri()));
     }
 
     @Test

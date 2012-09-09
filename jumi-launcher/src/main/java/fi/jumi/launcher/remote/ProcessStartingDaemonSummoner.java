@@ -15,6 +15,7 @@ import org.apache.commons.io.IOUtils;
 
 import javax.annotation.concurrent.*;
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.concurrent.*;
 
 @NotThreadSafe
@@ -49,7 +50,7 @@ public class ProcessStartingDaemonSummoner implements DaemonSummoner {
         try {
             JvmArgs jvmArgs = new JvmArgsBuilder()
                     .executableJar(steward.getDaemonJar())
-                    .workingDir(new File(".")) // TODO: get the working directory from suite options
+                    .workingDir(Paths.get(".")) // TODO: get the working directory from suite options
                     .jvmOptions(suiteConfiguration.jvmOptions())
                     .systemProperties(daemonConfiguration.toSystemProperties())
                     .programArgs(daemonConfiguration.toProgramArgs())

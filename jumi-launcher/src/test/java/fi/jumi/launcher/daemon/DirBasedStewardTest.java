@@ -25,9 +25,9 @@ public class DirBasedStewardTest {
 
     @Test
     public void copies_the_embedded_daemon_JAR_to_the_settings_dir() throws IOException {
-        DirBasedSteward steward = new DirBasedSteward(stubDaemonJar, tempDir.getRoot());
+        DirBasedSteward steward = new DirBasedSteward(stubDaemonJar, tempDir.getRoot().toPath());
 
-        File daemonJar = steward.getDaemonJar();
+        File daemonJar = steward.getDaemonJar().toFile();
 
         assertThat(daemonJar.getName(), is(expectedName));
         assertThat(FileUtils.readFileToByteArray(daemonJar), is(expectedContent));
@@ -36,7 +36,7 @@ public class DirBasedStewardTest {
     @Test
     public void does_not_copy_the_daemon_JAR_if_it_has_already_been_copied() {
         StubDaemonJar spyDaemonJar = spy(stubDaemonJar);
-        DirBasedSteward steward = new DirBasedSteward(spyDaemonJar, tempDir.getRoot());
+        DirBasedSteward steward = new DirBasedSteward(spyDaemonJar, tempDir.getRoot().toPath());
 
         steward.getDaemonJar();
         steward.getDaemonJar();

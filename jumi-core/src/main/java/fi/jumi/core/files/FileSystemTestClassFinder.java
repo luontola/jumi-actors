@@ -7,17 +7,16 @@ package fi.jumi.core.files;
 import fi.jumi.actors.ActorRef;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import java.io.File;
 import java.net.*;
 import java.util.List;
 
 @NotThreadSafe
 public class FileSystemTestClassFinder implements TestClassFinder {
 
-    private final List<File> classPath;
+    private final List<URI> classPath;
     private final String includedTestsPattern;
 
-    public FileSystemTestClassFinder(List<File> classPath, String includedTestsPattern) {
+    public FileSystemTestClassFinder(List<URI> classPath, String includedTestsPattern) {
         this.classPath = classPath;
         this.includedTestsPattern = includedTestsPattern;
     }
@@ -38,10 +37,10 @@ public class FileSystemTestClassFinder implements TestClassFinder {
         }
     }
 
-    private static URL[] asUrls(List<File> files) throws MalformedURLException {
-        URL[] urls = new URL[files.size()];
-        for (int i = 0, filesLength = files.size(); i < filesLength; i++) {
-            urls[i] = files.get(i).toURI().toURL();
+    private static URL[] asUrls(List<URI> uris) throws MalformedURLException {
+        URL[] urls = new URL[uris.size()];
+        for (int i = 0, filesLength = uris.size(); i < filesLength; i++) {
+            urls[i] = uris.get(i).toURL();
         }
         return urls;
     }

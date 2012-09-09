@@ -37,7 +37,7 @@ public class FileSystemTestClassFinderTest {
 
     private void findTestsMatchingPattern(String pattern) {
         File classesDir = getClassesDirectory(getClass());
-        FileSystemTestClassFinder finder = new FileSystemTestClassFinder(Arrays.asList(classesDir), pattern);
+        FileSystemTestClassFinder finder = new FileSystemTestClassFinder(Arrays.asList(classesDir.toPath().toUri()), pattern);
         finder.findTestClasses(ActorRef.wrap(listener));
     }
 

@@ -8,6 +8,7 @@ import org.hamcrest.*;
 import org.junit.Test;
 
 import java.io.File;
+import java.nio.file.*;
 import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -17,14 +18,14 @@ public class JvmArgsTest {
 
     @Test
     public void starts_an_executable_JAR() {
-        File executableJar = new File("executable.jar");
+        Path executableJar = Paths.get("executable.jar");
 
         List<String> command = newBuilder()
                 .executableJar(executableJar)
                 .toJvmArgs()
                 .toCommand();
 
-        assertThat(command, containsSubSequence("-jar", executableJar.getAbsolutePath()));
+        assertThat(command, containsSubSequence("-jar", executableJar.toAbsolutePath().toString()));
     }
 
     @Test
@@ -62,7 +63,7 @@ public class JvmArgsTest {
 
     @Test
     public void uses_specified_working_directory() {
-        File workingDir = new File("working-dir");
+        Path workingDir = Paths.get("working-dir");
 
         JvmArgs jvmArgs = newBuilder()
                 .workingDir(workingDir)
@@ -73,7 +74,7 @@ public class JvmArgsTest {
 
     @Test
     public void uses_specified_java_home() {
-        File javaHome = new File("custom-jre");
+        Path javaHome = Paths.get("custom-jre");
 
         List<String> command = newBuilder()
                 .javaHome(javaHome)
@@ -98,7 +99,7 @@ public class JvmArgsTest {
     private JvmArgsBuilder newBuilder() {
         // dummy values for required parameters
         return new JvmArgsBuilder()
-                .executableJar(new File("dummy.jar"));
+                .executableJar(new File("dummy.jar").toPath());
     }
 
     private static Matcher<List<String>> containsSubSequence(String... expectedSubSequence) {

@@ -7,7 +7,8 @@ package fi.jumi.core.config;
 import fi.jumi.core.util.Immutables;
 
 import javax.annotation.concurrent.Immutable;
-import java.io.*;
+import java.io.Serializable;
+import java.net.URI;
 import java.util.*;
 
 @Immutable
@@ -16,7 +17,7 @@ public class SuiteConfiguration implements Serializable {
     public static final SuiteConfiguration DEFAULTS = new SuiteConfiguration();
 
     // TODO: support for main and test class paths
-    private final List<File> classPath;
+    private final List<URI> classPath;
     private final List<String> jvmOptions;
     private final String includedTestsPattern;
 
@@ -39,7 +40,7 @@ public class SuiteConfiguration implements Serializable {
 
     // getters
 
-    public List<File> classPath() {
+    public List<URI> classPath() {
         return classPath;
     }
 

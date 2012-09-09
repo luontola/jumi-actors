@@ -4,11 +4,11 @@
 
 package fi.jumi.launcher.daemon;
 
-import java.io.File;
+import java.nio.file.Path;
 
 public interface Steward {
 
-    File getSettingsDir();
+    Path getSettingsDir();
 
-    File getDaemonJar();
+    Path getDaemonJar();
 }
