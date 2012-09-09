@@ -469,6 +469,8 @@
                             <threads>4</threads>
                             <jvmArgs>
                                 <arg>-ea</arg>
+                                <!-- XXX: PIT doesn't generate correct stack map frames for Java 7 -->
+                                <arg>-XX:-UseSplitVerifier</arg>
                             </jvmArgs>
                             <targetClasses>
                                 <pattern>fi.jumi.*</pattern>
