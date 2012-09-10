@@ -12,6 +12,7 @@ import java.util.regex.*;
 public class TextUIParser {
 
     private static final String RUN_HEADER = "(^ > Run #(\\d+) in (\\S+)$)";
+    private static final String UNTIL_NEXT_HEADER_OR_END = "(?=" + RUN_HEADER + "|\\z)";
     private static final int RUN_ID = 2;
     private static final int CLASS_NAME = 3;
 
@@ -43,7 +44,7 @@ public class TextUIParser {
     }
 
     private void parseRuns(String allRunsOutput) {
-        Matcher m = Pattern.compile(RUN_HEADER + ANY_LINES + "(?=" + RUN_HEADER + "|\\z)", Pattern.MULTILINE).matcher(allRunsOutput);
+        Matcher m = Pattern.compile(RUN_HEADER + ANY_LINES + UNTIL_NEXT_HEADER_OR_END, Pattern.MULTILINE).matcher(allRunsOutput);
         while (m.find()) {
             String runOutput = m.group();
             RunId runId = new RunId(Integer.parseInt(m.group(RUN_ID)));
