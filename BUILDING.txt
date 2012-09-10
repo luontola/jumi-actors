@@ -3,7 +3,7 @@
 
 Requirements
 
-    Java 1.6
+    JDK 7
     Maven 3
 
 Regular build, execute all end-to-end tests
