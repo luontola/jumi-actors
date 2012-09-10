@@ -83,9 +83,11 @@
 		https://github.com/KentBeck/junit/pull/145
 		https://github.com/KentBeck/junit/pull/393
 	- aftermath of upgrading to Java 7
-		- extract actors to their own project; IDEA can't handle well mixing language levels in the same project
-		- BuildTest: enable all_classes_must_use_the_specified_bytecode_version also when building in IDEA
-		- IDEA should warn about the use of APIs newer than the module language level
+		SKIP - extract actors to their own project; IDEA can't handle well mixing language levels in the same project
+			-> works in IDEA 12
+		OK - BuildTest: enable all_classes_must_use_the_specified_bytecode_version also when building in IDEA
+		OK - IDEA should warn about the use of APIs newer than the module language level
+			-> works when changed the module to use JDK 6
 		- we have many ASM versions we have on classpath (caliper depends on ASM 3), block "asm:*" artifacts with maven-enforcer-plugin?
 	- use ~/.jumi directory for the daemon jar
 	- make the number of test threads by default the number of CPUs + 1 or similar

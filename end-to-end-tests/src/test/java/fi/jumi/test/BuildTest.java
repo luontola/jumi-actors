@@ -200,8 +200,6 @@ public class BuildTest {
 
     @Test
     public void all_classes_must_use_the_specified_bytecode_version() throws IOException {
-        assumeReleaseBuild(); // XXX: compiling with IDEA compiles all modules with the same language level, so let's ignore this test when building in the IDE
-
         CompositeMatcher<ClassNode> matcher = newClassNodeCompositeMatcher()
                 .assertThatIt(hasClassVersion(isOneOf(expectedClassVersion)));
 
