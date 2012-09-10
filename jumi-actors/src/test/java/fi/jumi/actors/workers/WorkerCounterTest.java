@@ -161,15 +161,14 @@ public class WorkerCounterTest {
         final StringBuilder loggerOutput = new StringBuilder();
         Executor loggingExecutor = new Executor() {
             @Override
-            public void execute(Runnable command) {
-                loggerOutput.append(command.toString());
+            public void execute(Runnable wrappedCommand) {
+                loggerOutput.append(wrappedCommand.toString());
             }
         };
         WorkerCounter counter = new WorkerCounter(loggingExecutor);
         Runnable originalCommand = mock(Runnable.class, "<the command's original toString>");
 
         counter.execute(originalCommand);
-        counter.afterPreviousWorkersFinished(log("callback"));
 
         assertThat(loggerOutput.toString(), containsString(originalCommand.toString()));
     }
