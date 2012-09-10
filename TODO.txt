@@ -98,6 +98,9 @@
 	- add the benchmark results to the web site
 
 - misc refactoring
+	- after upgrading to (presumably) JUnit 4.11, refactor BuildTest's parameterized descriptions
+		https://github.com/KentBeck/junit/pull/145
+		https://github.com/KentBeck/junit/pull/393
 	- aftermath of upgrading to Java 7
 		- extract actors to their own project; IDEA can't handle well mixing language levels in the same project
 		- BuildTest: enable all_classes_must_use_the_specified_bytecode_version also when building in IDEA
