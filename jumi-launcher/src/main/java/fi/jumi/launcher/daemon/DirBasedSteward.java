@@ -28,27 +28,26 @@ public class DirBasedSteward implements Steward {
 
     @Override
     public Path getDaemonJar() {
-        try {
-            Path extractedJar = settingsDir.resolve("lib/" + daemonJar.getDaemonJarName());
-            if (!Files.exists(extractedJar)) {
-                InputStream embeddedJar = daemonJar.getDaemonJarAsStream();
-                copyToFile(embeddedJar, extractedJar);
-            }
-            return extractedJar;
+        Path extractedJar = settingsDir.resolve("lib/" + daemonJar.getDaemonJarName());
+        createIfDoesNotExist(extractedJar);
+        return extractedJar;
+    }
+
+    private void createIfDoesNotExist(Path extractedJar) {
+        if (Files.exists(extractedJar)) {
+            return;
+        }
+        try (InputStream embeddedJar = daemonJar.getDaemonJarAsStream()) {
+            copyToFile(embeddedJar, extractedJar);
         } catch (IOException e) {
-            throw new RuntimeException("failed to copy daemon JAR to " + settingsDir, e);
+            throw new RuntimeException("failed to copy the embedded daemon JAR to " + extractedJar, e);
         }
     }
 
-    private static void copyToFile(InputStream in, Path destination) throws IOException {
+    private static void copyToFile(InputStream source, Path destination) throws IOException {
         Files.createDirectories(destination.getParent());
-        OutputStream out = null;
-        try {
-            out = Files.newOutputStream(destination);
-            IOUtils.copy(in, out);
-        } finally {
-            IOUtils.closeQuietly(out);
-            IOUtils.closeQuietly(in);
+        try (OutputStream out = Files.newOutputStream(destination)) {
+            IOUtils.copy(source, out);
         }
     }
 }

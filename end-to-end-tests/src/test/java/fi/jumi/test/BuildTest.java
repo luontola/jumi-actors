@@ -250,14 +250,12 @@ public class BuildTest {
 
     private static Properties readPropertiesFromJar(Path jarFile, String resource) throws IOException {
         URLClassLoader cl = new URLClassLoader(new URL[]{jarFile.toUri().toURL()});
-        InputStream in = cl.getResourceAsStream(resource);
-        assertNotNull("resource not found: " + resource, in);
-        try {
+        try (InputStream in = cl.getResourceAsStream(resource)) {
+            assertNotNull("resource not found: " + resource, in);
+
             Properties p = new Properties();
             p.load(in);
             return p;
-        } finally {
-            in.close();
         }
     }
 

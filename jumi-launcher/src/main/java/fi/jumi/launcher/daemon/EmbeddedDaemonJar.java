@@ -4,8 +4,6 @@
 
 package fi.jumi.launcher.daemon;
 
-import org.apache.commons.io.IOUtils;
-
 import javax.annotation.concurrent.Immutable;
 import java.io.*;
 import java.util.Properties;
@@ -16,15 +14,12 @@ public class EmbeddedDaemonJar implements DaemonJar {
     private static final String daemonJarName;
 
     static {
-        InputStream in = getResourceAsStream("EmbeddedDaemonJar.properties");
-        try {
+        try (InputStream in = getResourceAsStream("EmbeddedDaemonJar.properties")) {
             Properties p = new Properties();
             p.load(in);
             daemonJarName = p.getProperty("daemonJarName");
         } catch (IOException e) {
             throw new RuntimeException(e);
-        } finally {
-            IOUtils.closeQuietly(in);
         }
     }
 

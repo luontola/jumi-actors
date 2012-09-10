@@ -5,7 +5,6 @@
 package fi.jumi.test;
 
 import com.google.common.collect.Iterables;
-import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.nio.file.*;
@@ -19,13 +18,10 @@ public class TestEnvironment {
 
     static {
         Properties testing = new Properties();
-        InputStream in = BuildTest.class.getResourceAsStream("/testing.properties");
-        try {
+        try (InputStream in = BuildTest.class.getResourceAsStream("/testing.properties")) {
             testing.load(in);
         } catch (IOException e) {
             throw new RuntimeException(e);
-        } finally {
-            IOUtils.closeQuietly(in);
         }
         PROJECT_ARTIFACTS_DIR = Paths.get(testing.getProperty("test.projectArtifactsDir")).toAbsolutePath();
         SANDBOX_DIR = Paths.get(testing.getProperty("test.sandbox")).toAbsolutePath();

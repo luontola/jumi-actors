@@ -1,5 +1,5 @@
 
-!! - migrate to Java 7
+OK - migrate to Java 7
 	OK - refactor the long tests in BuildTest
 	OK - change language level in all modules (except jumi-actors et al)
 		OK - check bytecode level in BuildTest
@@ -22,7 +22,7 @@
 	OK - use the diamond operator
 		OK - find "new .*<", migrate to diamond operator
 		OK - make jumi-actors-maven-plugin compile using the project language level
-	!! - find "finally", migrate to try-with-resources
+	OK - find "finally", migrate to try-with-resources
 
 - end-to-end tests: reporting test output
 	- capture System.out/err
