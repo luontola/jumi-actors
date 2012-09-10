@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Generate sources" type="MavenRunConfiguration" factoryName="Maven">
+  <configuration default="false" name="Generate sources" type="MavenRunConfiguration" factoryName="Maven" singleton="true">
     <MavenSettings>
       <option name="myGeneralSettings">
         <MavenGeneralSettings>
