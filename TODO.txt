@@ -2,16 +2,16 @@
 !! - end-to-end tests: reporting test output
 	!! - capture and show System.out
 		OK - end-to-end test
-		!! - TextUI
+		OK - TextUI
 			OK - print stdout
 			OK - handle missing newlines before test name
 			OK - extract NullRunVisitor from SuiteResultsSummary
-			!! - print stderr
-		- TextUIParser
-		- implement the capturer
+		SKIP - TextUIParser
+		!! - implement the capturer
 		- plug in the capturer in Main
 		- add the plumming for forwarding the events
 	- capture and show System.err
+		- TextUI: print stderr
 	- test: printing from the same thread to out & err should be synchronous, unlike in probably every IDE
 	- hacking System.out/err
 		- tests should restore the original out/err defensively in @After
