@@ -5,8 +5,8 @@
 		!! - TextUI
 			OK - print stdout
 			OK - handle missing newlines before test name
-			!! - extract NullRunVisitor from SuiteResultsSummary
-			- print stderr
+			OK - extract NullRunVisitor from SuiteResultsSummary
+			!! - print stderr
 		- TextUIParser
 		- implement the capturer
 		- plug in the capturer in Main

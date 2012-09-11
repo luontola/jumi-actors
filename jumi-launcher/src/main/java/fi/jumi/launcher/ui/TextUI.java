@@ -7,7 +7,7 @@ package fi.jumi.launcher.ui;
 import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.MessageReceiver;
 import fi.jumi.api.drivers.TestId;
-import fi.jumi.core.SuiteListener;
+import fi.jumi.core.*;
 import fi.jumi.core.results.*;
 import fi.jumi.core.runs.RunId;
 
@@ -84,36 +84,7 @@ public class TextUI {
     // printing visitors
 
     @NotThreadSafe
-    private class SuitePrinter implements SuiteListener {
-
-        @Override
-        public void onSuiteStarted() {
-        }
-
-        @Override
-        public void onTestFound(String testClass, TestId testId, String name) {
-        }
-
-        @Override
-        public void onRunStarted(RunId runId, String testClass) {
-        }
-
-        @Override
-        public void onTestStarted(RunId runId, TestId testId) {
-        }
-
-        @Override
-        public void onPrintedOut(RunId runId, String text) {
-            // TODO
-        }
-
-        @Override
-        public void onFailure(RunId runId, Throwable cause) {
-        }
-
-        @Override
-        public void onTestFinished(RunId runId) {
-        }
+    private class SuitePrinter extends NullSuiteListener {
 
         @Override
         public void onRunFinished(RunId runId) {

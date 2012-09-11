@@ -11,7 +11,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import java.util.*;
 
 @NotThreadSafe
-public class SuiteResultsSummary implements RunVisitor {
+public class SuiteResultsSummary extends NullRunVisitor {
 
     private final Set<GlobalTestId> failedTests = new HashSet<>();
     private final Set<GlobalTestId> allTests = new HashSet<>();
@@ -29,28 +29,12 @@ public class SuiteResultsSummary implements RunVisitor {
     }
 
     @Override
-    public void onRunStarted(RunId runId, String testClass) {
-    }
-
-    @Override
     public void onTestStarted(RunId runId, String testClass, TestId testId) {
         allTests.add(new GlobalTestId(testClass, testId));
     }
 
     @Override
-    public void onPrintedOut(RunId runId, String testClass, TestId testId, String text) {
-    }
-
-    @Override
     public void onFailure(RunId runId, String testClass, TestId testId, Throwable cause) {
         failedTests.add(new GlobalTestId(testClass, testId));
-    }
-
-    @Override
-    public void onTestFinished(RunId runId, String testClass, TestId testId) {
-    }
-
-    @Override
-    public void onRunFinished(RunId runId, String testClass) {
     }
 }
