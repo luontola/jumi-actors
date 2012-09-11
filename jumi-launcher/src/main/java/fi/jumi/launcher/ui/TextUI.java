@@ -58,7 +58,7 @@ public class TextUI {
     // low-level printing operations
     // TODO: extract to a new class?
 
-    private boolean beginningOfLine = true;
+    private boolean beginningOfLine = true; // XXX: line not tested
 
     private void printOut(String text) {
         printTo(out, text);
@@ -73,7 +73,7 @@ public class TextUI {
             printTo(out, "\n");
         }
         printTo(out, line);
-        printTo(out, "\n");
+        printTo(out, "\n"); // XXX: line not tested
     }
 
     private void printTo(PrintStream target, String text) {
@@ -174,7 +174,7 @@ public class TextUI {
         StringWriter buffer = new StringWriter();
         PrintWriter writer = new PrintWriter(buffer);
         cause.printStackTrace(writer);
-        writer.close();
+        writer.close(); // XXX: line not tested
         return buffer.toString();
     }
 }
