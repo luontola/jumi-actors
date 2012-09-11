@@ -22,7 +22,8 @@ import java.nio.file.*;
 import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNotNull;
 
 public class AppRunner implements TestRule {
 
@@ -144,12 +145,22 @@ public class AppRunner implements TestRule {
     }
 
     public void checkContainsRun(String... startAndEndEvents) {
-        List<String> expected = Arrays.asList(startAndEndEvents);
-        List<List<String>> actuals = new ArrayList<>();
+        assertNotNull("did not contain a run with the expected events", findRun(startAndEndEvents));
+    }
+
+    public RunId findRun(String... startAndEndEvents) {
+        List<String> expectedEvents = Arrays.asList(startAndEndEvents);
         for (RunId runId : ui.getRunIds()) {
-            actuals.add(ui.getTestStartAndEndEvents(runId));
+            List<String> actualEvents = ui.getTestStartAndEndEvents(runId);
+            if (actualEvents.equals(expectedEvents)) {
+                return runId;
+            }
         }
-        assertThat("did not contain a run with the expected events", actuals, hasItem(expected));
+        return null;
+    }
+
+    public String getRunOutput(RunId runId) {
+        return ui.getRunOutput(runId);
     }
 
     public void checkHasStackTrace(String... expectedElements) {

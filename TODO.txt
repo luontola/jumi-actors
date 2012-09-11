@@ -1,8 +1,8 @@
 
 !! - end-to-end tests: reporting test output
 	!! - capture and show System.out
-		- end-to-end test
-		- TextUI
+		OK - end-to-end test
+		!! - TextUI
 		- TextUIParser
 		- implement the capturer
 		- plug in the capturer in Main
