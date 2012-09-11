@@ -38,6 +38,10 @@ public class SuiteResultsSummary implements RunVisitor {
     }
 
     @Override
+    public void onPrintedOut(RunId runId, String testClass, TestId testId, String text) {
+    }
+
+    @Override
     public void onFailure(RunId runId, String testClass, TestId testId, Throwable cause) {
         failedTests.add(new GlobalTestId(testClass, testId));
     }

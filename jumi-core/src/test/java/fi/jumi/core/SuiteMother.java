@@ -18,6 +18,9 @@ public class SuiteMother {
         suite.end();
     }
 
+
+    // passing and failing tests
+
     public static void onePassingTest(SuiteListener listener) {
         EventBuilder suite = new EventBuilder(listener);
         suite.begin();
@@ -64,6 +67,9 @@ public class SuiteMother {
         suite.end();
     }
 
+
+    // multiple runs
+
     public static void twoPassingRuns(SuiteListener listener) {
         final EventBuilder suite = new EventBuilder(listener);
         suite.begin();
@@ -107,6 +113,43 @@ public class SuiteMother {
         listener.onTestFinished(run2);
         suite.runFinished(run1);
         suite.runFinished(run2);
+
+        suite.end();
+    }
+
+
+    // standard output
+
+    public static void printsToStdout(SuiteListener listener) {
+        final EventBuilder suite = new EventBuilder(listener);
+        suite.begin();
+
+        final RunId run1 = suite.nextRunId();
+        suite.runStarted(run1, TEST_CLASS);
+        suite.test(run1, TestId.ROOT, TEST_CLASS_NAME, new Runnable() {
+            @Override
+            public void run() {
+                suite.printOut(run1, "printed to stdout\n");
+            }
+        });
+        suite.runFinished(run1);
+
+        suite.end();
+    }
+
+    public static void printsToStdoutWithoutNewlineAtEnd(SuiteListener listener) {
+        final EventBuilder suite = new EventBuilder(listener);
+        suite.begin();
+
+        final RunId run1 = suite.nextRunId();
+        suite.runStarted(run1, TEST_CLASS);
+        suite.test(run1, TestId.ROOT, TEST_CLASS_NAME, new Runnable() {
+            @Override
+            public void run() {
+                suite.printOut(run1, "this doesn't end with newline");
+            }
+        });
+        suite.runFinished(run1);
 
         suite.end();
     }

@@ -329,4 +329,25 @@ public class TextUITest {
         }
         suite.end();
     }
+
+
+    // standard output
+
+    @Test
+    public void prints_what_tests_printed_to_stdout() {
+        SuiteMother.printsToStdout(listener);
+
+        assertInOutput("printed to stdout\n");
+    }
+
+    // TODO: printing to stderr
+
+    @Test
+    public void always_puts_test_start_and_end_events_on_a_new_line() {
+        SuiteMother.printsToStdoutWithoutNewlineAtEnd(listener);
+
+        String printedToStdout = "this doesn't end with newline";
+        String theNextMetaLine = " > -";
+        assertInOutput(printedToStdout + "\n" + theNextMetaLine);
+    }
 }

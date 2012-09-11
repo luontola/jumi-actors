@@ -13,6 +13,10 @@ public interface RunVisitor {
 
     void onTestStarted(RunId runId, String testClass, TestId testId);
 
+    void onPrintedOut(RunId runId, String testClass, TestId testId, String text);
+
+    // TODO: onPrintedErr
+
     void onFailure(RunId runId, String testClass, TestId testId, Throwable cause);
 
     void onTestFinished(RunId runId, String testClass, TestId testId);

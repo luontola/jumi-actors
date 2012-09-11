@@ -12,7 +12,7 @@ import fi.jumi.core.results.*;
 import fi.jumi.core.runs.RunId;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import java.io.PrintStream;
+import java.io.*;
 
 @NotThreadSafe
 public class TextUI {
@@ -54,6 +54,35 @@ public class TextUI {
         message.fireOn(suitePrinter);
     }
 
+
+    // low-level printing operations
+    // TODO: extract to a new class?
+
+    private boolean beginningOfLine = true;
+
+    private void printOut(String text) {
+        printTo(out, text);
+    }
+
+    private void printErr(String text) {
+        printTo(err, text);
+    }
+
+    private void printlnMeta(String line) {
+        if (!beginningOfLine) {
+            printTo(out, "\n");
+        }
+        printTo(out, line + "\n");
+    }
+
+    private void printTo(PrintStream target, String text) {
+        target.print(text);
+        beginningOfLine = text.endsWith("\n"); // matches both "\r\n" and "\n"
+    }
+
+
+    // printing visitors
+
     @NotThreadSafe
     private class SuitePrinter implements SuiteListener {
 
@@ -71,6 +100,11 @@ public class TextUI {
 
         @Override
         public void onTestStarted(RunId runId, TestId testId) {
+        }
+
+        @Override
+        public void onPrintedOut(RunId runId, String text) {
+            // TODO
         }
 
         @Override
@@ -100,7 +134,7 @@ public class TextUI {
             int pass = summary.getPassingTests();
             int fail = summary.getFailingTests();
             int total = summary.getTotalTests();
-            out.println(String.format("Pass: %d, Fail: %d, Total: %d", pass, fail, total));
+            printlnMeta(String.format("Pass: %d, Fail: %d, Total: %d", pass, fail, total));
         }
     }
 
@@ -121,8 +155,13 @@ public class TextUI {
         }
 
         @Override
+        public void onPrintedOut(RunId runId, String testClass, TestId testId, String text) {
+            printOut(text);
+        }
+
+        @Override
         public void onFailure(RunId runId, String testClass, TestId testId, Throwable cause) {
-            cause.printStackTrace(err);
+            printErr(getStackTrace(cause));
         }
 
         @Override
@@ -139,15 +178,15 @@ public class TextUI {
         // visual style
 
         private void printRunHeader(String testClass, RunId runId) {
-            out.println(" > Run #" + runId.toInt() + " in " + testClass);
+            printlnMeta(" > Run #" + runId.toInt() + " in " + testClass);
         }
 
         private void printTestName(String bullet, String testClass, TestId testId) {
-            out.println(" > " + testNameIndent() + bullet + " " + demuxer.getTestName(testClass, testId));
+            printlnMeta(" > " + testNameIndent() + bullet + " " + demuxer.getTestName(testClass, testId));
         }
 
         private void printRunFooter() {
-            out.println();
+            printlnMeta("");
         }
 
         private String testNameIndent() {
@@ -157,5 +196,13 @@ public class TextUI {
             }
             return indent.toString();
         }
+    }
+
+    private static String getStackTrace(Throwable cause) {
+        StringWriter buffer = new StringWriter();
+        PrintWriter writer = new PrintWriter(buffer);
+        cause.printStackTrace(writer);
+        writer.close();
+        return buffer.toString();
     }
 }

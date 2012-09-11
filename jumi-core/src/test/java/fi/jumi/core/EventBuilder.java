@@ -71,4 +71,8 @@ public class EventBuilder {
             }
         });
     }
+
+    public void printOut(RunId runId, String text) {
+        listener.onPrintedOut(runId, text);
+    }
 }

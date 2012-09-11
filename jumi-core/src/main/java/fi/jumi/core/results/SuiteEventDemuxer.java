@@ -107,6 +107,11 @@ public class SuiteEventDemuxer implements MessageSender<Event<SuiteListener>> {
         }
 
         @Override
+        public void onPrintedOut(RunId runId, String text) {
+            saveCurrentMessageToRun(runId);
+        }
+
+        @Override
         public void onFailure(RunId runId, Throwable cause) {
             saveCurrentMessageToRun(runId);
         }

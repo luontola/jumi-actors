@@ -17,6 +17,10 @@ public interface SuiteListener {
 
     void onTestStarted(RunId runId, TestId testId);
 
+    void onPrintedOut(RunId runId, String text);
+
+    // TODO: onPrintedErr
+
     void onFailure(RunId runId, Throwable cause);
 
     void onTestFinished(RunId runId);

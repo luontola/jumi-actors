@@ -49,6 +49,11 @@ public class RunEventDenormalizer implements SuiteListener {
     }
 
     @Override
+    public void onPrintedOut(RunId runId, String text) {
+        visitor.onPrintedOut(runId, testClass, getTestId(), text);
+    }
+
+    @Override
     public void onFailure(RunId runId, Throwable cause) {
         visitor.onFailure(runId, testClass, getTestId(), cause);
     }

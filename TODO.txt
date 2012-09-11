@@ -3,6 +3,10 @@
 	!! - capture and show System.out
 		OK - end-to-end test
 		!! - TextUI
+			OK - print stdout
+			OK - handle missing newlines before test name
+			!! - extract NullRunVisitor from SuiteResultsSummary
+			- print stderr
 		- TextUIParser
 		- implement the capturer
 		- plug in the capturer in Main
@@ -21,6 +25,7 @@
 			! - or just use a CGLIB proxy (net.sf.cglib.proxy.MethodInterceptor which synchronizes and delegates to real PrintStream, except net.sf.cglib.proxy.NoOp for Object's methods)
 	- tell launcher that what encoding the stdout/stderr use
 		- test: one daemon using ISO-8859-1 and another using UTF-8 to print åäö, the output should be the same
+	- extract low-level printing operations from TextUI into a new class?
 
 - move SimpleUnit into its own module; a usable example, a seedwork (http://www.martinfowler.com/bliki/Seedwork.html)
 
