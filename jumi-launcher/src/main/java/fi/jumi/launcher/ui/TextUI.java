@@ -72,7 +72,8 @@ public class TextUI {
         if (!beginningOfLine) {
             printTo(out, "\n");
         }
-        printTo(out, line + "\n");
+        printTo(out, line);
+        printTo(out, "\n");
     }
 
     private void printTo(PrintStream target, String text) {
