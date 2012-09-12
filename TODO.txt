@@ -8,10 +8,16 @@
 			OK - extract NullRunVisitor from SuiteResultsSummary
 		SKIP - TextUIParser
 		!! - implement the capturer
+			OK - pass through stdout
+			OK - capture stdout
+			!! - capture spawned threads
+			- don't capture unrelated threads
+			- what happens to capturing spawned threads after starting a new capture?
 		- plug in the capturer in Main
 		- add the plumming for forwarding the events
 	- capture and show System.err
 		- TextUI: print stderr
+		- OutputCapturer: capture stderr
 	- test: printing from the same thread to out & err should be synchronous, unlike in probably every IDE
 	- hacking System.out/err
 		- tests should restore the original out/err defensively in @After

@@ -92,7 +92,7 @@ public class BuildTest {
                 },
 
                 {"jumi-core",
-                        asList(Opcodes.V1_5, Opcodes.V1_7),
+                        asList(Opcodes.V1_5, Opcodes.V1_6, Opcodes.V1_7),
                         asList(
                                 "fi.jumi:jumi-actors",
                                 "fi.jumi:jumi-api"),
