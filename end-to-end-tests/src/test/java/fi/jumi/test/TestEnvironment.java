@@ -14,18 +14,34 @@ public class TestEnvironment {
 
     private static final Path PROJECT_ARTIFACTS_DIR;
     private static final Path SANDBOX_DIR;
-    private static final Path SAMPLE_CLASSES;
+    private static final Path SAMPLE_CLASSES_DIR;
 
     static {
-        Properties testing = new Properties();
         try (InputStream in = BuildTest.class.getResourceAsStream("/testing.properties")) {
+            Properties testing = new Properties();
             testing.load(in);
+
+            PROJECT_ARTIFACTS_DIR = getDirectory(testing, "test.projectArtifactsDir");
+            SANDBOX_DIR = getDirectory(testing, "test.sandbox");
+            SAMPLE_CLASSES_DIR = getDirectory(testing, "test.sampleClasses");
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        PROJECT_ARTIFACTS_DIR = Paths.get(testing.getProperty("test.projectArtifactsDir")).toAbsolutePath();
-        SANDBOX_DIR = Paths.get(testing.getProperty("test.sandbox")).toAbsolutePath();
-        SAMPLE_CLASSES = Paths.get(testing.getProperty("test.sampleClasses")).toAbsolutePath();
+    }
+
+    private static Path getDirectory(Properties properties, String key) throws IOException {
+        Path path = Paths.get(filteredProperty(properties, key)).toAbsolutePath();
+        Files.createDirectories(path);
+        return path;
+    }
+
+    private static String filteredProperty(Properties properties, String key) {
+        String value = properties.getProperty(key);
+        if (value.startsWith("${")) {
+            throw new IllegalStateException("the property '" + key + "' was not filled in: " + value);
+        }
+        return value;
     }
 
     public static Path getProjectJar(String artifactId) throws IOException {
@@ -50,7 +66,7 @@ public class TestEnvironment {
         return SANDBOX_DIR;
     }
 
-    public static Path getSampleClasses() {
-        return SAMPLE_CLASSES;
+    public static Path getSampleClassesDir() {
+        return SAMPLE_CLASSES_DIR;
     }
 }

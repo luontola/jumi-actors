@@ -118,7 +118,7 @@ public class AppRunner implements TestRule {
             suiteBuilder.addJvmOptions("-javaagent:" + threadSafetyAgent);
         }
         daemonBuilder.logActorMessages(true);
-        suiteBuilder.addToClassPath(TestEnvironment.getSampleClasses());
+        suiteBuilder.addToClassPath(TestEnvironment.getSampleClassesDir());
         suiteBuilder.includedTestsPattern(testsToInclude);
 
         getLauncher().start(suiteBuilder.freeze(), daemonBuilder.freeze());
