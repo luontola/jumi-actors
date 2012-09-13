@@ -17,7 +17,6 @@ public class StandardOutputTest {
     public final AppRunner app = new AppRunner();
 
 
-    @Ignore("not implemented") // TODO
     @Test(timeout = Timeouts.END_TO_END_TEST)
     public void shows_what_tests_print_to_stdout() throws Exception {
         assertThat(outputOf(PrintingTest.class, "testPrintOut"), containsString("printed to stdout"));

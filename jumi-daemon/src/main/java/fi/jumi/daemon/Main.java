@@ -11,7 +11,7 @@ import fi.jumi.core.*;
 import fi.jumi.core.config.*;
 import fi.jumi.core.events.*;
 import fi.jumi.core.network.*;
-import fi.jumi.core.output.OutputCapturer;
+import fi.jumi.core.output.*;
 import fi.jumi.core.util.PrefixedThreadFactory;
 import fi.jumi.daemon.timeout.*;
 
@@ -51,8 +51,9 @@ public class Main {
                 ? new PrintStreamMessageLogger(logOutput)
                 : new NullMessageListener();
 
-        // TODO: install the capturer to System.out
+        // replacing System.out/err with the output capturer
         OutputCapturer outputCapturer = new OutputCapturer(System.out, Charset.defaultCharset());
+        new OutputCapturerInstaller(new SystemOutErr()).install(outputCapturer);
 
         // thread pool configuration
         Executor actorsThreadPool = // messages already logged by the Actors implementation

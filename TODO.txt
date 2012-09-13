@@ -1,6 +1,6 @@
 
 !! - end-to-end tests: reporting test output
-	!! - capture and show System.out
+	OK - capture and show System.out
 		OK - end-to-end test
 		OK - TextUI
 			OK - print stdout
@@ -18,9 +18,9 @@
 		OK - plug in the capturer in the runners
 		OK - add the plumbing for forwarding the events
 		OK - create OutputCapturerInstaller
-		!! - plug in the capturer in Main
-	- capture and show System.err
-		- TextUI: print stderr
+		OK - plug in the capturer in Main
+	!! - capture and show System.err
+		!! - TextUI: print stderr
 		- OutputCapturer: capture stderr (replicate only the first two test cases which mention stdout explicitly?)
 		- SuiteListenerProtocolTest#suite_with_printing_tests (will drive all the plumbing)
 	- test: printing from the same thread to out & err should be synchronous, unlike in probably every IDE
@@ -39,6 +39,7 @@
 	- extract low-level printing operations from TextUI into a new class?
 	- test: printing non-ascii text
 	- writing binary data to System.out (create a TODO, leave unsupported for now)
+	- escape special characters in logging the onPrintedOut events, e.g. TestClassListener.onPrintedOut(RunId(3), "\n")
 
 - move SimpleUnit into its own module; a usable example, a seedwork (http://www.martinfowler.com/bliki/Seedwork.html)
 
