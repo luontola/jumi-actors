@@ -74,7 +74,7 @@ public class AppRunner implements TestRule {
 
             @Override
             protected Writer createDaemonOutputListener() {
-                return new WriterMultiplexer(new SystemOutWriter(), daemonOutput);
+                return new WriterReplicator(new SystemOutWriter(), daemonOutput);
             }
         }
 

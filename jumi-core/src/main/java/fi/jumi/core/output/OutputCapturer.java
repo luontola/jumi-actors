@@ -18,7 +18,7 @@ public class OutputCapturer {
     private final PrintStream out;
 
     public OutputCapturer(PrintStream realOut) {
-        out = new PrintStream(new OutputStreamMultiplexer(realOut, new WriterOutputStream(outCapturer)));
+        out = new PrintStream(new OutputStreamReplicator(realOut, new WriterOutputStream(outCapturer)));
     }
 
     public PrintStream out() {
@@ -53,11 +53,11 @@ public class OutputCapturer {
     }
 
     @ThreadSafe
-    private static class OutputStreamMultiplexer extends OutputStream {
+    private static class OutputStreamReplicator extends OutputStream {
         private final OutputStream out1;
         private final OutputStream out2;
 
-        public OutputStreamMultiplexer(OutputStream out1, OutputStream out2) {
+        public OutputStreamReplicator(OutputStream out1, OutputStream out2) {
             this.out1 = out1;
             this.out2 = out2;
         }

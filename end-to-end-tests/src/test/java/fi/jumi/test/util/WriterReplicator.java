@@ -6,11 +6,11 @@ package fi.jumi.test.util;
 
 import java.io.*;
 
-public class WriterMultiplexer extends Writer {
+public class WriterReplicator extends Writer {
 
     private final Writer[] writers;
 
-    public WriterMultiplexer(Writer... writers) {
+    public WriterReplicator(Writer... writers) {
         this.writers = writers;
     }
 
