@@ -17,5 +17,6 @@ public class OutputCapturerInstaller {
 
     public void install(OutputCapturer capturer) {
         outErr.setOut(capturer.out());
+        outErr.setErr(capturer.err());
     }
 }

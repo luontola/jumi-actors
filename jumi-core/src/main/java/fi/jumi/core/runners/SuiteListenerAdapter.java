@@ -42,6 +42,11 @@ class SuiteListenerAdapter implements TestClassListener {
     }
 
     @Override
+    public void onPrintedErr(RunId runId, String text) {
+        suiteListener.onPrintedErr(runId, text);
+    }
+
+    @Override
     public void onFailure(RunId runId, TestId testId, Throwable cause) {
         suiteListener.onFailure(runId, cause);
     }

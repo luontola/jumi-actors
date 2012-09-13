@@ -17,6 +17,8 @@ public interface TestClassListener {
 
     void onPrintedOut(RunId runId, String text);
 
+    void onPrintedErr(RunId runId, String text);
+
     void onFailure(RunId runId, TestId testId, Throwable cause);
 
     void onTestFinished(RunId runId, TestId testId);

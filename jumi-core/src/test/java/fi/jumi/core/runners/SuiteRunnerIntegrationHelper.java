@@ -31,6 +31,7 @@ public abstract class SuiteRunnerIntegrationHelper {
 
     private final OutputCapturer outputCapturer = new OutputCapturer(new PrintStream(new NullOutputStream()), new PrintStream(new NullOutputStream()), Charset.defaultCharset());
     protected final PrintStream stdout = outputCapturer.out();
+    protected final PrintStream stderr = outputCapturer.err();
 
     protected void runAndCheckExpectations(Driver driver, Class<?>... testClasses) {
         spy.replay();

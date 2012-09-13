@@ -70,6 +70,11 @@ class DuplicateOnTestFoundEventFilter implements TestClassListener {
     }
 
     @Override
+    public void onPrintedErr(RunId runId, String text) {
+        target.onPrintedErr(runId, text);
+    }
+
+    @Override
     public void onFailure(RunId runId, TestId testId, Throwable cause) {
         target.onFailure(runId, testId, cause);
     }

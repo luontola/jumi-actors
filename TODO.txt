@@ -19,14 +19,14 @@
 		OK - add the plumbing for forwarding the events
 		OK - create OutputCapturerInstaller
 		OK - plug in the capturer in Main
-	!! - capture and show System.err
+	OK - capture and show System.err
 		OK - TextUI: print stderr
 		OK - OutputCapturer: capture stderr (replicate only the first two test cases which mention stdout explicitly?)
-		!! - SuiteListenerProtocolTest#suite_with_printing_tests (will drive all the plumbing)
-	- test: printing from the same thread to out & err should be synchronous, unlike in probably every IDE
-	- hacking System.out/err
+		OK - SuiteListenerProtocolTest#suite_with_printing_tests (will drive all the plumbing)
+	OK - test: printing from the same thread to out & err should be synchronous, unlike in probably every IDE
+	!! - hacking System.out/err
 		OK - tests should restore the original out/err defensively in @After
-		- concurrency test, no interleaving: out.println("O") and err.println("E") from different threads, output must not contain "OE"/"EO" but only "O\nE\n"
+		!! - concurrency test, no interleaving: out.println("O") and err.println("E") from different threads, output must not contain "OE"/"EO" but only "O\nE\n"
 		- unit test: the PrintStreams for our & err must sync on the same object, testable by checking holdsLock in a mock OutputStream
 			- Thread.holdsLock(java.lang.Object)
 			- ReentrantLock.isHeldByCurrentThread()

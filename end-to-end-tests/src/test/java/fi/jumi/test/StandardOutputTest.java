@@ -22,13 +22,11 @@ public class StandardOutputTest {
         assertThat(outputOf(PrintingTest.class, "testPrintOut"), containsString("printed to stdout"));
     }
 
-    @Ignore("not implemented") // TODO
     @Test(timeout = Timeouts.END_TO_END_TEST)
     public void shows_what_tests_print_to_stderr() throws Exception {
         assertThat(outputOf(PrintingTest.class, "testPrintErr"), containsString("printed to stderr"));
     }
 
-    @Ignore("not implemented") // TODO
     @Test(timeout = Timeouts.END_TO_END_TEST)
     public void printing_to_stdout_and_stderr_is_synchronous() throws Exception {
         assertThat(outputOf(PrintingTest.class, "testInterleavedPrinting"), containsString("trololo"));

@@ -15,14 +15,21 @@ import static org.hamcrest.Matchers.is;
 
 public class OutputCapturerInstallerTest {
 
+    private final OutputCapturer capturer = new OutputCapturer(new PrintStream(new NullOutputStream()), new PrintStream(new NullOutputStream()), Charset.defaultCharset());
+    private final FakeOutErr outErr = new FakeOutErr();
+    private final OutputCapturerInstaller installer = new OutputCapturerInstaller(outErr);
+
     @Test
     public void replaces_stdout_with_the_captured_stream() {
-        OutputCapturer capturer = new OutputCapturer(new PrintStream(new NullOutputStream()), new PrintStream(new NullOutputStream()), Charset.defaultCharset());
-        FakeOutErr outErr = new FakeOutErr();
-        OutputCapturerInstaller installer = new OutputCapturerInstaller(outErr);
-
         installer.install(capturer);
 
         assertThat(outErr.out(), is(capturer.out()));
+    }
+
+    @Test
+    public void replaces_stderr_with_the_captured_stream() {
+        installer.install(capturer);
+
+        assertThat(outErr.err(), is(capturer.err()));
     }
 }

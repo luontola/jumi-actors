@@ -110,7 +110,7 @@ class CurrentRun {
 
         @Override
         public void err(String text) {
-            System.out.println("CurrentRun$OutputListenerAdapter.err"); // TODO
+            listener.tell().onPrintedErr(runId, text);
         }
     }
 }

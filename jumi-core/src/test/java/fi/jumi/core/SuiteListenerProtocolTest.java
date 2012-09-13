@@ -55,7 +55,7 @@ public class SuiteListenerProtocolTest extends SuiteRunnerIntegrationHelper {
         expect.onRunStarted(RUN_1, CLASS_1.getName());
         expect.onTestStarted(RUN_1, TestId.ROOT);
         expect.onPrintedOut(RUN_1, "printed to stdout");
-        // TODO: stderr
+        expect.onPrintedErr(RUN_1, "printed to stderr");
         expect.onTestFinished(RUN_1);
         expect.onRunFinished(RUN_1);
         expect.onSuiteFinished();
@@ -181,7 +181,7 @@ public class SuiteListenerProtocolTest extends SuiteRunnerIntegrationHelper {
                 public void run() {
                     TestNotifier tn = notifier.fireTestStarted(TestId.ROOT);
                     stdout.print("printed to stdout");
-                    // TODO: stderr
+                    stderr.print("printed to stderr");
                     tn.fireTestFinished();
                 }
             });
