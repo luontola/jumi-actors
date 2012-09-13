@@ -11,7 +11,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import java.util.*;
 
 @NotThreadSafe
-public class DuplicateOnTestFoundEventFilter implements TestClassListener {
+class DuplicateOnTestFoundEventFilter implements TestClassListener {
 
     private final TestClassListener target;
     private final Map<TestId, String> tests = new HashMap<>();
@@ -62,6 +62,11 @@ public class DuplicateOnTestFoundEventFilter implements TestClassListener {
     @Override
     public void onTestStarted(RunId runId, TestId testId) {
         target.onTestStarted(runId, testId);
+    }
+
+    @Override
+    public void onPrintedOut(RunId runId, String text) {
+        target.onPrintedOut(runId, text);
     }
 
     @Override

@@ -11,11 +11,13 @@ import fi.jumi.core.*;
 import fi.jumi.core.config.*;
 import fi.jumi.core.events.*;
 import fi.jumi.core.network.*;
+import fi.jumi.core.output.OutputCapturer;
 import fi.jumi.core.util.PrefixedThreadFactory;
 import fi.jumi.daemon.timeout.*;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.concurrent.*;
 
 @ThreadSafe
@@ -49,6 +51,9 @@ public class Main {
                 ? new PrintStreamMessageLogger(logOutput)
                 : new NullMessageListener();
 
+        // TODO: install the capturer to System.out
+        OutputCapturer outputCapturer = new OutputCapturer(System.out, Charset.defaultCharset());
+
         // thread pool configuration
         Executor actorsThreadPool = // messages already logged by the Actors implementation
                 Executors.newCachedThreadPool(new PrefixedThreadFactory("jumi-actors-"));
@@ -76,7 +81,8 @@ public class Main {
         // bootstrap the system
         ActorThread actorThread = actors.startActorThread();
         ActorRef<CommandListener> coordinator =
-                actorThread.bindActor(CommandListener.class, new TestRunCoordinator(actorThread, testsThreadPool, SHUTDOWN_ON_USER_COMMAND));
+                actorThread.bindActor(CommandListener.class,
+                        new TestRunCoordinator(actorThread, testsThreadPool, SHUTDOWN_ON_USER_COMMAND, outputCapturer));
 
         NetworkClient client = new NettyNetworkClient();
         client.connect("127.0.0.1", config.launcherPort(), new DaemonNetworkEndpoint(coordinator, startupTimeout, idleTimeout));

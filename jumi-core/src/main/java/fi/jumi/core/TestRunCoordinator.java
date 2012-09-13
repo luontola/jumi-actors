@@ -8,6 +8,7 @@ import fi.jumi.actors.*;
 import fi.jumi.core.config.SuiteConfiguration;
 import fi.jumi.core.drivers.*;
 import fi.jumi.core.files.*;
+import fi.jumi.core.output.OutputCapturer;
 import fi.jumi.core.runners.SuiteRunner;
 
 import javax.annotation.concurrent.NotThreadSafe;
@@ -21,13 +22,16 @@ public class TestRunCoordinator implements CommandListener {
     private final ActorThread actorThread;
     private final Executor testExecutor;
     private final Runnable shutdownHook;
+    private final OutputCapturer outputCapturer;
 
     private SuiteListener listener = null;
 
-    public TestRunCoordinator(ActorThread actorThread, Executor testExecutor, Runnable shutdownHook) {
+    // XXX: too many constructor parameters, could we group some of them together?
+    public TestRunCoordinator(ActorThread actorThread, Executor testExecutor, Runnable shutdownHook, OutputCapturer outputCapturer) {
         this.testExecutor = testExecutor;
         this.actorThread = actorThread;
         this.shutdownHook = shutdownHook;
+        this.outputCapturer = outputCapturer;
     }
 
     @Override
@@ -45,7 +49,7 @@ public class TestRunCoordinator implements CommandListener {
         DriverFinder driverFinder = new RunViaAnnotationDriverFinder();
 
         ActorRef<Startable> suiteRunner = actorThread.bindActor(Startable.class,
-                new SuiteRunner(listener, testClassFinder, driverFinder, actorThread, testExecutor));
+                new SuiteRunner(listener, testClassFinder, driverFinder, actorThread, testExecutor, outputCapturer));
         suiteRunner.tell().start();
     }
 

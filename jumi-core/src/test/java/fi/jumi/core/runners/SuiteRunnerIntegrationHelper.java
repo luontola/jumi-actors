@@ -11,8 +11,12 @@ import fi.jumi.api.drivers.Driver;
 import fi.jumi.core.*;
 import fi.jumi.core.drivers.DriverFinder;
 import fi.jumi.core.files.*;
+import fi.jumi.core.output.OutputCapturer;
 import fi.jumi.core.util.SpyListener;
+import org.apache.commons.io.output.NullOutputStream;
 
+import java.io.PrintStream;
+import java.nio.charset.Charset;
 import java.util.concurrent.Executor;
 
 public abstract class SuiteRunnerIntegrationHelper {
@@ -24,6 +28,9 @@ public abstract class SuiteRunnerIntegrationHelper {
     private final MessageListener messageListener = new NullMessageListener();
     private final SingleThreadedActors actors = new SingleThreadedActors(new DynamicEventizerProvider(), failureHandler, messageListener);
     private final Executor executor = actors.getExecutor();
+
+    private final OutputCapturer outputCapturer = new OutputCapturer(new PrintStream(new NullOutputStream()), Charset.defaultCharset());
+    protected final PrintStream stdout = outputCapturer.out();
 
     protected void runAndCheckExpectations(Driver driver, Class<?>... testClasses) {
         spy.replay();
@@ -47,7 +54,7 @@ public abstract class SuiteRunnerIntegrationHelper {
         TestClassFinder testClassFinder = new StubTestClassFinder(testClasses);
         ActorThread actorThread = actors.startActorThread();
         ActorRef<Startable> runner = actorThread.bindActor(Startable.class,
-                new SuiteRunner(listener, testClassFinder, driverFinder, actorThread, executor));
+                new SuiteRunner(listener, testClassFinder, driverFinder, actorThread, executor, outputCapturer));
         runner.tell().start();
         actors.processEventsUntilIdle();
     }

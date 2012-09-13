@@ -32,12 +32,14 @@ public class DuplicateOnTestFoundEventFilterTest {
     @Test
     public void forwards_all_other_events() {
         // TODO: create a generic test which calls all methods except onTestFound
+        filter.onPrintedOut(new RunId(8), "stdout");
         filter.onFailure(new RunId(9), TestId.of(1), new Exception("dummy exception"));
         filter.onTestStarted(new RunId(10), TestId.of(2));
         filter.onTestFinished(new RunId(11), TestId.of(3));
         filter.onRunStarted(new RunId(20));
         filter.onRunFinished(new RunId(21));
 
+        verify(target).onPrintedOut(new RunId(8), "stdout");
         verify(target).onFailure(eq(new RunId(9)), eq(TestId.of(1)), notNull(Throwable.class));
         verify(target).onTestStarted(new RunId(10), TestId.of(2));
         verify(target).onTestFinished(new RunId(11), TestId.of(3));

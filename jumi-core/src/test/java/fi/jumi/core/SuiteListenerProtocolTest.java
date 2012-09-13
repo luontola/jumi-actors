@@ -49,6 +49,21 @@ public class SuiteListenerProtocolTest extends SuiteRunnerIntegrationHelper {
     }
 
     @Test
+    public void suite_with_printing_tests() {
+        expect.onSuiteStarted();
+        expect.onTestFound(CLASS_1.getName(), TestId.ROOT, "DummyTest");
+        expect.onRunStarted(RUN_1, CLASS_1.getName());
+        expect.onTestStarted(RUN_1, TestId.ROOT);
+        expect.onPrintedOut(RUN_1, "printed to stdout");
+        // TODO: stderr
+        expect.onTestFinished(RUN_1);
+        expect.onRunFinished(RUN_1);
+        expect.onSuiteFinished();
+
+        runAndCheckExpectations(new OnePrintingTestDriver(), CLASS_1);
+    }
+
+    @Test
     public void suite_with_failing_tests() {
         expect.onSuiteStarted();
         expect.onTestFound(CLASS_1.getName(), TestId.ROOT, "DummyTest");
@@ -151,6 +166,22 @@ public class SuiteListenerProtocolTest extends SuiteRunnerIntegrationHelper {
                 @Override
                 public void run() {
                     TestNotifier tn = notifier.fireTestStarted(TestId.ROOT);
+                    tn.fireTestFinished();
+                }
+            });
+        }
+    }
+
+    public class OnePrintingTestDriver implements Driver {
+        @Override
+        public void findTests(Class<?> testClass, final SuiteNotifier notifier, Executor executor) {
+            notifier.fireTestFound(TestId.ROOT, testClass.getSimpleName());
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    TestNotifier tn = notifier.fireTestStarted(TestId.ROOT);
+                    stdout.print("printed to stdout");
+                    // TODO: stderr
                     tn.fireTestFinished();
                 }
             });

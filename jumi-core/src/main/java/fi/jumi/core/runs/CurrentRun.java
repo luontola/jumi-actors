@@ -6,21 +6,25 @@ package fi.jumi.core.runs;
 
 import fi.jumi.actors.ActorRef;
 import fi.jumi.api.drivers.TestId;
+import fi.jumi.core.output.*;
 import fi.jumi.core.runners.TestClassListener;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @ThreadSafe
-public class CurrentRun {
+class CurrentRun {
 
     private final ActorRef<TestClassListener> listener;
     private final RunIdSequence runIdSequence;
+    private final OutputCapturer outputCapturer;
+
     private final InheritableThreadLocal<RunContext> currentRun = new InheritableThreadLocal<>();
 
-    public CurrentRun(ActorRef<TestClassListener> listener, RunIdSequence runIdSequence) {
+    public CurrentRun(ActorRef<TestClassListener> listener, RunIdSequence runIdSequence, OutputCapturer outputCapturer) {
         this.listener = listener;
         this.runIdSequence = runIdSequence;
+        this.outputCapturer = outputCapturer;
     }
 
     public void fireTestFound(TestId testId, String name) {
@@ -32,8 +36,7 @@ public class CurrentRun {
         if (currentRun == null) {
             currentRun = new RunContext(runIdSequence.nextRunId());
             this.currentRun.set(currentRun);
-
-            listener.tell().onRunStarted(currentRun.runId);
+            fireRunStarted(currentRun);
         }
         currentRun.countTestStarted();
         listener.tell().onTestStarted(currentRun.runId, testId);
@@ -52,8 +55,18 @@ public class CurrentRun {
 
         if (currentRun.isRunFinished()) {
             this.currentRun.remove();
-            listener.tell().onRunFinished(currentRun.runId);
+            fireRunFinished(currentRun);
         }
+    }
+
+    private void fireRunStarted(RunContext currentRun) {
+        listener.tell().onRunStarted(currentRun.runId);
+        outputCapturer.captureTo(new OutputListenerAdapter(listener, currentRun.runId));
+    }
+
+    private void fireRunFinished(RunContext currentRun) {
+        outputCapturer.captureTo(new NullOutputListener());
+        listener.tell().onRunFinished(currentRun.runId);
     }
 
 
@@ -77,6 +90,22 @@ public class CurrentRun {
 
         public boolean isRunFinished() {
             return testNestingLevel.get() == 0;
+        }
+    }
+
+    @ThreadSafe
+    private static class OutputListenerAdapter implements OutputListener {
+        private final ActorRef<TestClassListener> listener;
+        private final RunId runId;
+
+        public OutputListenerAdapter(ActorRef<TestClassListener> listener, RunId runId) {
+            this.listener = listener;
+            this.runId = runId;
+        }
+
+        @Override
+        public void out(String text) {
+            listener.tell().onPrintedOut(runId, text);
         }
     }
 }

@@ -6,6 +6,7 @@ package fi.jumi.core.runs;
 
 import fi.jumi.actors.ActorRef;
 import fi.jumi.api.drivers.*;
+import fi.jumi.core.output.OutputCapturer;
 import fi.jumi.core.runners.TestClassListener;
 
 import javax.annotation.concurrent.ThreadSafe;
@@ -15,8 +16,8 @@ public class DefaultSuiteNotifier implements SuiteNotifier {
 
     private final CurrentRun currentRun;
 
-    public DefaultSuiteNotifier(ActorRef<TestClassListener> listener, RunIdSequence runIdSequence) {
-        this.currentRun = new CurrentRun(listener, runIdSequence);
+    public DefaultSuiteNotifier(ActorRef<TestClassListener> listener, RunIdSequence runIdSequence, OutputCapturer outputCapturer) {
+        this.currentRun = new CurrentRun(listener, runIdSequence, outputCapturer);
     }
 
     @Override

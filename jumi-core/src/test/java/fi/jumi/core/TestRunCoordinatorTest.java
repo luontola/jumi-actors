@@ -13,7 +13,7 @@ public class TestRunCoordinatorTest {
     @Test
     public void runs_the_shutdown_hook_when_told_to_shutdown() {
         Runnable shutdownHook = mock(Runnable.class);
-        TestRunCoordinator coordinator = new TestRunCoordinator(null, null, shutdownHook);
+        TestRunCoordinator coordinator = new TestRunCoordinator(null, null, shutdownHook, null);
 
         coordinator.shutdown();
 

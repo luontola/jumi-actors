@@ -11,7 +11,7 @@ import fi.jumi.core.runs.RunId;
 import javax.annotation.concurrent.NotThreadSafe;
 
 @NotThreadSafe
-public class SuiteListenerAdapter implements TestClassListener {
+class SuiteListenerAdapter implements TestClassListener {
 
     private final SuiteListener suiteListener;
     private final Class<?> testClass;
@@ -34,6 +34,11 @@ public class SuiteListenerAdapter implements TestClassListener {
     @Override
     public void onTestStarted(RunId runId, TestId testId) {
         suiteListener.onTestStarted(runId, testId);
+    }
+
+    @Override
+    public void onPrintedOut(RunId runId, String text) {
+        suiteListener.onPrintedOut(runId, text);
     }
 
     @Override

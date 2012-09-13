@@ -10,6 +10,7 @@ import fi.jumi.api.drivers.*;
 import fi.jumi.core.*;
 import fi.jumi.core.drivers.DriverFinder;
 import fi.jumi.core.files.*;
+import fi.jumi.core.output.OutputCapturer;
 import fi.jumi.core.runs.*;
 
 import javax.annotation.concurrent.NotThreadSafe;
@@ -23,20 +24,24 @@ public class SuiteRunner implements Startable, TestClassFinderListener {
     private final DriverFinder driverFinder;
     private final ActorThread actorThread;
     private final Executor testExecutor;
+    private final OutputCapturer outputCapturer;
 
     private final RunIdSequence runIdSequence = new RunIdSequence();
     private int childRunners = 0;
 
+    // XXX: too many constructor parameters, could we group some of them together?
     public SuiteRunner(SuiteListener suiteListener,
                        TestClassFinder testClassFinder,
                        DriverFinder driverFinder,
                        ActorThread actorThread,
-                       Executor testExecutor) {
+                       Executor testExecutor,
+                       OutputCapturer outputCapturer) {
         this.suiteListener = suiteListener;
         this.testClassFinder = testClassFinder;
         this.driverFinder = driverFinder;
         this.actorThread = actorThread;
         this.testExecutor = testExecutor;
+        this.outputCapturer = outputCapturer;
     }
 
     @Override
@@ -61,7 +66,8 @@ public class SuiteRunner implements Startable, TestClassFinderListener {
                 actorThread.bindActor(TestClassListener.class,
                         new DuplicateOnTestFoundEventFilter(
                                 new SuiteListenerAdapter(suiteListener, testClass))),
-                runIdSequence
+                runIdSequence,
+                outputCapturer
         );
 
         WorkerCounter executor = new WorkerCounter(testExecutor);
