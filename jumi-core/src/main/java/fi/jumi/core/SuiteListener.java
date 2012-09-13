@@ -19,7 +19,7 @@ public interface SuiteListener {
 
     void onPrintedOut(RunId runId, String text);
 
-    // TODO: onPrintedErr
+    void onPrintedErr(RunId runId, String text);
 
     void onFailure(RunId runId, Throwable cause);
 

@@ -132,6 +132,11 @@ public class TextUI {
         }
 
         @Override
+        public void onPrintedErr(RunId runId, String testClass, TestId testId, String text) {
+            printErr(text);
+        }
+
+        @Override
         public void onFailure(RunId runId, String testClass, TestId testId, Throwable cause) {
             printErr(getStackTrace(cause));
         }

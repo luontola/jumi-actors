@@ -137,6 +137,23 @@ public class SuiteMother {
         suite.end();
     }
 
+    public static void printsToStderr(SuiteListener listener) {
+        final EventBuilder suite = new EventBuilder(listener);
+        suite.begin();
+
+        final RunId run1 = suite.nextRunId();
+        suite.runStarted(run1, TEST_CLASS);
+        suite.test(run1, TestId.ROOT, TEST_CLASS_NAME, new Runnable() {
+            @Override
+            public void run() {
+                suite.printErr(run1, "printed to stderr\n");
+            }
+        });
+        suite.runFinished(run1);
+
+        suite.end();
+    }
+
     public static void printsToStdoutWithoutNewlineAtEnd(SuiteListener listener) {
         final EventBuilder suite = new EventBuilder(listener);
         suite.begin();

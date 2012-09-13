@@ -20,8 +20,8 @@
 		OK - create OutputCapturerInstaller
 		OK - plug in the capturer in Main
 	!! - capture and show System.err
-		!! - TextUI: print stderr
-		- OutputCapturer: capture stderr (replicate only the first two test cases which mention stdout explicitly?)
+		OK - TextUI: print stderr
+		!! - OutputCapturer: capture stderr (replicate only the first two test cases which mention stdout explicitly?)
 		- SuiteListenerProtocolTest#suite_with_printing_tests (will drive all the plumbing)
 	- test: printing from the same thread to out & err should be synchronous, unlike in probably every IDE
 	- hacking System.out/err
@@ -173,6 +173,7 @@
 	OK - spacing between test runs (empty line or horizontal bar?)
 	- option for showing all test runs or only failing
 	(- if multiple readers are needed: Streamer class for receiving events from UI thread)
+	- refactor TextUI, extract printing operations
 	- different colors for out (default), err (red), metadata e.g. test names (blue), binary output (yellow BG)?
 		- JCons (uses JNI on Windows, so maybe support only Unix)
 			http://jcons.sourceforge.net/

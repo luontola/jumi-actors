@@ -25,6 +25,10 @@ public class NullRunVisitor implements RunVisitor {
     }
 
     @Override
+    public void onPrintedErr(RunId runId, String testClass, TestId testId, String text) {
+    }
+
+    @Override
     public void onFailure(RunId runId, String testClass, TestId testId, Throwable cause) {
     }
 

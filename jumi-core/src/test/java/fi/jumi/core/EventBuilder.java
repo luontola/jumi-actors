@@ -75,4 +75,8 @@ public class EventBuilder {
     public void printOut(RunId runId, String text) {
         listener.onPrintedOut(runId, text);
     }
+
+    public void printErr(RunId runId, String text) {
+        listener.onPrintedErr(runId, text);
+    }
 }

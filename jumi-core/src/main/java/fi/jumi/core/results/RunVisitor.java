@@ -15,7 +15,7 @@ public interface RunVisitor {
 
     void onPrintedOut(RunId runId, String testClass, TestId testId, String text);
 
-    // TODO: onPrintedErr
+    void onPrintedErr(RunId runId, String testClass, TestId testId, String text);
 
     void onFailure(RunId runId, String testClass, TestId testId, Throwable cause);
 

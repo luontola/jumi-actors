@@ -33,6 +33,10 @@ public class NullSuiteListener implements SuiteListener {
     }
 
     @Override
+    public void onPrintedErr(RunId runId, String text) {
+    }
+
+    @Override
     public void onFailure(RunId runId, Throwable cause) {
     }
 
