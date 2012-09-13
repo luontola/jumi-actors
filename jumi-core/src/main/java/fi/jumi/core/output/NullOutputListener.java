@@ -12,4 +12,8 @@ public class NullOutputListener implements OutputListener {
     @Override
     public void out(String text) {
     }
+
+    @Override
+    public void err(String text) {
+    }
 }

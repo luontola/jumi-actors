@@ -7,4 +7,6 @@ package fi.jumi.core.output;
 public interface OutputListener {
 
     void out(String text);
+
+    void err(String text);
 }

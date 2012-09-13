@@ -26,7 +26,7 @@ public class AssigningRunIdsTest {
 
     private final TestClassListener listener = mock(TestClassListener.class);
     private final RunIdSequence runIdSequence = new RunIdSequence();
-    private final OutputCapturer outputCapturer = new OutputCapturer(new PrintStream(new NullOutputStream()), Charset.defaultCharset());
+    private final OutputCapturer outputCapturer = new OutputCapturer(new PrintStream(new NullOutputStream()), new PrintStream(new NullOutputStream()), Charset.defaultCharset());
     private final SuiteNotifier notifier = new DefaultSuiteNotifier(ActorRef.wrap(listener), runIdSequence, outputCapturer);
 
     @Test

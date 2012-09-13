@@ -29,7 +29,7 @@ public abstract class SuiteRunnerIntegrationHelper {
     private final SingleThreadedActors actors = new SingleThreadedActors(new DynamicEventizerProvider(), failureHandler, messageListener);
     private final Executor executor = actors.getExecutor();
 
-    private final OutputCapturer outputCapturer = new OutputCapturer(new PrintStream(new NullOutputStream()), Charset.defaultCharset());
+    private final OutputCapturer outputCapturer = new OutputCapturer(new PrintStream(new NullOutputStream()), new PrintStream(new NullOutputStream()), Charset.defaultCharset());
     protected final PrintStream stdout = outputCapturer.out();
 
     protected void runAndCheckExpectations(Driver driver, Class<?>... testClasses) {

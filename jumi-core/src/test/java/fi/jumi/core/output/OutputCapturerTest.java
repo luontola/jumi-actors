@@ -21,22 +21,31 @@ public class OutputCapturerTest {
     private static final long TIMEOUT = 1000;
 
     private final StringWriter printedToOut = new StringWriter();
+    private final StringWriter printedToErr = new StringWriter();
     private final PrintStream realOut = new PrintStream(new WriterOutputStream(printedToOut));
+    private final PrintStream realErr = new PrintStream(new WriterOutputStream(printedToErr));
 
-    private final OutputCapturer capturer = new OutputCapturer(realOut, Charset.defaultCharset());
+    private final OutputCapturer capturer = new OutputCapturer(realOut, realErr, Charset.defaultCharset());
 
 
     // basic capturing
 
-    // TODO: this same test also for stderr
     @Test
     public void passes_through_stdout_to_the_real_stdout() {
         capturer.out().print("foo");
 
-        assertThat(printedToOut.toString(), is("foo"));
+        assertThat("stdout", printedToOut.toString(), is("foo"));
+        assertThat("stderr", printedToErr.toString(), is(""));
     }
 
-    // TODO: this same test also for stderr
+    @Test
+    public void passes_through_stderr_to_the_real_stderr() {
+        capturer.err().print("foo");
+
+        assertThat("stdout", printedToOut.toString(), is(""));
+        assertThat("stderr", printedToErr.toString(), is("foo"));
+    }
+
     @Test
     public void captures_stdout() {
         OutputListenerSpy listener = new OutputListenerSpy();
@@ -44,7 +53,19 @@ public class OutputCapturerTest {
         capturer.captureTo(listener);
         capturer.out().print("foo");
 
-        assertThat(listener.out).containsExactly("foo");
+        assertThat(listener.out).as("stdout").containsExactly("foo");
+        assertThat(listener.err).as("stderr").containsExactly();
+    }
+
+    @Test
+    public void captures_stderr() {
+        OutputListenerSpy listener = new OutputListenerSpy();
+
+        capturer.captureTo(listener);
+        capturer.err().print("foo");
+
+        assertThat(listener.out).as("stdout").containsExactly();
+        assertThat(listener.err).as("stderr").containsExactly("foo");
     }
 
     @Test
@@ -185,10 +206,16 @@ public class OutputCapturerTest {
 
     private static class OutputListenerSpy implements OutputListener {
         public List<String> out = Collections.synchronizedList(new ArrayList<String>());
+        public List<String> err = Collections.synchronizedList(new ArrayList<String>());
 
         @Override
         public void out(String text) {
             out.add(text);
+        }
+
+        @Override
+        public void err(String text) {
+            err.add(text);
         }
     }
 }

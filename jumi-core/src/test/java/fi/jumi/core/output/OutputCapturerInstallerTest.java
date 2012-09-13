@@ -17,7 +17,7 @@ public class OutputCapturerInstallerTest {
 
     @Test
     public void replaces_stdout_with_the_captured_stream() {
-        OutputCapturer capturer = new OutputCapturer(new PrintStream(new NullOutputStream()), Charset.defaultCharset());
+        OutputCapturer capturer = new OutputCapturer(new PrintStream(new NullOutputStream()), new PrintStream(new NullOutputStream()), Charset.defaultCharset());
         FakeOutErr outErr = new FakeOutErr();
         OutputCapturerInstaller installer = new OutputCapturerInstaller(outErr);
 

@@ -52,7 +52,7 @@ public class Main {
                 : new NullMessageListener();
 
         // replacing System.out/err with the output capturer
-        OutputCapturer outputCapturer = new OutputCapturer(System.out, Charset.defaultCharset());
+        OutputCapturer outputCapturer = new OutputCapturer(System.out, System.err, Charset.defaultCharset());
         new OutputCapturerInstaller(new SystemOutErr()).install(outputCapturer);
 
         // thread pool configuration

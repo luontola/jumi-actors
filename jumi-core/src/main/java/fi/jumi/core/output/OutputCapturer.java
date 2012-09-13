@@ -15,14 +15,17 @@ public class OutputCapturer {
 
     // PrintStream does not do any buffering of its own; only the OutputStream that it delegates to may buffer.
 
-    private final OutputListenerAdapter outCapturer = new OutputListenerAdapter();
+    private final OutCapturer outCapturer = new OutCapturer();
+    private final ErrCapturer errCapturer = new ErrCapturer();
     private final PrintStream out;
+    private final PrintStream err;
 
-    public OutputCapturer(PrintStream realOut, Charset charset) {
+    public OutputCapturer(PrintStream realOut, PrintStream realErr, Charset charset) {
         OutputStream capturedOut = new WriterOutputStream(outCapturer, charset);
-        OutputStream replicator = new OutputStreamReplicator(realOut, capturedOut);
+        OutputStream capturedErr = new WriterOutputStream(errCapturer, charset);
         try {
-            out = new PrintStream(replicator, false, charset.name());
+            out = new PrintStream(new OutputStreamReplicator(realOut, capturedOut), false, charset.name());
+            err = new PrintStream(new OutputStreamReplicator(realErr, capturedErr), false, charset.name());
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -32,14 +35,35 @@ public class OutputCapturer {
         return out;
     }
 
+    public PrintStream err() {
+        return err;
+    }
+
     public void captureTo(OutputListener listener) {
         outCapturer.setListener(listener);
+        errCapturer.setListener(listener);
     }
 
 
     @ThreadSafe
-    private static class OutputListenerAdapter extends Writer {
-        private final ThreadLocal<OutputListener> listener = new InitializedInheritableThreadLocal<OutputListener>(new NullOutputListener());
+    private static class OutCapturer extends AbstractCapturer {
+        @Override
+        public void write(String text) {
+            listener.get().out(text);
+        }
+    }
+
+    @ThreadSafe
+    private static class ErrCapturer extends AbstractCapturer {
+        @Override
+        public void write(String text) {
+            listener.get().err(text);
+        }
+    }
+
+    @ThreadSafe
+    private static abstract class AbstractCapturer extends Writer {
+        protected final ThreadLocal<OutputListener> listener = new InitializedInheritableThreadLocal<OutputListener>(new NullOutputListener());
 
         public void setListener(OutputListener listener) {
             this.listener.set(listener);
@@ -47,8 +71,11 @@ public class OutputCapturer {
 
         @Override
         public void write(char[] cbuf, int off, int len) {
-            listener.get().out(new String(cbuf, off, len));
+            write(new String(cbuf, off, len));
         }
+
+        @Override
+        public abstract void write(String text);
 
         @Override
         public void flush() {

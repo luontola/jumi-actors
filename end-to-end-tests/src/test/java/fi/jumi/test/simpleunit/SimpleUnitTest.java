@@ -4,13 +4,13 @@
 
 package fi.jumi.test.simpleunit;
 
-import com.google.common.io.NullOutputStream;
 import fi.jumi.actors.ActorRef;
 import fi.jumi.api.drivers.TestId;
 import fi.jumi.core.output.OutputCapturer;
 import fi.jumi.core.runners.TestClassListener;
 import fi.jumi.core.runs.*;
 import fi.jumi.core.util.SpyListener;
+import org.apache.commons.io.output.NullOutputStream;
 import org.junit.Test;
 import sample.*;
 
@@ -149,7 +149,7 @@ public class SimpleUnitTest {
     // helpers
 
     private void executeTestClass(Class<?> testClass, TestClassListener listener) throws InterruptedException {
-        OutputCapturer outputCapturer = new OutputCapturer(new PrintStream(new NullOutputStream()), Charset.defaultCharset());
+        OutputCapturer outputCapturer = new OutputCapturer(new PrintStream(new NullOutputStream()), new PrintStream(new NullOutputStream()), Charset.defaultCharset());
         driver.findTests(testClass, new DefaultSuiteNotifier(ActorRef.wrap(listener), new RunIdSequence(), outputCapturer), executor);
         waitForTestsToExecute();
     }
