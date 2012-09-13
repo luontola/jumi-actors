@@ -8,6 +8,7 @@ import org.apache.commons.io.output.WriterOutputStream;
 import org.junit.Test;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -18,16 +19,16 @@ import static org.hamcrest.Matchers.is;
 public class OutputCapturerTest {
 
     private static final long TIMEOUT = 1000;
+
     private final StringWriter printedToOut = new StringWriter();
     private final PrintStream realOut = new PrintStream(new WriterOutputStream(printedToOut));
 
-    private final OutputCapturer capturer = new OutputCapturer(realOut);
-
-    // TODO: the same tests for stderr
+    private final OutputCapturer capturer = new OutputCapturer(realOut, Charset.defaultCharset());
 
 
     // basic capturing
 
+    // TODO: this same test also for stderr
     @Test
     public void passes_through_stdout_to_the_real_stdout() {
         capturer.out().print("foo");
@@ -35,6 +36,7 @@ public class OutputCapturerTest {
         assertThat(printedToOut.toString(), is("foo"));
     }
 
+    // TODO: this same test also for stderr
     @Test
     public void captures_stdout() {
         OutputListenerSpy listener = new OutputListenerSpy();

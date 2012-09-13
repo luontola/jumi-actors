@@ -8,6 +8,7 @@ import org.apache.commons.io.output.WriterOutputStream;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.*;
+import java.nio.charset.Charset;
 
 @ThreadSafe
 public class OutputCapturer {
@@ -17,8 +18,14 @@ public class OutputCapturer {
     private final OutputListenerAdapter outCapturer = new OutputListenerAdapter();
     private final PrintStream out;
 
-    public OutputCapturer(PrintStream realOut) {
-        out = new PrintStream(new OutputStreamReplicator(realOut, new WriterOutputStream(outCapturer)));
+    public OutputCapturer(PrintStream realOut, Charset charset) {
+        OutputStream capturedOut = new WriterOutputStream(outCapturer, charset);
+        OutputStream replicator = new OutputStreamReplicator(realOut, capturedOut);
+        try {
+            out = new PrintStream(replicator, false, charset.name());
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public PrintStream out() {

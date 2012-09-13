@@ -7,15 +7,15 @@
 			OK - handle missing newlines before test name
 			OK - extract NullRunVisitor from SuiteResultsSummary
 		SKIP - TextUIParser
-		!! - implement the capturer
+		OK - implement the capturer
 			OK - pass through stdout
 			OK - capture stdout
 			OK - don't capture unrelated threads / concurrent captures are isolated from each other
 			OK - capture spawned threads
 			OK - what happens to capturing spawned threads after starting a new capture?
 			OK - rename *Multiplexer to *Replicator (keep SuiteEventDemuxer as it is; it's named correctly http://www.afterdawn.com/glossary/term.cfm/demux)
-			!! - make the charset encoding explicit
-		- plug in the capturer in the runners
+			OK - make the charset encoding explicit
+		!! - plug in the capturer in the runners
 		- plug in the capturer in Main
 		- add the plumbing for forwarding the events
 	- capture and show System.err
