@@ -10,10 +10,10 @@
 		!! - implement the capturer
 			OK - pass through stdout
 			OK - capture stdout
-			!! - don't capture unrelated threads / concurrent captures are isolated from each other
-			- capture spawned threads
-			- what happens to capturing spawned threads after starting a new capture?
-			- rename *Multiplexer to *Replicator (keep SuiteEventDemuxer as it is; it's named correctly http://www.afterdawn.com/glossary/term.cfm/demux)
+			OK - don't capture unrelated threads / concurrent captures are isolated from each other
+			OK - capture spawned threads
+			OK - what happens to capturing spawned threads after starting a new capture?
+			!! - rename *Multiplexer to *Replicator (keep SuiteEventDemuxer as it is; it's named correctly http://www.afterdawn.com/glossary/term.cfm/demux)
 			- make the charset encoding explicit
 		- plug in the capturer in Main
 		- add the plumbing for forwarding the events
@@ -71,6 +71,7 @@
 	OK - consider a command for stopping actors (Thread.interrupt(), DeathPill)
 	- consider a supervisor pattern for actors (like in Akka)
 	- maybe testable by throwing exceptions from a driver or by producing non-valid .class files
+	- give a warning if a test spawned a thread which prints something after the test ended (but don't hide the output)
 
 - make jumi-actors its own project
 	would speed up the build by 50%, send a message about its stability (1.0+ version), and allow dependencies in examples and benchmarks (e.g. Akka)

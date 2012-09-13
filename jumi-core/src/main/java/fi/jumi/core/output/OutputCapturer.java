@@ -12,8 +12,7 @@ import java.io.*;
 @ThreadSafe
 public class OutputCapturer {
 
-    // PrintStream does not do any buffering of its own; only the OutputStream that
-    // it delegates to may buffer, so we don't need to call PrintStream.flush()
+    // PrintStream does not do any buffering of its own; only the OutputStream that it delegates to may buffer.
 
     private final OutputListenerAdapter outCapturer = new OutputListenerAdapter();
     private final PrintStream out;
@@ -33,15 +32,15 @@ public class OutputCapturer {
 
     @ThreadSafe
     private static class OutputListenerAdapter extends Writer {
-        private volatile OutputListener listener = new NullOutputListener();
+        private final ThreadLocal<OutputListener> listener = new InitializedInheritableThreadLocal<OutputListener>(new NullOutputListener());
 
         public void setListener(OutputListener listener) {
-            this.listener = listener;
+            this.listener.set(listener);
         }
 
         @Override
         public void write(char[] cbuf, int off, int len) {
-            listener.out(new String(cbuf, off, len));
+            listener.get().out(new String(cbuf, off, len));
         }
 
         @Override
