@@ -17,8 +17,8 @@
 			OK - make the charset encoding explicit
 		OK - plug in the capturer in the runners
 		OK - add the plumbing for forwarding the events
-		!! - create OutputCapturerInstaller
-		- plug in the capturer in Main
+		OK - create OutputCapturerInstaller
+		!! - plug in the capturer in Main
 	- capture and show System.err
 		- TextUI: print stderr
 		- OutputCapturer: capture stderr (replicate only the first two test cases which mention stdout explicitly?)
