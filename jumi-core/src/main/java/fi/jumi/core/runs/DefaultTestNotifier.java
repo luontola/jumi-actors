@@ -9,7 +9,7 @@ import fi.jumi.api.drivers.*;
 import javax.annotation.concurrent.ThreadSafe;
 
 @ThreadSafe
-public class DefaultTestNotifier implements TestNotifier {
+class DefaultTestNotifier implements TestNotifier {
 
     private final CurrentRun currentRun;
     private final TestId testId;

@@ -37,7 +37,7 @@
 	- tell launcher that what encoding the stdout/stderr use
 		- test: one daemon using ISO-8859-1 and another using UTF-8 to print åäö, the output should be the same
 	- extract low-level printing operations from TextUI into a new class?
-	- test: printing non-ascii text
+	- test: printing non-ascii text (singlebyte åäö and multibyte Asian characters)
 	- writing binary data to System.out (create a TODO, leave unsupported for now)
 	- escape special characters in logging the onPrintedOut events, e.g. TestClassListener.onPrintedOut(RunId(3), "\n")
 
