@@ -40,10 +40,20 @@
 	- test: printing non-ascii text (singlebyte åäö and multibyte Asian characters)
 	- writing binary data to System.out (create a TODO, leave unsupported for now)
 	- escape special characters in logging the onPrintedOut events, e.g. TestClassListener.onPrintedOut(RunId(3), "\n")
+		org.hamcrest.BaseDescription#toJavaSyntax
+		3.10.6. Escape Sequences for Character and String Literals
+			http://docs.oracle.com/javase/specs/jls/se7/html/jls-3.html#jls-3.10.6
+		java.lang.Character#isISOControl
+		java.lang.Integer#toHexString
+		- create a utility method for formatting the parameters, actors.eventizers.Events.toString(String className, String method, Object... args): String
+		- use it in fi.jumi.actors.eventizers.dynamic.DynamicEvent
+		- use it in fi.jumi.actors.maven.reference.dummyListener.OnSomethingEvent
+		- generate in fi.jumi.actors.maven.EventStubGenerator#getEvents
 
 - move SimpleUnit into its own module; a usable example, a seedwork (http://www.martinfowler.com/bliki/Seedwork.html)
 
 - first release (for testing framework developers)
+	- make fi.jumi.api.drivers.Driver an abstract class for easier backward compatibility
 	- write known limitations to release notes (to through all TODO comments and notes)
 	- publish a build
 	- create a demo video for framework developers
