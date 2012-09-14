@@ -16,6 +16,18 @@ import java.util.concurrent.locks.ReentrantLock;
 @ThreadSafe
 class SynchronizedPrintStream {
 
+    @SuppressWarnings({"UnusedDeclaration", "MismatchedReadAndWriteOfArray"})
+    private static final Class<?>[] DO_NOT_REMOVE_WHEN_MINIMIZING_THE_JAR = {
+            // these are the same as in net.sf.cglib.proxy.CallbackInfo.CALLBACKS
+            NoOp.class,
+            MethodInterceptor.class,
+            InvocationHandler.class,
+            LazyLoader.class,
+            Dispatcher.class,
+            FixedValue.class,
+            ProxyRefDispatcher.class,
+    };
+
     private static final Factory factory;
 
     static {

@@ -109,6 +109,7 @@
 	- add the benchmark results to the web site
 
 - misc refactoring
+	- consider implementing SynchronizedPrintStream using something else than CGLIB (ASM? Tapestry's Plastic?) to make the JAR smaller
 	- after upgrading to (presumably) JUnit 4.11, refactor BuildTest's parameterized descriptions
 		https://github.com/KentBeck/junit/pull/145
 		https://github.com/KentBeck/junit/pull/393
