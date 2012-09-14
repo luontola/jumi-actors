@@ -9,6 +9,7 @@ import org.apache.commons.io.output.WriterOutputStream;
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.*;
 import java.nio.charset.Charset;
+import java.util.concurrent.locks.ReentrantLock;
 
 @ThreadSafe
 public class OutputCapturer {
@@ -23,12 +24,9 @@ public class OutputCapturer {
     public OutputCapturer(PrintStream realOut, PrintStream realErr, Charset charset) {
         OutputStream capturedOut = new WriterOutputStream(outCapturer, charset);
         OutputStream capturedErr = new WriterOutputStream(errCapturer, charset);
-        try {
-            out = new PrintStream(new OutputStreamReplicator(realOut, capturedOut), false, charset.name());
-            err = new PrintStream(new OutputStreamReplicator(realErr, capturedErr), false, charset.name());
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        ReentrantLock lock = new ReentrantLock();
+        out = SynchronizedPrintStream.create(new OutputStreamReplicator(realOut, capturedOut), charset, lock);
+        err = SynchronizedPrintStream.create(new OutputStreamReplicator(realErr, capturedErr), charset, lock);
     }
 
     public PrintStream out() {

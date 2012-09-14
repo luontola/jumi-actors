@@ -176,6 +176,38 @@ public class OutputCapturerTest {
         assertThat(listener2.out).containsExactly();
     }
 
+    /**
+     * PrintStream synchronizes all its operations on itself, but since println() does two calls to the underlying
+     * OutputStream (or if the printed text is longer than all the internal buffers), it's possible for stdout and
+     * stderr to get interleaved.
+     */
+    @Test(timeout = TIMEOUT)
+    public void printing_to_stdout_and_stderr_concurrently() throws InterruptedException {
+        final int ITERATIONS = 30;
+        CombinedOutput combinedOutput = new CombinedOutput();
+        capturer.captureTo(combinedOutput);
+
+        runConcurrently(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        for (int i = 0; i < ITERATIONS; i++) {
+                            capturer.out().println("O");
+                        }
+                    }
+                }, new Runnable() {
+                    @Override
+                    public void run() {
+                        for (int i = 0; i < ITERATIONS; i++) {
+                            capturer.err().println("E");
+                        }
+                    }
+                }
+        );
+
+        assertThat(combinedOutput.toString()).matches("(O\\r?\\n|E\\r?\\n)+");
+    }
+
 
     // helpers
 
@@ -216,6 +248,25 @@ public class OutputCapturerTest {
         @Override
         public void err(String text) {
             err.add(text);
+        }
+    }
+
+    private static class CombinedOutput implements OutputListener {
+        private final StringBuffer sb = new StringBuffer();
+
+        @Override
+        public void out(String text) {
+            sb.append(text);
+        }
+
+        @Override
+        public void err(String text) {
+            sb.append(text);
+        }
+
+        @Override
+        public String toString() {
+            return sb.toString();
         }
     }
 }
