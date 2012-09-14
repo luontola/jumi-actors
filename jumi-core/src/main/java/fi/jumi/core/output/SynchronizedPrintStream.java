@@ -5,6 +5,7 @@
 package fi.jumi.core.output;
 
 import net.sf.cglib.proxy.*;
+import org.apache.commons.io.output.NullOutputStream;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.*;
@@ -15,14 +16,24 @@ import java.util.concurrent.locks.ReentrantLock;
 @ThreadSafe
 class SynchronizedPrintStream {
 
-    public static PrintStream create(OutputStream out, Charset charset, ReentrantLock lock) {
+    private static final Factory factory;
+
+    static {
         Enhancer e = new Enhancer();
         e.setSuperclass(PrintStream.class);
-        e.setCallback(new SynchronizedMethodInterceptor(lock));
-        e.setUseFactory(false); // TODO: generate the class only once and use the factory after that
-        return (PrintStream) e.create(
+        e.setCallback(new SynchronizedMethodInterceptor(null));
+        factory = (Factory) e.create(
+                new Class[]{OutputStream.class},
+                new Object[]{new NullOutputStream()}
+        );
+    }
+
+    public static PrintStream create(OutputStream out, Charset charset, ReentrantLock lock) {
+        return (PrintStream) factory.newInstance(
                 new Class[]{OutputStream.class, boolean.class, String.class},
-                new Object[]{out, false, charset.name()});
+                new Object[]{out, false, charset.name()},
+                new Callback[]{new SynchronizedMethodInterceptor(lock)}
+        );
     }
 
     @ThreadSafe
