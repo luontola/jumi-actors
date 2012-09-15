@@ -52,6 +52,9 @@ public class StandardOutputTest {
         assertThat(outputOf(PrintingTest.class, "testPrintNonAscii"), containsString("\u4f60\u597d")); // 你好
     }
 
+    // TODO: writing binary data to System.out: detect when using System.out as OutputStream and show it as binary data in the UI
+
+
     private String outputOf(Class<?> testClass, String testName) throws Exception {
         app.runTests(testClass);
         RunId runId = app.findRun(testClass.getSimpleName(), testName, "/", "/");

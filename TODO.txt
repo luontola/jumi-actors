@@ -42,7 +42,7 @@
 		OK - test: one daemon using ISO-8859-1 and another using UTF-8 to print åäö, the output should be the same
 		OK - test: printing unicode text (singlebyte åäö and multibyte Asian characters, e.g. 你好 or \u4f60\u597d)
 	OK - extract low-level printing operations from TextUI into a new class?
-	!! - writing binary data to System.out (create a TODO, leave unsupported for now)
+	SKIP - writing binary data to System.out (create a TODO, leave unsupported for now)
 	- escape special characters in logging the onPrintedOut events, e.g. TestClassListener.onPrintedOut(RunId(3), "\n")
 		org.hamcrest.BaseDescription#toJavaSyntax
 		3.10.6. Escape Sequences for Character and String Literals
