@@ -17,19 +17,16 @@ import java.io.*;
 @NotThreadSafe
 public class TextUI {
 
-    private final PrintStream out;
-    private final PrintStream err;
-
     // TODO: if multiple readers are needed, create a Streamer class per the original designs
     private final MessageReceiver<Event<SuiteListener>> eventStream;
+    private final Printer printer;
 
     private final SuiteEventDemuxer demuxer = new SuiteEventDemuxer();
     private final SuitePrinter suitePrinter = new SuitePrinter();
 
-    public TextUI(PrintStream out, PrintStream err, MessageReceiver<Event<SuiteListener>> eventStream) {
-        this.out = out;
-        this.err = err;
+    public TextUI(MessageReceiver<Event<SuiteListener>> eventStream, Printer printer) {
         this.eventStream = eventStream;
+        this.printer = printer;
     }
 
     public void update() {
@@ -52,33 +49,6 @@ public class TextUI {
     private void updateWithMessage(Event<SuiteListener> message) {
         demuxer.send(message);
         message.fireOn(suitePrinter);
-    }
-
-
-    // low-level printing operations
-    // TODO: extract to a new class?
-
-    private boolean beginningOfLine = true; // XXX: line not tested
-
-    private void printOut(String text) {
-        printTo(out, text);
-    }
-
-    private void printErr(String text) {
-        printTo(err, text);
-    }
-
-    private void printlnMeta(String line) {
-        if (!beginningOfLine) {
-            printTo(out, "\n");
-        }
-        printTo(out, line);
-        printTo(out, "\n"); // XXX: line not tested
-    }
-
-    private void printTo(PrintStream target, String text) {
-        target.print(text);
-        beginningOfLine = text.endsWith("\n"); // matches both "\r\n" and "\n"
     }
 
 
@@ -106,7 +76,7 @@ public class TextUI {
             int pass = summary.getPassingTests();
             int fail = summary.getFailingTests();
             int total = summary.getTotalTests();
-            printlnMeta(String.format("Pass: %d, Fail: %d, Total: %d", pass, fail, total));
+            printer.printlnMeta(String.format("Pass: %d, Fail: %d, Total: %d", pass, fail, total));
         }
     }
 
@@ -128,17 +98,17 @@ public class TextUI {
 
         @Override
         public void onPrintedOut(RunId runId, String testClass, TestId testId, String text) {
-            printOut(text);
+            printer.printOut(text);
         }
 
         @Override
         public void onPrintedErr(RunId runId, String testClass, TestId testId, String text) {
-            printErr(text);
+            printer.printErr(text);
         }
 
         @Override
         public void onFailure(RunId runId, String testClass, TestId testId, Throwable cause) {
-            printErr(getStackTrace(cause));
+            printer.printErr(getStackTrace(cause));
         }
 
         @Override
@@ -155,15 +125,15 @@ public class TextUI {
         // visual style
 
         private void printRunHeader(String testClass, RunId runId) {
-            printlnMeta(" > Run #" + runId.toInt() + " in " + testClass);
+            printer.printlnMeta(" > Run #" + runId.toInt() + " in " + testClass);
         }
 
         private void printTestName(String bullet, String testClass, TestId testId) {
-            printlnMeta(" > " + testNameIndent() + bullet + " " + demuxer.getTestName(testClass, testId));
+            printer.printlnMeta(" > " + testNameIndent() + bullet + " " + demuxer.getTestName(testClass, testId));
         }
 
         private void printRunFooter() {
-            printlnMeta("");
+            printer.printlnMeta("");
         }
 
         private String testNameIndent() {

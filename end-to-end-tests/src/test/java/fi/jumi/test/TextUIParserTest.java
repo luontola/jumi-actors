@@ -9,7 +9,7 @@ import fi.jumi.actors.queue.MessageQueue;
 import fi.jumi.core.*;
 import fi.jumi.core.events.suiteListener.SuiteListenerToEvent;
 import fi.jumi.core.runs.RunId;
-import fi.jumi.launcher.ui.TextUI;
+import fi.jumi.launcher.ui.*;
 import org.junit.Test;
 
 import java.io.*;
@@ -100,7 +100,7 @@ public class TextUIParserTest {
 
     private TextUIParser textUI() {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        TextUI ui = new TextUI(new PrintStream(out), new PrintStream(out), stream);
+        TextUI ui = new TextUI(stream, new PlainTextPrinter(new PrintStream(out)));
         ui.update();
         return new TextUIParser(out.toString());
     }

@@ -25,7 +25,7 @@ public class TextUITest {
     private final EventBuilder suite = new EventBuilder(listener);
 
     private final ByteArrayOutputStream out = new ByteArrayOutputStream();
-    private final TextUI ui = new TextUI(new PrintStream(out), new PrintStream(out), stream);
+    private final TextUI ui = new TextUI(stream, new PlainTextPrinter(new PrintStream(out)));
 
 
     private String runAndGetOutput() {

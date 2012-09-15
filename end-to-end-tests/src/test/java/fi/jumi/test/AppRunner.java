@@ -10,7 +10,7 @@ import fi.jumi.core.runs.RunId;
 import fi.jumi.core.util.Strings;
 import fi.jumi.launcher.*;
 import fi.jumi.launcher.process.*;
-import fi.jumi.launcher.ui.TextUI;
+import fi.jumi.launcher.ui.*;
 import fi.jumi.test.util.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.output.WriterOutputStream;
@@ -110,7 +110,7 @@ public class AppRunner implements TestRule {
         startTests(testsToInclude);
 
         ByteArrayOutputStream outputBuffer = new ByteArrayOutputStream();
-        TextUI ui = new TextUI(new PrintStream(outputBuffer), new PrintStream(outputBuffer), launcher.getEventStream());
+        TextUI ui = new TextUI(launcher.getEventStream(), new PlainTextPrinter(new PrintStream(outputBuffer)));
         ui.updateUntilFinished();
 
         String output = outputBuffer.toString();
