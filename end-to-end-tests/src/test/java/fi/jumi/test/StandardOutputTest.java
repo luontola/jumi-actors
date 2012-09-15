@@ -8,8 +8,10 @@ import fi.jumi.core.runs.RunId;
 import org.junit.*;
 import sample.PrintingTest;
 
+import java.nio.charset.Charset;
+
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.*;
 
 public class StandardOutputTest {
 
@@ -30,6 +32,24 @@ public class StandardOutputTest {
     @Test(timeout = Timeouts.END_TO_END_TEST)
     public void printing_to_stdout_and_stderr_is_synchronous() throws Exception {
         assertThat(outputOf(PrintingTest.class, "testInterleavedPrinting"), containsString("trololo"));
+    }
+
+    @Test(timeout = Timeouts.END_TO_END_TEST)
+    public void compensates_for_the_default_charset_of_the_daemon_process() throws Exception {
+        app.setDefaultCharset(Charset.forName("ISO-8859-1"));
+        assertThat(outputOf(PrintingTest.class, "testPrintNonAscii"), allOf(
+                containsString("default charset is ISO-8859-1"),
+                containsString("åäö")));
+
+        app.setDefaultCharset(Charset.forName("UTF-8"));
+        assertThat(outputOf(PrintingTest.class, "testPrintNonAscii"), allOf(
+                containsString("default charset is UTF-8"),
+                containsString("åäö")));
+    }
+
+    @Test(timeout = Timeouts.END_TO_END_TEST)
+    public void displays_all_unicode_characters_correctly() throws Exception {
+        assertThat(outputOf(PrintingTest.class, "testPrintNonAscii"), containsString("\u4f60\u597d")); // 你好
     }
 
     private String outputOf(Class<?> testClass, String testName) throws Exception {

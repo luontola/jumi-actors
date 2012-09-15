@@ -25,12 +25,12 @@ public class ProcessStartingDaemonSummoner implements DaemonSummoner {
     private final ProcessStarter processStarter;
     private final NetworkServer daemonConnector;
 
-    private final Writer outputListener; // TODO: remove me
+    private final OutputStream outputListener; // TODO: remove me
 
     public ProcessStartingDaemonSummoner(Steward steward,
                                          ProcessStarter processStarter,
                                          NetworkServer daemonConnector,
-                                         Writer outputListener) {
+                                         OutputStream outputListener) {
         this.steward = steward;
         this.processStarter = processStarter;
         this.daemonConnector = daemonConnector;
@@ -62,7 +62,7 @@ public class ProcessStartingDaemonSummoner implements DaemonSummoner {
         }
     }
 
-    private static void copyInBackground(final InputStream src, final Writer dest) {
+    private static void copyInBackground(final InputStream src, final OutputStream dest) {
         @NotThreadSafe
         class Copier implements Runnable {
             @Override

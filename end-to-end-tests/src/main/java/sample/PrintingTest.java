@@ -7,6 +7,8 @@ package sample;
 import fi.jumi.api.RunVia;
 import fi.jumi.test.simpleunit.SimpleUnit;
 
+import java.nio.charset.Charset;
+
 @RunVia(SimpleUnit.class)
 @SuppressWarnings({"UnusedDeclaration"})
 public class PrintingTest {
@@ -26,5 +28,11 @@ public class PrintingTest {
         System.err.print("o");
         System.out.print("l");
         System.err.print("o");
+    }
+
+    public void testPrintNonAscii() {
+        System.out.println("default charset is " + Charset.defaultCharset().name());
+        System.out.println("åäö");
+        System.out.println("你好");
     }
 }

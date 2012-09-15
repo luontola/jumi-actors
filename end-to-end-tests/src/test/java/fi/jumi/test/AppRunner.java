@@ -13,11 +13,13 @@ import fi.jumi.launcher.process.*;
 import fi.jumi.launcher.ui.TextUI;
 import fi.jumi.test.util.*;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.output.WriterOutputStream;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.util.*;
 
@@ -33,6 +35,7 @@ public class AppRunner implements TestRule {
     private final SpyProcessStarter processStarter = new SpyProcessStarter(new SystemProcessStarter());
     private final CloseAwaitableStringWriter daemonOutput = new CloseAwaitableStringWriter();
     private NetworkServer mockNetworkServer = null;
+    private Charset defaultCharset = Charset.forName("UTF-8");
 
     private JumiLauncher launcher;
     private TextUIParser ui;
@@ -42,6 +45,10 @@ public class AppRunner implements TestRule {
 
     public void setMockNetworkServer(NetworkServer mockNetworkServer) {
         this.mockNetworkServer = mockNetworkServer;
+    }
+
+    public void setDefaultCharset(Charset defaultCharset) {
+        this.defaultCharset = defaultCharset;
     }
 
     public JumiLauncher getLauncher() {
@@ -73,8 +80,8 @@ public class AppRunner implements TestRule {
             }
 
             @Override
-            protected Writer createDaemonOutputListener() {
-                return new WriterReplicator(new SystemOutWriter(), daemonOutput);
+            protected OutputStream createDaemonOutputListener() {
+                return new WriterOutputStream(new WriterReplicator(new SystemOutWriter(), daemonOutput), defaultCharset);
             }
         }
 
@@ -118,6 +125,7 @@ public class AppRunner implements TestRule {
             suiteBuilder.addJvmOptions("-javaagent:" + threadSafetyAgent);
         }
         daemonBuilder.logActorMessages(true);
+        suiteBuilder.addJvmOptions("-Dfile.encoding=" + defaultCharset.name());
         suiteBuilder.addToClassPath(TestEnvironment.getSampleClassesDir());
         suiteBuilder.includedTestsPattern(testsToInclude);
 

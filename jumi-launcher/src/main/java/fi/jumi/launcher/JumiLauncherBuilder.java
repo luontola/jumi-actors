@@ -12,7 +12,7 @@ import fi.jumi.core.util.PrefixedThreadFactory;
 import fi.jumi.launcher.daemon.*;
 import fi.jumi.launcher.process.*;
 import fi.jumi.launcher.remote.*;
-import org.apache.commons.io.output.NullWriter;
+import org.apache.commons.io.output.NullOutputStream;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.io.*;
@@ -28,7 +28,7 @@ public class JumiLauncherBuilder {
         final ExecutorService actorsThreadPool = createActorsThreadPool();
         ProcessStarter processStarter = createProcessStarter();
         final NetworkServer networkServer = createNetworkServer();
-        Writer daemonOutputListener = createDaemonOutputListener();
+        OutputStream daemonOutputListener = createDaemonOutputListener();
 
         Actors actors = new MultiThreadedActors(
                 actorsThreadPool,
@@ -93,7 +93,7 @@ public class JumiLauncherBuilder {
         return new NettyNetworkServer(debugLogging);
     }
 
-    protected Writer createDaemonOutputListener() {
-        return new NullWriter();
+    protected OutputStream createDaemonOutputListener() {
+        return new NullOutputStream();
     }
 }

@@ -34,14 +34,14 @@
 			SKIP - note: can't override just selected methods, because the print's delegate to a private method, and anyways it would couple to PrintStream's implementation details
 			SKIP - might break in future Java versions, if more methods are added to PrintStream, so beware of it
 			OK - or just use a CGLIB proxy (net.sf.cglib.proxy.MethodInterceptor which synchronizes and delegates to real PrintStream, except net.sf.cglib.proxy.NoOp for Object's methods)
-	!! - tell launcher that what encoding the stdout/stderr use
-		!! - create AppRunner.setDefaultCharset
-			- change createDaemonOutputListener's type to OutputStream (dependency injects the decision of which charset to use)
-			- use the charset in reading the daemon output;
-			- set the daemon's file.encoding system property
-		- test: one daemon using ISO-8859-1 and another using UTF-8 to print åäö, the output should be the same
-		- test: printing unicode text (singlebyte åäö and multibyte Asian characters, e.g. 你好 or \u4f60\u597d)
-	- extract low-level printing operations from TextUI into a new class?
+	OK - tell launcher that what encoding the stdout/stderr use
+		OK - create AppRunner.setDefaultCharset
+			OK - change createDaemonOutputListener's type to OutputStream (dependency injects the decision of which charset to use)
+			OK - use the charset in reading the daemon output;
+			OK - set the daemon's file.encoding system property
+		OK - test: one daemon using ISO-8859-1 and another using UTF-8 to print åäö, the output should be the same
+		OK - test: printing unicode text (singlebyte åäö and multibyte Asian characters, e.g. 你好 or \u4f60\u597d)
+	!! - extract low-level printing operations from TextUI into a new class?
 	- writing binary data to System.out (create a TODO, leave unsupported for now)
 	- escape special characters in logging the onPrintedOut events, e.g. TestClassListener.onPrintedOut(RunId(3), "\n")
 		org.hamcrest.BaseDescription#toJavaSyntax

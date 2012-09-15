@@ -10,6 +10,7 @@ import fi.jumi.core.network.*;
 import fi.jumi.launcher.FakeProcess;
 import fi.jumi.launcher.daemon.Steward;
 import fi.jumi.launcher.process.*;
+import org.apache.commons.io.output.WriterOutputStream;
 import org.junit.Test;
 
 import java.io.*;
@@ -32,7 +33,7 @@ public class ProcessStartingDaemonSummonerTest {
             steward,
             processStarter,
             daemonConnector,
-            outputListener
+            new WriterOutputStream(outputListener)
     );
 
     private final SuiteConfiguration dummySuiteConfig = new SuiteConfiguration();
