@@ -44,6 +44,18 @@
 	OK - extract low-level printing operations from TextUI into a new class?
 	SKIP - writing binary data to System.out (create a TODO, leave unsupported for now)
 	!! - refactor AppRunner.startTests
+		!! - create the default configuration to constructor
+		- don't use the builders in fields, but the immutable values
+	- make the charset explicit everywhere
+		- use java.lang.Appendable in fi.jumi.launcher.ui.PlainTextPrinter
+		- use java.lang.StringBuilder in fi.jumi.test.AppRunner#runTests
+		- in AppRunner's createDaemonOutputListener
+			- write the raw bytes to stdout (using TeeOutputStream?)
+			- remove SystemOutWriter and WriterReplicator if possible
+		- parameterize with charset everywhere, except maybe some unit tests:
+			java.io.PrintStream
+			java.io.ByteArrayOutputStream#toString
+			org.apache.commons.io.output.WriterOutputStream
 	- escape special characters in logging the onPrintedOut events, e.g. TestClassListener.onPrintedOut(RunId(3), "\n")
 		org.hamcrest.BaseDescription#toJavaSyntax
 		3.10.6. Escape Sequences for Character and String Literals
