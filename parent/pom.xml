@@ -388,7 +388,7 @@
 
                 <plugin>
                     <artifactId>maven-install-plugin</artifactId>
-                    <version>2.3.1</version>
+                    <version>2.4</version>
                 </plugin>
 
                 <plugin>
@@ -408,13 +408,13 @@
 
                 <plugin>
                     <artifactId>maven-shade-plugin</artifactId>
-                    <version>1.7.1</version>
+                    <version>2.0</version>
                     <configuration>
-                        <!-- TODO: This also minimizes jumi-core when it's included in jumi-daemon. Keep watch whether it causes problems. -->
+                        <!-- NOTE: This also minimizes jumi-core when it's included in jumi-daemon -->
                         <minimizeJar>true</minimizeJar>
-                        <!-- XXX: 1.7.1 doesn't remove this temporary file after a build, so let's at least move it out of the basedir,
-                             though it might not work in some situations: http://jira.codehaus.org/browse/MSHADE-124 -->
-                        <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml
+                        <!-- Keep the generated POM file out of the base directory -->
+                        <dependencyReducedPomLocation>
+                            ${project.build.directory}/dependency-reduced-pom.xml
                         </dependencyReducedPomLocation>
                     </configuration>
                 </plugin>
@@ -426,12 +426,12 @@
 
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.12.2</version>
+                    <version>2.12.3</version>
                 </plugin>
 
                 <plugin>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>2.12.2</version>
+                    <version>2.12.3</version>
                 </plugin>
 
                 <plugin>
