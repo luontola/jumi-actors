@@ -29,13 +29,15 @@ import static org.junit.Assert.assertNotNull;
 
 public class AppRunner implements TestRule {
 
+    private static final String DISPLAY_CHARSET = "UTF-8";
+
     // TODO: use a proper sandbox utility
     private final Path sandboxDir = TestEnvironment.getSandboxDir().resolve(UUID.randomUUID().toString());
 
     private final SpyProcessStarter processStarter = new SpyProcessStarter(new SystemProcessStarter());
     private final CloseAwaitableStringWriter daemonOutput = new CloseAwaitableStringWriter();
     private NetworkServer mockNetworkServer = null;
-    private Charset defaultCharset = Charset.forName("UTF-8");
+    private Charset daemonDefaultCharset = Charset.forName("UTF-8");
 
     private JumiLauncher launcher;
     private TextUIParser ui;
@@ -47,8 +49,8 @@ public class AppRunner implements TestRule {
         this.mockNetworkServer = mockNetworkServer;
     }
 
-    public void setDefaultCharset(Charset defaultCharset) {
-        this.defaultCharset = defaultCharset;
+    public void setDaemonDefaultCharset(Charset daemonDefaultCharset) {
+        this.daemonDefaultCharset = daemonDefaultCharset;
     }
 
     public JumiLauncher getLauncher() {
@@ -81,7 +83,7 @@ public class AppRunner implements TestRule {
 
             @Override
             protected OutputStream createDaemonOutputListener() {
-                return new WriterOutputStream(new WriterReplicator(new SystemOutWriter(), daemonOutput), defaultCharset);
+                return new WriterOutputStream(new WriterReplicator(new SystemOutWriter(), daemonOutput), daemonDefaultCharset);
             }
         }
 
@@ -110,10 +112,10 @@ public class AppRunner implements TestRule {
         startTests(testsToInclude);
 
         ByteArrayOutputStream outputBuffer = new ByteArrayOutputStream();
-        TextUI ui = new TextUI(launcher.getEventStream(), new PlainTextPrinter(new PrintStream(outputBuffer)));
+        TextUI ui = new TextUI(launcher.getEventStream(), new PlainTextPrinter(new PrintStream(outputBuffer, true, DISPLAY_CHARSET)));
         ui.updateUntilFinished();
 
-        String output = outputBuffer.toString();
+        String output = outputBuffer.toString(DISPLAY_CHARSET);
         printTextUIOutput(output);
         this.ui = new TextUIParser(output);
     }
@@ -125,7 +127,7 @@ public class AppRunner implements TestRule {
             suiteBuilder.addJvmOptions("-javaagent:" + threadSafetyAgent);
         }
         daemonBuilder.logActorMessages(true);
-        suiteBuilder.addJvmOptions("-Dfile.encoding=" + defaultCharset.name());
+        suiteBuilder.addJvmOptions("-Dfile.encoding=" + daemonDefaultCharset.name());
         suiteBuilder.addToClassPath(TestEnvironment.getSampleClassesDir());
         suiteBuilder.includedTestsPattern(testsToInclude);
 

@@ -36,12 +36,12 @@ public class StandardOutputTest {
 
     @Test(timeout = Timeouts.END_TO_END_TEST)
     public void compensates_for_the_default_charset_of_the_daemon_process() throws Exception {
-        app.setDefaultCharset(Charset.forName("ISO-8859-1"));
+        app.setDaemonDefaultCharset(Charset.forName("ISO-8859-1"));
         assertThat(outputOf(PrintingTest.class, "testPrintNonAscii"), allOf(
                 containsString("default charset is ISO-8859-1"),
                 containsString("åäö")));
 
-        app.setDefaultCharset(Charset.forName("UTF-8"));
+        app.setDaemonDefaultCharset(Charset.forName("UTF-8"));
         assertThat(outputOf(PrintingTest.class, "testPrintNonAscii"), allOf(
                 containsString("default charset is UTF-8"),
                 containsString("åäö")));
