@@ -122,16 +122,33 @@ public class AppRunner implements TestRule {
 
     public void startTests(String testsToInclude) throws IOException {
         // XXX: needs to be done here instead of the constructor, because of how JUnit runs timeouting tests in a separate thread, and this builder is not thread-safe, which will be caught by the thread-safety-checker
-        if (TestSystemProperties.useThreadSafetyAgent()) {
-            Path threadSafetyAgent = TestEnvironment.getProjectJar("thread-safety-agent");
-            suiteBuilder.addJvmOptions("-javaagent:" + threadSafetyAgent);
-        }
-        daemonBuilder.logActorMessages(true);
-        suiteBuilder.addJvmOptions("-Dfile.encoding=" + daemonDefaultCharset.name());
-        suiteBuilder.addToClassPath(TestEnvironment.getSampleClassesDir());
-        suiteBuilder.includedTestsPattern(testsToInclude);
+        // TODO: now with the phase change pattern we should be able to construct the defaults in the constructor
 
-        getLauncher().start(suiteBuilder.freeze(), daemonBuilder.freeze());
+        DaemonConfiguration daemon = userDaemonConfig().melt()
+                .logActorMessages(true)
+                .freeze();
+
+        SuiteConfiguration suite = userSuiteConfig().melt()
+                .addJvmOptions("-Dfile.encoding=" + daemonDefaultCharset.name())
+                .addToClassPath(TestEnvironment.getSampleClassesDir())
+                .includedTestsPattern(testsToInclude)
+                .freeze();
+
+        if (TestSystemProperties.useThreadSafetyAgent()) {
+            suite = suite.melt()
+                    .addJvmOptions("-javaagent:" + TestEnvironment.getProjectJar("thread-safety-agent"))
+                    .freeze();
+        }
+
+        getLauncher().start(suite, daemon);
+    }
+
+    private SuiteConfiguration userSuiteConfig() {
+        return suiteBuilder.freeze();
+    }
+
+    private DaemonConfiguration userDaemonConfig() {
+        return daemonBuilder.freeze();
     }
 
     private static void printTextUIOutput(String output) {
