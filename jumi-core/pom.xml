@@ -66,8 +66,21 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>attach-tests</id>
                         <goals>
                             <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-test-sources</id>
+                        <goals>
+                            <goal>test-jar-no-fork</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -78,7 +91,6 @@
                 <artifactId>jumi-actors-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>runnable</id>
                         <goals>
                             <goal>generate-event-stubs</goal>
                         </goals>
