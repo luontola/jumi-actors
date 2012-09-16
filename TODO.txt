@@ -50,10 +50,10 @@
 		OK - migrate to java.nio.charset.StandardCharsets
 		OK - use java.lang.Appendable in fi.jumi.launcher.ui.PlainTextPrinter
 		OK - use java.lang.StringBuilder in fi.jumi.test.AppRunner#runTests
-		!! - in AppRunner's createDaemonOutputListener
-			- write the raw bytes to stdout (using TeeOutputStream?)
-			- remove SystemOutWriter and WriterReplicator if possible
-		- parameterize with charset everywhere, except maybe some unit tests:
+		OK - in AppRunner's createDaemonOutputListener
+			OK - write the raw bytes to stdout (using TeeOutputStream?)
+			OK - remove SystemOutWriter and WriterReplicator if possible
+		!! - parameterize with charset everywhere, except maybe some unit tests:
 			java.io.PrintStream
 			java.io.ByteArrayOutputStream#toString
 			org.apache.commons.io.output.WriterOutputStream

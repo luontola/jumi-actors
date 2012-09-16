@@ -11,9 +11,9 @@ import fi.jumi.core.util.Strings;
 import fi.jumi.launcher.*;
 import fi.jumi.launcher.process.*;
 import fi.jumi.launcher.ui.*;
-import fi.jumi.test.util.*;
+import fi.jumi.test.util.CloseAwaitableStringWriter;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.output.WriterOutputStream;
+import org.apache.commons.io.output.*;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -83,7 +83,9 @@ public class AppRunner implements TestRule {
 
             @Override
             protected OutputStream createDaemonOutputListener() {
-                return new WriterOutputStream(new WriterReplicator(new SystemOutWriter(), daemonOutput), daemonDefaultCharset);
+                return new TeeOutputStream(
+                        new CloseShieldOutputStream(System.out),
+                        new WriterOutputStream(daemonOutput, daemonDefaultCharset));
             }
         }
 
