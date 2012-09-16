@@ -111,11 +111,11 @@ public class AppRunner implements TestRule {
     public void runTests(String testsToInclude) throws Exception {
         startTests(testsToInclude);
 
-        ByteArrayOutputStream outputBuffer = new ByteArrayOutputStream();
-        TextUI ui = new TextUI(launcher.getEventStream(), new PlainTextPrinter(new PrintStream(outputBuffer, true, DISPLAY_CHARSET.name())));
+        StringBuilder outputBuffer = new StringBuilder();
+        TextUI ui = new TextUI(launcher.getEventStream(), new PlainTextPrinter(outputBuffer));
         ui.updateUntilFinished();
 
-        String output = outputBuffer.toString(DISPLAY_CHARSET.name());
+        String output = outputBuffer.toString();
         printTextUIOutput(output);
         this.ui = new TextUIParser(output);
     }

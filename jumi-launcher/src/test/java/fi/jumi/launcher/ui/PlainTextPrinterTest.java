@@ -4,19 +4,15 @@
 
 package fi.jumi.launcher.ui;
 
-import org.apache.commons.io.output.WriterOutputStream;
 import org.junit.Test;
-
-import java.io.*;
-import java.nio.charset.Charset;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 public class PlainTextPrinterTest {
 
-    private final StringWriter output = new StringWriter();
-    private final PlainTextPrinter printer = new PlainTextPrinter(new PrintStream(new WriterOutputStream(output, Charset.defaultCharset(), 16, true)));
+    private final StringBuilder output = new StringBuilder();
+    private final PlainTextPrinter printer = new PlainTextPrinter(output);
 
     @Test
     public void prints_stdout() {

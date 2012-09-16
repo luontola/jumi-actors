@@ -5,15 +5,15 @@
 package fi.jumi.launcher.ui;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import java.io.PrintStream;
+import java.io.IOException;
 
 @NotThreadSafe
 public class PlainTextPrinter implements Printer {
 
-    private final PrintStream out;
+    private final Appendable out;
     private boolean beginningOfLine = true;
 
-    public PlainTextPrinter(PrintStream out) {
+    public PlainTextPrinter(Appendable out) {
         this.out = out;
     }
 
@@ -36,8 +36,12 @@ public class PlainTextPrinter implements Printer {
         printTo(out, "\n");
     }
 
-    private void printTo(PrintStream target, String text) {
-        target.print(text);
+    private void printTo(Appendable target, String text) {
+        try {
+            target.append(text);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         beginningOfLine = text.endsWith("\n"); // matches both "\r\n" and "\n"
     }
 }
