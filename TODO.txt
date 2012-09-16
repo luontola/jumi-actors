@@ -65,8 +65,11 @@
 		java.lang.Character#isISOControl
 		java.lang.Integer#toHexString
 		java.nio.charset.CharsetEncoder#canEncode
-		!! - create a utility method for formatting the parameters, actors.eventizers.Events.toString(String className, String method, Object... args): String
-		- use it in fi.jumi.actors.eventizers.dynamic.DynamicEvent
+		OK - create a utility method for formatting the parameters, actors.eventizers.Events.toString(String className, String method, Object... args): String
+			OK - escape sequences
+			OK - ISO control chars
+			OK - non-encodable chars
+		!! - use it in fi.jumi.actors.eventizers.dynamic.DynamicEvent
 		- use it in fi.jumi.actors.maven.reference.dummyListener.OnSomethingEvent
 		- generate in fi.jumi.actors.maven.EventStubGenerator#getEvents
 
