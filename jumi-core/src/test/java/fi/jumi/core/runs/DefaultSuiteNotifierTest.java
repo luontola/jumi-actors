@@ -23,7 +23,7 @@ public class DefaultSuiteNotifierTest {
     private static final RunId FIRST_RUN_ID = new RunId(RunId.FIRST_ID);
 
     private final TestClassListener listener = mock(TestClassListener.class);
-    private final OutputCapturer outputCapturer = new OutputCapturer(new PrintStream(new NullOutputStream()), new PrintStream(new NullOutputStream()), Charset.defaultCharset());
+    private final OutputCapturer outputCapturer = new OutputCapturer(new NullOutputStream(), new NullOutputStream(), Charset.defaultCharset());
     private final PrintStream stdout = outputCapturer.out();
 
     private final SuiteNotifier notifier = new DefaultSuiteNotifier(ActorRef.wrap(listener), new RunIdSequence(), outputCapturer);

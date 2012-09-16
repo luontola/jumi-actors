@@ -46,7 +46,7 @@
 	OK - refactor AppRunner.startTests
 		SKIP - create the default configuration in constructor
 		SKIP - don't use the builders in fields, but the immutable values
-	!! - make the charset explicit everywhere
+	OK - make the charset explicit everywhere
 		OK - migrate to java.nio.charset.StandardCharsets
 		OK - use java.lang.Appendable in fi.jumi.launcher.ui.PlainTextPrinter
 		OK - use java.lang.StringBuilder in fi.jumi.test.AppRunner#runTests
@@ -57,15 +57,15 @@
 			java.io.PrintStream
 			java.io.ByteArrayOutputStream#toString
 			org.apache.commons.io.output.WriterOutputStream
-		!! - make fi.jumi.core.output.OutputCapturer use OutputStream instead of PrintStream?
-	- escape special characters in logging the onPrintedOut events, e.g. TestClassListener.onPrintedOut(RunId(3), "\n")
+		OK - make fi.jumi.core.output.OutputCapturer use OutputStream instead of PrintStream?
+	!! - escape special characters in logging the onPrintedOut events, e.g. TestClassListener.onPrintedOut(RunId(3), "\n")
 		org.hamcrest.BaseDescription#toJavaSyntax
 		3.10.6. Escape Sequences for Character and String Literals
 			http://docs.oracle.com/javase/specs/jls/se7/html/jls-3.html#jls-3.10.6
 		java.lang.Character#isISOControl
 		java.lang.Integer#toHexString
 		java.nio.charset.CharsetEncoder#canEncode
-		- create a utility method for formatting the parameters, actors.eventizers.Events.toString(String className, String method, Object... args): String
+		!! - create a utility method for formatting the parameters, actors.eventizers.Events.toString(String className, String method, Object... args): String
 		- use it in fi.jumi.actors.eventizers.dynamic.DynamicEvent
 		- use it in fi.jumi.actors.maven.reference.dummyListener.OnSomethingEvent
 		- generate in fi.jumi.actors.maven.EventStubGenerator#getEvents

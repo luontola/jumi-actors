@@ -21,7 +21,7 @@ public class OutputCapturer {
     private final PrintStream out;
     private final PrintStream err;
 
-    public OutputCapturer(PrintStream realOut, PrintStream realErr, Charset charset) {
+    public OutputCapturer(OutputStream realOut, OutputStream realErr, Charset charset) {
         OutputStream capturedOut = new WriterOutputStream(outCapturer, charset);
         OutputStream capturedErr = new WriterOutputStream(errCapturer, charset);
         ReentrantLock lock = new ReentrantLock();

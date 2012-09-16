@@ -12,7 +12,6 @@ import fi.jumi.core.runners.TestClassListener;
 import org.apache.commons.io.output.NullOutputStream;
 import org.junit.Test;
 
-import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.*;
@@ -26,7 +25,7 @@ public class AssigningRunIdsTest {
 
     private final TestClassListener listener = mock(TestClassListener.class);
     private final RunIdSequence runIdSequence = new RunIdSequence();
-    private final OutputCapturer outputCapturer = new OutputCapturer(new PrintStream(new NullOutputStream()), new PrintStream(new NullOutputStream()), Charset.defaultCharset());
+    private final OutputCapturer outputCapturer = new OutputCapturer(new NullOutputStream(), new NullOutputStream(), Charset.defaultCharset());
     private final SuiteNotifier notifier = new DefaultSuiteNotifier(ActorRef.wrap(listener), runIdSequence, outputCapturer);
 
     @Test

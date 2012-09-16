@@ -22,8 +22,8 @@ public class OutputCapturerTest {
 
     private final StringWriter printedToOut = new StringWriter();
     private final StringWriter printedToErr = new StringWriter();
-    private final PrintStream realOut = new PrintStream(new WriterOutputStream(printedToOut));
-    private final PrintStream realErr = new PrintStream(new WriterOutputStream(printedToErr));
+    private final OutputStream realOut = new WriterOutputStream(printedToOut);
+    private final OutputStream realErr = new WriterOutputStream(printedToErr);
 
     private final OutputCapturer capturer = new OutputCapturer(realOut, realErr, Charset.defaultCharset());
 

@@ -14,7 +14,6 @@ import org.apache.commons.io.output.NullOutputStream;
 import org.junit.Test;
 import sample.*;
 
-import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.util.concurrent.*;
 
@@ -149,7 +148,7 @@ public class SimpleUnitTest {
     // helpers
 
     private void executeTestClass(Class<?> testClass, TestClassListener listener) throws InterruptedException {
-        OutputCapturer outputCapturer = new OutputCapturer(new PrintStream(new NullOutputStream()), new PrintStream(new NullOutputStream()), Charset.defaultCharset());
+        OutputCapturer outputCapturer = new OutputCapturer(new NullOutputStream(), new NullOutputStream(), Charset.defaultCharset());
         driver.findTests(testClass, new DefaultSuiteNotifier(ActorRef.wrap(listener), new RunIdSequence(), outputCapturer), executor);
         waitForTestsToExecute();
     }
