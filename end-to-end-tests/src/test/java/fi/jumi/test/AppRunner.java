@@ -42,8 +42,8 @@ public class AppRunner implements TestRule {
     private JumiLauncher launcher;
     private TextUIParser ui;
 
-    public final SuiteConfigurationBuilder suiteBuilder = new SuiteConfigurationBuilder();
-    public final DaemonConfigurationBuilder daemonBuilder = new DaemonConfigurationBuilder();
+    public final SuiteConfigurationBuilder suite = new SuiteConfigurationBuilder();
+    public final DaemonConfigurationBuilder daemon = new DaemonConfigurationBuilder();
 
     public void setMockNetworkServer(NetworkServer mockNetworkServer) {
         this.mockNetworkServer = mockNetworkServer;
@@ -121,34 +121,25 @@ public class AppRunner implements TestRule {
     }
 
     public void startTests(String testsToInclude) throws IOException {
-        // XXX: needs to be done here instead of the constructor, because of how JUnit runs timeouting tests in a separate thread, and this builder is not thread-safe, which will be caught by the thread-safety-checker
-        // TODO: now with the phase change pattern we should be able to construct the defaults in the constructor
+        getLauncher().start(configure(suite.freeze(), testsToInclude), configure(daemon.freeze()));
+    }
 
-        DaemonConfiguration daemon = userDaemonConfig().melt()
+    private SuiteConfiguration configure(SuiteConfiguration suite, String testsToInclude) throws IOException {
+        SuiteConfigurationBuilder builder = suite.melt();
+
+        builder.addJvmOptions("-Dfile.encoding=" + daemonDefaultCharset.name());
+        builder.addToClassPath(TestEnvironment.getSampleClassesDir());
+        builder.includedTestsPattern(testsToInclude);
+        if (TestSystemProperties.useThreadSafetyAgent()) {
+            builder.addJvmOptions("-javaagent:" + TestEnvironment.getProjectJar("thread-safety-agent"));
+        }
+        return builder.freeze();
+    }
+
+    private DaemonConfiguration configure(DaemonConfiguration daemon) {
+        return daemon.melt()
                 .logActorMessages(true)
                 .freeze();
-
-        SuiteConfiguration suite = userSuiteConfig().melt()
-                .addJvmOptions("-Dfile.encoding=" + daemonDefaultCharset.name())
-                .addToClassPath(TestEnvironment.getSampleClassesDir())
-                .includedTestsPattern(testsToInclude)
-                .freeze();
-
-        if (TestSystemProperties.useThreadSafetyAgent()) {
-            suite = suite.melt()
-                    .addJvmOptions("-javaagent:" + TestEnvironment.getProjectJar("thread-safety-agent"))
-                    .freeze();
-        }
-
-        getLauncher().start(suite, daemon);
-    }
-
-    private SuiteConfiguration userSuiteConfig() {
-        return suiteBuilder.freeze();
-    }
-
-    private DaemonConfiguration userDaemonConfig() {
-        return daemonBuilder.freeze();
     }
 
     private static void printTextUIOutput(String output) {

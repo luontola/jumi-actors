@@ -43,10 +43,11 @@
 		OK - test: printing unicode text (singlebyte åäö and multibyte Asian characters, e.g. 你好 or \u4f60\u597d)
 	OK - extract low-level printing operations from TextUI into a new class?
 	SKIP - writing binary data to System.out (create a TODO, leave unsupported for now)
-	!! - refactor AppRunner.startTests
-		!! - create the default configuration to constructor
-		- don't use the builders in fields, but the immutable values
-	- make the charset explicit everywhere
+	OK - refactor AppRunner.startTests
+		SKIP - create the default configuration in constructor
+		SKIP - don't use the builders in fields, but the immutable values
+	!! - make the charset explicit everywhere
+		!! - migrate to java.nio.charset.StandardCharsets
 		- use java.lang.Appendable in fi.jumi.launcher.ui.PlainTextPrinter
 		- use java.lang.StringBuilder in fi.jumi.test.AppRunner#runTests
 		- in AppRunner's createDaemonOutputListener
@@ -62,6 +63,7 @@
 			http://docs.oracle.com/javase/specs/jls/se7/html/jls-3.html#jls-3.10.6
 		java.lang.Character#isISOControl
 		java.lang.Integer#toHexString
+		java.nio.charset.CharsetEncoder#canEncode
 		- create a utility method for formatting the parameters, actors.eventizers.Events.toString(String className, String method, Object... args): String
 		- use it in fi.jumi.actors.eventizers.dynamic.DynamicEvent
 		- use it in fi.jumi.actors.maven.reference.dummyListener.OnSomethingEvent
