@@ -12,8 +12,6 @@ import fi.jumi.core.runs.RunId;
 import fi.jumi.launcher.ui.*;
 import org.junit.Test;
 
-import java.io.*;
-
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -99,8 +97,8 @@ public class TextUIParserTest {
     }
 
     private TextUIParser textUI() {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        TextUI ui = new TextUI(stream, new PlainTextPrinter(new PrintStream(out)));
+        StringBuilder out = new StringBuilder();
+        TextUI ui = new TextUI(stream, new PlainTextPrinter(out));
         ui.update();
         return new TextUIParser(out.toString());
     }

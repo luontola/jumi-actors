@@ -12,8 +12,6 @@ import fi.jumi.core.events.suiteListener.SuiteListenerToEvent;
 import fi.jumi.core.runs.RunId;
 import org.junit.Test;
 
-import java.io.*;
-
 import static fi.jumi.core.util.Asserts.*;
 
 public class TextUITest {
@@ -24,8 +22,8 @@ public class TextUITest {
     private final SuiteListener listener = new SuiteListenerToEvent(stream);
     private final EventBuilder suite = new EventBuilder(listener);
 
-    private final ByteArrayOutputStream out = new ByteArrayOutputStream();
-    private final TextUI ui = new TextUI(stream, new PlainTextPrinter(new PrintStream(out)));
+    private final StringBuilder out = new StringBuilder();
+    private final TextUI ui = new TextUI(stream, new PlainTextPrinter(out));
 
 
     private String runAndGetOutput() {

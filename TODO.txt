@@ -53,10 +53,11 @@
 		OK - in AppRunner's createDaemonOutputListener
 			OK - write the raw bytes to stdout (using TeeOutputStream?)
 			OK - remove SystemOutWriter and WriterReplicator if possible
-		!! - parameterize with charset everywhere, except maybe some unit tests:
+		OK - parameterize with charset everywhere, except maybe some unit tests:
 			java.io.PrintStream
 			java.io.ByteArrayOutputStream#toString
 			org.apache.commons.io.output.WriterOutputStream
+		!! - make fi.jumi.core.output.OutputCapturer use OutputStream instead of PrintStream?
 	- escape special characters in logging the onPrintedOut events, e.g. TestClassListener.onPrintedOut(RunId(3), "\n")
 		org.hamcrest.BaseDescription#toJavaSyntax
 		3.10.6. Escape Sequences for Character and String Literals
