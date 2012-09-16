@@ -19,7 +19,7 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import java.io.*;
-import java.nio.charset.Charset;
+import java.nio.charset.*;
 import java.nio.file.*;
 import java.util.*;
 
@@ -29,7 +29,7 @@ import static org.junit.Assert.assertNotNull;
 
 public class AppRunner implements TestRule {
 
-    private static final String DISPLAY_CHARSET = "UTF-8";
+    private static final Charset DISPLAY_CHARSET = StandardCharsets.UTF_8;
 
     // TODO: use a proper sandbox utility
     private final Path sandboxDir = TestEnvironment.getSandboxDir().resolve(UUID.randomUUID().toString());
@@ -37,7 +37,7 @@ public class AppRunner implements TestRule {
     private final SpyProcessStarter processStarter = new SpyProcessStarter(new SystemProcessStarter());
     private final CloseAwaitableStringWriter daemonOutput = new CloseAwaitableStringWriter();
     private NetworkServer mockNetworkServer = null;
-    private Charset daemonDefaultCharset = Charset.forName("UTF-8");
+    private Charset daemonDefaultCharset = StandardCharsets.UTF_8;
 
     private JumiLauncher launcher;
     private TextUIParser ui;
@@ -112,10 +112,10 @@ public class AppRunner implements TestRule {
         startTests(testsToInclude);
 
         ByteArrayOutputStream outputBuffer = new ByteArrayOutputStream();
-        TextUI ui = new TextUI(launcher.getEventStream(), new PlainTextPrinter(new PrintStream(outputBuffer, true, DISPLAY_CHARSET)));
+        TextUI ui = new TextUI(launcher.getEventStream(), new PlainTextPrinter(new PrintStream(outputBuffer, true, DISPLAY_CHARSET.name())));
         ui.updateUntilFinished();
 
-        String output = outputBuffer.toString(DISPLAY_CHARSET);
+        String output = outputBuffer.toString(DISPLAY_CHARSET.name());
         printTextUIOutput(output);
         this.ui = new TextUIParser(output);
     }

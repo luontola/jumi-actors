@@ -8,7 +8,7 @@ import fi.jumi.core.runs.RunId;
 import org.junit.*;
 import sample.PrintingTest;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -36,12 +36,12 @@ public class StandardOutputTest {
 
     @Test(timeout = Timeouts.END_TO_END_TEST)
     public void compensates_for_the_default_charset_of_the_daemon_process() throws Exception {
-        app.setDaemonDefaultCharset(Charset.forName("ISO-8859-1"));
+        app.setDaemonDefaultCharset(StandardCharsets.ISO_8859_1);
         assertThat(outputOf(PrintingTest.class, "testPrintNonAscii"), allOf(
                 containsString("default charset is ISO-8859-1"),
                 containsString("åäö")));
 
-        app.setDaemonDefaultCharset(Charset.forName("UTF-8"));
+        app.setDaemonDefaultCharset(StandardCharsets.UTF_8);
         assertThat(outputOf(PrintingTest.class, "testPrintNonAscii"), allOf(
                 containsString("default charset is UTF-8"),
                 containsString("åäö")));
