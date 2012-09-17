@@ -4,8 +4,9 @@
 	OK - move classes and tests there
 	OK - update end-to-end tests to include simpleunit.jar in classpath
 	OK - declare dependency to jsr305 in parent pom?
-	!! - update the tests to use the real runners and result classes
-	- move any testing infrastructure to core.testbench
+	OK - update the tests to use the real runners and result classes
+	OK - move any testing infrastructure to core.testbench
+	!! - create TestBench.out/err
 
 - first release (for testing framework developers)
 	- double-check the public APIs
