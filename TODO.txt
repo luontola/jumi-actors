@@ -1,8 +1,9 @@
 
 !! - move SimpleUnit into its own module; a usable example, a seedwork (http://www.martinfowler.com/bliki/Seedwork.html)
-	!! - create simpleunit module
-	- move classes and tests there
-	- update end-to-end tests to include simpleunit.jar in classpath
+	OK - create simpleunit module
+	OK - move classes and tests there
+	OK - update end-to-end tests to include simpleunit.jar in classpath
+	!! - declare dependency to jsr305 in parent pom?
 	- update the tests to use the real runners and result classes
 	- move any testing infrastructure to core.testbench
 
@@ -10,6 +11,8 @@
 	- double-check the public APIs
 		- make fi.jumi.api.drivers.Driver an abstract class for easier backward compatibility
 		- change SuiteConfiguration's includedTestsPattern to testClassName
+	- configure maven-deploy-plugin, remove skipping the deployment (except end-to-end-tests module)
+	- check licenses, create NOTICE file
 	- write known limitations to release notes (to through all TODO comments and notes)
 	- publish a build
 	- create a demo video for framework developers

@@ -5,7 +5,7 @@
 package sample;
 
 import fi.jumi.api.RunVia;
-import fi.jumi.test.simpleunit.SimpleUnit;
+import fi.jumi.simpleunit.SimpleUnit;
 
 import java.nio.charset.Charset;
 

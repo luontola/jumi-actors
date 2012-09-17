@@ -29,8 +29,6 @@ import static org.junit.Assert.assertNotNull;
 
 public class AppRunner implements TestRule {
 
-    private static final Charset DISPLAY_CHARSET = StandardCharsets.UTF_8;
-
     // TODO: use a proper sandbox utility
     private final Path sandboxDir = TestEnvironment.getSandboxDir().resolve(UUID.randomUUID().toString());
 
@@ -130,6 +128,7 @@ public class AppRunner implements TestRule {
         SuiteConfigurationBuilder builder = suite.melt();
 
         builder.addJvmOptions("-Dfile.encoding=" + daemonDefaultCharset.name());
+        builder.addToClassPath(TestEnvironment.getProjectJar("simpleunit"));
         builder.addToClassPath(TestEnvironment.getSampleClassesDir());
         builder.includedTestsPattern(testsToInclude);
         if (TestSystemProperties.useThreadSafetyAgent()) {

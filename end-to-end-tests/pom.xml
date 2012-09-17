@@ -21,10 +21,10 @@
 
     <dependencies>
 
+        <!-- TODO: should the test data be in a different module? then they could have both main and test sources -->
         <dependency>
-            <!-- TODO: should the test data be in a different module? then they could have both main and test sources -->
             <groupId>fi.jumi</groupId>
-            <artifactId>jumi-api</artifactId>
+            <artifactId>simpleunit</artifactId>
         </dependency>
 
         <dependency>
@@ -212,6 +212,12 @@
                                     <artifactId>jumi-launcher</artifactId>
                                     <version>${project.version}</version>
                                     <type>pom</type>
+                                </artifactItem>
+
+                                <artifactItem>
+                                    <groupId>fi.jumi</groupId>
+                                    <artifactId>simpleunit</artifactId>
+                                    <version>${project.version}</version>
                                 </artifactItem>
 
                                 <artifactItem>

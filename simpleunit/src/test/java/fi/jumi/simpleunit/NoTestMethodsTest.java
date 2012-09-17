@@ -2,16 +2,11 @@
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
-package sample;
+package fi.jumi.simpleunit;
 
 import fi.jumi.api.RunVia;
-import fi.jumi.simpleunit.SimpleUnit;
 
 @RunVia(SimpleUnit.class)
 @SuppressWarnings({"UnusedDeclaration"})
-public class OneFailingTest {
-
-    public void testFailing() {
-        throw new AssertionError("dummy failure");
-    }
+public class NoTestMethodsTest {
 }

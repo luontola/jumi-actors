@@ -10,6 +10,7 @@
     <file url="file://$PROJECT_DIR$/jumi-daemon" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jumi-launcher" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/parent" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/simpleunit" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/thread-safety-agent" charset="UTF-8" />
   </component>
 </project>

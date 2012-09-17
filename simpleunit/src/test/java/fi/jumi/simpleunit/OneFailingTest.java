@@ -1,15 +1,16 @@
-// Copyright © 2011, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
-package fi.jumi.test.simpleunit;
+package fi.jumi.simpleunit;
 
 import fi.jumi.api.RunVia;
 
 @RunVia(SimpleUnit.class)
 @SuppressWarnings({"UnusedDeclaration"})
-public class IllegalTestMethodSignatureTest {
+public class OneFailingTest {
 
-    public void testMethodWithParameters(Object illegal) {
+    public void testFailing() {
+        throw new AssertionError("dummy failure");
     }
 }

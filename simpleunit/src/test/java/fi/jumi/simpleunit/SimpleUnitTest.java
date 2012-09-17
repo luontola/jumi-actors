@@ -2,7 +2,7 @@
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
-package fi.jumi.test.simpleunit;
+package fi.jumi.simpleunit;
 
 import fi.jumi.actors.ActorRef;
 import fi.jumi.api.drivers.TestId;
@@ -12,7 +12,6 @@ import fi.jumi.core.runs.*;
 import fi.jumi.core.util.SpyListener;
 import org.apache.commons.io.output.NullOutputStream;
 import org.junit.Test;
-import sample.*;
 
 import java.nio.charset.Charset;
 import java.util.concurrent.*;
@@ -135,7 +134,7 @@ public class SimpleUnitTest {
         listener.onTestFound(TestId.ROOT, "NoTestMethodsTest");
         listener.onRunStarted(RUN_1);
         listener.onTestStarted(RUN_1, TestId.ROOT);
-        listener.onFailure(RUN_1, TestId.ROOT, new IllegalArgumentException("No test methods in class fi.jumi.test.simpleunit.NoTestMethodsTest"));
+        listener.onFailure(RUN_1, TestId.ROOT, new IllegalArgumentException("No test methods in class fi.jumi.simpleunit.NoTestMethodsTest"));
         listener.onTestFinished(RUN_1, TestId.ROOT);
         listener.onRunFinished(RUN_1);
 

@@ -34,6 +34,7 @@
         <module name="jumi-launcher" />
         <module name="parent" />
         <module name="project" />
+        <module name="simpleunit" />
         <module name="thread-safety-agent" />
       </profile>
     </annotationProcessing>
@@ -47,6 +48,7 @@
       <module name="jumi-launcher" target="1.7" />
       <module name="parent" target="1.7" />
       <module name="project" target="1.7" />
+      <module name="simpleunit" target="1.7" />
       <module name="thread-safety-agent" target="1.6" />
     </bytecodeTargetLevel>
   </component>

@@ -114,6 +114,11 @@
                 <artifactId>jumi-launcher</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>fi.jumi</groupId>
+                <artifactId>simpleunit</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <!-- Networking -->
 

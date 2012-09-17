@@ -11,6 +11,7 @@
       <module fileurl="file://$PROJECT_DIR$/jumi-launcher/jumi-launcher.iml" filepath="$PROJECT_DIR$/jumi-launcher/jumi-launcher.iml" />
       <module fileurl="file://$PROJECT_DIR$/parent/parent.iml" filepath="$PROJECT_DIR$/parent/parent.iml" />
       <module fileurl="file://$PROJECT_DIR$/project.iml" filepath="$PROJECT_DIR$/project.iml" />
+      <module fileurl="file://$PROJECT_DIR$/simpleunit/simpleunit.iml" filepath="$PROJECT_DIR$/simpleunit/simpleunit.iml" />
       <module fileurl="file://$PROJECT_DIR$/thread-safety-agent/thread-safety-agent.iml" filepath="$PROJECT_DIR$/thread-safety-agent/thread-safety-agent.iml" />
     </modules>
   </component>
