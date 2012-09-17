@@ -12,7 +12,7 @@ import java.util.*;
 import java.util.concurrent.Executor;
 
 @NotThreadSafe
-public class SimpleUnit implements Driver {
+public class SimpleUnit extends Driver {
 
     @Override
     public void findTests(Class<?> testClass, SuiteNotifier notifier, Executor executor) {

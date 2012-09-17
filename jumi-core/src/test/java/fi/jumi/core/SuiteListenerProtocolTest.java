@@ -151,14 +151,14 @@ public class SuiteListenerProtocolTest extends SuiteRunnerIntegrationHelper {
     private static class SecondDummyTest {
     }
 
-    public static class ZeroTestsDriver implements Driver {
+    public static class ZeroTestsDriver extends Driver {
         @Override
         public void findTests(Class<?> testClass, SuiteNotifier notifier, Executor executor) {
             notifier.fireTestFound(TestId.ROOT, testClass.getSimpleName());
         }
     }
 
-    public static class OneTestDriver implements Driver {
+    public static class OneTestDriver extends Driver {
         @Override
         public void findTests(Class<?> testClass, final SuiteNotifier notifier, Executor executor) {
             notifier.fireTestFound(TestId.ROOT, testClass.getSimpleName());
@@ -172,7 +172,7 @@ public class SuiteListenerProtocolTest extends SuiteRunnerIntegrationHelper {
         }
     }
 
-    public class OnePrintingTestDriver implements Driver {
+    public class OnePrintingTestDriver extends Driver {
         @Override
         public void findTests(Class<?> testClass, final SuiteNotifier notifier, Executor executor) {
             notifier.fireTestFound(TestId.ROOT, testClass.getSimpleName());
@@ -188,7 +188,7 @@ public class SuiteListenerProtocolTest extends SuiteRunnerIntegrationHelper {
         }
     }
 
-    public static class OneFailingTestDriver implements Driver {
+    public static class OneFailingTestDriver extends Driver {
         @Override
         public void findTests(Class<?> testClass, final SuiteNotifier notifier, Executor executor) {
             notifier.fireTestFound(TestId.ROOT, testClass.getSimpleName());
@@ -203,7 +203,7 @@ public class SuiteListenerProtocolTest extends SuiteRunnerIntegrationHelper {
         }
     }
 
-    public static class NestedTestsDriver implements Driver {
+    public static class NestedTestsDriver extends Driver {
         @Override
         public void findTests(final Class<?> testClass, final SuiteNotifier notifier, Executor executor) {
             notifier.fireTestFound(TestId.ROOT, testClass.getSimpleName());
@@ -223,7 +223,7 @@ public class SuiteListenerProtocolTest extends SuiteRunnerIntegrationHelper {
         }
     }
 
-    public static class ManyTestRunsDriver implements Driver {
+    public static class ManyTestRunsDriver extends Driver {
         @Override
         public void findTests(final Class<?> testClass, final SuiteNotifier notifier, Executor executor) {
             notifier.fireTestFound(TestId.ROOT, testClass.getSimpleName());

@@ -30,7 +30,7 @@ public class DriverFindersTest {
         return finder.findTestClassDriver(viaAnnotatedClassClass);
     }
 
-    static class DummyDriver implements Driver {
+    static class DummyDriver extends Driver {
         @Override
         public void findTests(Class<?> testClass, SuiteNotifier notifier, Executor executor) {
         }

@@ -82,7 +82,7 @@ public class SuiteRunnerTest extends SuiteRunnerIntegrationHelper {
     private static class SecondDummyTest {
     }
 
-    public static class DuplicateFireTestFoundDriver implements Driver {
+    public static class DuplicateFireTestFoundDriver extends Driver {
         @Override
         public void findTests(Class<?> testClass, SuiteNotifier notifier, Executor executor) {
             notifier.fireTestFound(TestId.ROOT, "fireTestFound called twice");
@@ -90,7 +90,7 @@ public class SuiteRunnerTest extends SuiteRunnerIntegrationHelper {
         }
     }
 
-    public static class FakeTestClassDriver implements Driver {
+    public static class FakeTestClassDriver extends Driver {
         @Override
         public void findTests(Class<?> testClass, SuiteNotifier notifier, Executor executor) {
             notifier.fireTestFound(TestId.ROOT, testClass.getSimpleName());
