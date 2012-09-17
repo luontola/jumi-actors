@@ -1,5 +1,5 @@
 
-!! - end-to-end tests: reporting test output
+OK - end-to-end tests: reporting test output
 	OK - capture and show System.out
 		OK - end-to-end test
 		OK - TextUI
@@ -58,7 +58,7 @@
 			java.io.ByteArrayOutputStream#toString
 			org.apache.commons.io.output.WriterOutputStream
 		OK - make fi.jumi.core.output.OutputCapturer use OutputStream instead of PrintStream?
-	!! - escape special characters in logging the onPrintedOut events, e.g. TestClassListener.onPrintedOut(RunId(3), "\n")
+	OK - escape special characters in logging the onPrintedOut events, e.g. TestClassListener.onPrintedOut(RunId(3), "\n")
 		org.hamcrest.BaseDescription#toJavaSyntax
 		3.10.6. Escape Sequences for Character and String Literals
 			http://docs.oracle.com/javase/specs/jls/se7/html/jls-3.html#jls-3.10.6
@@ -69,9 +69,9 @@
 			OK - escape sequences
 			OK - ISO control chars
 			OK - non-encodable chars
-		!! - use it in fi.jumi.actors.eventizers.dynamic.DynamicEvent
-		- use it in fi.jumi.actors.maven.reference.dummyListener.OnSomethingEvent
-		- generate in fi.jumi.actors.maven.EventStubGenerator#getEvents
+		OK - use it in fi.jumi.actors.eventizers.dynamic.DynamicEvent
+		OK - use it in fi.jumi.actors.maven.reference.dummyListener.OnSomethingEvent
+		OK - generate in fi.jumi.actors.maven.EventStubGenerator#getEvents
 
 - move SimpleUnit into its own module; a usable example, a seedwork (http://www.martinfowler.com/bliki/Seedwork.html)
 	- create simpleunit module

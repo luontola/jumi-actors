@@ -4,12 +4,11 @@
 
 package fi.jumi.actors.eventizers.dynamic;
 
-import fi.jumi.actors.eventizers.Event;
+import fi.jumi.actors.eventizers.*;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.*;
 import java.lang.reflect.*;
-import java.util.Arrays;
 
 @ThreadSafe
 public class DynamicEvent<T> implements Event<T>, Serializable {
@@ -54,9 +53,7 @@ public class DynamicEvent<T> implements Event<T>, Serializable {
 
     @Override
     public String toString() {
-        String args = Arrays.toString(nonNull(this.args));
-        args = args.substring(1, args.length() - 1);
-        return method.getDeclaringClass().getSimpleName() + "." + method.getName() + "(" + args + ")";
+        return EventToString.format(method.getDeclaringClass().getSimpleName(), method.getName(), nonNull(args));
     }
 
     private static Object[] nonNull(Object[] args) {

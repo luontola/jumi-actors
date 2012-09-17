@@ -4,7 +4,6 @@
 
 package fi.jumi.actors.maven;
 
-import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.eventizers.*;
 import fi.jumi.actors.maven.codegen.*;
 import fi.jumi.actors.queue.MessageSender;
@@ -115,6 +114,7 @@ public class EventStubGenerator {
             cb.implement(JavaType.of(Serializable.class));
             cb.fieldsAndConstructorParameters(arguments);
 
+            String eventToString = cb.getImportedName(JavaType.of(EventToString.class));
             String listenerName = cb.getImportedName(listenerInterface);
             cb.addImports(arguments);
 
@@ -125,7 +125,7 @@ public class EventStubGenerator {
 
             cb.addMethod("" +
                     "    public String toString() {\n" +
-                    "        return \"" + listenerName + "." + method.getName() + "(" + arguments.toToString() + ")\";\n" +
+                    "        return " + eventToString + ".format(\"" + listenerName + "\", \"" + method.getName() + "\"" + arguments.toActualVarargs() + ");\n" +
                     "    }\n");
 
             events.add(cb.build());

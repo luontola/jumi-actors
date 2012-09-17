@@ -4,7 +4,7 @@
 
 package fi.jumi.actors.eventizers.dynamic;
 
-import fi.jumi.actors.*;
+import fi.jumi.actors.ActorInterfaceContractsTest;
 import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.*;
 import org.junit.*;
@@ -70,7 +70,7 @@ public class DynamicEventizerTest {
     @Test
     public void the_events_have_descriptive_toString_methods() {
         frontend.onSomething("param");
-        assertThat(queue.poll().toString(), is("DummyListener.onSomething(param)"));
+        assertThat(queue.poll().toString(), is("DummyListener.onSomething(\"param\")"));
 
         frontend.multipleArguments(1, 2);
         assertThat(queue.poll().toString(), is("DummyListener.multipleArguments(1, 2)"));

@@ -1,6 +1,7 @@
 package fi.jumi.actors.maven.reference.dummyListener;
 
 import fi.jumi.actors.eventizers.Event;
+import fi.jumi.actors.eventizers.EventToString;
 import fi.jumi.actors.maven.DummyListener;
 import java.io.Serializable;
 
@@ -19,6 +20,6 @@ public class OnSomethingEvent implements Event<DummyListener>, Serializable {
     }
 
     public String toString() {
-        return "DummyListener.onSomething(" + arg0 + ", " + arg1 + ")";
+        return EventToString.format("DummyListener", "onSomething", arg0, arg1);
     }
 }

@@ -81,7 +81,7 @@ public class EventStubGeneratorTest {
         frontend.onSomething("foo", "bar");
         frontend.onOther();
 
-        assertThat(spy.poll().toString(), is("DummyListener.onSomething(foo, bar)"));
+        assertThat(spy.poll().toString(), is("DummyListener.onSomething(\"foo\", \"bar\")"));
         assertThat(spy.poll().toString(), is("DummyListener.onOther()"));
     }
 
