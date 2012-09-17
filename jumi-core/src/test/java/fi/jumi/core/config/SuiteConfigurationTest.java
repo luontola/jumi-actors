@@ -52,18 +52,18 @@ public class SuiteConfigurationTest {
     }
 
 
-    // includedTestsPattern
+    // testClass
 
     @Test
-    public void included_tests_pattern_can_be_changed() {
-        builder.includedTestsPattern("the pattern");
+    public void test_class_can_be_changed() {
+        builder.testClass("TheClass");
 
-        assertThat(configuration().includedTestsPattern(), is("the pattern"));
+        assertThat(configuration().testClass(), is("TheClass"));
     }
 
     @Test
-    public void included_tests_pattern_has_a_default_value() {
-        assertThat(configuration().includedTestsPattern(), is(SuiteConfiguration.DEFAULTS.includedTestsPattern()));
+    public void test_class_has_a_default_value() {
+        assertThat(configuration().testClass(), is(SuiteConfiguration.DEFAULTS.testClass()));
     }
 
 

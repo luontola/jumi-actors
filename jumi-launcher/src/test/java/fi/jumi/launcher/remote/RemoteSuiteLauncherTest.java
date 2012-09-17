@@ -40,7 +40,7 @@ public class RemoteSuiteLauncherTest {
     public void sends_RunTests_command_to_the_daemon_when_it_connects() {
         SuiteConfiguration config = new SuiteConfigurationBuilder()
                 .addToClassPath(Paths.get("dependency.jar"))
-                .includedTestsPattern("*Test")
+                .testClass("FooTest")
                 .freeze();
 
         suiteLauncher.runTests(config, dummyDaemonConfig, suiteListener);

@@ -108,8 +108,8 @@ public class AppRunner implements TestRule {
         runTests(clazz.getName());
     }
 
-    public void runTests(String testsToInclude) throws Exception {
-        startTests(testsToInclude);
+    public void runTests(String testClass) throws Exception {
+        startTests(testClass);
 
         StringBuilder outputBuffer = new StringBuilder();
         TextUI ui = new TextUI(launcher.getEventStream(), new PlainTextPrinter(outputBuffer));
@@ -120,17 +120,17 @@ public class AppRunner implements TestRule {
         this.ui = new TextUIParser(output);
     }
 
-    public void startTests(String testsToInclude) throws IOException {
-        getLauncher().start(configure(suite.freeze(), testsToInclude), configure(daemon.freeze()));
+    public void startTests(String testClass) throws IOException {
+        getLauncher().start(configure(suite.freeze(), testClass), configure(daemon.freeze()));
     }
 
-    private SuiteConfiguration configure(SuiteConfiguration suite, String testsToInclude) throws IOException {
+    private SuiteConfiguration configure(SuiteConfiguration suite, String testClass) throws IOException {
         SuiteConfigurationBuilder builder = suite.melt();
 
         builder.addJvmOptions("-Dfile.encoding=" + daemonDefaultCharset.name());
         builder.addToClassPath(TestEnvironment.getProjectJar("simpleunit"));
         builder.addToClassPath(TestEnvironment.getSampleClassesDir());
-        builder.includedTestsPattern(testsToInclude);
+        builder.testClass(testClass);
         if (TestSystemProperties.useThreadSafetyAgent()) {
             builder.addJvmOptions("-javaagent:" + TestEnvironment.getProjectJar("thread-safety-agent"));
         }
