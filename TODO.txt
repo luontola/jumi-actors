@@ -3,8 +3,8 @@
 	OK - double-check the public APIs
 		OK - make fi.jumi.api.drivers.Driver an abstract class for easier backward compatibility
 		OK - change SuiteConfiguration's includedTestsPattern to testClassName
-	!! - configure maven-deploy-plugin, remove skipping the deployment (except end-to-end-tests module)
-	- check licenses, create NOTICE file
+	OK - configure maven-deploy-plugin, remove skipping the deployment (except end-to-end-tests module)
+	!! - check licenses, create NOTICE file
 	- write known limitations to release notes (to through all TODO comments and notes)
 	- publish a build
 	- create a demo video for framework developers

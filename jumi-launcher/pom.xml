@@ -53,14 +53,6 @@
 
         <plugins>
 
-            <plugin>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <configuration>
-                    <!-- TODO: remove me when ready for release (until then release only jumi-actors) -->
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-
             <!-- Embed the daemon JAR inside the launcher JAR -->
 
             <plugin>

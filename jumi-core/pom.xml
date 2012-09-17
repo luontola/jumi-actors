@@ -48,13 +48,7 @@
     <build>
         <plugins>
 
-            <plugin>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <configuration>
-                    <!-- TODO: remove me when ready for release (until then release only jumi-actors) -->
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
+            <!-- The tests contain utility classes that may be of use to consumers -->
 
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -79,6 +73,8 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Event stubs -->
 
             <plugin>
                 <groupId>fi.jumi</groupId>
