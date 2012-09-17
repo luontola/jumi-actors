@@ -1,80 +1,6 @@
 
-OK - end-to-end tests: reporting test output
-	OK - capture and show System.out
-		OK - end-to-end test
-		OK - TextUI
-			OK - print stdout
-			OK - handle missing newlines before test name
-			OK - extract NullRunVisitor from SuiteResultsSummary
-		SKIP - TextUIParser
-		OK - implement the capturer
-			OK - pass through stdout
-			OK - capture stdout
-			OK - don't capture unrelated threads / concurrent captures are isolated from each other
-			OK - capture spawned threads
-			OK - what happens to capturing spawned threads after starting a new capture?
-			OK - rename *Multiplexer to *Replicator (keep SuiteEventDemuxer as it is; it's named correctly http://www.afterdawn.com/glossary/term.cfm/demux)
-			OK - make the charset encoding explicit
-		OK - plug in the capturer in the runners
-		OK - add the plumbing for forwarding the events
-		OK - create OutputCapturerInstaller
-		OK - plug in the capturer in Main
-	OK - capture and show System.err
-		OK - TextUI: print stderr
-		OK - OutputCapturer: capture stderr (replicate only the first two test cases which mention stdout explicitly?)
-		OK - SuiteListenerProtocolTest#suite_with_printing_tests (will drive all the plumbing)
-	OK - test: printing from the same thread to out & err should be synchronous, unlike in probably every IDE
-	OK - hacking System.out/err
-		OK - tests should restore the original out/err defensively in @After
-		OK - concurrency test, no interleaving: out.println("O") and err.println("E") from different threads, output must not contain "OE"/"EO" but only "O\nE\n"
-		OK - unit test: the PrintStreams for our & err must sync on the same object, testable by checking holdsLock in a mock OutputStream
-			SKIP - Thread.holdsLock(java.lang.Object)
-			OK - ReentrantLock.isHeldByCurrentThread()
-		OK - generic test: all methods on our custom PrintStream must delegate to the PrintStream given as parameter, testable with reflection and CGLIB-proxy as target mock
-			SKIP - note: can't override just selected methods, because the print's delegate to a private method, and anyways it would couple to PrintStream's implementation details
-			SKIP - might break in future Java versions, if more methods are added to PrintStream, so beware of it
-			OK - or just use a CGLIB proxy (net.sf.cglib.proxy.MethodInterceptor which synchronizes and delegates to real PrintStream, except net.sf.cglib.proxy.NoOp for Object's methods)
-	OK - tell launcher that what encoding the stdout/stderr use
-		OK - create AppRunner.setDefaultCharset
-			OK - change createDaemonOutputListener's type to OutputStream (dependency injects the decision of which charset to use)
-			OK - use the charset in reading the daemon output;
-			OK - set the daemon's file.encoding system property
-		OK - test: one daemon using ISO-8859-1 and another using UTF-8 to print åäö, the output should be the same
-		OK - test: printing unicode text (singlebyte åäö and multibyte Asian characters, e.g. 你好 or \u4f60\u597d)
-	OK - extract low-level printing operations from TextUI into a new class?
-	SKIP - writing binary data to System.out (create a TODO, leave unsupported for now)
-	OK - refactor AppRunner.startTests
-		SKIP - create the default configuration in constructor
-		SKIP - don't use the builders in fields, but the immutable values
-	OK - make the charset explicit everywhere
-		OK - migrate to java.nio.charset.StandardCharsets
-		OK - use java.lang.Appendable in fi.jumi.launcher.ui.PlainTextPrinter
-		OK - use java.lang.StringBuilder in fi.jumi.test.AppRunner#runTests
-		OK - in AppRunner's createDaemonOutputListener
-			OK - write the raw bytes to stdout (using TeeOutputStream?)
-			OK - remove SystemOutWriter and WriterReplicator if possible
-		OK - parameterize with charset everywhere, except maybe some unit tests:
-			java.io.PrintStream
-			java.io.ByteArrayOutputStream#toString
-			org.apache.commons.io.output.WriterOutputStream
-		OK - make fi.jumi.core.output.OutputCapturer use OutputStream instead of PrintStream?
-	OK - escape special characters in logging the onPrintedOut events, e.g. TestClassListener.onPrintedOut(RunId(3), "\n")
-		org.hamcrest.BaseDescription#toJavaSyntax
-		3.10.6. Escape Sequences for Character and String Literals
-			http://docs.oracle.com/javase/specs/jls/se7/html/jls-3.html#jls-3.10.6
-		java.lang.Character#isISOControl
-		java.lang.Integer#toHexString
-		java.nio.charset.CharsetEncoder#canEncode
-		OK - create a utility method for formatting the parameters, actors.eventizers.Events.toString(String className, String method, Object... args): String
-			OK - escape sequences
-			OK - ISO control chars
-			OK - non-encodable chars
-		OK - use it in fi.jumi.actors.eventizers.dynamic.DynamicEvent
-		OK - use it in fi.jumi.actors.maven.reference.dummyListener.OnSomethingEvent
-		OK - generate in fi.jumi.actors.maven.EventStubGenerator#getEvents
-
-- move SimpleUnit into its own module; a usable example, a seedwork (http://www.martinfowler.com/bliki/Seedwork.html)
-	- create simpleunit module
+!! - move SimpleUnit into its own module; a usable example, a seedwork (http://www.martinfowler.com/bliki/Seedwork.html)
+	!! - create simpleunit module
 	- move classes and tests there
 	- update end-to-end tests to include simpleunit.jar in classpath
 	- update the tests to use the real runners and result classes
@@ -139,6 +65,9 @@ OK - end-to-end tests: reporting test output
 	- add the benchmark results to the web site
 
 - misc refactoring
+	- when default charset is ISO-8859-1 (fi.jumi.test.StandardOutputTest#compensates_for_the_default_charset_of_the_daemon_process), Unicode chars are lost already when they are captured (nihao becomes ??); should we do something about it?
+		(1) We could have an internal PrintStream which uses UTF-8/16 and capture losslessly from it, after which it's routed to a PrintStream which uses the actual encoding (might interfere with writing binary data to stdout).
+		(2) Or then keep it as is. That would be the way that System.out works normally. Principle of least surprise?
 	- consider implementing SynchronizedPrintStream using something else than CGLIB (ASM? Tapestry's Plastic?) to make the JAR smaller
 	- after upgrading to (presumably) JUnit 4.11, refactor BuildTest's parameterized descriptions
 		https://github.com/KentBeck/junit/pull/145
