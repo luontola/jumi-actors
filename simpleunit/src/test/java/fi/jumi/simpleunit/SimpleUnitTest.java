@@ -18,13 +18,15 @@ public class SimpleUnitTest {
 
     private static final RunId RUN_1 = new RunId(1);
 
+    private final TestBench testBench = new TestBench();
+
     // TODO: think of a high-level API to write tests against, so that it hides Jumi's low-level event protocol
 
     @Test
     public void the_test_class_is_named_after_its_simple_name() {
         Class<OnePassingTest> testClass = OnePassingTest.class;
 
-        SuiteEventDemuxer results = TestBench.runTests(testClass);
+        SuiteEventDemuxer results = testBench.run(testClass);
 
         assertThat(results.getTestName(testClass.getName(), TestId.ROOT), is("OnePassingTest"));
     }
@@ -33,7 +35,7 @@ public class SimpleUnitTest {
     public void the_tests_are_methods_whose_name_starts_with_test() throws InterruptedException {
         Class<OnePassingTest> testClass = OnePassingTest.class;
 
-        SuiteEventDemuxer results = TestBench.runTests(testClass);
+        SuiteEventDemuxer results = testBench.run(testClass);
 
         assertThat(results.getTestName(testClass.getName(), TestId.of(0)), is("testPassing"));
     }
@@ -52,7 +54,7 @@ public class SimpleUnitTest {
         listener.onRunFinished(RUN_1, testClass.getName());
 
         spy.replay();
-        SuiteEventDemuxer results = TestBench.runTests(testClass);
+        SuiteEventDemuxer results = testBench.run(testClass);
         results.visitAllRuns(listener);
         spy.verify();
     }
@@ -72,7 +74,7 @@ public class SimpleUnitTest {
         listener.onRunFinished(RUN_1, testClass.getName());
 
         spy.replay();
-        SuiteEventDemuxer results = TestBench.runTests(testClass);
+        SuiteEventDemuxer results = testBench.run(testClass);
         results.visitAllRuns(listener);
         spy.verify();
     }
@@ -90,7 +92,7 @@ public class SimpleUnitTest {
         listener.onRunFinished(RUN_1, testClass.getName());
 
         spy.replay();
-        SuiteEventDemuxer results = TestBench.runTests(testClass);
+        SuiteEventDemuxer results = testBench.run(testClass);
         results.visitAllRuns(listener);
         spy.verify();
 
@@ -113,7 +115,7 @@ public class SimpleUnitTest {
         listener.onRunFinished(RUN_1, testClass.getName());
 
         spy.replay();
-        SuiteEventDemuxer results = TestBench.runTests(testClass);
+        SuiteEventDemuxer results = testBench.run(testClass);
         results.visitAllRuns(listener);
         spy.verify();
 
@@ -135,7 +137,7 @@ public class SimpleUnitTest {
         listener.onRunFinished(RUN_1, testClass.getName());
 
         spy.replay();
-        SuiteEventDemuxer results = TestBench.runTests(testClass);
+        SuiteEventDemuxer results = testBench.run(testClass);
         results.visitAllRuns(listener);
         spy.verify();
     }

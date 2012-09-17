@@ -10,8 +10,9 @@ import fi.jumi.actors.listeners.*;
 import fi.jumi.api.drivers.Driver;
 import fi.jumi.core.*;
 import fi.jumi.core.drivers.DriverFinder;
-import fi.jumi.core.files.*;
+import fi.jumi.core.files.TestClassFinder;
 import fi.jumi.core.output.OutputCapturer;
+import fi.jumi.core.testbench.*;
 import fi.jumi.core.util.SpyListener;
 import org.apache.commons.io.output.NullOutputStream;
 
@@ -20,6 +21,8 @@ import java.nio.charset.Charset;
 import java.util.concurrent.Executor;
 
 public abstract class SuiteRunnerIntegrationHelper {
+
+    // TODO: replace with TestBench?
 
     private final SpyListener<SuiteListener> spy = new SpyListener<>(SuiteListener.class);
     protected final SuiteListener expect = spy.getListener();
@@ -58,33 +61,5 @@ public abstract class SuiteRunnerIntegrationHelper {
                 new SuiteRunner(listener, testClassFinder, driverFinder, actorThread, executor, outputCapturer));
         runner.tell().start();
         actors.processEventsUntilIdle();
-    }
-
-    private static class StubDriverFinder implements DriverFinder {
-        private final Driver driver;
-
-        public StubDriverFinder(Driver driver) {
-            this.driver = driver;
-        }
-
-        @Override
-        public Driver findTestClassDriver(Class<?> testClass) {
-            return driver;
-        }
-    }
-
-    private static class StubTestClassFinder implements TestClassFinder {
-        private final Class<?>[] testClasses;
-
-        public StubTestClassFinder(Class<?>... testClasses) {
-            this.testClasses = testClasses;
-        }
-
-        @Override
-        public void findTestClasses(ActorRef<TestClassFinderListener> listener) {
-            for (Class<?> testClass : testClasses) {
-                listener.tell().onTestClassFound(testClass);
-            }
-        }
     }
 }

@@ -1,12 +1,12 @@
 
-!! - move SimpleUnit into its own module; a usable example, a seedwork (http://www.martinfowler.com/bliki/Seedwork.html)
+OK - move SimpleUnit into its own module; a usable example, a seedwork (http://www.martinfowler.com/bliki/Seedwork.html)
 	OK - create simpleunit module
 	OK - move classes and tests there
 	OK - update end-to-end tests to include simpleunit.jar in classpath
 	OK - declare dependency to jsr305 in parent pom?
 	OK - update the tests to use the real runners and result classes
 	OK - move any testing infrastructure to core.testbench
-	!! - create TestBench.out/err
+	OK - create TestBench.out/err
 
 - first release (for testing framework developers)
 	- double-check the public APIs
@@ -69,6 +69,7 @@
 	- add the benchmark results to the web site
 
 - misc refactoring
+	- replace SuiteRunnerIntegrationHelper with TestBench?
 	- when default charset is ISO-8859-1 (fi.jumi.test.StandardOutputTest#compensates_for_the_default_charset_of_the_daemon_process), Unicode chars are lost already when they are captured (nihao becomes ??); should we do something about it?
 		(1) We could have an internal PrintStream which uses UTF-8/16 and capture losslessly from it, after which it's routed to a PrintStream which uses the actual encoding (might interfere with writing binary data to stdout).
 		(2) Or then keep it as is. That would be the way that System.out works normally. Principle of least surprise?
