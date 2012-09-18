@@ -5,8 +5,8 @@
 		OK - change SuiteConfiguration's includedTestsPattern to testClassName
 	OK - configure maven-deploy-plugin, remove skipping the deployment (except end-to-end-tests module)
 	OK - check licenses, create NOTICE file
-	!! - write known limitations to release notes (to through all TODO comments and notes)
-	- publish a build
+	OK - write known limitations to release notes (to through all TODO comments and notes)
+	!! - publish a build
 	- create a demo video for framework developers
 	- javadocs on web site, at least jumi-api
 	- advertise publicly
