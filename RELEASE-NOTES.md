@@ -2,7 +2,7 @@
 Release Notes
 =============
 
-### next release
+### Upcoming Changes
 
 - TBD
 

@@ -12,7 +12,7 @@ RELEASE_NOTES_FILE = ARGV.shift
 
 old_release_notes = IO.read(RELEASE_NOTES_FILE)
 new_release_notes = old_release_notes.sub(/^(### Jumi)/,
-                                          "### next release\n\n- TBD\n\n\\1")
+                                          "### Upcoming Changes\n\n- TBD\n\n\\1")
 
 File.open(RELEASE_NOTES_FILE, 'wb') { |file|
   file.write(new_release_notes)
