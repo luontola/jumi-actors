@@ -2,6 +2,10 @@
 Release Notes
 =============
 
+### next release
+
+- TBD
+
 ### Jumi 0.1.196 (2012-09-19)
 
 First release of the Jumi test runner. This release is targeted at the developers of testing frameworks and other tools, for them to start implementing support for Jumi. This release includes the following features:
