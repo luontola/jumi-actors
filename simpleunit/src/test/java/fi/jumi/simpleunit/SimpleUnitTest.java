@@ -4,6 +4,7 @@
 
 package fi.jumi.simpleunit;
 
+import fi.jumi.api.RunVia;
 import fi.jumi.api.drivers.TestId;
 import fi.jumi.core.results.*;
 import fi.jumi.core.runs.RunId;
@@ -132,7 +133,7 @@ public class SimpleUnitTest {
         listener.onRunStarted(RUN_1, testClass.getName());
         listener.onTestStarted(RUN_1, testClass.getName(), TestId.ROOT);
         listener.onFailure(RUN_1, testClass.getName(), TestId.ROOT,
-                new IllegalArgumentException("No test methods in class fi.jumi.simpleunit.NoTestMethodsTest"));
+                new IllegalArgumentException("No test methods in class fi.jumi.simpleunit.SimpleUnitTest$NoTestMethodsTest"));
         listener.onTestFinished(RUN_1, testClass.getName(), TestId.ROOT);
         listener.onRunFinished(RUN_1, testClass.getName());
 
@@ -140,5 +141,54 @@ public class SimpleUnitTest {
         SuiteEventDemuxer results = testBench.run(testClass);
         results.visitAllRuns(listener);
         spy.verify();
+    }
+
+
+    // guinea pigs
+
+    @RunVia(SimpleUnit.class)
+    @SuppressWarnings({"UnusedDeclaration"})
+    public static class OnePassingTest {
+
+        public void testPassing() {
+        }
+
+        public void unrelatedMethod() {
+            // doesn't start with "test", so is not a test
+        }
+    }
+
+    @RunVia(SimpleUnit.class)
+    @SuppressWarnings({"UnusedDeclaration"})
+    public static class OneFailingTest {
+
+        public void testFailing() {
+            throw new AssertionError("dummy failure");
+        }
+    }
+
+    @RunVia(SimpleUnit.class)
+    @SuppressWarnings({"UnusedDeclaration"})
+    public static class FailureInConstructorTest {
+
+        public FailureInConstructorTest() {
+            throw new RuntimeException("dummy exception");
+        }
+
+        public void testNotExecuted() {
+        }
+    }
+
+    @RunVia(SimpleUnit.class)
+    @SuppressWarnings({"UnusedDeclaration"})
+    public static class IllegalTestMethodSignatureTest {
+
+        public void testMethodWithParameters(Object illegal) {
+        }
+    }
+
+    @RunVia(SimpleUnit.class)
+    @SuppressWarnings({"UnusedDeclaration"})
+    public static class NoTestMethodsTest {
     }
 }
