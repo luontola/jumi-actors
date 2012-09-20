@@ -33,26 +33,27 @@ class CurrentRun {
 
     public void fireTestStarted(TestId testId) {
         RunContext currentRun = this.currentRun.get();
+
+        // notify run started?
         if (currentRun == null) {
             currentRun = new RunContext(runIdSequence.nextRunId());
             this.currentRun.set(currentRun);
             fireRunStarted(currentRun);
         }
+
+        // notify test started
         currentRun.countTestStarted();
         listener.tell().onTestStarted(currentRun.runId, testId);
-    }
-
-    public void fireFailure(TestId testId, Throwable cause) {
-        RunContext currentRun = this.currentRun.get();
-        listener.tell().onFailure(currentRun.runId, testId, cause);
     }
 
     public void fireTestFinished(TestId testId) {
         RunContext currentRun = this.currentRun.get();
 
-        listener.tell().onTestFinished(currentRun.runId, testId);
+        // notify test finished
         currentRun.countTestFinished();
+        listener.tell().onTestFinished(currentRun.runId, testId);
 
+        // notify run finished?
         if (currentRun.isRunFinished()) {
             this.currentRun.remove();
             fireRunFinished(currentRun);
@@ -67,6 +68,11 @@ class CurrentRun {
     private void fireRunFinished(RunContext currentRun) {
         outputCapturer.captureTo(new NullOutputListener());
         listener.tell().onRunFinished(currentRun.runId);
+    }
+
+    public void fireFailure(TestId testId, Throwable cause) {
+        RunContext currentRun = this.currentRun.get();
+        listener.tell().onFailure(currentRun.runId, testId, cause);
     }
 
 
