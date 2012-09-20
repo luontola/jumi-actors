@@ -8,9 +8,10 @@
 	OK - write known limitations to release notes (to through all TODO comments and notes)
 	OK - publish a build
 	OK - create a demo video for framework developers
-	!! - wait for Maven Central to be synced, check that the examples can be run
-	- javadocs on web site, at least jumi-api
+	OK - wait for Maven Central to be synced, check that the examples can be run
+	!! - javadocs on web site, at least jumi-api
 	- advertise publicly (video, release notes, intro text)
+		OK - twitter, FB, G+
 		- jumi mailing list
 		- own blog
 		- relevant mailing lists

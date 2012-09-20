@@ -4,7 +4,7 @@ Release Notes
 
 ### Upcoming Changes
 
-- TBD
+- Removed from jumi-api's Javadocs mentions of planned features which do not yet exist
 
 ### Jumi 0.1.196 (2012-09-19)
 
