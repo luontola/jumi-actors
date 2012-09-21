@@ -12,19 +12,32 @@
 	OK - javadocs on web site, at least jumi-api
 	!! - advertise publicly (video, release notes, intro text)
 		OK - twitter, FB, G+
-		!! - jumi mailing list
-		- own blog
-		- relevant mailing lists
-		- relevant news sites
+		OK - jumi mailing list
+		OK - own blog
+		OK - relevant news sites
+		!! - relevant mailing lists
 	- contact selected testing framework developers directly
 
 - migrate Specsy to use Jumi
-	- create Jumi driver
+	!! - create Jumi driver
+		OK - update Path
+		OK - create Jumi adapter
+		OK - update tests to run using Jumi
+		OK - remove JUnit related code
+		!! - create Jumi driver and bootstrapper
 	- convert from Scala to Java
+	- start using PIT
 	- frontend for Scala
 	- frontend for Java
 	- frontend for Groovy
 	- release 2.0
+
+- NPE if annotation is missing:
+java.lang.NullPointerException
+	at fi.jumi.core.drivers.RunViaAnnotationDriverFinder.findTestClassDriver(RunViaAnnotationDriverFinder.java:18)
+	at fi.jumi.core.runners.SuiteRunner.onTestClassFound(SuiteRunner.java:63)
+	- give a better error message, or just a warning
+	- after adding JUnit support, this can be expected to fail, after which the next strategy in chain should be tried
 
 - end-to-end tests: running multiple test classes
 	- it's not sure whether SuiteRunner works correctly when there are many test classes
@@ -185,6 +198,7 @@
 		- cancel idleTimeout if somebody connects again (unit test only?)
 	- if daemon dies unexpectedly (System.exit/halt, JVM crash etc.), report it and restart next time
 		http://vanillajava.blogspot.com/2011/12/test-complete-failure-of-jvm.html
+	- how to show unfinished test runs in the TextUI? (both JVM crash unfinishing all tests, and buggy testing framework unfinishing some tests)
 	- if daemon disconnects due to network problem, reconnect and resume where we were left?
 		- should not exit the JVM (due to idle timeout) while tests are running
 	- make it reliable
@@ -285,8 +299,8 @@
 		announce [M]
 			update-www
 			send-emails
-	- upgrade to Go 12.3
-	- enable deployment for all except end-to-end tests and the aggregate pom: jumi-api, jumi-core, jumi-daemon, jumi-launcher
+	OK - upgrade to Go 12.3
+	OK - enable deployment for all except end-to-end tests and the aggregate pom: jumi-api, jumi-core, jumi-daemon, jumi-launcher
 	- create jumi-integration and add it to the pipeline
 		- integration tests for Specsy
 		- platform for running the tests
