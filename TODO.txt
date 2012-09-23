@@ -19,16 +19,16 @@
 	- contact selected testing framework developers directly
 
 - migrate Specsy to use Jumi
-	!! - create Jumi driver
+	OK - create Jumi driver
 		OK - update Path
 		OK - create Jumi adapter
 		OK - update tests to run using Jumi
 		OK - remove JUnit related code
-		!! - create Jumi driver and bootstrapper
-	- convert from Scala to Java
-	- start using PIT
-	- frontend for Scala
-	- frontend for Java
+		OK - create Jumi driver and bootstrapper
+	OK - convert from Scala to Java
+	OK - start using PIT
+	OK - frontend for Scala
+	OK - frontend for Java
 	- frontend for Groovy
 	- release 2.0
 
@@ -38,6 +38,8 @@ java.lang.NullPointerException
 	at fi.jumi.core.runners.SuiteRunner.onTestClassFound(SuiteRunner.java:63)
 	- give a better error message, or just a warning
 	- after adding JUnit support, this can be expected to fail, after which the next strategy in chain should be tried
+
+- make @RunVia inherited
 
 - end-to-end tests: running multiple test classes
 	- it's not sure whether SuiteRunner works correctly when there are many test classes
@@ -65,6 +67,8 @@ java.lang.NullPointerException
 	- consider a supervisor pattern for actors (like in Akka)
 	- maybe testable by throwing exceptions from a driver or by producing non-valid .class files
 	- give a warning if a test spawned a thread which prints something after the test ended (but don't hide the output)
+
+- given an error message if starting the daemon fails (for example out of memory)
 
 - make jumi-actors its own project
 	would speed up the build by 50%, send a message about its stability (1.0+ version), and allow dependencies in examples and benchmarks (e.g. Akka)
