@@ -33,6 +33,13 @@ ROADMAP:
 	- Build tool, IDE and CI integration (Maven has the highest priority)
 	- Well designed UI
 	[release 1.0 around here?]
+	- Ignored/filtered tests
+		- Suggestion: Provide SuiteNotifier.isIgnored(TestId id, String name) that drivers may query, to get common input from IDEs. Either parameter may be null, if it's not uniquely identifying for that framework (e.g. TestId based on order of methods, or allows duplicate test names)
+		- Also a notification mechanism SuiteNotifier.fireTestIgnored(TestId) to show in results what the drivers ultimately decided to ignore
+	- Pending tests
+		- Must support marking a test pending both before and after starting to execute it (e.g. @Ignore vs. assumeThat())
+		- Should the pending status be per suite, or per run? (i.e. when a test is run multiple times, can some of them be pending and not others?)
+	- Test groups/tags for choosing which tests to execute. Probably string based (http://tech.groups.yahoo.com/group/junit/message/24017) or hybrid (http://tech.groups.yahoo.com/group/junit/message/24024)
 	- Statistics (required by many other features)
 	- Test priorization, run first those which will most probably fail, run fast tests first etc.
 	- Detect what classes a test depends on (e.g. by spying on the class loader) and run only those (or those first)

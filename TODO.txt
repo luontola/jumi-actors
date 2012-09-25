@@ -10,13 +10,13 @@
 	OK - create a demo video for framework developers
 	OK - wait for Maven Central to be synced, check that the examples can be run
 	OK - javadocs on web site, at least jumi-api
-	!! - advertise publicly (video, release notes, intro text)
+	OK - advertise publicly (video, release notes, intro text)
 		OK - twitter, FB, G+
 		OK - jumi mailing list
 		OK - own blog
 		OK - relevant news sites
-		!! - relevant mailing lists
-	- contact selected testing framework developers directly
+		OK - relevant mailing lists
+	!! - contact selected testing framework developers directly
 
 - migrate Specsy to use Jumi
 	OK - create Jumi driver
@@ -31,6 +31,16 @@
 	OK - frontend for Java
 	- frontend for Groovy
 	- release 2.0
+
+- extract test doubles from Specsy to testbench
+	- SilentOutputCapturer (as overloaded OutputCapturer constructor? UTF_16BE should be the simplest conversion, same as what Strings use)
+		http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/6-b14/sun/nio/cs/UTF_8.java
+		http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/6-b14/sun/nio/cs/UTF_16BE.java
+		http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/6-b14/sun/nio/cs/UnicodeEncoder.java
+		http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/6-b14/sun/nio/cs/UnicodeDecoder.java
+	- FakeSuiteNotifier
+	- others?
+	- try to avoid commons-io dependency on testers; create our own NullOutputStream, or is that constructor enough?
 
 - NPE if annotation is missing:
 java.lang.NullPointerException
