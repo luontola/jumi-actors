@@ -20,7 +20,7 @@ unless ARGV.length == 1
 end
 OUTPUT_FILE = ARGV.shift
 
-module_list_items = Dir.glob('*/target/pit-reports/*/index.html').sort.
+module_list_items = Dir.glob('*/target/pit-reports/index.html').sort.
         map { |module_index| module_list_item(module_index) }.
         join("\n")
 

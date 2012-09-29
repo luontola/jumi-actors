@@ -507,6 +507,7 @@
                                 <pattern>fi.jumi.*</pattern>
                             </targetTests>
                             <failWhenNoMutations>false</failWhenNoMutations>
+                            <timestampedReports>false</timestampedReports>
                             <mutators>
                                 <mutator>ALL</mutator>
                             </mutators>
