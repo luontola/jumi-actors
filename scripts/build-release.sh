@@ -12,7 +12,7 @@ TAG="v$RELEASE_VERSION"
 ruby scripts/prepare-release-notes.rb RELEASE-NOTES.md "$RELEASE_VERSION"
 git add RELEASE-NOTES.md
 git commit -m "Release $RELEASE_VERSION"
-git tag -u "$GPG_KEYNAME" -m "Jumi $RELEASE_VERSION" -m "$RELEASE_NOTES" "$TAG"
+git tag -u "$GPG_KEYNAME" -m "Jumi Actors $RELEASE_VERSION" -m "$RELEASE_NOTES" "$TAG"
 export RELEASE_REVISION=`git rev-parse HEAD`
 
 mkdir build

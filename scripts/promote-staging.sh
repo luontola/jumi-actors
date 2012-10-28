@@ -19,4 +19,4 @@ mvn org.sonatype.plugins:nexus-maven-plugin:2.1:staging-close \
     -Dnexus.groupId=fi.jumi \
     -Dnexus.artifactId=parent \
     -Dnexus.version="$VERSION" \
-    -Dnexus.description="Jumi $VERSION"
+    -Dnexus.description="Jumi Actors $VERSION"

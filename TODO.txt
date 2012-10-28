@@ -4,9 +4,10 @@
 	OK - copy jumi to jumi-actors repository, disconnect their histories
 	OK - remove unnecessary stuff from parent POM
 	OK - update readme, release notes etc.
-	!! - update all links on the web site, add links to all repositories
-	- rename groupId to fi.jumi.actors
-	- move user guide to the new project's wiki
+	OK - setup CI
+	OK - update all links on the web site, add links to all repositories
+	OK - move user guide to the new project's wiki
+	!! - rename groupId to fi.jumi.actors
 	- refactor build scripts to be project-independent
 	- move build scripts to their own project (jumi-scripts)
 	- update deployment pipeline to fetch scripts separately (might not need to store as artifacts)

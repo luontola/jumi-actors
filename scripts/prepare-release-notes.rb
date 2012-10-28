@@ -13,7 +13,7 @@ RELEASE_VERSION = ARGV.shift
 
 old_release_notes = IO.read(RELEASE_NOTES_FILE)
 new_release_notes = old_release_notes.sub(/^### Upcoming Changes$/,
-                                          "### Jumi #{RELEASE_VERSION} (#{Date.today.strftime('%F')})")
+                                          "### Jumi Actors #{RELEASE_VERSION} (#{Date.today.strftime('%F')})")
 
 File.open(RELEASE_NOTES_FILE, 'wb') { |file|
   file.write(new_release_notes)
