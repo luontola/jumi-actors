@@ -1,46 +1,13 @@
 
-!! - first release (for testing framework developers)
-	OK - double-check the public APIs
-		OK - make fi.jumi.api.drivers.Driver an abstract class for easier backward compatibility
-		OK - change SuiteConfiguration's includedTestsPattern to testClassName
-	OK - configure maven-deploy-plugin, remove skipping the deployment (except end-to-end-tests module)
-	OK - check licenses, create NOTICE file
-	OK - write known limitations to release notes (to through all TODO comments and notes)
-	OK - publish a build
-	OK - create a demo video for framework developers
-	OK - wait for Maven Central to be synced, check that the examples can be run
-	OK - javadocs on web site, at least jumi-api
-	OK - advertise publicly (video, release notes, intro text)
-		OK - twitter, FB, G+
-		OK - jumi mailing list
-		OK - own blog
-		OK - relevant news sites
-		OK - relevant mailing lists
-	!! - contact selected testing framework developers directly
-
-- migrate Specsy to use Jumi
-	OK - create Jumi driver
-		OK - update Path
-		OK - create Jumi adapter
-		OK - update tests to run using Jumi
-		OK - remove JUnit related code
-		OK - create Jumi driver and bootstrapper
-	OK - convert from Scala to Java
-	OK - start using PIT
-	OK - frontend for Scala
-	OK - frontend for Java
-	- frontend for Groovy
-	- release 2.0
-
 - extract test doubles from Specsy to testbench
-	- SilentOutputCapturer (as overloaded OutputCapturer constructor? UTF_16BE should be the simplest conversion, same as what Strings use)
+	- SilentOutputCapturer or overloaded OutputCapturer constructor (UTF_16BE should be the simplest conversion, same as what Strings use)
 		http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/6-b14/sun/nio/cs/UTF_8.java
 		http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/6-b14/sun/nio/cs/UTF_16BE.java
 		http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/6-b14/sun/nio/cs/UnicodeEncoder.java
 		http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/6-b14/sun/nio/cs/UnicodeDecoder.java
+		- try to avoid commons-io dependency on testers; create our own NullOutputStream, or is that constructor enough?
 	- FakeSuiteNotifier
 	- others?
-	- try to avoid commons-io dependency on testers; create our own NullOutputStream, or is that constructor enough?
 
 - NPE if annotation is missing:
 java.lang.NullPointerException
@@ -53,6 +20,15 @@ java.lang.NullPointerException
 
 - end-to-end tests: running multiple test classes
 	- it's not sure whether SuiteRunner works correctly when there are many test classes
+	- pass a list of class names as a suite parameter
+
+- TextUI: optionally hide passing tests
+
+- release 0.2.x
+	- promote Specsy 2, now that Jumi is nearly usable
+	- contact selected testing framework developers directly
+
+- end-to-end tests: discovering test classes based on file patterns
 	- test class inclusion patterns (*Test, Test*, some.package.*, some.package.** etc.)
 		- consider using Java 7's glob/regex patterns
 			http://docs.oracle.com/javase/tutorial/essential/io/fileOps.html#glob
