@@ -13,8 +13,6 @@ import java.util.*;
 public class TestEnvironment {
 
     private static final Path PROJECT_ARTIFACTS_DIR;
-    private static final Path SANDBOX_DIR;
-    private static final Path SAMPLE_CLASSES_DIR;
 
     static {
         try (InputStream in = BuildTest.class.getResourceAsStream("/testing.properties")) {
@@ -22,8 +20,6 @@ public class TestEnvironment {
             testing.load(in);
 
             PROJECT_ARTIFACTS_DIR = getDirectory(testing, "test.projectArtifactsDir");
-            SANDBOX_DIR = getDirectory(testing, "test.sandbox");
-            SAMPLE_CLASSES_DIR = getDirectory(testing, "test.sampleClasses");
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -60,13 +56,5 @@ public class TestEnvironment {
                 throw new IllegalArgumentException("could not find the artifact " + glob, e);
             }
         }
-    }
-
-    public static Path getSandboxDir() {
-        return SANDBOX_DIR;
-    }
-
-    public static Path getSampleClassesDir() {
-        return SAMPLE_CLASSES_DIR;
     }
 }

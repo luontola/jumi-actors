@@ -15,29 +15,9 @@
 
     <properties>
         <test.projectArtifactsDir>${project.build.directory}/project-artifacts</test.projectArtifactsDir>
-        <test.sandbox>${project.build.directory}/sandbox</test.sandbox>
-        <test.sampleClasses>${project.build.directory}/classes</test.sampleClasses>
     </properties>
 
     <dependencies>
-
-        <!-- TODO: should the test data be in a different module? then they could have both main and test sources -->
-        <dependency>
-            <groupId>fi.jumi</groupId>
-            <artifactId>simpleunit</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>fi.jumi</groupId>
-            <artifactId>jumi-launcher</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>fi.jumi</groupId>
-            <artifactId>jumi-core</artifactId>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
 
         <!-- Misc -->
 
@@ -108,12 +88,6 @@
                         <include>**/*Test.class</include>
                     </includes>
                     <redirectTestOutputToFile>true</redirectTestOutputToFile>
-                    <systemProperties>
-                        <property>
-                            <name>jumi.useThreadSafetyAgent</name>
-                            <value>true</value>
-                        </property>
-                    </systemProperties>
                     <argLine>"-javaagent:${test.projectArtifactsDir}/thread-safety-agent-${project.version}.jar"
                     </argLine>
                 </configuration>
@@ -164,60 +138,6 @@
                                     <artifactId>jumi-actors</artifactId>
                                     <version>${project.version}</version>
                                     <type>pom</type>
-                                </artifactItem>
-
-                                <artifactItem>
-                                    <groupId>fi.jumi</groupId>
-                                    <artifactId>jumi-api</artifactId>
-                                    <version>${project.version}</version>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>fi.jumi</groupId>
-                                    <artifactId>jumi-api</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>pom</type>
-                                </artifactItem>
-
-                                <artifactItem>
-                                    <groupId>fi.jumi</groupId>
-                                    <artifactId>jumi-core</artifactId>
-                                    <version>${project.version}</version>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>fi.jumi</groupId>
-                                    <artifactId>jumi-core</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>pom</type>
-                                </artifactItem>
-
-                                <artifactItem>
-                                    <groupId>fi.jumi</groupId>
-                                    <artifactId>jumi-daemon</artifactId>
-                                    <version>${project.version}</version>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>fi.jumi</groupId>
-                                    <artifactId>jumi-daemon</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>pom</type>
-                                </artifactItem>
-
-                                <artifactItem>
-                                    <groupId>fi.jumi</groupId>
-                                    <artifactId>jumi-launcher</artifactId>
-                                    <version>${project.version}</version>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>fi.jumi</groupId>
-                                    <artifactId>jumi-launcher</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>pom</type>
-                                </artifactItem>
-
-                                <artifactItem>
-                                    <groupId>fi.jumi</groupId>
-                                    <artifactId>simpleunit</artifactId>
-                                    <version>${project.version}</version>
                                 </artifactItem>
 
                                 <artifactItem>

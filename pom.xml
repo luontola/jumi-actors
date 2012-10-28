@@ -13,16 +13,11 @@
     <artifactId>project</artifactId>
     <packaging>pom</packaging>
 
-    <name>Jumi</name>
+    <name>Jumi Actors</name>
 
     <modules>
         <module>jumi-actors</module>
         <module>jumi-actors-maven-plugin</module>
-        <module>jumi-api</module>
-        <module>jumi-core</module>
-        <module>jumi-daemon</module>
-        <module>jumi-launcher</module>
-        <module>simpleunit</module>
         <module>thread-safety-agent</module>
         <module>end-to-end-tests</module>
         <module>parent</module>

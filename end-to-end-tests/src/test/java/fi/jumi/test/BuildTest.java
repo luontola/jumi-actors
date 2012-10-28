@@ -4,13 +4,11 @@
 
 package fi.jumi.test;
 
-import com.google.common.io.*;
-import fi.jumi.launcher.daemon.EmbeddedDaemonJar;
-import fi.jumi.test.PartiallyParameterized.NonParameterized;
 import fi.jumi.test.util.*;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
@@ -21,7 +19,6 @@ import javax.xml.xpath.*;
 import java.io.*;
 import java.net.*;
 import java.nio.file.*;
-import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
@@ -34,7 +31,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import static org.junit.Assume.assumeTrue;
 
-@RunWith(PartiallyParameterized.class)
+@RunWith(Parameterized.class)
 public class BuildTest {
 
     private static final String MANIFEST = "META-INF/MANIFEST.MF";
@@ -42,19 +39,12 @@ public class BuildTest {
     private static final String BASE_PACKAGE = "fi/jumi/";
 
     private static final String[] DOES_NOT_NEED_JSR305_ANNOTATIONS = {
-            // shaded classes
-            "fi/jumi/core/INTERNAL/",
-            "fi/jumi/daemon/INTERNAL/",
-            "fi/jumi/launcher/INTERNAL/",
-            // generated classes
-            "fi/jumi/core/events/",
             // ignore, because the ThreadSafetyAgent anyways won't check itself
             "fi/jumi/threadsafetyagent/",
     };
 
     public static final String RELEASE_VERSION_PATTERN = "\\d+\\.\\d+\\.\\d+";
     public static final String SNAPSHOT_VERSION_PATTERN = "\\d+\\.\\d+-SNAPSHOT";
-    public static final String VERSION_PATTERN = "(" + RELEASE_VERSION_PATTERN + "|" + SNAPSHOT_VERSION_PATTERN + ")";
 
     private final String artifactId;
     private final Integer[] expectedClassVersion;
@@ -71,7 +61,6 @@ public class BuildTest {
     @Parameters
     @SuppressWarnings("unchecked")
     public static Collection<Object[]> data() {
-        // TODO: upgrade shaded dependencies to Java 6/7 to benefit from their faster class loading
         return asList(new Object[][]{
                 {"jumi-actors",
                         asList(Opcodes.V1_6),
@@ -80,48 +69,6 @@ public class BuildTest {
                                 MANIFEST,
                                 POM_FILES,
                                 BASE_PACKAGE + "actors/")
-                },
-
-                {"jumi-api",
-                        asList(Opcodes.V1_7),
-                        asList(),
-                        asList(
-                                MANIFEST,
-                                POM_FILES,
-                                BASE_PACKAGE + "api/")
-                },
-
-                {"jumi-core",
-                        asList(Opcodes.V1_2, Opcodes.V1_5, Opcodes.V1_6, Opcodes.V1_7),
-                        asList(
-                                "fi.jumi:jumi-actors",
-                                "fi.jumi:jumi-api"),
-                        asList(
-                                MANIFEST,
-                                POM_FILES,
-                                BASE_PACKAGE + "core/")
-                },
-
-                {"jumi-daemon",
-                        asList(Opcodes.V1_2, Opcodes.V1_5, Opcodes.V1_6, Opcodes.V1_7),
-                        asList(),
-                        asList(
-                                MANIFEST,
-                                POM_FILES,
-                                BASE_PACKAGE + "actors/",
-                                BASE_PACKAGE + "api/",
-                                BASE_PACKAGE + "core/",
-                                BASE_PACKAGE + "daemon/")
-                },
-
-                {"jumi-launcher",
-                        asList(Opcodes.V1_6, Opcodes.V1_7),
-                        asList(
-                                "fi.jumi:jumi-core"),
-                        asList(
-                                MANIFEST,
-                                POM_FILES,
-                                BASE_PACKAGE + "launcher/")
                 },
 
                 {"thread-safety-agent",
@@ -165,20 +112,6 @@ public class BuildTest {
 
         Properties p = getBuildProperties();
         assertThat(p.getProperty("revision")).as("revision").matches("[0-9a-f]{40}");
-    }
-
-    @Test
-    @NonParameterized
-    public void embedded_daemon_jar_is_exactly_the_same_as_the_published_daemon_jar() throws IOException {
-        EmbeddedDaemonJar embeddedJar = new EmbeddedDaemonJar();
-        Path publishedJar = TestEnvironment.getProjectJar("jumi-daemon");
-
-        try (InputStream in1 = embeddedJar.getDaemonJarAsStream();
-             InputStream in2 = Files.newInputStream(publishedJar)) {
-
-            assertTrue("the embedded daemon JAR was not equal to " + publishedJar,
-                    ByteStreams.equal(asSupplier(in1), asSupplier(in2)));
-        }
     }
 
     @Test
@@ -287,15 +220,6 @@ public class BuildTest {
             allowed |= file.startsWith("/" + s);
         }
         return allowed;
-    }
-
-    private static InputSupplier<InputStream> asSupplier(final InputStream in) {
-        return new InputSupplier<InputStream>() {
-            @Override
-            public InputStream getInput() {
-                return in;
-            }
-        };
     }
 
     private static List<String> getRuntimeDependencies(Document doc) throws XPathExpressionException {
