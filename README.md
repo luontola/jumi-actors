@@ -1,7 +1,7 @@
 
-Jumi
-====
+Jumi Actors
+===========
 
-Common test runner for the JVM. Natively supports running tests in parallel. Full stack from UI to class loading. Overcomes a bunch of limitations in JUnit's test runner, IDEs and build tools.
+Actor library for Java to support concurrency and asynchronous event-driven programming.
 
-For more information see <http://jumi.fi>
+For more information see <http://jumi.fi/actors.html>
