@@ -15,10 +15,7 @@
     <packaging>pom</packaging>
 
     <description>
-        Common test runner for the JVM. Natively supports running
-        tests in parallel. Full stack from UI to class loading.
-        Overcomes a bunch of limitations in JUnit's test runner, IDEs
-        and build tools.
+        Actor library for Java to support concurrency and asynchronous event-driven programming.
     </description>
     <url>http://jumi.fi</url>
     <inceptionYear>2011</inceptionYear>
@@ -39,8 +36,8 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com/orfjackal/jumi.git</connection>
-        <url>https://github.com/orfjackal/jumi</url>
+        <connection>scm:git:git://github.com/orfjackal/jumi-actors.git</connection>
+        <url>https://github.com/orfjackal/jumi-actors</url>
     </scm>
 
     <properties>
@@ -94,46 +91,12 @@
     <dependencyManagement>
         <dependencies>
 
-            <!-- Jumi -->
+            <!-- Jumi Actors -->
 
             <dependency>
                 <groupId>fi.jumi</groupId>
                 <artifactId>jumi-actors</artifactId>
                 <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>fi.jumi</groupId>
-                <artifactId>jumi-api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>fi.jumi</groupId>
-                <artifactId>jumi-core</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>fi.jumi</groupId>
-                <artifactId>jumi-core</artifactId>
-                <version>${project.version}</version>
-                <type>test-jar</type>
-            </dependency>
-            <dependency>
-                <groupId>fi.jumi</groupId>
-                <artifactId>jumi-launcher</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>fi.jumi</groupId>
-                <artifactId>simpleunit</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <!-- Networking -->
-
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty</artifactId>
-                <version>3.5.5.Final</version>
             </dependency>
 
             <!-- Misc -->
@@ -200,12 +163,6 @@
                 <version>4.0</version>
             </dependency>
 
-            <dependency>
-                <groupId>cglib</groupId>
-                <artifactId>cglib-nodep</artifactId>
-                <version>2.2.2</version>
-            </dependency>
-
             <!-- Testing -->
 
             <dependency>
@@ -253,8 +210,8 @@
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.6</source>
+                    <target>1.6</target>
                 </configuration>
             </plugin>
 
@@ -369,8 +326,8 @@
                     <artifactId>jumi-actors-maven-plugin</artifactId>
                     <version>${project.version}</version>
                     <configuration>
-                        <source>1.7</source>
-                        <target>1.7</target>
+                        <source>1.6</source>
+                        <target>1.6</target>
                     </configuration>
                 </plugin>
 
