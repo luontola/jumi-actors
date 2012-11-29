@@ -7,10 +7,15 @@
 	OK - setup CI
 	OK - update all links on the web site, add links to all repositories
 	OK - move user guide to the new project's wiki
-	!! - rename groupId to fi.jumi.actors
+	!! - rename groupId to fi.jumi.actors?
 	- refactor build scripts to be project-independent
 	- move build scripts to their own project (jumi-scripts)
 	- update deployment pipeline to fetch scripts separately (might not need to store as artifacts)
+
+- don't use Java 7
+	- update end-to-end tests to not use Java 7 features
+	- build with JDK 6 on CI
+	- update building.txt
 
 - actors examples & benchmarks:
 	OK - create benchmarks: ring round trip, warm startup
