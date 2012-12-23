@@ -11,8 +11,8 @@
 	OK - move build scripts to their own project (jumi-scripts)
 	OK - update deployment pipeline to fetch scripts separately (might not need to store as artifacts)
 	!! - rename groupId to fi.jumi.actors
-		- at least for the parent module it's a must; otherwise it conflicts with the main project
-		- do we need to parameterize promote-staging.sh with the groupId? try it, or try the new nexus plugin.
+		OK - at least for the parent module it's a must; otherwise it conflicts with the main project
+		!! - do we need to parameterize promote-staging.sh with the groupId? try it, or try the new nexus plugin.
 
 - don't use Java 7
 	- update end-to-end tests to not use Java 7 features

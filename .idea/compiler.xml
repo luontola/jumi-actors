@@ -8,9 +8,9 @@
       <directory url="file://$PROJECT_DIR$/jumi-actors/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
       <directory url="file://$PROJECT_DIR$/end-to-end-tests/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
       <directory url="file://$PROJECT_DIR$/jumi-actors-maven-plugin/target/generated-sources/annotations" includeSubdirectories="true" />
-      <directory url="file://$PROJECT_DIR$/thread-safety-agent/target/generated-sources/annotations" includeSubdirectories="true" />
       <directory url="file://$PROJECT_DIR$/jumi-actors/target/generated-sources/annotations" includeSubdirectories="true" />
       <directory url="file://$PROJECT_DIR$/end-to-end-tests/target/generated-sources/annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/thread-safety-agent/target/generated-sources/annotations" includeSubdirectories="true" />
     </excludeFromCompile>
     <resourceExtensions>
       <entry name=".+\.(properties|xml|html|dtd|tld)" />

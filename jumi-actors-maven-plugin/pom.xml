@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>fi.jumi</groupId>
+        <groupId>fi.jumi.actors</groupId>
         <artifactId>parent</artifactId>
         <version>0.1-SNAPSHOT</version>
         <relativePath>../parent/pom.xml</relativePath>
@@ -16,7 +16,7 @@
     <dependencies>
 
         <dependency>
-            <groupId>fi.jumi</groupId>
+            <groupId>fi.jumi.actors</groupId>
             <artifactId>jumi-actors</artifactId>
         </dependency>
 

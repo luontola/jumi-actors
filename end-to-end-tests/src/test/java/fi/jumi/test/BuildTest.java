@@ -35,7 +35,7 @@ import static org.junit.Assume.assumeTrue;
 public class BuildTest {
 
     private static final String MANIFEST = "META-INF/MANIFEST.MF";
-    private static final String POM_FILES = "META-INF/maven/fi.jumi/";
+    private static final String POM_FILES = "META-INF/maven/fi.jumi.actors/";
     private static final String BASE_PACKAGE = "fi/jumi/";
 
     private static final String[] DOES_NOT_NEED_JSR305_ANNOTATIONS = {
@@ -99,7 +99,7 @@ public class BuildTest {
     @Test
     public void jar_contains_a_pom_properties_with_the_maven_artifact_identifiers() throws IOException {
         Properties p = getPomProperties();
-        assertThat("groupId", p.getProperty("groupId"), is("fi.jumi"));
+        assertThat("groupId", p.getProperty("groupId"), is("fi.jumi.actors"));
         assertThat("artifactId", p.getProperty("artifactId"), is(artifactId));
 
         String version = p.getProperty("version");
@@ -117,7 +117,7 @@ public class BuildTest {
     @Test
     public void none_of_the_artifacts_may_have_dependencies_to_external_libraries() {
         for (String dependency : expectedDependencies) {
-            assertThat("artifact " + artifactId, dependency, startsWith("fi.jumi:"));
+            assertThat("artifact " + artifactId, dependency, startsWith("fi.jumi.actors:"));
         }
     }
 

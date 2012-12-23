@@ -9,7 +9,7 @@
         <version>7</version>
     </parent>
 
-    <groupId>fi.jumi</groupId>
+    <groupId>fi.jumi.actors</groupId>
     <artifactId>parent</artifactId>
     <version>0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -94,7 +94,7 @@
             <!-- Jumi Actors -->
 
             <dependency>
-                <groupId>fi.jumi</groupId>
+                <groupId>fi.jumi.actors</groupId>
                 <artifactId>jumi-actors</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -322,7 +322,7 @@
             <plugins>
 
                 <plugin>
-                    <groupId>fi.jumi</groupId>
+                    <groupId>fi.jumi.actors</groupId>
                     <artifactId>jumi-actors-maven-plugin</artifactId>
                     <version>${project.version}</version>
                     <configuration>
