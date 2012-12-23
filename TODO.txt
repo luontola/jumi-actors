@@ -1,19 +1,4 @@
 
-OK - make jumi-actors its own project
-	would speed up the build by 50%, send a message about its stability (1.0+ version), and allow dependencies in examples and benchmarks (e.g. Akka)
-	OK - copy jumi to jumi-actors repository, disconnect their histories
-	OK - remove unnecessary stuff from parent POM
-	OK - update readme, release notes etc.
-	OK - setup CI
-	OK - update all links on the web site, add links to all repositories
-	OK - move user guide to the new project's wiki
-	OK - refactor build scripts to be project-independent
-	OK - move build scripts to their own project (jumi-scripts)
-	OK - update deployment pipeline to fetch scripts separately (might not need to store as artifacts)
-	OK - rename groupId to fi.jumi.actors
-		OK - at least for the parent module it's a must; otherwise it conflicts with the main project
-		OK - do we need to parameterize promote-staging.sh with the groupId? try it, or try the new nexus plugin.
-
 - don't use Java 7
 	- the compiles-using-project-language-level test uses Java 7; figure out a way to unit test it without JDK 7
 	- update end-to-end tests to not use Java 7 features
@@ -21,7 +6,6 @@ OK - make jumi-actors its own project
 	- update building.txt
 
 - actors examples & benchmarks:
-	OK - create benchmarks: ring round trip, warm startup
 	- create jumi-actors-examples, put there the examples and benchmarks
 	- create a benchmark to compare against Akka Actors
 		- ring round trip
@@ -32,14 +16,17 @@ OK - make jumi-actors its own project
 	- add the benchmark results to the web site
 
 - misc refactoring
+	- extract AbstractMessageLogger from PrintStreamMessageLogger, to support multiple logging frameworks
 	- after upgrading to (presumably) JUnit 4.11, refactor BuildTest's parameterized descriptions
 		https://github.com/KentBeck/junit/pull/145
 		https://github.com/KentBeck/junit/pull/393
-	- logging actor messages could benefit from seeing that from which actor a messages was sent; a trace of intermediate actors
-	- seems that Eventizer.newBackend is not used; keep it for symmetry or remove it?
-	- extract AbstractMessageLogger from PrintStreamMessageLogger, to support multiple logging frameworks
 
 - refactor jumi-actors-maven-plugin
+	- plugin pom: instead of using testResource, use add-test-source with http://mojo.codehaus.org/build-helper-maven-plugin/ and keep the reference files in the normal resource directory
+	- DummyListenerToEvent: rename sender to target
+	- EventToDummyListener: rename listener to target
+	- @Generated annotation, example: @Generated(value = "fi.jumi.actors.maven.EventStubGenerator", comments = "Generated based on fi.jumi.actors.maven.DummyListener", date = "2000-01-01")
+	- @Override annotation to all methods
 	- find a way to read the compiler language level from maven-compiler-plugin, instead of configuring it separately for this plugin
 		http://maven.apache.org/ref/3.0.4/maven-core/apidocs/org/apache/maven/project/MavenProject.html
 			getPlugin
@@ -52,8 +39,7 @@ OK - make jumi-actors its own project
 		http://stackoverflow.com/questions/526733/maven-plugin-executing-another-plugin
 		http://timmoore.github.com/mojo-executor/
 		http://stackoverflow.com/questions/4243686/how-to-programatically-invoke-a-maven-dependency-plugin/5761554#5761554
-	- DummyListenerToEvent: rename sender to target
-	- EventToDummyListener: rename listener to target
+	- hand-written serialization using bare DataOutput/DataInput? should give overall best performance without additional dependencies: https://github.com/eishay/jvm-serializers/wiki/
 	- switch to using Eclipse JDT DOM for code generation, create an internal DSL as necessary (factory methods to avoid setter hell)
 		http://blog.cedarsoft.com/2010/08/code-generation-done-right/
 		http://www.eclipse.org/jdt/core/index.php
@@ -81,19 +67,14 @@ OK - make jumi-actors its own project
 			- migrate to AST one method at a time, if possible
 				- try using AST.newMethodDeclaration or AST.newBlock instead of AST.newCompilationUnit
 			- delete the old code generator
-	- @Generated annotation, example: @Generated(value = "fi.jumi.codegenerator.EventStubGenerator", comments = "Generated based on fi.jumi.codegenerator.DummyListener", date = "2000-01-01")
-	- @Override annotation to all methods
-	- annotation to suppress unchecked warnings due to type erasure?
-	- toString?
-	- hand-written serialization using bare DataOutput/DataInput? should give overall best performance without additional dependencies: https://github.com/eishay/jvm-serializers/wiki/
-	- plugin pom: add-source with http://mojo.codehaus.org/build-helper-maven-plugin/
-	- install plugin to local repository to avoid false alarms in jumi-core pom
 	- evaluate triggering the code generator using JSR 269 (might be hard to generate code for 3rd party classes such as Runnable?)
 		! http://deors.wordpress.com/2011/10/08/annotation-processors/
 		! http://deors.wordpress.com/2011/10/31/annotation-generators/
 		http://weblogs.java.net/blog/tball/archive/2006/09/hacking_javac.html
 		http://code.google.com/p/genftw/
 		http://code.google.com/p/objectify-gwtkey/
+
+- a trace of intermediate actors: logging actor messages could benefit from seeing that from which actor(s) a message originated
 
 - web site improvements
 	- site for jumi-actors-maven-plugin
