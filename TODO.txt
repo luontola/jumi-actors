@@ -1,5 +1,5 @@
 
-!! - make jumi-actors its own project
+OK - make jumi-actors its own project
 	would speed up the build by 50%, send a message about its stability (1.0+ version), and allow dependencies in examples and benchmarks (e.g. Akka)
 	OK - copy jumi to jumi-actors repository, disconnect their histories
 	OK - remove unnecessary stuff from parent POM
@@ -10,11 +10,12 @@
 	OK - refactor build scripts to be project-independent
 	OK - move build scripts to their own project (jumi-scripts)
 	OK - update deployment pipeline to fetch scripts separately (might not need to store as artifacts)
-	!! - rename groupId to fi.jumi.actors
+	OK - rename groupId to fi.jumi.actors
 		OK - at least for the parent module it's a must; otherwise it conflicts with the main project
-		!! - do we need to parameterize promote-staging.sh with the groupId? try it, or try the new nexus plugin.
+		OK - do we need to parameterize promote-staging.sh with the groupId? try it, or try the new nexus plugin.
 
 - don't use Java 7
+	- the compiles-using-project-language-level test uses Java 7; figure out a way to unit test it without JDK 7
 	- update end-to-end tests to not use Java 7 features
 	- build with JDK 6 on CI
 	- update building.txt
