@@ -1,23 +1,6 @@
 
-- exception about the method argument type parameter:
-java.lang.IllegalArgumentException: unsupported type Out
-	at fi.jumi.actors.maven.codegen.JavaType.of(JavaType.java:31)
-	at fi.jumi.actors.maven.codegen.JavaType.of(JavaType.java:13)
-	at fi.jumi.actors.maven.codegen.JavaType.asJavaTypes(JavaType.java:45)
-	at fi.jumi.actors.maven.codegen.JavaType.typeArgumentsOf(JavaType.java:37)
-	at fi.jumi.actors.maven.codegen.JavaType.of(JavaType.java:13)
-	at fi.jumi.actors.maven.codegen.ArgumentList.<init>(ArgumentList.java:17)
-	at fi.jumi.actors.maven.EventStubGenerator.getFrontend(EventStubGenerator.java:81)
-	at fi.jumi.actors.maven.GenerateEventStubsMojo.execute(GenerateEventStubsMojo.java:105)
-	at org.apache.maven.plugin.DefaultBuildPluginManager.executeMojo(DefaultBuildPluginManager.java:105)
-  when generating stubs for:
-	public interface DaemonListener extends NetworkEndpoint<Event<SuiteListener>, Event<CommandListener>> {
-	}
-	public interface NetworkEndpoint<In, Out> {
-	    void onConnected(NetworkConnection connection, MessageSender<Out> sender);
-	    void onMessage(In message);
-	    void onDisconnected();
-	}
+- generating event stubs when method argument types take type parameters (now causes JavaType to throw IllegalArgumentException: unsupported type)
+	https://github.com/orfjackal/jumi-actors/issues/1
 
 - don't use Java 7
 	- the compiles-using-project-language-level test uses Java 7; figure out a way to unit test it without JDK 7
