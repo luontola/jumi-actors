@@ -1,12 +1,31 @@
 
-- generating event stubs when method argument types take type parameters (now causes JavaType to throw IllegalArgumentException: unsupported type)
-	https://github.com/orfjackal/jumi-actors/issues/1
-
 - don't use Java 7
 	- the compiles-using-project-language-level test uses Java 7; figure out a way to unit test it without JDK 7
 	- update end-to-end tests to not use Java 7 features
 	- build with JDK 6 on CI
 	- update building.txt
+
+- after upgrading to (presumably) JUnit 4.11, refactor BuildTest's parameterized descriptions
+	https://github.com/KentBeck/junit/pull/145
+	https://github.com/KentBeck/junit/pull/393
+
+- thread-safety-checker: when an inner class is missing the annotation, use the annotation of the enclosing class or default to @NotThreadSafe when the enclosing class has any concurrency annotation
+
+- generating event stubs when method argument types take type parameters (now causes JavaType to throw IllegalArgumentException: unsupported type)
+	https://github.com/orfjackal/jumi-actors/issues/1
+
+- extract AbstractMessageLogger from PrintStreamMessageLogger, to support multiple logging frameworks
+
+- make it possible to plug in your own MessageQueue implementation when creating a particular actor thread
+	interface MessageQueue<T> {
+	    MessageSender<T> getMessageSender();
+	    MessageReceiver<T> getMessageReceiver();
+	}
+	- rename current impl to UnboundedManyToManyMessageQueue
+	- create BoundedBatchingManyToOneMessageQueue
+		- reader consumes its own queue first, then all the others in fair round robin fashion with batch reads
+		- create a mechanism to avoid the actor thread sending itself so many messages that it deadlocks (reader's queue 2x larger? expand automatically?)
+	- benchmarks for all the queue types
 
 - actors examples & benchmarks:
 	- create jumi-actors-examples, put there the examples and benchmarks
@@ -17,12 +36,6 @@
 	- create a benchmark to compare reflection vs code generation based eventizers
 		- also use it as an example of using the code generator plugin
 	- add the benchmark results to the web site
-
-- misc refactoring
-	- extract AbstractMessageLogger from PrintStreamMessageLogger, to support multiple logging frameworks
-	- after upgrading to (presumably) JUnit 4.11, refactor BuildTest's parameterized descriptions
-		https://github.com/KentBeck/junit/pull/145
-		https://github.com/KentBeck/junit/pull/393
 
 - refactor jumi-actors-maven-plugin
 	- plugin pom: instead of using testResource, use add-test-source with http://mojo.codehaus.org/build-helper-maven-plugin/ and keep the reference files in the normal resource directory
