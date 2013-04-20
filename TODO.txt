@@ -16,6 +16,12 @@
 
 - extract AbstractMessageLogger from PrintStreamMessageLogger, to support multiple logging frameworks
 
+- make it possible to give names to actor threads
+	https://groups.google.com/forum/#!topic/jumi-test-runner/BYyEfzLnX4A
+	- at least make it possible to use a fixed name
+	- should there be a convenience factory method for generating unique names? e.g. "jumi-actors-1-thread-1" format.
+	- should we still use an Executor? is it anyways needed for testing purposes? create NamedThreadExecutor interface and adapter for Executor?
+
 - make it possible to plug in your own MessageQueue implementation when creating a particular actor thread
 	interface MessageQueue<T> {
 	    MessageSender<T> getMessageSender();
