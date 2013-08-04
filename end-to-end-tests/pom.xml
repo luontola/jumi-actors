@@ -92,10 +92,6 @@
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <configuration>
-                    <includes>
-                        <include>**/*Test.class</include>
-                    </includes>
-                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
                     <argLine>"-javaagent:${test.projectArtifactsDir}/thread-safety-agent-${project.version}.jar"
                     </argLine>
                 </configuration>
