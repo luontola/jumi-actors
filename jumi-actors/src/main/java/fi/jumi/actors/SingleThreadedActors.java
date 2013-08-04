@@ -34,7 +34,7 @@ public class SingleThreadedActors extends Actors {
     /**
      * Processes in the current thread all messages which were sent to actors. The order of processing messages is
      * deterministic. Will block until all messages have been processed and nobody is sending more messages.
-     * <p/>
+     * <p>
      * When using {@link CrashEarlyFailureHandler}, will rethrow uncaught exceptions from actors to the caller of this
      * method.
      */

@@ -14,10 +14,10 @@ public interface FailureHandler {
 
     /**
      * Should log the exception and possibly do some error recovery.
-     * <p/>
+     * <p>
      * May stop the actor thread by interrupting the current thread. Otherwise the actor thread (and all actors in it)
      * will keep on processing messages.
-     * <p/>
+     * <p>
      * Should not throw any exceptions - that would result in implementation specific behaviour.
      */
     void uncaughtException(Object actor, Object message, Throwable exception);

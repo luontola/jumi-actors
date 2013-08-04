@@ -13,7 +13,7 @@ import java.util.concurrent.*;
 
 /**
  * Create a ring of actors and forward a message around the ring multiple times.
- * <p/>
+ * <p>
  * Based on http://blog.grayproductions.net/articles/erlang_message_passing/
  */
 public class RingBenchmark extends SimpleBenchmark {

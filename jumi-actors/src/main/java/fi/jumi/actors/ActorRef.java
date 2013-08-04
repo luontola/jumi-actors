@@ -16,7 +16,7 @@ public class ActorRef<T> {
 
     /**
      * Can be used to wrap test doubles into {@code ActorRef}s for unit testing purposes.
-     * <p/>
+     * <p>
      * <span style="color: Red">Warning: Never use this method in production code! This method is meant to be used
      * <em>only</em> by the {@link Actors} class.</span>
      */
@@ -31,7 +31,7 @@ public class ActorRef<T> {
     /**
      * Used for sending asynchronous messages to an actor. The recommended usage pattern is {@code
      * actorRef.tell().theMessage(theParameters)}
-     * <p/>
+     * <p>
      * To avoid confusion, the proxy returned from this method should never be stored in a variable or passed as a
      * parameter to a method. Otherwise it can be hard to know that when you are holding the real actor object and when
      * a proxy to it. Though that may sometimes be warranted when interacting with actor-unaware code or if you wish to
