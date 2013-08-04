@@ -1,9 +1,19 @@
 
 - don't use Java 7
 	- the compiles-using-project-language-level test uses Java 7; figure out a way to unit test it without JDK 7
+		-> maybe we could parameterize maven-invoker-plugin to use a different JDK for just that test?
 	- update end-to-end tests to not use Java 7 features
+		-> extract the common class parsing/iterating functionality into an external library?
+	- configure maven-failsafe-plugin to use Java 6
 	- build with JDK 6 on CI
 	- update building.txt
+
+- refactor EventSpy: always call await() from assertContains() to avoid duplication?
+	http://lets-code.orfjackal.net/2013/04/lets-code-jumi-231-monitoredexecutor.html
+	- find all usages and see if await be done everywhere
+	- do the change
+	- set timeout through constructor? or use test timeouts and throw InterruptedException?
+	- remove duplicated calls to await()
 
 - after upgrading to (presumably) JUnit 4.11, refactor BuildTest's parameterized descriptions
 	https://github.com/KentBeck/junit/pull/145
@@ -21,6 +31,7 @@
 	- at least make it possible to use a fixed name
 	- should there be a convenience factory method for generating unique names? e.g. "jumi-actors-1-thread-1" format.
 	- should we still use an Executor? is it anyways needed for testing purposes? create NamedThreadExecutor interface and adapter for Executor?
+		- find all usages of MultiThreadedActors and analyze how it is used (especially in tests); do we interrupt the threads with shutdownNow()?
 
 - make it possible to plug in your own MessageQueue implementation when creating a particular actor thread
 	interface MessageQueue<T> {
