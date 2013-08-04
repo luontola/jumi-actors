@@ -3,6 +3,7 @@
     <MavenSettings>
       <option name="myGeneralSettings">
         <MavenGeneralSettings>
+          <option name="alwaysUpdateSnapshots" value="false" />
           <option name="checksumPolicy" value="FAIL" />
           <option name="failureBehavior" value="FAST" />
           <option name="localRepository" value="" />
@@ -11,7 +12,6 @@
           <option name="outputLevel" value="INFO" />
           <option name="pluginUpdatePolicy" value="DO_NOT_UPDATE" />
           <option name="printErrorStackTraces" value="true" />
-          <option name="snapshotUpdatePolicy" value="ALWAYS_UPDATE" />
           <option name="usePluginRegistry" value="false" />
           <option name="userSettingsFile" value="" />
           <option name="workOffline" value="false" />
@@ -41,6 +41,7 @@
           <option name="profilesMap">
             <map />
           </option>
+          <option name="resolveToWorkspace" value="false" />
           <option name="workingDirPath" value="$PROJECT_DIR$" />
         </MavenRunnerParameters>
       </option>
