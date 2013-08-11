@@ -1,4 +1,4 @@
-// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2013, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -17,7 +17,7 @@ import static org.hamcrest.Matchers.*;
 public class ThreadSafetyCheckerTest {
 
     @Rule
-    public final ExpectedException thrown = ExpectedException.none();
+    public final ExpectedException thrown = ExpectedException.none().handleAssertionErrors();
 
     private final ThreadSafetyChecker checker = new ThreadSafetyChecker();
 
