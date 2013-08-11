@@ -1,35 +1,30 @@
-// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2013, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
 package fi.jumi.test;
 
-import com.google.common.collect.Iterables;
+import fi.luontola.buildtest.*;
 
-import java.io.*;
-import java.nio.file.*;
-import java.util.*;
+import java.io.File;
+import java.util.Properties;
 
 public class TestEnvironment {
 
-    private static final Path PROJECT_ARTIFACTS_DIR;
+    public static final VersionNumbering VERSION_NUMBERING = new VersionNumbering();
+    public static final ProjectArtifacts ARTIFACTS;
 
     static {
-        try (InputStream in = BuildTest.class.getResourceAsStream("/testing.properties")) {
-            Properties testing = new Properties();
-            testing.load(in);
-
-            PROJECT_ARTIFACTS_DIR = getDirectory(testing, "test.projectArtifactsDir");
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        Properties p = ResourcesUtil.getProperties("testing.properties");
+        ARTIFACTS = new ProjectArtifacts(getDirectory(p, "test.projectArtifactsDir"));
     }
 
-    private static Path getDirectory(Properties properties, String key) throws IOException {
-        Path path = Paths.get(filteredProperty(properties, key)).toAbsolutePath();
-        Files.createDirectories(path);
-        return path;
+    private static File getDirectory(Properties properties, String key) {
+        File file = new File(filteredProperty(properties, key));
+        if (!file.isDirectory()) {
+            throw new IllegalArgumentException("not a directory: " + file);
+        }
+        return file;
     }
 
     private static String filteredProperty(Properties properties, String key) {
@@ -38,23 +33,5 @@ public class TestEnvironment {
             throw new IllegalStateException("the property '" + key + "' was not filled in: " + value);
         }
         return value;
-    }
-
-    public static Path getProjectJar(String artifactId) throws IOException {
-        return getProjectArtifact(artifactId + "-*.jar");
-    }
-
-    public static Path getProjectPom(String artifactId) throws IOException {
-        return getProjectArtifact(artifactId + "-*.pom");
-    }
-
-    private static Path getProjectArtifact(String glob) throws IOException {
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(PROJECT_ARTIFACTS_DIR, glob)) {
-            try {
-                return Iterables.getOnlyElement(stream);
-            } catch (NoSuchElementException | IllegalArgumentException e) {
-                throw new IllegalArgumentException("could not find the artifact " + glob, e);
-            }
-        }
     }
 }

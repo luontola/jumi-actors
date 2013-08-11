@@ -19,6 +19,14 @@
 
     <dependencies>
 
+        <!-- Testing -->
+
+        <dependency>
+            <groupId>fi.luontola.buildtest</groupId>
+            <artifactId>buildtest</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <!-- Misc -->
 
         <dependency>

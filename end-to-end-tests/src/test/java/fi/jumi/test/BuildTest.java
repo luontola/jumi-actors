@@ -4,7 +4,7 @@
 
 package fi.jumi.test;
 
-import fi.jumi.test.util.*;
+import fi.luontola.buildtest.*;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,23 +12,17 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
-import org.w3c.dom.*;
 
 import javax.annotation.concurrent.*;
-import javax.xml.xpath.*;
 import java.io.*;
-import java.net.*;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
-import static fi.jumi.test.util.AsmMatchers.*;
-import static fi.jumi.test.util.AsmUtils.annotatedWithOneOf;
+import static fi.luontola.buildtest.AsmMatchers.*;
+import static fi.luontola.buildtest.AsmUtils.annotatedWithOneOf;
 import static java.util.Arrays.asList;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
 import static org.junit.Assume.assumeTrue;
 
 @RunWith(Parameterized.class)
@@ -42,9 +36,6 @@ public class BuildTest {
             // ignore, because the ThreadSafetyAgent anyways won't check itself
             "fi/jumi/threadsafetyagent/",
     };
-
-    public static final String RELEASE_VERSION_PATTERN = "\\d+\\.\\d+\\.\\d+";
-    public static final String SNAPSHOT_VERSION_PATTERN = "\\d+\\.\\d+-SNAPSHOT";
 
     private final String artifactId;
     private final Integer[] expectedClassVersion;
@@ -83,16 +74,14 @@ public class BuildTest {
 
     @Test
     public void pom_contains_only_allowed_dependencies() throws Exception {
-        Path pomFile = TestEnvironment.getProjectPom(artifactId);
-        Document pom = XmlUtils.parseXml(pomFile);
-        List<String> dependencies = getRuntimeDependencies(pom);
+        List<String> dependencies = MavenUtils.getRuntimeDependencies(getProjectPom());
         assertThat("dependencies of " + artifactId, dependencies, is(expectedDependencies));
     }
 
     @Test
     public void jar_contains_only_allowed_files() throws Exception {
-        Path jarFile = TestEnvironment.getProjectJar(artifactId);
-        assertJarContainsOnly(jarFile, expectedContents);
+        File jarFile = getProjectJar();
+        JarUtils.assertContainsOnly(jarFile, expectedContents);
     }
 
     @Test
@@ -100,9 +89,7 @@ public class BuildTest {
         Properties p = getPomProperties();
         assertThat("groupId", p.getProperty("groupId"), is("fi.jumi.actors"));
         assertThat("artifactId", p.getProperty("artifactId"), is(artifactId));
-
-        String version = p.getProperty("version");
-        assertTrue("should be either release or snapshot: " + version, isRelease(version) != isSnapshot(version));
+        assertThat("version", p.getProperty("version"), is(TestEnvironment.VERSION_NUMBERING));
     }
 
     @Test
@@ -135,7 +122,7 @@ public class BuildTest {
         CompositeMatcher<ClassNode> matcher = newClassNodeCompositeMatcher()
                 .assertThatIt(hasClassVersion(isOneOf(expectedClassVersion)));
 
-        checkAllClasses(matcher, TestEnvironment.getProjectJar(artifactId));
+        JarUtils.checkAllClasses(getProjectJar(), matcher);
     }
 
     @Test
@@ -146,94 +133,34 @@ public class BuildTest {
                 .excludeIf(nameStartsWithOneOf(DOES_NOT_NEED_JSR305_ANNOTATIONS))
                 .assertThatIt(is(annotatedWithOneOf(Immutable.class, NotThreadSafe.class, ThreadSafe.class)));
 
-        checkAllClasses(matcher, TestEnvironment.getProjectJar(artifactId));
+        JarUtils.checkAllClasses(getProjectJar(), matcher);
     }
 
 
     // helper methods
 
+    private File getProjectPom() throws IOException {
+        return TestEnvironment.ARTIFACTS.getProjectPom(artifactId);
+    }
+
+    private File getProjectJar() throws IOException {
+        return TestEnvironment.ARTIFACTS.getProjectJar(artifactId);
+    }
+
     private void assumeReleaseBuild() throws IOException {
         String version = getPomProperties().getProperty("version");
-        assumeTrue(isRelease(version));
+        assumeTrue(TestEnvironment.VERSION_NUMBERING.isRelease(version));
     }
 
     private Properties getBuildProperties() throws IOException {
-        return getMavenArtifactProperties("build.properties");
+        return getMavenArtifactProperties(getProjectJar(), "build.properties");
     }
 
     private Properties getPomProperties() throws IOException {
-        return getMavenArtifactProperties("pom.properties");
+        return getMavenArtifactProperties(getProjectJar(), "pom.properties");
     }
 
-    private static boolean isRelease(String version) {
-        return version.matches(RELEASE_VERSION_PATTERN);
-    }
-
-    private static boolean isSnapshot(String version) {
-        return version.matches(SNAPSHOT_VERSION_PATTERN);
-    }
-
-    private Properties getMavenArtifactProperties(String filename) throws IOException {
-        Path jarFile = TestEnvironment.getProjectJar(artifactId);
-        return readPropertiesFromJar(jarFile, POM_FILES + artifactId + "/" + filename);
-    }
-
-    private static Properties readPropertiesFromJar(Path jarFile, String resource) throws IOException {
-        URLClassLoader cl = new URLClassLoader(new URL[]{jarFile.toUri().toURL()});
-        try (InputStream in = cl.getResourceAsStream(resource)) {
-            assertNotNull("resource not found: " + resource, in);
-
-            Properties p = new Properties();
-            p.load(in);
-            return p;
-        }
-    }
-
-    private static void checkAllClasses(CompositeMatcher<ClassNode> matcher, Path jarFile) {
-        for (ClassNode classNode : JarFileUtils.classesIn(jarFile)) {
-            matcher.check(classNode);
-        }
-        try {
-            matcher.rethrowErrors();
-        } catch (AssertionError e) {
-            // XXX: get the parameterized runner improved so that it would be easier to see which of the parameters broke a test
-            System.err.println("Found errors in " + jarFile);
-            throw e;
-        }
-    }
-
-    private static void assertJarContainsOnly(final Path jarFile, final List<String> whitelist) throws IOException {
-        JarFileUtils.walkZipFile(jarFile, new SimpleFileVisitor<Path>() {
-            @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                assertTrue(jarFile + " contained a not allowed entry: " + file,
-                        isWhitelisted(file, whitelist));
-                return FileVisitResult.CONTINUE;
-            }
-        });
-    }
-
-    private static boolean isWhitelisted(Path file, List<String> whitelist) {
-        boolean allowed = false;
-        for (String s : whitelist) {
-            allowed |= file.startsWith("/" + s);
-        }
-        return allowed;
-    }
-
-    private static List<String> getRuntimeDependencies(Document doc) throws XPathExpressionException {
-        NodeList nodes = (NodeList) XmlUtils.xpath(
-                "/project/dependencies/dependency[not(scope) or scope='compile' or scope='runtime']",
-                doc, XPathConstants.NODESET);
-
-        List<String> results = new ArrayList<>();
-        for (int i = 0; i < nodes.getLength(); i++) {
-            Node dependency = nodes.item(i);
-
-            String groupId = XmlUtils.xpath("groupId", dependency);
-            String artifactId = XmlUtils.xpath("artifactId", dependency);
-            results.add(groupId + ":" + artifactId);
-        }
-        return results;
+    private Properties getMavenArtifactProperties(File jarFile, String filename) {
+        return JarUtils.getProperties(jarFile, POM_FILES + artifactId + "/" + filename);
     }
 }
