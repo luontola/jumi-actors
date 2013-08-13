@@ -41,12 +41,14 @@ public class BuildTest {
     private final Integer[] expectedClassVersion;
     private final List<String> expectedDependencies;
     private final List<String> expectedContents;
+    private final Deprecations expectedDeprecations;
 
-    public BuildTest(String artifactId, List<Integer> expectedClassVersion, List<String> expectedDependencies, List<String> expectedContents) {
+    public BuildTest(String artifactId, List<Integer> expectedClassVersion, List<String> expectedDependencies, List<String> expectedContents, Deprecations expectedDeprecations) {
         this.artifactId = artifactId;
         this.expectedClassVersion = expectedClassVersion.toArray(new Integer[expectedClassVersion.size()]);
         this.expectedDependencies = expectedDependencies;
         this.expectedContents = expectedContents;
+        this.expectedDeprecations = expectedDeprecations;
     }
 
     @Parameters(name = "{0}")
@@ -58,7 +60,8 @@ public class BuildTest {
                         asList(
                                 MANIFEST,
                                 POM_FILES,
-                                BASE_PACKAGE + "actors/")
+                                BASE_PACKAGE + "actors/"),
+                        new Deprecations()
                 },
 
                 {"thread-safety-agent",
@@ -67,7 +70,8 @@ public class BuildTest {
                         asList(
                                 MANIFEST,
                                 POM_FILES,
-                                BASE_PACKAGE + "threadsafetyagent/")
+                                BASE_PACKAGE + "threadsafetyagent/"),
+                        new Deprecations()
                 },
         });
     }
@@ -134,6 +138,11 @@ public class BuildTest {
                 .assertThatIt(is(annotatedWithOneOf(Immutable.class, NotThreadSafe.class, ThreadSafe.class)));
 
         JarUtils.checkAllClasses(getProjectJar(), matcher);
+    }
+
+    @Test
+    public void deprecated_methods_are_removed_after_the_transition_period() throws IOException {
+        expectedDeprecations.verify(new ClassesInJarFile(getProjectJar()));
     }
 
 
