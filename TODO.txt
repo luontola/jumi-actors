@@ -3,6 +3,8 @@
 	https://groups.google.com/d/topic/jumi-test-runner/xQYPeqB00UQ/discussion
 	- find all use cases in Jumi, see how they would benefit from this change, design the API appropriately
 
+- support for non-void actor methods which return a Future
+
 - don't use Java 7
 	- the compiles-using-project-language-level test uses Java 7; figure out a way to unit test it without JDK 7
 		-> maybe we could parameterize maven-invoker-plugin to use a different JDK for just that test?
