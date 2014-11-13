@@ -8,31 +8,44 @@ import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 
 import javax.tools.*;
-import java.util.*;
+import java.io.*;
+import java.util.Arrays;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 public class AnnotationProcessorTest {
 
     @Rule
     public final TemporaryFolder tempDir = new TemporaryFolder();
 
+    private File outputDir;
+
+    @Before
+    public void setup() {
+        outputDir = tempDir.getRoot();
+    }
+
     @Test
-    public void foo() {
+    public void generates_eventizers() throws IOException {
         compile(new JavaSourceFromString("DummyInterface", "" +
                 "package com.example;\n" +
                 "@fi.jumi.actors.generator.GenerateEventizer\n" +
                 "public interface DummyInterface {\n" +
                 "}"
         ));
+
+        assertThat(new File(outputDir, "com/example/Foo.java"), hasProperty("file", equalTo(true)));
+        assertThat(new File(outputDir, "com/example/Foo.class"), hasProperty("file", equalTo(true)));
     }
 
-    private void compile(JavaFileObject... compilationUnits) {
+    private void compile(JavaFileObject... compilationUnits) throws IOException {
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
-        List<String> options = Arrays.asList("-d", tempDir.getRoot().getAbsolutePath());
-        boolean success = compiler.getTask(null, null, diagnostics, options, null, Arrays.asList(compilationUnits)).call();
+        StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, null, null);
+        fileManager.setLocation(StandardLocation.CLASS_OUTPUT, Arrays.asList(outputDir));
+
+        boolean success = compiler.getTask(null, fileManager, diagnostics, null, null, Arrays.asList(compilationUnits)).call();
         for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
             System.err.println(diagnostic);
         }
