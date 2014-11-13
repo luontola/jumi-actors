@@ -1,4 +1,4 @@
-// Copyright © 2011-2013, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2014, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -29,10 +29,13 @@ import static org.junit.Assume.assumeTrue;
 public class BuildTest {
 
     private static final String MANIFEST = "META-INF/MANIFEST.MF";
+    private static final String ANNOTATION_PROCESSOR = "META-INF/services/javax.annotation.processing.Processor";
     private static final String POM_FILES = "META-INF/maven/fi.jumi.actors/";
     private static final String BASE_PACKAGE = "fi/jumi/";
 
     private static final String[] DOES_NOT_NEED_JSR305_ANNOTATIONS = {
+            // ignore, because only invoked by the compiler
+            "fi/jumi/actors/generator/",
             // ignore, because the ThreadSafetyAgent anyways won't check itself
             "fi/jumi/threadsafetyagent/",
     };
@@ -63,7 +66,17 @@ public class BuildTest {
                                 BASE_PACKAGE + "actors/"),
                         new Deprecations()
                 },
-
+                {"jumi-actors-generator",
+                        asList(Opcodes.V1_6),
+                        asList(
+                                "fi.jumi.actors:jumi-actors"),
+                        asList(
+                                MANIFEST,
+                                POM_FILES,
+                                BASE_PACKAGE + "actors/generator/",
+                                ANNOTATION_PROCESSOR),
+                        new Deprecations()
+                },
                 {"thread-safety-agent",
                         asList(Opcodes.V1_5, Opcodes.V1_6),
                         asList(),
@@ -117,7 +130,8 @@ public class BuildTest {
             assertThat("artifact " + artifactId, content, Matchers.<String>
                     either(startsWith(BASE_PACKAGE))
                     .or(startsWith(POM_FILES))
-                    .or(startsWith(MANIFEST)));
+                    .or(startsWith(MANIFEST))
+                    .or(startsWith(ANNOTATION_PROCESSOR)));
         }
     }
 

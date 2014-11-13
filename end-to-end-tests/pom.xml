@@ -159,6 +159,18 @@
 
                                 <artifactItem>
                                     <groupId>fi.jumi.actors</groupId>
+                                    <artifactId>jumi-actors-generator</artifactId>
+                                    <version>${project.version}</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>fi.jumi.actors</groupId>
+                                    <artifactId>jumi-actors-generator</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>pom</type>
+                                </artifactItem>
+
+                                <artifactItem>
+                                    <groupId>fi.jumi.actors</groupId>
                                     <artifactId>thread-safety-agent</artifactId>
                                     <version>${project.version}</version>
                                 </artifactItem>

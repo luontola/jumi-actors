@@ -13,6 +13,10 @@
     <artifactId>jumi-actors-generator</artifactId>
     <packaging>jar</packaging>
 
+    <properties>
+        <shadedPrefix>fi.jumi.actors.generator.INTERNAL</shadedPrefix>
+    </properties>
+
     <dependencies>
 
         <dependency>
@@ -37,6 +41,43 @@
                          because our own annotation processor is not yet compiled then -->
                     <proc>none</proc>
                 </configuration>
+            </plugin>
+
+            <!-- Hide external dependencies -->
+
+            <plugin>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <artifactSet>
+                                <excludes>
+                                    <!-- Regular dependencies (transitive) -->
+                                    <exclude>fi.jumi.actors:jumi-actors</exclude>
+                                </excludes>
+                            </artifactSet>
+                            <relocations>
+                                <!-- Hidden dependencies -->
+                                <relocation>
+                                    <pattern>com.google</pattern>
+                                    <shadedPattern>${shadedPrefix}.com.google</shadedPattern>
+                                </relocation>
+                            </relocations>
+                            <filters>
+                                <!-- Throw away non-class files of hidden dependencies -->
+                                <filter>
+                                    <artifact>com.google.guava:guava</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/**</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
         </plugins>

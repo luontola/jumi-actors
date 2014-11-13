@@ -36,10 +36,6 @@
 	- set timeout through constructor? or use test timeouts and throw InterruptedException?
 	- remove duplicated calls to await()
 
-- after upgrading to (presumably) JUnit 4.11, refactor BuildTest's parameterized descriptions
-	https://github.com/KentBeck/junit/pull/145
-	https://github.com/KentBeck/junit/pull/393
-
 - thread-safety-checker: when an inner class is missing the annotation, use the annotation of the enclosing class or default to @NotThreadSafe when the enclosing class has any concurrency annotation
 
 - generating event stubs when method argument types take type parameters (now causes JavaType to throw IllegalArgumentException: unsupported type)
