@@ -5,6 +5,7 @@
       <w>demuxer</w>
       <w>denormalizer</w>
       <w>eventizer</w>
+      <w>eventizers</w>
       <w>jumi</w>
       <w>stderr</w>
       <w>stdout</w>
