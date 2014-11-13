@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/end-to-end-tests/end-to-end-tests.iml" filepath="$PROJECT_DIR$/end-to-end-tests/end-to-end-tests.iml" />
       <module fileurl="file://$PROJECT_DIR$/jumi-actors/jumi-actors.iml" filepath="$PROJECT_DIR$/jumi-actors/jumi-actors.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jumi-actors-generator/jumi-actors-generator.iml" filepath="$PROJECT_DIR$/jumi-actors-generator/jumi-actors-generator.iml" />
       <module fileurl="file://$PROJECT_DIR$/jumi-actors-maven-plugin/jumi-actors-maven-plugin.iml" filepath="$PROJECT_DIR$/jumi-actors-maven-plugin/jumi-actors-maven-plugin.iml" />
       <module fileurl="file://$PROJECT_DIR$/parent/parent.iml" filepath="$PROJECT_DIR$/parent/parent.iml" />
       <module fileurl="file://$PROJECT_DIR$/project.iml" filepath="$PROJECT_DIR$/project.iml" />
@@ -11,4 +12,3 @@
     </modules>
   </component>
 </project>
-

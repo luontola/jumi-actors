@@ -19,6 +19,11 @@
 
     <dependencies>
 
+        <dependency>
+            <groupId>fi.jumi.actors</groupId>
+            <artifactId>jumi-actors-generator</artifactId>
+        </dependency>
+
         <!-- Testing -->
 
         <dependency>

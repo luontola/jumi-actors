@@ -99,6 +99,11 @@
                 <artifactId>jumi-actors</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>fi.jumi.actors</groupId>
+                <artifactId>jumi-actors-generator</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <!-- Misc -->
 

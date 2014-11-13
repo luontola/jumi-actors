@@ -7,32 +7,30 @@
         <groupId>fi.jumi.actors</groupId>
         <artifactId>parent</artifactId>
         <version>0.1-SNAPSHOT</version>
-        <relativePath>parent/pom.xml</relativePath>
+        <relativePath>../parent/pom.xml</relativePath>
     </parent>
 
-    <artifactId>project</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>jumi-actors-generator</artifactId>
+    <packaging>jar</packaging>
 
-    <name>Jumi Actors</name>
+    <dependencies>
 
-    <modules>
-        <module>jumi-actors</module>
-        <module>jumi-actors-generator</module>
-        <module>jumi-actors-maven-plugin</module>
-        <module>thread-safety-agent</module>
-        <module>end-to-end-tests</module>
-        <module>parent</module>
-    </modules>
+        <dependency>
+            <groupId>fi.jumi.actors</groupId>
+            <artifactId>jumi-actors</artifactId>
+        </dependency>
+
+    </dependencies>
 
     <build>
         <plugins>
 
-            <!-- Don't deploy the project's aggregate module to Maven Central -->
-
             <plugin>
-                <artifactId>maven-deploy-plugin</artifactId>
+                <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <skip>true</skip>
+                    <!-- Running the annotation processor would fail for the current module,
+                         because our own annotation processor is not yet compiled then -->
+                    <proc>none</proc>
                 </configuration>
             </plugin>
 
