@@ -20,6 +20,11 @@
     <dependencies>
 
         <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-debug-all</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>fi.jumi.actors</groupId>
             <artifactId>jumi-actors</artifactId>
         </dependency>
