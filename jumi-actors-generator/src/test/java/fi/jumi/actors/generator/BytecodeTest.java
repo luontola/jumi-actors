@@ -2,9 +2,7 @@
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
-package fi.jumi.actors.generator;// Copyright © 2011-2014, Esko Luontola <www.orfjackal.net>
-// This software is released under the Apache License 2.0.
-// The license text is at http://www.apache.org/licenses/LICENSE-2.0
+package fi.jumi.actors.generator;
 
 import com.google.common.io.ByteStreams;
 import org.junit.Test;
@@ -21,11 +19,14 @@ import static org.hamcrest.Matchers.is;
 public class BytecodeTest {
 
     @Test
-    public void foo() throws Exception {
+    public void show_it() throws Exception {
+        ASMifier.main(new String[]{GuineaPig.class.getName()});
+    }
+
+    @Test
+    public void do_it() throws Exception {
         Callable<Integer> obj = new GuineaPig();
         assertThat(obj.call(), is(42));
-
-        ASMifier.main(new String[]{GuineaPig.class.getName()});
 
         byte[] original = getBytecode(GuineaPig.class);
         byte[] transformed = transform(original);
