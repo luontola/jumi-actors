@@ -7,7 +7,7 @@ package fi.jumi.actors.generator;
 import com.google.common.io.ByteStreams;
 import org.junit.Test;
 import org.objectweb.asm.*;
-import org.objectweb.asm.util.ASMifier;
+import org.objectweb.asm.util.*;
 
 import java.io.*;
 import java.util.concurrent.Callable;
@@ -18,6 +18,8 @@ import static org.hamcrest.Matchers.is;
 @SuppressWarnings("unchecked")
 public class BytecodeTest {
 
+    public static final int ORIGINAL_VALUE = 42;
+
     @Test
     public void show_it() throws Exception {
         ASMifier.main(new String[]{GuineaPig.class.getName()});
@@ -26,13 +28,13 @@ public class BytecodeTest {
     @Test
     public void do_it() throws Exception {
         Callable<Integer> obj = new GuineaPig();
-        assertThat(obj.call(), is(42));
+        assertThat(obj.call(), is(ORIGINAL_VALUE));
 
         byte[] original = getBytecode(GuineaPig.class);
         byte[] transformed = transform(original);
         obj = (Callable<Integer>) new MyClassLoader().defineClass(transformed).newInstance();
 
-        assertThat(obj.call(), is(42));
+        assertThat(obj.call(), is(ORIGINAL_VALUE));
     }
 
     private byte[] transform(byte[] original) {
@@ -40,6 +42,7 @@ public class BytecodeTest {
         ClassVisitor next = writer;
 
         next = new MyClassVisitor(next);
+        next = new TraceClassVisitor(next, new ASMifier(), new PrintWriter(System.out));
 
         new ClassReader(original).accept(next, 0);
         return writer.toByteArray();
@@ -57,7 +60,7 @@ public class BytecodeTest {
     public static class GuineaPig implements Callable<Integer> {
         @Override
         public Integer call() {
-            return 42;
+            return ORIGINAL_VALUE;
         }
     }
 
