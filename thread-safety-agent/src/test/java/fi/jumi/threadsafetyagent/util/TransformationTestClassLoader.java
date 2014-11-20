@@ -1,4 +1,4 @@
-// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2014, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -34,15 +34,19 @@ public class TransformationTestClassLoader extends ClassLoader {
     @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
         try {
-            byte[] b = transformer.transform(this, name, null, null, readClassBytes(name));
+            byte[] original = readClassBytes(name);
+            byte[] result = transformer.transform(this, name, null, null, original);
+            if (result == null) {
+                result = original;
+            }
             if (dirToWriteClasses != null) {
                 try {
-                    FileUtils.writeByteArrayToFile(new File(dirToWriteClasses, name + ".class"), b);
+                    FileUtils.writeByteArrayToFile(new File(dirToWriteClasses, name + ".class"), result);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             }
-            return defineClass(name, b, 0, b.length);
+            return defineClass(name, result, 0, result.length);
 
         } catch (IllegalClassFormatException e) {
             throw new ClassNotFoundException(name, e);

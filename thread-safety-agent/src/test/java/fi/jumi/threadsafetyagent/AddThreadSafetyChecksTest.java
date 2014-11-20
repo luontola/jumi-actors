@@ -1,4 +1,4 @@
-// Copyright © 2011-2013, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2014, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -100,8 +100,8 @@ public class AddThreadSafetyChecksTest {
     private static Class<?> instrumentClass(Class<?> cls) throws Exception {
         ClassFileTransformer transformer = new ThreadSafetyCheckerTransformer() {
             @Override
-            protected ClassVisitor getAdapters(ClassVisitor cv) {
-                return super.getAdapters(new CheckClassAdapter(cv));
+            protected ClassVisitor getAdapters(ClassVisitor next) {
+                return super.getAdapters(new CheckClassAdapter(next));
             }
         };
         ClassLoader loader = new TransformationTestClassLoader(cls.getName(), transformer, null);

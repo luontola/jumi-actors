@@ -1,4 +1,4 @@
-// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2014, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -25,8 +25,8 @@ public class AddThreadSafetyChecks extends ClassVisitor {
     //     3.1.5 pages 39-41: stack map frames explained
     //     3.2.1 page 44: ClassWriter options for computing them automatically (slower)
 
-    public AddThreadSafetyChecks(ClassVisitor cv) {
-        super(Opcodes.ASM4, cv);
+    public AddThreadSafetyChecks(ClassVisitor next) {
+        super(Opcodes.ASM4, next);
     }
 
     @Override
@@ -40,13 +40,13 @@ public class AddThreadSafetyChecks extends ClassVisitor {
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-        MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
+        MethodVisitor next = super.visitMethod(access, name, desc, signature, exceptions);
         if (isConstructor(name)) {
-            mv = new InstantiateChecker(api, mv);
+            next = new InstantiateChecker(next);
         } else if (isInstanceMethod(access)) {
-            mv = new CallChecker(api, mv);
+            next = new CallChecker(next);
         }
-        return mv;
+        return next;
     }
 
     @Override
@@ -73,8 +73,8 @@ public class AddThreadSafetyChecks extends ClassVisitor {
     // method transformers
 
     private class InstantiateChecker extends MethodVisitor {
-        public InstantiateChecker(int api, MethodVisitor mv) {
-            super(api, mv);
+        public InstantiateChecker(MethodVisitor next) {
+            super(Opcodes.ASM4, next);
         }
 
         @Override
@@ -92,14 +92,14 @@ public class AddThreadSafetyChecks extends ClassVisitor {
 
         @Override
         public void visitMaxs(int maxStack, int maxLocals) {
-            // TODO: stack might not be empty right before a RETURN statement, so this maxStack can be too optimistic
+            // XXX: stack might not be empty right before a RETURN statement, so this maxStack can be too optimistic
             super.visitMaxs(max(3, maxStack), maxLocals);
         }
     }
 
     private class CallChecker extends MethodVisitor {
-        public CallChecker(int api, MethodVisitor mv) {
-            super(api, mv);
+        public CallChecker(MethodVisitor next) {
+            super(Opcodes.ASM4, next);
         }
 
         @Override
