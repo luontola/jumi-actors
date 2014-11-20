@@ -17,7 +17,6 @@ public class AddThreadSafetyChecks extends ClassVisitor {
     private static final String CHECKER_FIELD = "$Jumi$threadSafetyChecker";
 
     private String myClassName;
-    private Label lastGeneratedCode;
 
     public AddThreadSafetyChecks(ClassVisitor next) {
         super(Opcodes.ASM5, next);
@@ -73,9 +72,8 @@ public class AddThreadSafetyChecks extends ClassVisitor {
 
         @Override
         public void visitInsn(int opcode) {
-            // FIXME: handle all the xRETURN opcodes
+            // instantiate the checker at the end of the constructor
             if (opcode == RETURN) {
-                // insert to the end of the method
                 super.visitVarInsn(ALOAD, 0);
                 super.visitTypeInsn(NEW, CHECKER_CLASS);
                 super.visitInsn(DUP);
@@ -87,12 +85,14 @@ public class AddThreadSafetyChecks extends ClassVisitor {
 
         @Override
         public void visitMaxs(int maxStack, int maxLocals) {
-            // XXX: stack might not be empty right before a RETURN statement, so this maxStack can be too optimistic
+            // XXX: the stack is not guaranteed to be empty right before a RETURN statement, so this maxStack can be too optimistic
             super.visitMaxs(max(3, maxStack), maxLocals);
         }
     }
 
     private class CallChecker extends MethodVisitor {
+
+        private Label lastGeneratedCode;
 
         public CallChecker(MethodVisitor next) {
             super(Opcodes.ASM5, next);
@@ -102,11 +102,11 @@ public class AddThreadSafetyChecks extends ClassVisitor {
         public void visitCode() {
             super.visitCode();
 
-            // use line number of the first non-generated instruction
+            // use the line number of the first non-generated instruction
             lastGeneratedCode = new Label();
             super.visitLabel(lastGeneratedCode);
 
-            // insert to the beginning of the method
+            // call the checker in the beginning of the method
             super.visitVarInsn(ALOAD, 0);
             super.visitFieldInsn(GETFIELD, myClassName, CHECKER_FIELD, CHECKER_CLASS_DESC);
             super.visitMethodInsn(INVOKEVIRTUAL, CHECKER_CLASS, "checkCurrentThread", "()V", false);
