@@ -19,14 +19,8 @@ public class AddThreadSafetyChecks extends ClassVisitor {
     private String myClassName;
     private Label lastGeneratedCode;
 
-    // TODO: keep an eye on what to do with stackmap frames when parsing & producing Java 7 bytecode
-    // http://weblogs.java.net/blog/fabriziogiudici/archive/2012/05/07/understanding-subtle-new-behaviours-jdk-7
-    // http://download.forge.objectweb.org/asm/asm4-guide.pdf
-    //     3.1.5 pages 39-41: stack map frames explained
-    //     3.2.1 page 44: ClassWriter options for computing them automatically (slower)
-
     public AddThreadSafetyChecks(ClassVisitor next) {
-        super(Opcodes.ASM4, next);
+        super(Opcodes.ASM5, next);
     }
 
     @Override
@@ -55,7 +49,6 @@ public class AddThreadSafetyChecks extends ClassVisitor {
         super.visitEnd();
     }
 
-
     private void createCheckerField() {
         FieldVisitor fv = this.visitField(ACC_PRIVATE + ACC_FINAL, CHECKER_FIELD, CHECKER_CLASS_DESC, null, null);
         fv.visitEnd();
@@ -73,18 +66,20 @@ public class AddThreadSafetyChecks extends ClassVisitor {
     // method transformers
 
     private class InstantiateChecker extends MethodVisitor {
+
         public InstantiateChecker(MethodVisitor next) {
-            super(Opcodes.ASM4, next);
+            super(Opcodes.ASM5, next);
         }
 
         @Override
         public void visitInsn(int opcode) {
+            // FIXME: handle all the xRETURN opcodes
             if (opcode == RETURN) {
                 // insert to the end of the method
                 super.visitVarInsn(ALOAD, 0);
                 super.visitTypeInsn(NEW, CHECKER_CLASS);
                 super.visitInsn(DUP);
-                super.visitMethodInsn(INVOKESPECIAL, CHECKER_CLASS, "<init>", "()V");
+                super.visitMethodInsn(INVOKESPECIAL, CHECKER_CLASS, "<init>", "()V", false);
                 super.visitFieldInsn(PUTFIELD, myClassName, CHECKER_FIELD, CHECKER_CLASS_DESC);
             }
             super.visitInsn(opcode);
@@ -98,8 +93,9 @@ public class AddThreadSafetyChecks extends ClassVisitor {
     }
 
     private class CallChecker extends MethodVisitor {
+
         public CallChecker(MethodVisitor next) {
-            super(Opcodes.ASM4, next);
+            super(Opcodes.ASM5, next);
         }
 
         @Override
@@ -113,7 +109,7 @@ public class AddThreadSafetyChecks extends ClassVisitor {
             // insert to the beginning of the method
             super.visitVarInsn(ALOAD, 0);
             super.visitFieldInsn(GETFIELD, myClassName, CHECKER_FIELD, CHECKER_CLASS_DESC);
-            super.visitMethodInsn(INVOKEVIRTUAL, CHECKER_CLASS, "checkCurrentThread", "()V");
+            super.visitMethodInsn(INVOKEVIRTUAL, CHECKER_CLASS, "checkCurrentThread", "()V", false);
         }
 
         @Override
