@@ -4,16 +4,34 @@
 
 package fi.jumi.actors.generator.codegen;
 
+import javax.lang.model.element.*;
 import java.lang.reflect.*;
 import java.util.*;
 
 public abstract class JavaType {
 
+    public static JavaType of(TypeElement type) {
+        return JavaType.of(type, null);
+    }
+
     public static JavaType of(Type type) {
-        return JavaType.of(type, typeArgumentsOf(type));
+        return JavaType.of(null, type);
+    }
+
+    public static JavaType of(TypeElement typeElement, Type type) {
+        return JavaType.of(typeElement, type, typeArgumentsOf(type));
     }
 
     public static JavaType of(Type type, JavaType... typeArguments) {
+        return of(null, type, typeArguments);
+    }
+
+    public static JavaType of(TypeElement typeElement, Type type, JavaType... typeArguments) {
+        if (typeElement != null) {
+            if (typeElement.getKind() == ElementKind.INTERFACE) {
+                return new AstJavaType(typeElement);
+            }
+        }
         if (type instanceof Class && typeArguments.length == 0) {
             return new RawType((Class<?>) type);
         }
@@ -53,7 +71,7 @@ public abstract class JavaType {
 
     public abstract String getSimpleName();
 
-    public abstract List<Class<?>> getRawTypesToImport();
+    public abstract List<JavaType> getClassImports();
 
 
     private static class RawType extends JavaType {
@@ -80,9 +98,11 @@ public abstract class JavaType {
         }
 
         @Override
-        public List<Class<?>> getRawTypesToImport() {
-            ArrayList<Class<?>> imports = new ArrayList<Class<?>>();
-            imports.add(type);
+        public List<JavaType> getClassImports() {
+            List<JavaType> imports = new ArrayList<JavaType>();
+            if (!type.isPrimitive()) {
+                imports.add(this);
+            }
             return imports;
         }
     }
@@ -124,11 +144,11 @@ public abstract class JavaType {
         }
 
         @Override
-        public List<Class<?>> getRawTypesToImport() {
-            List<Class<?>> imports = new ArrayList<Class<?>>();
-            imports.add(type);
+        public List<JavaType> getClassImports() {
+            List<JavaType> imports = new ArrayList<JavaType>();
+            imports.add(JavaType.of(type));
             for (JavaType typeArgument : typeArguments) {
-                imports.addAll(typeArgument.getRawTypesToImport());
+                imports.addAll(typeArgument.getClassImports());
             }
             return imports;
         }
@@ -157,8 +177,47 @@ public abstract class JavaType {
         }
 
         @Override
-        public List<Class<?>> getRawTypesToImport() {
+        public List<JavaType> getClassImports() {
             return Collections.emptyList();
+        }
+    }
+
+    private static class AstJavaType extends JavaType {
+
+        private final TypeElement type;
+
+        public AstJavaType(TypeElement type) {
+            this.type = type;
+        }
+
+        @Override
+        public String getPackage() {
+            Element e = type;
+            while (e.getKind() != ElementKind.PACKAGE) {
+                e = e.getEnclosingElement();
+            }
+            return e.toString() + "xxx"; // TODO: anybody uses?
+        }
+
+        @Override
+        public String getRawName() {
+            return type.getSimpleName().toString();
+        }
+
+        @Override
+        public String getSimpleName() {
+            return type.getSimpleName().toString();
+        }
+
+        @Override
+        public List<JavaType> getClassImports() {
+            try {
+                // XXX
+                Class<?> c = Class.forName(type.toString().replace("Test.", "Test$"));
+                return Arrays.asList(JavaType.of(c));
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }

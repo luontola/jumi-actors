@@ -29,7 +29,7 @@ public class EventStubGenerator {
 
     public EventStubGenerator(Class<?> listenerType1, TypeElement listenerType, TargetPackageResolver targetPackageResolver) {
         Eventizers.validateActorInterface(listenerType1);
-        listenerInterface = JavaType.of(listenerType1);
+        listenerInterface = JavaType.of(listenerType);
         listenerMethods = listenerType1.getMethods();
         Arrays.sort(listenerMethods, new Comparator<Method>() {
             @Override

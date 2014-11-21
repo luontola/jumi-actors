@@ -8,7 +8,7 @@ import java.util.*;
 
 public class Imports {
 
-    private final List<Class<?>> classesToImport = new ArrayList<Class<?>>();
+    private final List<JavaType> classesToImport = new ArrayList<JavaType>();
     private final List<String> packagesToImport = new ArrayList<String>();
 
     public void addImports(ArgumentList arguments) {
@@ -19,7 +19,7 @@ public class Imports {
 
     public void addImports(JavaType... types) {
         for (JavaType type : types) {
-            classesToImport.addAll(type.getRawTypesToImport());
+            classesToImport.addAll(type.getClassImports());
         }
     }
 
@@ -30,12 +30,12 @@ public class Imports {
     @Override
     public String toString() {
         SortedSet<String> imports = new TreeSet<String>();
-        for (Class<?> type : classesToImport) {
-            if (type.isPrimitive() || isAlreadyInScope(type)) {
+        for (JavaType type : classesToImport) {
+            if (isAlreadyInScope(type)) {
                 continue;
             }
             // TODO: do not import classes from target package
-            imports.add(type.getName());
+            imports.add(type.getPackage() + "." + type.getRawName());
         }
         for (String packageName : packagesToImport) {
             imports.add(packageName + ".*");
@@ -49,7 +49,7 @@ public class Imports {
         return sb.toString();
     }
 
-    private static boolean isAlreadyInScope(Class<?> type) {
-        return type.getPackage().getName().equals("java.lang");
+    private static boolean isAlreadyInScope(JavaType type) {
+        return type.getPackage().equals("java.lang");
     }
 }
