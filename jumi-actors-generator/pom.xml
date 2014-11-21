@@ -32,6 +32,14 @@
     </dependencies>
 
     <build>
+
+        <!-- Add reference event stub sources to the classpath -->
+        <testResources>
+            <testResource>
+                <directory>${project.build.testSourceDirectory}</directory>
+            </testResource>
+        </testResources>
+
         <plugins>
 
             <plugin>
