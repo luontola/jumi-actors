@@ -8,6 +8,7 @@ import fi.jumi.actors.eventizers.*;
 import fi.jumi.actors.generator.codegen.*;
 import fi.jumi.actors.queue.MessageSender;
 
+import javax.lang.model.element.TypeElement;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -26,10 +27,10 @@ public class EventStubGenerator {
     private final String eventizerPackage;
     private final String stubsPackage;
 
-    public EventStubGenerator(Class<?> listenerType, TargetPackageResolver targetPackageResolver) {
-        Eventizers.validateActorInterface(listenerType);
-        listenerInterface = JavaType.of(listenerType);
-        listenerMethods = listenerType.getMethods();
+    public EventStubGenerator(Class<?> listenerType1, TypeElement listenerType, TargetPackageResolver targetPackageResolver) {
+        Eventizers.validateActorInterface(listenerType1);
+        listenerInterface = JavaType.of(listenerType1);
+        listenerMethods = listenerType1.getMethods();
         Arrays.sort(listenerMethods, new Comparator<Method>() {
             @Override
             public int compare(Method m1, Method m2) {

@@ -11,8 +11,12 @@ import fi.jumi.actors.generator.codegen.GeneratedClass;
 import fi.jumi.actors.generator.reference.DummyListenerEventizer;
 import fi.jumi.actors.queue.*;
 import org.junit.*;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.*;
 
+import javax.annotation.processing.AbstractProcessor;
+import javax.lang.model.element.TypeElement;
+import javax.tools.*;
+import javax.tools.JavaCompiler.CompilationTask;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.*;
@@ -30,13 +34,16 @@ public class EventStubGeneratorTest {
     @Rule
     public final ExpectedException thrown = ExpectedException.none();
 
+    @Rule
+    public final TemporaryFolder tempDir = new TemporaryFolder();
+
     private TargetPackageResolver targetPackageResolver;
     private EventStubGenerator generator;
 
     @Before
     public void setUp() {
         targetPackageResolver = new TargetPackageResolver(TARGET_PACKAGE);
-        generator = new EventStubGenerator(DummyListener.class, targetPackageResolver);
+        generator = new EventStubGenerator(DummyListener.class, ast(DummyListener.class), targetPackageResolver);
     }
 
     @Test
@@ -103,17 +110,17 @@ public class EventStubGeneratorTest {
     }
 
     @Test
-    public void generates_eventizer_class() throws IOException {
+    public void generates_eventizer_class() {
         assertClassEquals("fi/jumi/actors/generator/reference/DummyListenerEventizer.java", generator.getEventizer());
     }
 
     @Test
-    public void generates_frontend_class() throws IOException {
+    public void generates_frontend_class() {
         assertClassEquals("fi/jumi/actors/generator/reference/dummyListener/DummyListenerToEvent.java", generator.getFrontend());
     }
 
     @Test
-    public void generates_backend_class() throws IOException {
+    public void generates_backend_class() {
         assertClassEquals("fi/jumi/actors/generator/reference/dummyListener/EventToDummyListener.java", generator.getBackend());
     }
 
@@ -126,7 +133,7 @@ public class EventStubGeneratorTest {
 
     @Test
     public void generates_event_classes_for_every_listener_method() {
-        generator = new EventStubGenerator(TwoMethodInterface.class, targetPackageResolver);
+        generator = new EventStubGenerator(TwoMethodInterface.class, ast(TwoMethodInterface.class), targetPackageResolver);
 
         List<GeneratedClass> events = generator.getEvents();
         assertThat(events.size(), is(2));
@@ -136,7 +143,7 @@ public class EventStubGeneratorTest {
 
     @Test
     public void adds_imports_for_all_method_parameter_types() {
-        generator = new EventStubGenerator(ExternalLibraryReferencingListener.class, targetPackageResolver);
+        generator = new EventStubGenerator(ExternalLibraryReferencingListener.class, ast(ExternalLibraryReferencingListener.class), targetPackageResolver);
 
         GeneratedClass event = generator.getEvents().get(0);
         assertThat(event.source, containsString("import java.util.Random;"));
@@ -147,7 +154,7 @@ public class EventStubGeneratorTest {
 
     @Test
     public void adds_imports_for_type_parameters_of_method_parameter_types() {
-        generator = new EventStubGenerator(GenericParametersListener.class, targetPackageResolver);
+        generator = new EventStubGenerator(GenericParametersListener.class, ast(GenericParametersListener.class), targetPackageResolver);
 
         GeneratedClass event = generator.getEvents().get(0);
         assertThat(event.source, containsString("import java.util.List;"));
@@ -160,7 +167,7 @@ public class EventStubGeneratorTest {
 
     @Test
     public void raw_types_are_not_used() {
-        generator = new EventStubGenerator(GenericParametersListener.class, targetPackageResolver);
+        generator = new EventStubGenerator(GenericParametersListener.class, ast(GenericParametersListener.class), targetPackageResolver);
 
         GeneratedClass event = generator.getEvents().get(0);
         assertThat(event.source, containsString("List<File>"));
@@ -173,7 +180,7 @@ public class EventStubGeneratorTest {
 
     @Test
     public void supports_methods_inherited_from_parent_interfaces() {
-        generator = new EventStubGenerator(ChildInterface.class, targetPackageResolver);
+        generator = new EventStubGenerator(ChildInterface.class, ast(ChildInterface.class), targetPackageResolver);
 
         GeneratedClass frontend = generator.getFrontend();
         assertThat(frontend.source, containsString("void methodInChild()"));
@@ -185,21 +192,67 @@ public class EventStubGeneratorTest {
         thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage("actor interface methods must be void");
 
-        new EventStubGenerator(InvalidActorInterface.class, targetPackageResolver);
+        new EventStubGenerator(InvalidActorInterface.class, ast(InvalidActorInterface.class), targetPackageResolver);
     }
 
 
-    private static void assertClassEquals(String expectedPath, GeneratedClass actual) throws IOException {
+    private static void assertClassEquals(String expectedPath, GeneratedClass actual) {
         assertEquals("file path", expectedPath, actual.path);
         assertEquals("file content", readFile(expectedPath), actual.source);
     }
 
-    private static String readFile(String resource) throws IOException {
+    private static String readFile(String resource) {
         InputStream in = EventStubGenerator.class.getClassLoader().getResourceAsStream(resource);
+        if (in == null) {
+            throw new IllegalArgumentException("No such resource: " + resource);
+        }
         try {
             return new String(ByteStreams.toByteArray(in), Charset.forName("UTF-8"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         } finally {
-            in.close();
+            try {
+                in.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private TypeElement ast(Class<?> clazz) {
+        AstExtractor extractor = new AstExtractor(clazz);
+        compile(extractor, readJavaSource(clazz));
+        return extractor.getResult();
+    }
+
+    private static JavaSourceFromString readJavaSource(Class<?> clazz) {
+        while (clazz.getEnclosingClass() != null) {
+            clazz = clazz.getEnclosingClass();
+        }
+        String code = readFile(clazz.getName().replace('.', '/') + ".java");
+        return new JavaSourceFromString(clazz.getName(), code);
+    }
+
+    private void compile(AbstractProcessor processor, JavaFileObject... compilationUnits) {
+        try {
+            JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+            DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
+            StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, null, null);
+            fileManager.setLocation(StandardLocation.CLASS_OUTPUT, Arrays.asList(tempDir.getRoot()));
+
+            CompilationTask task = compiler.getTask(null, fileManager, diagnostics, null, null, Arrays.asList(compilationUnits));
+
+            task.setProcessors(Arrays.asList(
+                    //new PrintingProcessor(),
+                    processor
+            ));
+            boolean success = task.call();
+            for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
+                System.err.println(diagnostic);
+            }
+            assertThat("compile succeeded", success, is(true));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

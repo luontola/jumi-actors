@@ -4,6 +4,7 @@
 
 package fi.jumi.actors.generator;
 
+@GenerateEventizer
 public interface DummyListener {
 
     void onSomething(String foo, String bar);
