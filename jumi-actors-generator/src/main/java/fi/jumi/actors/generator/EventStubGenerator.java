@@ -18,7 +18,8 @@ import static com.google.common.base.CaseFormat.*;
 public class EventStubGenerator {
 
     private final JavaType listenerInterface;
-    private final Method[] listenerMethods;
+    private final Method[] listenerMethods_old;
+    private final List<JavaMethod> listenerMethods;
 
     private final JavaType eventizerInterface;
     private final JavaType eventInterface;
@@ -27,11 +28,12 @@ public class EventStubGenerator {
     private final String eventizerPackage;
     private final String stubsPackage;
 
-    public EventStubGenerator(Class<?> listenerType1, TypeElement listenerType, TargetPackageResolver targetPackageResolver) {
-        Eventizers.validateActorInterface(listenerType1);
+    public EventStubGenerator(Class<?> listenerType_old, TypeElement listenerType, TargetPackageResolver targetPackageResolver) {
+        Eventizers.validateActorInterface(listenerType_old);
         listenerInterface = JavaType.of(listenerType);
-        listenerMethods = listenerType1.getMethods();
-        Arrays.sort(listenerMethods, new Comparator<Method>() {
+        listenerMethods = listenerInterface.getMethods();
+        listenerMethods_old = listenerType_old.getMethods();
+        Arrays.sort(listenerMethods_old, new Comparator<Method>() {
             @Override
             public int compare(Method m1, Method m2) {
                 return m1.getName().compareTo(m2.getName());
@@ -79,12 +81,11 @@ public class EventStubGenerator {
         cb.implement(listenerInterface);
         cb.fieldsAndConstructorParameters(new ArgumentList(sender));
 
-        for (Method method : listenerMethods) {
-            ArgumentList arguments = new ArgumentList(method);
-            cb.addImports(arguments);
+        for (JavaMethod method : listenerMethods) {
+            cb.addImports(method.getClassImports());
             cb.addMethod("" +
-                    "    public void " + method.getName() + "(" + arguments.toFormalArguments() + ") {\n" +
-                    "        " + sender.name + ".send(new " + myEventWrapperName(method) + "(" + arguments.toActualArguments() + "));\n" +
+                    "    public void " + method.getName() + "(" + method.toFormalArguments() + ") {\n" +
+                    "        " + sender.name + ".send(new " + myEventWrapperName(method) + "(" + method.toActualArguments() + "));\n" +
                     "    }\n");
         }
         return cb.build();
@@ -108,7 +109,7 @@ public class EventStubGenerator {
 
     public List<GeneratedClass> getEvents() {
         List<GeneratedClass> events = new ArrayList<GeneratedClass>();
-        for (Method method : listenerMethods) {
+        for (Method method : listenerMethods_old) {
             ArgumentList arguments = new ArgumentList(method);
 
             ClassBuilder cb = new ClassBuilder(myEventWrapperName(method), stubsPackage);
@@ -158,6 +159,10 @@ public class EventStubGenerator {
     }
 
     private String myEventWrapperName(Method method) {
+        return LOWER_CAMEL.to(UPPER_CAMEL, method.getName()) + "Event";
+    }
+
+    private String myEventWrapperName(JavaMethod method) {
         return LOWER_CAMEL.to(UPPER_CAMEL, method.getName()) + "Event";
     }
 }

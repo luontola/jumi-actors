@@ -37,8 +37,13 @@ public class AnnotationProcessor extends AbstractProcessor {
         return false;
     }
 
-    private void generateEventizers(TypeElement iface) throws IOException {
-        PackageElement pkg = getPackage(iface);
+    private void generateEventizers(TypeElement eventInterface) throws IOException {
+        PackageElement pkg = getPackage(eventInterface);
+
+        String targetPackage = pkg.getQualifiedName().toString();
+        TargetPackageResolver targetPackageResolver = new TargetPackageResolver(targetPackage);
+        //EventStubGenerator generator = new EventStubGenerator(null, eventInterface, targetPackageResolver);
+
         JavaFileObject file = processingEnv.getFiler().createSourceFile(pkg.getQualifiedName() + ".Foo");
         Writer w = file.openWriter();
         w.write("package " + pkg.getQualifiedName() + "; class Foo {}");

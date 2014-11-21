@@ -37,6 +37,10 @@ public class ClassBuilder {
         return type.getSimpleName();
     }
 
+    public void addImports(List<JavaType> imports) {
+        imports.addAll(imports);
+    }
+
     public void addImports(ArgumentList arguments) {
         imports.addImports(arguments);
     }

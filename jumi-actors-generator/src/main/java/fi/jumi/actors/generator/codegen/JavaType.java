@@ -73,6 +73,8 @@ public abstract class JavaType {
 
     public abstract List<JavaType> getClassImports();
 
+    public abstract List<JavaMethod> getMethods();
+
 
     private static class RawType extends JavaType {
         private final Class<?> type;
@@ -104,6 +106,11 @@ public abstract class JavaType {
                 imports.add(this);
             }
             return imports;
+        }
+
+        @Override
+        public List<JavaMethod> getMethods() {
+            return Collections.emptyList();
         }
     }
 
@@ -152,6 +159,11 @@ public abstract class JavaType {
             }
             return imports;
         }
+
+        @Override
+        public List<JavaMethod> getMethods() {
+            return Collections.emptyList();
+        }
     }
 
     private static class GenericWildcardType extends JavaType {
@@ -178,6 +190,11 @@ public abstract class JavaType {
 
         @Override
         public List<JavaType> getClassImports() {
+            return Collections.emptyList();
+        }
+
+        @Override
+        public List<JavaMethod> getMethods() {
             return Collections.emptyList();
         }
     }
@@ -218,6 +235,18 @@ public abstract class JavaType {
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
+        }
+
+        @Override
+        public List<JavaMethod> getMethods() {
+            ArrayList<JavaMethod> methods = new ArrayList<JavaMethod>();
+            for (Element element : type.getEnclosedElements()) {
+                if (element.getKind() == ElementKind.METHOD) {
+                    methods.add(new JavaMethod((ExecutableElement) element));
+                }
+            }
+            // TODO: get methods of parent interfaces
+            return methods;
         }
     }
 }

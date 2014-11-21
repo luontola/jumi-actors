@@ -12,11 +12,11 @@ public class DummyListenerToEvent implements DummyListener {
         this.sender = sender;
     }
 
-    public void onOther() {
-        sender.send(new OnOtherEvent());
+    public void onSomething(java.lang.String foo, java.lang.String bar) {
+        sender.send(new OnSomethingEvent(foo, bar));
     }
 
-    public void onSomething(String arg0, String arg1) {
-        sender.send(new OnSomethingEvent(arg0, arg1));
+    public void onOther() {
+        sender.send(new OnOtherEvent());
     }
 }
