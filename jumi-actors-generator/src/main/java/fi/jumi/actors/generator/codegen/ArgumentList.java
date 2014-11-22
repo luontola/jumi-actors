@@ -4,19 +4,11 @@
 
 package fi.jumi.actors.generator.codegen;
 
-import java.lang.reflect.*;
 import java.util.*;
 
 public class ArgumentList implements Iterable<Argument> {
 
     private final List<Argument> arguments = new ArrayList<Argument>();
-
-    public ArgumentList(Method method) {
-        Type[] types = method.getGenericParameterTypes();
-        for (int i = 0; i < types.length; i++) {
-            this.arguments.add(new Argument(JavaType.of(types[i]), "arg" + i));
-        }
-    }
 
     public ArgumentList(Argument... arguments) {
         this.arguments.addAll(Arrays.asList(arguments));
@@ -40,24 +32,5 @@ public class ArgumentList implements Iterable<Argument> {
             sb.append(argument.type.getSimpleName() + " " + argument.name);
         }
         return sb;
-    }
-
-    public StringBuilder toActualArguments() {
-        StringBuilder sb = new StringBuilder();
-        for (Argument argument : arguments) {
-            if (sb.length() > 0) {
-                sb.append(", ");
-            }
-            sb.append(argument.name);
-        }
-        return sb;
-    }
-
-    public String toActualVarargs() {
-        StringBuilder args = toActualArguments();
-        if (args.length() > 0) {
-            return ", " + args;
-        }
-        return args.toString();
     }
 }

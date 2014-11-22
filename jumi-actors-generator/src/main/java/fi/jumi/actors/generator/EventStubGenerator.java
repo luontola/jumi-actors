@@ -10,7 +10,6 @@ import fi.jumi.actors.queue.MessageSender;
 
 import javax.lang.model.element.TypeElement;
 import java.io.Serializable;
-import java.lang.reflect.Method;
 import java.util.*;
 
 import static com.google.common.base.CaseFormat.*;
@@ -75,8 +74,8 @@ public class EventStubGenerator {
         for (JavaMethod method : listenerMethods) {
             cb.addImports(method.getClassImports());
             cb.addMethod("" +
-                    "    public void " + method.getName() + "(" + method.toFormalArguments() + ") {\n" +
-                    "        " + sender.name + ".send(new " + myEventWrapperName(method) + "(" + method.toActualArguments() + "));\n" +
+                    "    public void " + method.getName() + "(" + JavaVar.toFormalArguments(method.getArguments()) + ") {\n" +
+                    "        " + sender.name + ".send(new " + myEventWrapperName(method) + "(" + JavaVar.toActualArguments(method.getArguments()) + "));\n" +
                     "    }\n");
         }
         return cb.build();
@@ -111,12 +110,12 @@ public class EventStubGenerator {
 
             cb.addMethod("" +
                     "    public void fireOn(" + listenerName + " target) {\n" +
-                    "        target." + method.getName() + "(" + method.toActualArguments() + ");\n" +
+                    "        target." + method.getName() + "(" + JavaVar.toActualArguments(method.getArguments()) + ");\n" +
                     "    }\n");
 
             cb.addMethod("" +
                     "    public String toString() {\n" +
-                    "        return " + eventToString + ".format(\"" + listenerName + "\", \"" + method.getName() + "\"" + method.toActualVarargs() + ");\n" +
+                    "        return " + eventToString + ".format(\"" + listenerName + "\", \"" + method.getName() + "\"" + JavaVar.toActualVarargs(method.getArguments()) + ");\n" +
                     "    }\n");
 
             events.add(cb.build());
@@ -144,10 +143,6 @@ public class EventStubGenerator {
 
     private String myBackendName() {
         return "EventTo" + listenerInterface.getRawName();
-    }
-
-    private String myEventWrapperName(Method method) {
-        return LOWER_CAMEL.to(UPPER_CAMEL, method.getName()) + "Event";
     }
 
     private String myEventWrapperName(JavaMethod method) {

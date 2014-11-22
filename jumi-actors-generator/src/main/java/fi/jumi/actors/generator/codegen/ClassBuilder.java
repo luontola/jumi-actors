@@ -16,7 +16,7 @@ public class ClassBuilder {
     private final List<JavaType> interfaces = new ArrayList<JavaType>();
     private final Imports imports = new Imports();
     @Deprecated private ArgumentList constructorArguments_old = new ArgumentList();
-    private JavaMethod constructorArguments;
+    private final List<JavaVar> constructorArguments = new ArrayList<JavaVar>();
 
     public ClassBuilder(String className, String targetPackage) {
         this.className = className;
@@ -29,7 +29,7 @@ public class ClassBuilder {
     }
 
     public void fieldsAndConstructorParameters(JavaMethod method) {
-        constructorArguments = method;
+        constructorArguments.addAll(method.getArguments());
     }
 
     public void fieldsAndConstructorParameters(ArgumentList arguments) {
@@ -84,14 +84,13 @@ public class ClassBuilder {
         StringBuilder sb = new StringBuilder();
         sb.append("public class " + className + " implements " + toImplementsDeclaration(interfaces) + " {\n");
         sb.append("\n");
-        if (constructorArguments != null && constructorArguments.getArguments().size() > 0) {
-            List<JavaVar> vars = constructorArguments.getArguments();
-            for (JavaVar var : vars) {
+        if (constructorArguments.size() > 0) {
+            for (JavaVar var : constructorArguments) {
                 sb.append("    private final " + var.getType() + " " + var.getName() + ";\n");
             }
             sb.append("\n");
-            sb.append("    public " + className + "(" + constructorArguments.toFormalArguments() + ") {\n");
-            for (JavaVar var : vars) {
+            sb.append("    public " + className + "(" + JavaVar.toFormalArguments(constructorArguments) + ") {\n");
+            for (JavaVar var : constructorArguments) {
                 sb.append("        this." + var.getName() + " = " + var.getName() + ";\n");
             }
             sb.append("    }\n");
