@@ -25,19 +25,35 @@ public class JavaMethod {
         return element.getSimpleName().toString();
     }
 
+    public List<JavaVar> getArguments() {
+        ArrayList<JavaVar> vars = new ArrayList<JavaVar>();
+        for (VariableElement var : element.getParameters()) {
+            vars.add(new JavaVar(var));
+        }
+        return vars;
+    }
+
     public String toFormalArguments() {
         List<String> vars = new ArrayList<String>();
-        for (VariableElement var : element.getParameters()) {
-            vars.add(var.asType() + " " + var);
+        for (JavaVar var : getArguments()) {
+            vars.add(var.getType() + " " + var.getName());
         }
         return Joiner.on(", ").join(vars);
     }
 
     public String toActualArguments() {
         List<String> vars = new ArrayList<String>();
-        for (VariableElement var : element.getParameters()) {
-            vars.add(var.getSimpleName().toString());
+        for (JavaVar var : getArguments()) {
+            vars.add(var.getName());
         }
         return Joiner.on(", ").join(vars);
+    }
+
+    public String toActualVarargs() {
+        String args = toActualArguments();
+        if (args.length() > 0) {
+            return ", " + args;
+        }
+        return args;
     }
 }

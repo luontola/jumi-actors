@@ -15,7 +15,8 @@ public class ClassBuilder {
     private final StringBuilder methods = new StringBuilder();
     private final List<JavaType> interfaces = new ArrayList<JavaType>();
     private final Imports imports = new Imports();
-    private ArgumentList constructorArguments = new ArgumentList();
+    @Deprecated private ArgumentList constructorArguments_old = new ArgumentList();
+    private JavaMethod constructorArguments;
 
     public ClassBuilder(String className, String targetPackage) {
         this.className = className;
@@ -27,9 +28,13 @@ public class ClassBuilder {
         imports.addImports(anInterface);
     }
 
+    public void fieldsAndConstructorParameters(JavaMethod method) {
+        constructorArguments = method;
+    }
+
     public void fieldsAndConstructorParameters(ArgumentList arguments) {
         addImports(arguments);
-        this.constructorArguments = arguments;
+        this.constructorArguments_old = arguments;
     }
 
     public String getImportedName(JavaType type) {
@@ -79,10 +84,23 @@ public class ClassBuilder {
         StringBuilder sb = new StringBuilder();
         sb.append("public class " + className + " implements " + toImplementsDeclaration(interfaces) + " {\n");
         sb.append("\n");
-        if (constructorArguments.size() > 0) {
-            sb.append(fields(constructorArguments));
+        if (constructorArguments != null && constructorArguments.getArguments().size() > 0) {
+            List<JavaVar> vars = constructorArguments.getArguments();
+            for (JavaVar var : vars) {
+                sb.append("    private final " + var.getType() + " " + var.getName() + ";\n");
+            }
             sb.append("\n");
-            sb.append(constructor(className, constructorArguments));
+            sb.append("    public " + className + "(" + constructorArguments.toFormalArguments() + ") {\n");
+            for (JavaVar var : vars) {
+                sb.append("        this." + var.getName() + " = " + var.getName() + ";\n");
+            }
+            sb.append("    }\n");
+            sb.append("\n");
+
+        } else if (constructorArguments_old.size() > 0) {
+            sb.append(fields(constructorArguments_old));
+            sb.append("\n");
+            sb.append(constructor(className, constructorArguments_old));
             sb.append("\n");
         }
         sb.append(methods);

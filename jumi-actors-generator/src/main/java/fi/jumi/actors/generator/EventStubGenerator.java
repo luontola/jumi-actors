@@ -18,7 +18,6 @@ import static com.google.common.base.CaseFormat.*;
 public class EventStubGenerator {
 
     private final JavaType listenerInterface;
-    private final Method[] listenerMethods_old;
     private final List<JavaMethod> listenerMethods;
 
     private final JavaType eventizerInterface;
@@ -32,13 +31,6 @@ public class EventStubGenerator {
         Eventizers.validateActorInterface(listenerType_old);
         listenerInterface = JavaType.of(listenerType);
         listenerMethods = listenerInterface.getMethods();
-        listenerMethods_old = listenerType_old.getMethods();
-        Arrays.sort(listenerMethods_old, new Comparator<Method>() {
-            @Override
-            public int compare(Method m1, Method m2) {
-                return m1.getName().compareTo(m2.getName());
-            }
-        });
 
         eventizerInterface = JavaType.of(Eventizer.class, listenerInterface);
         eventInterface = JavaType.of(Event.class, listenerInterface);
@@ -109,26 +101,23 @@ public class EventStubGenerator {
 
     public List<GeneratedClass> getEvents() {
         List<GeneratedClass> events = new ArrayList<GeneratedClass>();
-        for (Method method : listenerMethods_old) {
-            ArgumentList arguments = new ArgumentList(method);
-
+        for (JavaMethod method : listenerMethods) {
             ClassBuilder cb = new ClassBuilder(myEventWrapperName(method), stubsPackage);
             cb.implement(eventInterface);
             cb.implement(JavaType.of(Serializable.class));
-            cb.fieldsAndConstructorParameters(arguments);
+            cb.fieldsAndConstructorParameters(method);
 
             String eventToString = cb.getImportedName(JavaType.of(EventToString.class));
             String listenerName = cb.getImportedName(listenerInterface);
-            cb.addImports(arguments);
 
             cb.addMethod("" +
                     "    public void fireOn(" + listenerName + " target) {\n" +
-                    "        target." + method.getName() + "(" + arguments.toActualArguments() + ");\n" +
+                    "        target." + method.getName() + "(" + method.toActualArguments() + ");\n" +
                     "    }\n");
 
             cb.addMethod("" +
                     "    public String toString() {\n" +
-                    "        return " + eventToString + ".format(\"" + listenerName + "\", \"" + method.getName() + "\"" + arguments.toActualVarargs() + ");\n" +
+                    "        return " + eventToString + ".format(\"" + listenerName + "\", \"" + method.getName() + "\"" + method.toActualVarargs() + ");\n" +
                     "    }\n");
 
             events.add(cb.build());
