@@ -65,33 +65,33 @@ public class EventStubGenerator {
     }
 
     public GeneratedClass getFrontend() {
-        Argument sender = new Argument(senderInterface, "sender");
+        JavaVar sender = JavaVar.of(senderInterface, "sender");
 
         ClassBuilder cb = new ClassBuilder(myFrontendName(), stubsPackage);
         cb.implement(listenerInterface);
-        cb.fieldsAndConstructorParameters(new ArgumentList(sender));
+        cb.fieldsAndConstructorParameters(Arrays.asList(sender));
 
         for (JavaMethod method : listenerMethods) {
             cb.addImports(method.getClassImports());
             cb.addMethod("" +
                     "    public void " + method.getName() + "(" + JavaVar.toFormalArguments(method.getArguments()) + ") {\n" +
-                    "        " + sender.name + ".send(new " + myEventWrapperName(method) + "(" + JavaVar.toActualArguments(method.getArguments()) + "));\n" +
+                    "        " + sender.getName() + ".send(new " + myEventWrapperName(method) + "(" + JavaVar.toActualArguments(method.getArguments()) + "));\n" +
                     "    }\n");
         }
         return cb.build();
     }
 
     public GeneratedClass getBackend() {
-        Argument listener = new Argument(listenerInterface, "listener");
+        JavaVar listener = JavaVar.of(listenerInterface, "listener");
 
         ClassBuilder cb = new ClassBuilder(myBackendName(), stubsPackage);
         cb.implement(senderInterface);
-        cb.fieldsAndConstructorParameters(new ArgumentList(listener));
+        cb.fieldsAndConstructorParameters(Arrays.asList(listener));
 
         String eventName = cb.getImportedName(eventInterface);
         cb.addMethod("" +
                 "    public void send(" + eventName + " message) {\n" +
-                "        message.fireOn(" + listener.name + ");\n" +
+                "        message.fireOn(" + listener.getName() + ");\n" +
                 "    }\n");
 
         return cb.build();
@@ -103,7 +103,7 @@ public class EventStubGenerator {
             ClassBuilder cb = new ClassBuilder(myEventWrapperName(method), stubsPackage);
             cb.implement(eventInterface);
             cb.implement(JavaType.of(Serializable.class));
-            cb.fieldsAndConstructorParameters(method);
+            cb.fieldsAndConstructorParameters(method.getArguments());
 
             String eventToString = cb.getImportedName(JavaType.of(EventToString.class));
             String listenerName = cb.getImportedName(listenerInterface);

@@ -7,24 +7,21 @@ package fi.jumi.actors.generator.codegen;
 import com.google.common.base.Joiner;
 
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.TypeMirror;
 import java.util.*;
 
-public class JavaVar {
+public abstract class JavaVar {
 
-    private final VariableElement var;
-
-    public JavaVar(VariableElement var) {
-        this.var = var;
+    public static JavaVar of(VariableElement var) {
+        return new AstJavaVar(var);
     }
 
-    public String getName() {
-        return var.getSimpleName().toString();
+    public static JavaVar of(JavaType type, String name) {
+        return new SimpleJavaVar(type, name);
     }
 
-    public TypeMirror getType() {
-        return var.asType();
-    }
+    public abstract String getType();
+
+    public abstract String getName();
 
     public static String toFormalArguments(List<JavaVar> arguments) {
         List<String> vars = new ArrayList<String>();
@@ -48,5 +45,46 @@ public class JavaVar {
             return ", " + args;
         }
         return args;
+    }
+
+
+    private static class AstJavaVar extends JavaVar {
+
+        private final VariableElement var;
+
+        private AstJavaVar(VariableElement var) {
+            this.var = var;
+        }
+
+        @Override
+        public String getType() {
+            return var.asType().toString();
+        }
+
+        @Override
+        public String getName() {
+            return var.getSimpleName().toString();
+        }
+    }
+
+    private static class SimpleJavaVar extends JavaVar {
+
+        private final JavaType type;
+        private final String name;
+
+        public SimpleJavaVar(JavaType type, String name) {
+            this.type = type;
+            this.name = name;
+        }
+
+        @Override
+        public String getType() {
+            return type.getName();
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
     }
 }

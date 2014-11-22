@@ -11,12 +11,6 @@ public class Imports {
     private final List<JavaType> classesToImport = new ArrayList<JavaType>();
     private final List<String> packagesToImport = new ArrayList<String>();
 
-    public void addImports(ArgumentList arguments) {
-        for (Argument argument : arguments) {
-            addImports(argument.type);
-        }
-    }
-
     public void addImports(JavaType... types) {
         for (JavaType type : types) {
             classesToImport.addAll(type.getClassImports());

@@ -15,7 +15,6 @@ public class ClassBuilder {
     private final StringBuilder methods = new StringBuilder();
     private final List<JavaType> interfaces = new ArrayList<JavaType>();
     private final Imports imports = new Imports();
-    @Deprecated private ArgumentList constructorArguments_old = new ArgumentList();
     private final List<JavaVar> constructorArguments = new ArrayList<JavaVar>();
 
     public ClassBuilder(String className, String targetPackage) {
@@ -28,13 +27,8 @@ public class ClassBuilder {
         imports.addImports(anInterface);
     }
 
-    public void fieldsAndConstructorParameters(JavaMethod method) {
-        constructorArguments.addAll(method.getArguments());
-    }
-
-    public void fieldsAndConstructorParameters(ArgumentList arguments) {
-        addImports(arguments);
-        this.constructorArguments_old = arguments;
+    public void fieldsAndConstructorParameters(List<JavaVar> arguments) {
+        constructorArguments.addAll(arguments);
     }
 
     public String getImportedName(JavaType type) {
@@ -44,10 +38,6 @@ public class ClassBuilder {
 
     public void addImports(List<JavaType> imports) {
         imports.addAll(imports);
-    }
-
-    public void addImports(ArgumentList arguments) {
-        imports.addImports(arguments);
     }
 
     public void addPackageImport(String packageName) {
@@ -62,11 +52,8 @@ public class ClassBuilder {
     }
 
     public GeneratedClass build() {
-        StringBuilder source = new StringBuilder();
-        source.append(packageStatement());
-        source.append(imports);
-        source.append(classBody());
-        return new GeneratedClass(fileForClass(className), source.toString());
+        String source = packageStatement() + imports + classBody();
+        return new GeneratedClass(fileForClass(className), source);
     }
 
     private String fileForClass(String className) {
@@ -95,12 +82,6 @@ public class ClassBuilder {
             }
             sb.append("    }\n");
             sb.append("\n");
-
-        } else if (constructorArguments_old.size() > 0) {
-            sb.append(fields(constructorArguments_old));
-            sb.append("\n");
-            sb.append(constructor(className, constructorArguments_old));
-            sb.append("\n");
         }
         sb.append(methods);
         sb.append("}\n");
@@ -115,24 +96,6 @@ public class ClassBuilder {
             }
             sb.append(type.getSimpleName());
         }
-        return sb;
-    }
-
-    private StringBuilder fields(ArgumentList fields) {
-        StringBuilder sb = new StringBuilder();
-        for (Argument argument : fields) {
-            sb.append("    private final " + argument.type.getSimpleName() + " " + argument.name + ";\n");
-        }
-        return sb;
-    }
-
-    private StringBuilder constructor(String className, ArgumentList fields) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("    public " + className + "(" + fields.toFormalArguments() + ") {\n");
-        for (Argument argument : fields) {
-            sb.append("        this." + argument.name + " = " + argument.name + ";\n");
-        }
-        sb.append("    }\n");
         return sb;
     }
 }

@@ -1,14 +1,12 @@
 package fi.jumi.actors.generator.reference.dummyListener;
 
-import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.generator.DummyListener;
-import fi.jumi.actors.queue.MessageSender;
 
 public class DummyListenerToEvent implements DummyListener {
 
-    private final MessageSender<Event<DummyListener>> sender;
+    private final fi.jumi.actors.queue.MessageSender<fi.jumi.actors.eventizers.Event<fi.jumi.actors.generator.DummyListener>> sender;
 
-    public DummyListenerToEvent(MessageSender<Event<DummyListener>> sender) {
+    public DummyListenerToEvent(fi.jumi.actors.queue.MessageSender<fi.jumi.actors.eventizers.Event<fi.jumi.actors.generator.DummyListener>> sender) {
         this.sender = sender;
     }
 

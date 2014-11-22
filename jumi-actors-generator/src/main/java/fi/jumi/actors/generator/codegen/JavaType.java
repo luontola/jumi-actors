@@ -69,6 +69,8 @@ public abstract class JavaType {
 
     public abstract String getRawName();
 
+    public abstract String getName();
+
     public abstract String getSimpleName();
 
     public abstract List<JavaType> getClassImports();
@@ -92,6 +94,11 @@ public abstract class JavaType {
         @Override
         public String getRawName() {
             return type.getSimpleName();
+        }
+
+        @Override
+        public String getName() {
+            return type.getCanonicalName();
         }
 
         @Override
@@ -135,17 +142,26 @@ public abstract class JavaType {
         }
 
         @Override
-        public String getSimpleName() {
-            return type.getSimpleName() + "<" + typeArgumentsAsString() + ">";
+        public String getName() {
+            return type.getName() + "<" + typeArgumentsAsString(false) + ">";
         }
 
-        private String typeArgumentsAsString() {
+        @Override
+        public String getSimpleName() {
+            return type.getSimpleName() + "<" + typeArgumentsAsString(true) + ">";
+        }
+
+        private String typeArgumentsAsString(boolean simpleName) {
             String result = "";
             for (int i = 0; i < typeArguments.length; i++) {
                 if (i > 0) {
                     result += ", ";
                 }
-                result += typeArguments[i].getSimpleName();
+                if (simpleName) {
+                    result += typeArguments[i].getSimpleName();
+                } else {
+                    result += typeArguments[i].getName();
+                }
             }
             return result;
         }
@@ -183,9 +199,14 @@ public abstract class JavaType {
         }
 
         @Override
-        public String getSimpleName() {
+        public String getName() {
             // TODO: upper and lower bounds
             return "?";
+        }
+
+        @Override
+        public String getSimpleName() {
+            return getName();
         }
 
         @Override
@@ -219,6 +240,11 @@ public abstract class JavaType {
         @Override
         public String getRawName() {
             return type.getSimpleName().toString();
+        }
+
+        @Override
+        public String getName() {
+            return type.toString();
         }
 
         @Override

@@ -26,7 +26,7 @@ public class JavaMethod {
     public List<JavaVar> getArguments() {
         ArrayList<JavaVar> vars = new ArrayList<JavaVar>();
         for (VariableElement var : element.getParameters()) {
-            vars.add(new JavaVar(var));
+            vars.add(JavaVar.of(var));
         }
         return vars;
     }
