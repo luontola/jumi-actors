@@ -7,6 +7,7 @@
 		http://code.google.com/p/genftw/
 		http://code.google.com/p/objectify-gwtkey/
 	!! - port the current generator
+	- generate error messages about invalid eventizer interfaces
 	- generate imports or not?
 	- inherited methods, would somehow have to get the parent's AST
 	- 3rd party classes: package-local interface with @GenerateEventizers(useParent = true)

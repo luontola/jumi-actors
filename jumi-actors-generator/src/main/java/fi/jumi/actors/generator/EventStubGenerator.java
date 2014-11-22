@@ -27,8 +27,7 @@ public class EventStubGenerator {
     private final String eventizerPackage;
     private final String stubsPackage;
 
-    public EventStubGenerator(Class<?> listenerType_old, TypeElement listenerType, TargetPackageResolver targetPackageResolver) {
-        Eventizers.validateActorInterface(listenerType_old);
+    public EventStubGenerator(TypeElement listenerType, TargetPackageResolver targetPackageResolver) {
         listenerInterface = JavaType.of(listenerType);
         listenerMethods = listenerInterface.getMethods();
 
