@@ -141,7 +141,6 @@ public class EventStubGeneratorTest {
         assertThat(events.get(1).path, endsWith("OnTwoEvent.java"));
     }
 
-    @Ignore
     @Test
     public void adds_imports_for_all_method_parameter_types() {
         generator = new EventStubGenerator(ast(ExternalLibraryReferencingListener.class), targetPackageResolver);

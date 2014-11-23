@@ -5,13 +5,25 @@
 package fi.jumi.actors.generator.codegen;
 
 import javax.lang.model.element.*;
+import javax.lang.model.type.*;
 import java.lang.reflect.*;
+import java.lang.reflect.WildcardType;
 import java.util.*;
 
 public abstract class JavaType {
 
     public static JavaType of(TypeElement type) {
         return JavaType.of(type, null);
+    }
+
+    public static JavaType of(TypeMirror type) {
+        TypeKind kind = type.getKind();
+        if (kind == TypeKind.DECLARED) {
+            DeclaredType t = (DeclaredType) type;
+            TypeElement e = (TypeElement) t.asElement();
+            return JavaType.of(e);
+        }
+        throw new IllegalArgumentException("unsupported kind " + kind);
     }
 
     public static JavaType of(Type type) {
@@ -28,9 +40,7 @@ public abstract class JavaType {
 
     public static JavaType of(TypeElement typeElement, Type type, JavaType... typeArguments) {
         if (typeElement != null) {
-            if (typeElement.getKind() == ElementKind.INTERFACE) {
-                return new AstJavaType(typeElement);
-            }
+            return new AstJavaType(typeElement);
         }
         if (type instanceof Class && typeArguments.length == 0) {
             return new RawType((Class<?>) type);
@@ -69,8 +79,6 @@ public abstract class JavaType {
 
     public abstract String getRawName();
 
-    public abstract String getName();
-
     public abstract String getSimpleName();
 
     public abstract List<JavaType> getClassImports();
@@ -94,11 +102,6 @@ public abstract class JavaType {
         @Override
         public String getRawName() {
             return type.getSimpleName();
-        }
-
-        @Override
-        public String getName() {
-            return type.getCanonicalName();
         }
 
         @Override
@@ -142,26 +145,17 @@ public abstract class JavaType {
         }
 
         @Override
-        public String getName() {
-            return type.getName() + "<" + typeArgumentsAsString(false) + ">";
-        }
-
-        @Override
         public String getSimpleName() {
-            return type.getSimpleName() + "<" + typeArgumentsAsString(true) + ">";
+            return type.getSimpleName() + "<" + typeArgumentsAsString() + ">";
         }
 
-        private String typeArgumentsAsString(boolean simpleName) {
+        private String typeArgumentsAsString() {
             String result = "";
             for (int i = 0; i < typeArguments.length; i++) {
                 if (i > 0) {
                     result += ", ";
                 }
-                if (simpleName) {
-                    result += typeArguments[i].getSimpleName();
-                } else {
-                    result += typeArguments[i].getName();
-                }
+                result += typeArguments[i].getSimpleName();
             }
             return result;
         }
@@ -199,14 +193,9 @@ public abstract class JavaType {
         }
 
         @Override
-        public String getName() {
+        public String getSimpleName() {
             // TODO: upper and lower bounds
             return "?";
-        }
-
-        @Override
-        public String getSimpleName() {
-            return getName();
         }
 
         @Override
@@ -222,51 +211,43 @@ public abstract class JavaType {
 
     private static class AstJavaType extends JavaType {
 
-        private final TypeElement type;
+        private final TypeElement element;
 
-        public AstJavaType(TypeElement type) {
-            this.type = type;
+        public AstJavaType(TypeElement element) {
+            this.element = element;
         }
 
         @Override
         public String getPackage() {
-            Element e = type;
+            Element e = element;
             while (e.getKind() != ElementKind.PACKAGE) {
                 e = e.getEnclosingElement();
             }
-            return e.toString() + "xxx"; // TODO: anybody uses?
+            return e.toString();
         }
 
         @Override
         public String getRawName() {
-            return type.getSimpleName().toString();
-        }
-
-        @Override
-        public String getName() {
-            return type.toString();
+            return element.getSimpleName().toString();
         }
 
         @Override
         public String getSimpleName() {
-            return type.getSimpleName().toString();
+            return element.getSimpleName().toString();
         }
 
         @Override
         public List<JavaType> getClassImports() {
-            try {
-                // XXX
-                Class<?> c = Class.forName(type.toString().replace("Test.", "Test$"));
-                return Arrays.asList(JavaType.of(c));
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
+            // TODO: generics support needed?
+            ArrayList<JavaType> imports = new ArrayList<JavaType>();
+            imports.add(this);
+            return imports;
         }
 
         @Override
         public List<JavaMethod> getMethods() {
             ArrayList<JavaMethod> methods = new ArrayList<JavaMethod>();
-            for (Element element : type.getEnclosedElements()) {
+            for (Element element : this.element.getEnclosedElements()) {
                 if (element.getKind() == ElementKind.METHOD) {
                     methods.add(new JavaMethod((ExecutableElement) element));
                 }

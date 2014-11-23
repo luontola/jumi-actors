@@ -12,21 +12,21 @@ import java.util.*;
 public abstract class JavaVar {
 
     public static JavaVar of(VariableElement var) {
-        return new AstJavaVar(var);
+        return new AstJavaVar(var); // TODO: unnecessary - extract the type and name
     }
 
     public static JavaVar of(JavaType type, String name) {
         return new SimpleJavaVar(type, name);
     }
 
-    public abstract String getType();
+    public abstract JavaType getType();
 
     public abstract String getName();
 
-    public static String toFormalArguments(List<JavaVar> arguments) {
+    public static String toFormalArguments(ClassBuilder cb, List<JavaVar> arguments) {
         List<String> vars = new ArrayList<String>();
         for (JavaVar var : arguments) {
-            vars.add(var.getType() + " " + var.getName());
+            vars.add(cb.imported(var.getType()) + " " + var.getName());
         }
         return Joiner.on(", ").join(vars);
     }
@@ -57,8 +57,8 @@ public abstract class JavaVar {
         }
 
         @Override
-        public String getType() {
-            return var.asType().toString();
+        public JavaType getType() {
+            return JavaType.of(var.asType());
         }
 
         @Override
@@ -78,8 +78,8 @@ public abstract class JavaVar {
         }
 
         @Override
-        public String getType() {
-            return type.getName();
+        public JavaType getType() {
+            return type;
         }
 
         @Override

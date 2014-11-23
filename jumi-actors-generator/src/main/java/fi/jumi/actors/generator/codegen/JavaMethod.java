@@ -15,10 +15,6 @@ public class JavaMethod {
         this.element = element;
     }
 
-    public List<JavaType> getClassImports() {
-        return Collections.emptyList(); // TODO
-    }
-
     public String getName() {
         return element.getSimpleName().toString();
     }

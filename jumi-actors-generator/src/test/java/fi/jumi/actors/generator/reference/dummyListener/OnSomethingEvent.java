@@ -7,10 +7,10 @@ import java.io.Serializable;
 
 public class OnSomethingEvent implements Event<DummyListener>, Serializable {
 
-    private final java.lang.String foo;
-    private final java.lang.String bar;
+    private final String foo;
+    private final String bar;
 
-    public OnSomethingEvent(java.lang.String foo, java.lang.String bar) {
+    public OnSomethingEvent(String foo, String bar) {
         this.foo = foo;
         this.bar = bar;
     }

@@ -24,20 +24,15 @@ public class ClassBuilder {
 
     public void implement(JavaType anInterface) {
         interfaces.add(anInterface);
-        imports.addImports(anInterface);
     }
 
     public void fieldsAndConstructorParameters(List<JavaVar> arguments) {
         constructorArguments.addAll(arguments);
     }
 
-    public String getImportedName(JavaType type) {
+    public String imported(JavaType type) {
         imports.addImports(type);
         return type.getSimpleName();
-    }
-
-    public void addImports(List<JavaType> imports) {
-        imports.addAll(imports);
     }
 
     public void addPackageImport(String packageName) {
@@ -52,8 +47,8 @@ public class ClassBuilder {
     }
 
     public GeneratedClass build() {
-        String source = packageStatement() + imports + classBody();
-        return new GeneratedClass(fileForClass(className), source);
+        StringBuilder body = classBody(); // classBody adds imports, so it must be executed first
+        return new GeneratedClass(fileForClass(className), packageStatement() + imports + body);
     }
 
     private String fileForClass(String className) {
@@ -73,10 +68,10 @@ public class ClassBuilder {
         sb.append("\n");
         if (constructorArguments.size() > 0) {
             for (JavaVar var : constructorArguments) {
-                sb.append("    private final " + var.getType() + " " + var.getName() + ";\n");
+                sb.append("    private final " + imported(var.getType()) + " " + var.getName() + ";\n");
             }
             sb.append("\n");
-            sb.append("    public " + className + "(" + JavaVar.toFormalArguments(constructorArguments) + ") {\n");
+            sb.append("    public " + className + "(" + JavaVar.toFormalArguments(this, constructorArguments) + ") {\n");
             for (JavaVar var : constructorArguments) {
                 sb.append("        this." + var.getName() + " = " + var.getName() + ";\n");
             }
@@ -88,13 +83,13 @@ public class ClassBuilder {
         return sb;
     }
 
-    private static StringBuilder toImplementsDeclaration(List<JavaType> types) {
+    private  StringBuilder toImplementsDeclaration(List<JavaType> types) {
         StringBuilder sb = new StringBuilder();
         for (JavaType type : types) {
             if (sb.length() > 0) {
                 sb.append(", ");
             }
-            sb.append(type.getSimpleName());
+            sb.append(imported(type));
         }
         return sb;
     }
