@@ -152,7 +152,6 @@ public class EventStubGeneratorTest {
         assertThat(frontend.source, containsString("import java.util.Random;"));
     }
 
-    @Ignore
     @Test
     public void adds_imports_for_type_parameters_of_method_parameter_types() {
         generator = new EventStubGenerator(ast(GenericParametersListener.class), targetPackageResolver);
@@ -166,7 +165,6 @@ public class EventStubGeneratorTest {
         assertThat(frontend.source, containsString("import java.io.File;"));
     }
 
-    @Ignore
     @Test
     public void raw_types_are_not_used() {
         generator = new EventStubGenerator(ast(GenericParametersListener.class), targetPackageResolver);

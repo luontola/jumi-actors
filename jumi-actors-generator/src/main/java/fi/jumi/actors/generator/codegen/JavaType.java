@@ -13,48 +13,47 @@ import java.util.*;
 public abstract class JavaType {
 
     public static JavaType of(TypeElement type) {
-        return JavaType.of(type, null);
+        return of(type, null, null);
     }
 
     public static JavaType of(TypeMirror type) {
         TypeKind kind = type.getKind();
         if (kind == TypeKind.DECLARED) {
-            DeclaredType t = (DeclaredType) type;
-            TypeElement e = (TypeElement) t.asElement();
-            return JavaType.of(e);
+            DeclaredType dt = (DeclaredType) type;
+            TypeElement element = (TypeElement) dt.asElement(); // XXX: strips away generics
+            return JavaType.of(element, type, null);
         }
         throw new IllegalArgumentException("unsupported kind " + kind);
     }
 
     public static JavaType of(Type type) {
-        return JavaType.of(null, type);
-    }
-
-    public static JavaType of(TypeElement typeElement, Type type) {
-        return JavaType.of(typeElement, type, typeArgumentsOf(type));
+        return of(null, null, type, typeArgumentsOf(type));
     }
 
     public static JavaType of(Type type, JavaType... typeArguments) {
-        return of(null, type, typeArguments);
+        return of(null, null, type, typeArguments);
     }
 
-    public static JavaType of(TypeElement typeElement, Type type, JavaType... typeArguments) {
+    private static JavaType of(TypeElement typeElement, TypeMirror typeMirror, Type type, JavaType... typeArguments) {
         if (typeElement != null) {
-            return new AstJavaType(typeElement);
+            if (typeMirror == null) {
+                typeMirror = typeElement.asType();
+            }
+            return new AstJavaType(typeElement, typeMirror);
         }
         if (type instanceof Class && typeArguments.length == 0) {
-            return new RawType((Class<?>) type);
+            return new RawJavaType((Class<?>) type);
         }
         if (type instanceof Class && typeArguments.length > 0) {
-            return new GenericType((Class<?>) type, typeArguments);
+            return new GenericJavaType(JavaType.of(type), typeArguments);
         }
         if (type instanceof ParameterizedType) {
             ParameterizedType t = (ParameterizedType) type;
             Class<?> rawType = (Class<?>) t.getRawType();
-            return new GenericType(rawType, typeArguments);
+            return new GenericJavaType(JavaType.of(rawType), typeArguments);
         }
         if (type instanceof WildcardType) {
-            return new GenericWildcardType();
+            return new WildcardJavaType();
         }
         throw new IllegalArgumentException("unsupported type " + type);
     }
@@ -86,12 +85,16 @@ public abstract class JavaType {
     public abstract List<JavaMethod> getMethods();
 
 
-    private static class RawType extends JavaType {
+    private static class RawJavaType extends JavaType {
         private final Class<?> type;
 
-        private RawType(Class<?> type) {
-            super();
+        private RawJavaType(Class<?> type) {
             this.type = type;
+        }
+
+        @Override
+        public String toString() {
+            return getClass().getSimpleName() + "(" + type + ")";
         }
 
         @Override
@@ -124,24 +127,28 @@ public abstract class JavaType {
         }
     }
 
-    private static class GenericType extends JavaType {
-        private final Class<?> type;
+    private static class GenericJavaType extends JavaType {
+        private final JavaType type;
         private final JavaType[] typeArguments;
 
-        private GenericType(Class<?> aClass, JavaType[] typeArguments) {
-            super();
-            this.type = aClass;
+        private GenericJavaType(JavaType type, JavaType[] typeArguments) {
+            this.type = type;
             this.typeArguments = typeArguments;
         }
 
         @Override
+        public String toString() {
+            return getClass().getSimpleName() + "(" + type + ", " + Arrays.toString(typeArguments) + ")";
+        }
+
+        @Override
         public String getPackage() {
-            return type.getPackage().getName();
+            return type.getPackage();
         }
 
         @Override
         public String getRawName() {
-            return type.getSimpleName();
+            return type.getRawName();
         }
 
         @Override
@@ -163,7 +170,7 @@ public abstract class JavaType {
         @Override
         public List<JavaType> getClassImports() {
             List<JavaType> imports = new ArrayList<JavaType>();
-            imports.add(JavaType.of(type));
+            imports.add(type);
             for (JavaType typeArgument : typeArguments) {
                 imports.addAll(typeArgument.getClassImports());
             }
@@ -176,10 +183,14 @@ public abstract class JavaType {
         }
     }
 
-    private static class GenericWildcardType extends JavaType {
+    private static class WildcardJavaType extends JavaType {
 
-        private GenericWildcardType() {
-            super();
+        private WildcardJavaType() {
+        }
+
+        @Override
+        public String toString() {
+            return getClass().getSimpleName() + "(" + getSimpleName() + ")";
         }
 
         @Override
@@ -211,10 +222,25 @@ public abstract class JavaType {
 
     private static class AstJavaType extends JavaType {
 
+        // XXX: is there some way for just the element or type to be enough?
         private final TypeElement element;
+        private final DeclaredType type;
+        private final List<JavaType> typeArguments = new ArrayList<JavaType>();
 
-        public AstJavaType(TypeElement element) {
+        public AstJavaType(TypeElement element, TypeMirror type) {
+            if (type.getKind() != TypeKind.DECLARED) {
+                throw new IllegalArgumentException("type " + type + " had kind " + type.getKind());
+            }
             this.element = element;
+            this.type = (DeclaredType) type;
+            for (TypeMirror typeArgument : this.type.getTypeArguments()) {
+                this.typeArguments.add(JavaType.of(typeArgument));
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass().getSimpleName() + "(" + element + ", " + type + ", " + typeArguments + ")";
         }
 
         @Override
@@ -233,14 +259,23 @@ public abstract class JavaType {
 
         @Override
         public String getSimpleName() {
-            return element.getSimpleName().toString();
+            StringBuilder sb = new StringBuilder();
+            sb.append(type.asElement().getSimpleName());
+            if (!typeArguments.isEmpty()) {
+                sb.append("<");
+                for (JavaType typeArgument : typeArguments) {
+                    sb.append(typeArgument.getSimpleName());
+                }
+                sb.append(">");
+            }
+            return sb.toString();
         }
 
         @Override
         public List<JavaType> getClassImports() {
-            // TODO: generics support needed?
             ArrayList<JavaType> imports = new ArrayList<JavaType>();
             imports.add(this);
+            imports.addAll(typeArguments);
             return imports;
         }
 
