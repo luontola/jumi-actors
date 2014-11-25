@@ -12,7 +12,7 @@
 
     <groupId>fi.jumi.actors</groupId>
     <artifactId>parent</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <description>
