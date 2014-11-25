@@ -12,6 +12,7 @@ public class EventToDummyListener implements MessageSender<Event<DummyListener>>
         this.target = target;
     }
 
+    @Override
     public void send(Event<DummyListener> message) {
         message.fireOn(target);
     }

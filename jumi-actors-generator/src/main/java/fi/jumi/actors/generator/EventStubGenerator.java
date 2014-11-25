@@ -56,16 +56,19 @@ public class EventStubGenerator {
         String senderType = cb.imported(senderInterface);
 
         cb.addMethod("" +
+                "    @Override\n" +
                 "    public Class<" + listenerType + "> getType() {\n" +
                 "        return " + listenerType + ".class;\n" +
                 "    }\n");
 
         cb.addMethod("" +
+                "    @Override\n" +
                 "    public " + listenerType + " newFrontend(" + senderType + " target) {\n" +
                 "        return new " + myFrontendName() + "(target);\n" +
                 "    }\n");
 
         cb.addMethod("" +
+                "    @Override\n" +
                 "    public " + senderType + " newBackend(" + listenerType + " target) {\n" +
                 "        return new " + myBackendName() + "(target);\n" +
                 "    }\n");
@@ -82,6 +85,7 @@ public class EventStubGenerator {
 
         for (JavaMethod method : listenerMethods) {
             cb.addMethod("" +
+                    "    @Override\n" +
                     "    public void " + method.getName() + "(" + JavaVar.toFormalArguments(cb, method.getArguments()) + ") {\n" +
                     "        " + target.getName() + ".send(new " + myEventWrapperName(method) + "(" + JavaVar.toActualArguments(method.getArguments()) + "));\n" +
                     "    }\n");
@@ -97,6 +101,7 @@ public class EventStubGenerator {
         cb.fieldsAndConstructorParameters(Arrays.asList(target));
 
         cb.addMethod("" +
+                "    @Override\n" +
                 "    public void send(" + cb.imported(eventInterface) + " message) {\n" +
                 "        message.fireOn(" + target.getName() + ");\n" +
                 "    }\n");
@@ -125,11 +130,13 @@ public class EventStubGenerator {
             }
 
             cb.addMethod("" +
+                    "    @Override\n" +
                     "    public void fireOn(" + listenerName + " target) {\n" +
                     "        target." + method.getName() + "(" + JavaVar.toActualArguments(arguments) + ");\n" +
                     "    }\n");
 
             cb.addMethod("" +
+                    "    @Override\n" +
                     "    public String toString() {\n" +
                     "        return " + eventToString + ".format(\"" + listenerName + "\", \"" + method.getName() + "\"" + JavaVar.toActualVarargs(arguments) + ");\n" +
                     "    }\n");

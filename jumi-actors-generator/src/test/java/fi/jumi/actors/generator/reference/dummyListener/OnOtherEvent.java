@@ -7,10 +7,12 @@ import java.io.Serializable;
 
 public class OnOtherEvent implements Event<DummyListener>, Serializable {
 
+    @Override
     public void fireOn(DummyListener target) {
         target.onOther();
     }
 
+    @Override
     public String toString() {
         return EventToString.format("DummyListener", "onOther");
     }

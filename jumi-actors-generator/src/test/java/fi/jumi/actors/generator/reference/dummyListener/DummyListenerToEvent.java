@@ -12,10 +12,12 @@ public class DummyListenerToEvent implements DummyListener {
         this.target = target;
     }
 
+    @Override
     public void onSomething(String foo, String bar) {
         target.send(new OnSomethingEvent(foo, bar));
     }
 
+    @Override
     public void onOther() {
         target.send(new OnOtherEvent());
     }

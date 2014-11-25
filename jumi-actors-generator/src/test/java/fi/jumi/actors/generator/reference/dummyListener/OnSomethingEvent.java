@@ -23,10 +23,12 @@ public class OnSomethingEvent implements Event<DummyListener>, Serializable {
         return bar;
     }
 
+    @Override
     public void fireOn(DummyListener target) {
         target.onSomething(foo, bar);
     }
 
+    @Override
     public String toString() {
         return EventToString.format("DummyListener", "onSomething", foo, bar);
     }
