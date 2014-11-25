@@ -76,6 +76,8 @@ public abstract class JavaType {
 
     public abstract String getPackage();
 
+    public abstract String getName();
+
     public abstract String getRawName();
 
     public abstract String getSimpleName();
@@ -100,6 +102,11 @@ public abstract class JavaType {
         @Override
         public String getPackage() {
             return type.getPackage().getName();
+        }
+
+        @Override
+        public String getName() {
+            return type.getName();
         }
 
         @Override
@@ -144,6 +151,11 @@ public abstract class JavaType {
         @Override
         public String getPackage() {
             return type.getPackage();
+        }
+
+        @Override
+        public String getName() {
+            return type.getName();
         }
 
         @Override
@@ -199,6 +211,11 @@ public abstract class JavaType {
         }
 
         @Override
+        public String getName() {
+            return getSimpleName();
+        }
+
+        @Override
         public String getRawName() {
             throw new UnsupportedOperationException();
         }
@@ -250,6 +267,11 @@ public abstract class JavaType {
                 e = e.getEnclosingElement();
             }
             return e.toString();
+        }
+
+        @Override
+        public String getName() {
+            return element.toString();
         }
 
         @Override

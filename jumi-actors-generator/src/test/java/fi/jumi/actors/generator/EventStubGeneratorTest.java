@@ -43,7 +43,7 @@ public class EventStubGeneratorTest {
     @Before
     public void setUp() {
         targetPackageResolver = new TargetPackageResolver(TARGET_PACKAGE);
-        generator = new EventStubGenerator(ast(DummyListener.class), targetPackageResolver);
+        generator = newEventStubGenerator(DummyListener.class);
     }
 
     @Test
@@ -133,7 +133,7 @@ public class EventStubGeneratorTest {
 
     @Test
     public void generates_event_classes_for_every_listener_method() {
-        generator = new EventStubGenerator(ast(TwoMethodInterface.class), targetPackageResolver);
+        generator = newEventStubGenerator(TwoMethodInterface.class);
 
         List<GeneratedClass> events = generator.getEvents();
         assertThat(events.size(), is(2));
@@ -143,7 +143,8 @@ public class EventStubGeneratorTest {
 
     @Test
     public void adds_imports_for_all_method_parameter_types() {
-        generator = new EventStubGenerator(ast(ExternalLibraryReferencingListener.class), targetPackageResolver);
+        Class<?> clazz = ExternalLibraryReferencingListener.class;
+        generator = newEventStubGenerator(clazz);
 
         GeneratedClass event = generator.getEvents().get(0);
         assertThat(event.source, containsString("import java.util.Random;"));
@@ -154,7 +155,7 @@ public class EventStubGeneratorTest {
 
     @Test
     public void adds_imports_for_type_parameters_of_method_parameter_types() {
-        generator = new EventStubGenerator(ast(GenericParametersListener.class), targetPackageResolver);
+        generator = newEventStubGenerator(GenericParametersListener.class);
 
         GeneratedClass event = generator.getEvents().get(0);
         assertThat(event.source, containsString("import java.util.List;"));
@@ -167,7 +168,7 @@ public class EventStubGeneratorTest {
 
     @Test
     public void raw_types_are_not_used() {
-        generator = new EventStubGenerator(ast(GenericParametersListener.class), targetPackageResolver);
+        generator = newEventStubGenerator(GenericParametersListener.class);
 
         GeneratedClass event = generator.getEvents().get(0);
         assertThat(event.source, containsString("List<File>"));
@@ -181,7 +182,7 @@ public class EventStubGeneratorTest {
     @Ignore
     @Test
     public void supports_methods_inherited_from_parent_interfaces() {
-        generator = new EventStubGenerator(ast(ChildInterface.class), targetPackageResolver);
+        generator = newEventStubGenerator(ChildInterface.class);
 
         GeneratedClass frontend = generator.getFrontend();
         assertThat(frontend.source, containsString("void methodInChild()"));
@@ -194,7 +195,7 @@ public class EventStubGeneratorTest {
         thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage("actor interface methods must be void");
 
-        new EventStubGenerator(ast(InvalidActorInterface.class), targetPackageResolver);
+        newEventStubGenerator(InvalidActorInterface.class);
     }
 
 
@@ -219,6 +220,12 @@ public class EventStubGeneratorTest {
                 e.printStackTrace();
             }
         }
+    }
+
+    private EventStubGenerator newEventStubGenerator(Class<?> listenerType) {
+        EventStubGenerator generator = new EventStubGenerator(ast(listenerType), targetPackageResolver);
+        generator.setGenerationDate(new GregorianCalendar(2000, Calendar.DECEMBER, 31).getTime());
+        return generator;
     }
 
     private TypeElement ast(Class<?> clazz) {

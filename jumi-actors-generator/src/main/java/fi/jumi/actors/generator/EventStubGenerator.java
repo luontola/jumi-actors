@@ -8,8 +8,10 @@ import fi.jumi.actors.eventizers.*;
 import fi.jumi.actors.generator.codegen.*;
 import fi.jumi.actors.queue.MessageSender;
 
+import javax.annotation.Generated;
 import javax.lang.model.element.TypeElement;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.google.common.base.CaseFormat.*;
@@ -25,6 +27,8 @@ public class EventStubGenerator {
 
     private final String eventizerPackage;
     private final String stubsPackage;
+    private String generatorName = getClass().getName();
+    private Date generationDate = new Date();
 
     public EventStubGenerator(TypeElement listenerType, TargetPackageResolver targetPackageResolver) {
         listenerInterface = JavaType.of(listenerType);
@@ -38,6 +42,14 @@ public class EventStubGenerator {
         stubsPackage = targetPackageResolver.getStubsPackage(listenerInterface);
     }
 
+    public void setGeneratorName(String generatorName) {
+        this.generatorName = generatorName;
+    }
+
+    public void setGenerationDate(Date generationDate) {
+        this.generationDate = generationDate;
+    }
+
     public List<GeneratedClass> getGeneratedClasses() {
         List<GeneratedClass> generated = new ArrayList<GeneratedClass>();
         generated.add(getEventizer());
@@ -49,6 +61,7 @@ public class EventStubGenerator {
 
     public GeneratedClass getEventizer() {
         ClassBuilder cb = new ClassBuilder(myEventizerName(), eventizerPackage);
+        addGeneratedAnnotation(cb);
         cb.implement(eventizerInterface);
         cb.addPackageImport(stubsPackage);
 
@@ -80,6 +93,7 @@ public class EventStubGenerator {
         JavaVar target = JavaVar.of(senderInterface, "target");
 
         ClassBuilder cb = new ClassBuilder(myFrontendName(), stubsPackage);
+        addGeneratedAnnotation(cb);
         cb.implement(listenerInterface);
         cb.fieldsAndConstructorParameters(Arrays.asList(target));
 
@@ -97,6 +111,7 @@ public class EventStubGenerator {
         JavaVar target = JavaVar.of(listenerInterface, "target");
 
         ClassBuilder cb = new ClassBuilder(myBackendName(), stubsPackage);
+        addGeneratedAnnotation(cb);
         cb.implement(senderInterface);
         cb.fieldsAndConstructorParameters(Arrays.asList(target));
 
@@ -115,6 +130,7 @@ public class EventStubGenerator {
             List<JavaVar> arguments = method.getArguments();
 
             ClassBuilder cb = new ClassBuilder(myEventWrapperName(method), stubsPackage);
+            addGeneratedAnnotation(cb);
             cb.implement(eventInterface);
             cb.implement(JavaType.of(Serializable.class));
             cb.fieldsAndConstructorParameters(arguments);
@@ -151,6 +167,13 @@ public class EventStubGenerator {
             }
         });
         return events;
+    }
+
+    private void addGeneratedAnnotation(ClassBuilder cb) {
+        cb.annotate("@" + cb.imported(JavaType.of(Generated.class)) +
+                "(value = \"" + generatorName + "\",\n" +
+                "        comments = \"Based on " + listenerInterface.getName() + "\",\n" +
+                "        date = \"" + new SimpleDateFormat("yyyy-MM-dd").format(generationDate) + "\")");
     }
 
 

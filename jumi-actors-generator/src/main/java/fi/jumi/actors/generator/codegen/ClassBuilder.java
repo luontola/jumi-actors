@@ -14,12 +14,17 @@ public class ClassBuilder {
 
     private final StringBuilder methods = new StringBuilder();
     private final List<JavaType> interfaces = new ArrayList<JavaType>();
+    private final List<String> annotations = new ArrayList<String>();
     private final Imports imports = new Imports();
     private final List<JavaVar> constructorArguments = new ArrayList<JavaVar>();
 
     public ClassBuilder(String className, String targetPackage) {
         this.className = className;
         this.targetPackage = targetPackage;
+    }
+
+    public void annotate(String annotation) {
+        this.annotations.add(annotation);
     }
 
     public void implement(JavaType anInterface) {
@@ -62,6 +67,10 @@ public class ClassBuilder {
 
     private StringBuilder classBody() {
         StringBuilder sb = new StringBuilder();
+        for (String annotation : annotations) {
+            sb.append(annotation);
+            sb.append("\n");
+        }
         sb.append("public class " + className + " implements " + toImplementsDeclaration(interfaces) + " {\n");
         sb.append("\n");
         if (constructorArguments.size() > 0) {

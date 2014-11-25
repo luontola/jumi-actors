@@ -44,6 +44,7 @@ public class AnnotationProcessor extends AbstractProcessor {
         String targetPackage = pkg.getQualifiedName().toString();
         TargetPackageResolver targetPackageResolver = new TargetPackageResolver(targetPackage);
         EventStubGenerator generator = new EventStubGenerator(eventInterface, targetPackageResolver);
+        generator.setGeneratorName(getClass().getName());
 
         for (GeneratedClass generated : generator.getGeneratedClasses()) {
             JavaFileObject file = processingEnv.getFiler().createSourceFile(generated.name, eventInterface);
