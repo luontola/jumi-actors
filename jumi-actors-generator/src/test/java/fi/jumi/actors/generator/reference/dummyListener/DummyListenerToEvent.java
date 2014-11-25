@@ -6,17 +6,17 @@ import fi.jumi.actors.queue.MessageSender;
 
 public class DummyListenerToEvent implements DummyListener {
 
-    private final MessageSender<Event<DummyListener>> sender;
+    private final MessageSender<Event<DummyListener>> target;
 
-    public DummyListenerToEvent(MessageSender<Event<DummyListener>> sender) {
-        this.sender = sender;
+    public DummyListenerToEvent(MessageSender<Event<DummyListener>> target) {
+        this.target = target;
     }
 
     public void onSomething(String foo, String bar) {
-        sender.send(new OnSomethingEvent(foo, bar));
+        target.send(new OnSomethingEvent(foo, bar));
     }
 
     public void onOther() {
-        sender.send(new OnOtherEvent());
+        target.send(new OnOtherEvent());
     }
 }

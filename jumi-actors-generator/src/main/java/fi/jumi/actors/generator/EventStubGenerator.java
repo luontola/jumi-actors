@@ -74,31 +74,31 @@ public class EventStubGenerator {
     }
 
     public GeneratedClass getFrontend() {
-        JavaVar sender = JavaVar.of(senderInterface, "sender");
+        JavaVar target = JavaVar.of(senderInterface, "target");
 
         ClassBuilder cb = new ClassBuilder(myFrontendName(), stubsPackage);
         cb.implement(listenerInterface);
-        cb.fieldsAndConstructorParameters(Arrays.asList(sender));
+        cb.fieldsAndConstructorParameters(Arrays.asList(target));
 
         for (JavaMethod method : listenerMethods) {
             cb.addMethod("" +
                     "    public void " + method.getName() + "(" + JavaVar.toFormalArguments(cb, method.getArguments()) + ") {\n" +
-                    "        " + sender.getName() + ".send(new " + myEventWrapperName(method) + "(" + JavaVar.toActualArguments(method.getArguments()) + "));\n" +
+                    "        " + target.getName() + ".send(new " + myEventWrapperName(method) + "(" + JavaVar.toActualArguments(method.getArguments()) + "));\n" +
                     "    }\n");
         }
         return cb.build();
     }
 
     public GeneratedClass getBackend() {
-        JavaVar listener = JavaVar.of(listenerInterface, "listener");
+        JavaVar target = JavaVar.of(listenerInterface, "target");
 
         ClassBuilder cb = new ClassBuilder(myBackendName(), stubsPackage);
         cb.implement(senderInterface);
-        cb.fieldsAndConstructorParameters(Arrays.asList(listener));
+        cb.fieldsAndConstructorParameters(Arrays.asList(target));
 
         cb.addMethod("" +
                 "    public void send(" + cb.imported(eventInterface) + " message) {\n" +
-                "        message.fireOn(" + listener.getName() + ");\n" +
+                "        message.fireOn(" + target.getName() + ");\n" +
                 "    }\n");
 
         return cb.build();

@@ -6,13 +6,13 @@ import fi.jumi.actors.queue.MessageSender;
 
 public class EventToDummyListener implements MessageSender<Event<DummyListener>> {
 
-    private final DummyListener listener;
+    private final DummyListener target;
 
-    public EventToDummyListener(DummyListener listener) {
-        this.listener = listener;
+    public EventToDummyListener(DummyListener target) {
+        this.target = target;
     }
 
     public void send(Event<DummyListener> message) {
-        message.fireOn(listener);
+        message.fireOn(target);
     }
 }
