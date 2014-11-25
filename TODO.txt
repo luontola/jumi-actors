@@ -8,7 +8,8 @@
 		http://code.google.com/p/objectify-gwtkey/
 	OK - port the current generator
 	OK - generate imports
-	!! - generate error messages about invalid eventizer interfaces
+	OK - hook into the annotation processor
+	- generate error messages about invalid eventizer interfaces
 	- inherited methods, would somehow have to get the parent's AST
 	- 3rd party classes: package-local interface with @GenerateEventizers(useParent = true)
 		- will need to figure out how to read the parameter names, maybe use overloaded methods if available

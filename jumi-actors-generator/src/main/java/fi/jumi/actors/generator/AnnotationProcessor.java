@@ -5,6 +5,7 @@
 package fi.jumi.actors.generator;
 
 import com.google.common.base.Throwables;
+import fi.jumi.actors.generator.codegen.GeneratedClass;
 
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
@@ -42,12 +43,14 @@ public class AnnotationProcessor extends AbstractProcessor {
 
         String targetPackage = pkg.getQualifiedName().toString();
         TargetPackageResolver targetPackageResolver = new TargetPackageResolver(targetPackage);
-        //EventStubGenerator generator = new EventStubGenerator(null, eventInterface, targetPackageResolver);
+        EventStubGenerator generator = new EventStubGenerator(eventInterface, targetPackageResolver);
 
-        JavaFileObject file = processingEnv.getFiler().createSourceFile(pkg.getQualifiedName() + ".Foo");
-        Writer w = file.openWriter();
-        w.write("package " + pkg.getQualifiedName() + "; class Foo {}");
-        w.close();
+        for (GeneratedClass generated : generator.getGeneratedClasses()) {
+            JavaFileObject file = processingEnv.getFiler().createSourceFile(generated.name, eventInterface);
+            Writer w = file.openWriter();
+            w.write(generated.source);
+            w.close();
+        }
     }
 
     private static PackageElement getPackage(Element e) {

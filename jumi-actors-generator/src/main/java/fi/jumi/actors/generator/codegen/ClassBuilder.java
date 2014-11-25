@@ -47,12 +47,10 @@ public class ClassBuilder {
     }
 
     public GeneratedClass build() {
-        StringBuilder body = classBody(); // classBody adds imports, so it must be executed first
-        return new GeneratedClass(fileForClass(className), packageStatement() + imports + body);
-    }
-
-    private String fileForClass(String className) {
-        return targetPackage.replace('.', '/') + "/" + className + ".java";
+        String name = targetPackage + "." + className;
+        StringBuilder body = classBody(); // classBody adds imports, so it must be executed before imports
+        String source = packageStatement() + imports.toString() + body;
+        return new GeneratedClass(name, source);
     }
 
 
@@ -83,7 +81,7 @@ public class ClassBuilder {
         return sb;
     }
 
-    private  StringBuilder toImplementsDeclaration(List<JavaType> types) {
+    private StringBuilder toImplementsDeclaration(List<JavaType> types) {
         StringBuilder sb = new StringBuilder();
         for (JavaType type : types) {
             if (sb.length() > 0) {

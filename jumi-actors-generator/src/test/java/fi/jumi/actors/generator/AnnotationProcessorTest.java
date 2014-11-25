@@ -35,8 +35,8 @@ public class AnnotationProcessorTest {
                 "}"
         ));
 
-        assertThat(new File(outputDir, "com/example/Foo.java"), hasProperty("file", equalTo(true)));
-        assertThat(new File(outputDir, "com/example/Foo.class"), hasProperty("file", equalTo(true)));
+        assertThat(new File(outputDir, "com/example/DummyInterfaceEventizer.java"), hasProperty("file", equalTo(true)));
+        assertThat(new File(outputDir, "com/example/DummyInterfaceEventizer.class"), hasProperty("file", equalTo(true)));
     }
 
     private void compile(JavaFileObject... compilationUnits) throws IOException {

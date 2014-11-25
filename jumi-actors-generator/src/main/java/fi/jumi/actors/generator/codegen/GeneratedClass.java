@@ -6,11 +6,11 @@ package fi.jumi.actors.generator.codegen;
 
 public class GeneratedClass {
 
-    public final String path;
+    public final String name;
     public final String source;
 
-    public GeneratedClass(String path, String source) {
-        this.path = path;
+    public GeneratedClass(String name, String source) {
+        this.name = name;
         this.source = source;
     }
 }

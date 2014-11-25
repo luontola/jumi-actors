@@ -7,5 +7,7 @@ package fi.jumi.test;
 import fi.jumi.actors.generator.GenerateEventizer;
 
 @GenerateEventizer
-public interface Dummy {
+public interface GuineaPig {
+
+    void foo(String s);
 }

@@ -38,6 +38,15 @@ public class EventStubGenerator {
         stubsPackage = targetPackageResolver.getStubsPackage(listenerInterface);
     }
 
+    public List<GeneratedClass> getGeneratedClasses() {
+        List<GeneratedClass> generated = new ArrayList<GeneratedClass>();
+        generated.add(getEventizer());
+        generated.add(getFrontend());
+        generated.add(getBackend());
+        generated.addAll(getEvents());
+        return generated;
+    }
+
     public GeneratedClass getEventizer() {
         ClassBuilder cb = new ClassBuilder(myEventizerName(), eventizerPackage);
         cb.implement(eventizerInterface);
@@ -122,7 +131,7 @@ public class EventStubGenerator {
         Collections.sort(events, new Comparator<GeneratedClass>() {
             @Override
             public int compare(GeneratedClass o1, GeneratedClass o2) {
-                return o1.path.compareTo(o2.path);
+                return o1.name.compareTo(o2.name);
             }
         });
         return events;

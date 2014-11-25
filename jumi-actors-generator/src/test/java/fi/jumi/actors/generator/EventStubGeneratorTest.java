@@ -111,24 +111,24 @@ public class EventStubGeneratorTest {
 
     @Test
     public void generates_eventizer_class() {
-        assertClassEquals("fi/jumi/actors/generator/reference/DummyListenerEventizer.java", generator.getEventizer());
+        assertClassEquals("fi.jumi.actors.generator.reference.DummyListenerEventizer", generator.getEventizer());
     }
 
     @Test
     public void generates_frontend_class() {
-        assertClassEquals("fi/jumi/actors/generator/reference/dummyListener/DummyListenerToEvent.java", generator.getFrontend());
+        assertClassEquals("fi.jumi.actors.generator.reference.dummyListener.DummyListenerToEvent", generator.getFrontend());
     }
 
     @Test
     public void generates_backend_class() {
-        assertClassEquals("fi/jumi/actors/generator/reference/dummyListener/EventToDummyListener.java", generator.getBackend());
+        assertClassEquals("fi.jumi.actors.generator.reference.dummyListener.EventToDummyListener", generator.getBackend());
     }
 
     @Test
     public void generates_event_classes() throws IOException {
         List<GeneratedClass> events = generator.getEvents();
-        assertClassEquals("fi/jumi/actors/generator/reference/dummyListener/OnOtherEvent.java", events.get(0));
-        assertClassEquals("fi/jumi/actors/generator/reference/dummyListener/OnSomethingEvent.java", events.get(1));
+        assertClassEquals("fi.jumi.actors.generator.reference.dummyListener.OnOtherEvent", events.get(0));
+        assertClassEquals("fi.jumi.actors.generator.reference.dummyListener.OnSomethingEvent", events.get(1));
     }
 
     @Test
@@ -137,8 +137,8 @@ public class EventStubGeneratorTest {
 
         List<GeneratedClass> events = generator.getEvents();
         assertThat(events.size(), is(2));
-        assertThat(events.get(0).path, endsWith("OnOneEvent.java"));
-        assertThat(events.get(1).path, endsWith("OnTwoEvent.java"));
+        assertThat(events.get(0).name, endsWith(".OnOneEvent"));
+        assertThat(events.get(1).name, endsWith(".OnTwoEvent"));
     }
 
     @Test
@@ -198,9 +198,9 @@ public class EventStubGeneratorTest {
     }
 
 
-    private static void assertClassEquals(String expectedPath, GeneratedClass actual) {
-        assertEquals("file path", expectedPath, actual.path);
-        assertEquals("file content", readFile(expectedPath), actual.source);
+    private static void assertClassEquals(String expectedName, GeneratedClass actual) {
+        assertEquals("class name", expectedName, actual.name);
+        assertEquals("file content", readFile(expectedName.replace(".", "/") + ".java"), actual.source);
     }
 
     private static String readFile(String resource) {
