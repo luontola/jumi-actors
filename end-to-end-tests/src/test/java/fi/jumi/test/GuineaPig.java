@@ -9,5 +9,5 @@ import fi.jumi.actors.generator.GenerateEventizer;
 @GenerateEventizer
 public interface GuineaPig {
 
-    void foo(String s);
+    void onFoo(String foo);
 }

@@ -15,6 +15,14 @@ public class OnSomethingEvent implements Event<DummyListener>, Serializable {
         this.bar = bar;
     }
 
+    public String getFoo() {
+        return foo;
+    }
+
+    public String getBar() {
+        return bar;
+    }
+
     public void fireOn(DummyListener target) {
         target.onSomething(foo, bar);
     }

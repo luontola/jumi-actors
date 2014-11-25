@@ -6,7 +6,7 @@ package fi.jumi.test;
 
 import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.queue.*;
-import fi.jumi.test.guineaPig.FooEvent;
+import fi.jumi.test.guineaPig.OnFooEvent;
 import org.junit.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -28,12 +28,11 @@ public class JumiActorsGeneratorTest {
         MessageQueue<Event<GuineaPig>> queue = new MessageQueue<>();
 
         GuineaPig frontend = eventizer.newFrontend(queue);
-        frontend.foo("foo");
+        frontend.onFoo("foo");
 
-        Event<GuineaPig> message = queue.poll();
+        OnFooEvent message = (OnFooEvent) queue.poll();
         assertThat("message", message, is(notNullValue()));
-        // TODO
-        //assertThat("message value", message.getFoo(), is("foo"));
+        assertThat("message value", message.getFoo(), is("foo"));
     }
 
     @Test
@@ -42,9 +41,9 @@ public class JumiActorsGeneratorTest {
         GuineaPig target = mock(GuineaPig.class);
 
         MessageSender<Event<GuineaPig>> backend = eventizer.newBackend(target);
-        backend.send(new FooEvent("foo"));
+        backend.send(new OnFooEvent("foo"));
 
-        verify(target).foo("foo");
+        verify(target).onFoo("foo");
     }
 
     @Ignore // TODO

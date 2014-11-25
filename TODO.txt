@@ -9,6 +9,7 @@
 	OK - port the current generator
 	OK - generate imports
 	OK - hook into the annotation processor
+	OK - event getters
 	- generate error messages about invalid eventizer interfaces
 	- inherited methods, would somehow have to get the parent's AST
 	- 3rd party classes: package-local interface with @GenerateEventizers(useParent = true)

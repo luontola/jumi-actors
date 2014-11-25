@@ -107,22 +107,31 @@ public class EventStubGenerator {
     public List<GeneratedClass> getEvents() {
         List<GeneratedClass> events = new ArrayList<GeneratedClass>();
         for (JavaMethod method : listenerMethods) {
+            List<JavaVar> arguments = method.getArguments();
+
             ClassBuilder cb = new ClassBuilder(myEventWrapperName(method), stubsPackage);
             cb.implement(eventInterface);
             cb.implement(JavaType.of(Serializable.class));
-            cb.fieldsAndConstructorParameters(method.getArguments());
+            cb.fieldsAndConstructorParameters(arguments);
 
             String eventToString = cb.imported(JavaType.of(EventToString.class));
             String listenerName = cb.imported(listenerInterface);
 
+            for (JavaVar argument : arguments) {
+                cb.addMethod("" +
+                        "    public " + cb.imported(argument.getType()) + " " + getterName(argument.getName()) + "() {\n" +
+                        "        return " + argument.getName() + ";\n" +
+                        "    }\n");
+            }
+
             cb.addMethod("" +
                     "    public void fireOn(" + listenerName + " target) {\n" +
-                    "        target." + method.getName() + "(" + JavaVar.toActualArguments(method.getArguments()) + ");\n" +
+                    "        target." + method.getName() + "(" + JavaVar.toActualArguments(arguments) + ");\n" +
                     "    }\n");
 
             cb.addMethod("" +
                     "    public String toString() {\n" +
-                    "        return " + eventToString + ".format(\"" + listenerName + "\", \"" + method.getName() + "\"" + JavaVar.toActualVarargs(method.getArguments()) + ");\n" +
+                    "        return " + eventToString + ".format(\"" + listenerName + "\", \"" + method.getName() + "\"" + JavaVar.toActualVarargs(arguments) + ");\n" +
                     "    }\n");
 
             events.add(cb.build());
@@ -154,5 +163,9 @@ public class EventStubGenerator {
 
     private String myEventWrapperName(JavaMethod method) {
         return LOWER_CAMEL.to(UPPER_CAMEL, method.getName()) + "Event";
+    }
+
+    private static String getterName(String field) {
+        return "get" + LOWER_CAMEL.to(UPPER_CAMEL, field);
     }
 }
