@@ -74,12 +74,26 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>integration-test</id>
+                        <id>integration-test-java6</id>
                         <phase>integration-test</phase>
                         <goals>
                             <goal>install</goal>
                             <goal>run</goal>
                         </goals>
+                        <configuration>
+                            <javaHome>${env.JAVA6_HOME}</javaHome>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>integration-test-java7</id>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>install</goal>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <javaHome>${env.JAVA7_HOME}</javaHome>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
