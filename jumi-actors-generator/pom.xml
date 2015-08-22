@@ -51,6 +51,20 @@
                 </configuration>
             </plugin>
 
+            <!-- Some tests in this module test reading sources from the local Maven repository,
+                 so we must download them also on the CI server -->
+
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>sources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!-- Hide external dependencies -->
 
             <plugin>
