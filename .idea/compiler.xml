@@ -62,7 +62,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="end-to-end-tests" target="1.7" />
+      <module name="end-to-end-tests" target="1.6" />
       <module name="jumi-actors" target="1.6" />
       <module name="jumi-actors-generator" target="1.6" />
       <module name="jumi-actors-maven-plugin" target="1.6" />
