@@ -1,4 +1,13 @@
 
+OK - don't use Java 7 (or upgrade to Java 8 and use Retrolambda?)
+	OK - the compiles-using-project-language-level test uses Java 7; figure out a way to unit test it without JDK 7
+		-> maybe we could parameterize maven-invoker-plugin to use a different JDK for just that test?
+	OK - update end-to-end tests to not use Java 7 features
+		-> extract the common class parsing/iterating functionality into an external library?
+	OK - configure maven-failsafe-plugin to use Java 6
+	OK - build with JDK 6 on CI
+	OK - update building.txt
+
 !! - annotation processor based generator
 	OK - evaluate triggering the code generator using JSR 269 (might be hard to generate code for 3rd party classes such as Runnable?)
 		! http://deors.wordpress.com/2011/10/08/annotation-processors/
@@ -36,15 +45,6 @@
 	- find all use cases in Jumi, see how they would benefit from this change, design the API appropriately
 
 - support for non-void actor methods which return a Future
-
-- don't use Java 7 (or upgrade to Java 8 and use Retrolambda?)
-	- the compiles-using-project-language-level test uses Java 7; figure out a way to unit test it without JDK 7
-		-> maybe we could parameterize maven-invoker-plugin to use a different JDK for just that test?
-	- update end-to-end tests to not use Java 7 features
-		-> extract the common class parsing/iterating functionality into an external library?
-	- configure maven-failsafe-plugin to use Java 6
-	- build with JDK 6 on CI
-	- update building.txt
 
 - refactor EventSpy: always call await() from assertContains() to avoid duplication?
 	http://lets-code.orfjackal.net/2013/04/lets-code-jumi-231-monitoredexecutor.html

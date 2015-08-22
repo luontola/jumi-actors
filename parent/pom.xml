@@ -238,9 +238,7 @@
                         <include>**/*Test.class</include>
                     </includes>
                     <redirectTestOutputToFile>true</redirectTestOutputToFile>
-                    <!-- XXX: We should normally run all tests with Java 6, but BuildTest uses Java 7 features.
-                         Thankfully we don't have any other end-to-end tests, so this setting affects only it. -->
-                    <jvm>${env.JAVA7_HOME}/bin/java</jvm>
+                    <jvm>${env.JAVA6_HOME}/bin/java</jvm>
                 </configuration>
             </plugin>
 
@@ -281,9 +279,6 @@
                             <rules>
                                 <requireEnvironmentVariable>
                                     <variableName>JAVA6_HOME</variableName>
-                                </requireEnvironmentVariable>
-                                <requireEnvironmentVariable>
-                                    <variableName>JAVA7_HOME</variableName>
                                 </requireEnvironmentVariable>
                             </rules>
                         </configuration>
