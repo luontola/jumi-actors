@@ -12,6 +12,8 @@ import java.util.zip.*;
 
 public class LibrarySourceLocator {
 
+    private static final File javaHome = new File(System.getProperty("java.home"));
+
     public String findSources(String className) {
         String result = null;
         String sourceFilePath = className.replace('.', '/') + ".java";
@@ -19,14 +21,23 @@ public class LibrarySourceLocator {
             // classpath
             InputStream in = getClass().getClassLoader().getResourceAsStream(sourceFilePath);
             if (in != null) {
-                return toString(in);
+                result = toString(in);
             }
 
             // JDK
-            File javaHome = new File(System.getProperty("java.home"));
-            File jdkSourcesFile = new File(javaHome.getParentFile(), "src.zip");
-            if (jdkSourcesFile.isFile()) {
-                result = findZipFileEntry(jdkSourcesFile, sourceFilePath);
+            if (result == null) {
+                File jdkSourcesFile = new File(javaHome.getParentFile(), "src.zip");
+                if (jdkSourcesFile.isFile()) {
+                    result = findZipFileEntry(jdkSourcesFile, sourceFilePath);
+                }
+            }
+
+            // JDK 6 on OS X
+            if (result == null) {
+                File jdkSourcesFile = new File(javaHome, "src.jar");
+                if (jdkSourcesFile.isFile()) {
+                    result = findZipFileEntry(jdkSourcesFile, "src/" + sourceFilePath);
+                }
             }
 
             // local Maven repository
@@ -40,7 +51,7 @@ public class LibrarySourceLocator {
                 }
             }
         } catch (IOException e) {
-            System.err.println("Error finding sources for " + className);
+            System.err.println("Error: failed to read sources of " + className);
             e.printStackTrace();
         }
         return result;
