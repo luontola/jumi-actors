@@ -473,6 +473,7 @@
                         </executions>
                         <configuration>
                             <threads>4</threads>
+                            <timeoutConstant>5000</timeoutConstant>
                             <jvmArgs>
                                 <arg>-ea</arg>
                                 <!-- XXX: PIT doesn't generate correct stack map frames for Java 7 -->
