@@ -42,8 +42,13 @@ public class AnnotationProcessor extends AbstractProcessor {
     private void generateEventizers(TypeElement eventInterface) throws IOException {
         GenerateEventizer config = eventInterface.getAnnotation(GenerateEventizer.class);
 
-        PackageElement pkg = getPackage(eventInterface);
-        String targetPackage = pkg.getQualifiedName().toString();
+        String targetPackage;
+        if (!config.targetPackage().isEmpty()) {
+            targetPackage = config.targetPackage();
+        } else {
+            PackageElement currentPackage = getPackage(eventInterface);
+            targetPackage = currentPackage.getQualifiedName().toString();
+        }
 
         if (config.useParentInterface()) {
             List<? extends TypeMirror> parentInterfaces = eventInterface.getInterfaces();
@@ -60,8 +65,7 @@ public class AnnotationProcessor extends AbstractProcessor {
             eventInterface = getAst(parentInterface, sourceCode);
         }
 
-        TargetPackageResolver targetPackageResolver = new TargetPackageResolver(targetPackage);
-        EventStubGenerator generator = new EventStubGenerator(eventInterface, targetPackageResolver);
+        EventStubGenerator generator = new EventStubGenerator(eventInterface, new TargetPackageResolver(targetPackage));
         generator.setGeneratorName(getClass().getName());
 
         for (GeneratedClass generated : generator.getGeneratedClasses()) {

@@ -15,4 +15,9 @@ public @interface GenerateEventizer {
      * eventizers for interfaces which are not under your control (i.e. part of the JDK or a 3rd party library).
      */
     boolean useParentInterface() default false;
+
+    /**
+     * Write eventizer classes to another package instead of the current package.
+     */
+    String targetPackage() default "";
 }

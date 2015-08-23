@@ -5,6 +5,7 @@
 package fi.jumi.actors.generator;
 
 import fi.jumi.actors.generator.ast.JavaSourceFromString;
+import org.hamcrest.*;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 
@@ -36,8 +37,21 @@ public class AnnotationProcessorTest {
                 "}"
         ));
 
-        assertThat(new File(outputDir, "com/example/DummyInterfaceEventizer.java"), hasProperty("file", equalTo(true)));
-        assertThat(new File(outputDir, "com/example/DummyInterfaceEventizer.class"), hasProperty("file", equalTo(true)));
+        assertThat(new File(outputDir, "com/example/DummyInterfaceEventizer.java"), exists());
+        assertThat(new File(outputDir, "com/example/DummyInterfaceEventizer.class"), exists());
+    }
+
+    @Test
+    public void generates_eventizers_to_another_target_package() throws IOException {
+        compile(new JavaSourceFromString("AnotherTargetPackage", "" +
+                "package com.example;\n" +
+                "@fi.jumi.actors.generator.GenerateEventizer(targetPackage = \"com.example.events\")\n" +
+                "public interface AnotherTargetPackage {\n" +
+                "}"
+        ));
+
+        assertThat(new File(outputDir, "com/example/events/AnotherTargetPackageEventizer.java"), exists());
+        assertThat(new File(outputDir, "com/example/events/AnotherTargetPackageEventizer.class"), exists());
     }
 
     @Test
@@ -49,8 +63,8 @@ public class AnnotationProcessorTest {
                 "}"
         ));
 
-        assertThat(new File(outputDir, "com/example/RunnableEventizer.java"), hasProperty("file", equalTo(true)));
-        assertThat(new File(outputDir, "com/example/RunnableEventizer.class"), hasProperty("file", equalTo(true)));
+        assertThat(new File(outputDir, "com/example/RunnableEventizer.java"), exists());
+        assertThat(new File(outputDir, "com/example/RunnableEventizer.class"), exists());
     }
 
     @Test
@@ -97,5 +111,24 @@ public class AnnotationProcessorTest {
             System.err.println(diagnostic);
         }
         return success;
+    }
+
+    private static Matcher<File> exists() {
+        return new TypeSafeMatcher<File>() {
+            @Override
+            protected boolean matchesSafely(File item) {
+                return item.exists();
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("file exists");
+            }
+
+            @Override
+            protected void describeMismatchSafely(File item, Description mismatchDescription) {
+                mismatchDescription.appendText("no such file ").appendValue(item);
+            }
+        };
     }
 }
