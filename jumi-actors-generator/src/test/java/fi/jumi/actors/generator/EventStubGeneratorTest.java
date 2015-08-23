@@ -1,4 +1,4 @@
-// Copyright © 2011-2014, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2015, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -7,6 +7,7 @@ package fi.jumi.actors.generator;
 import com.google.common.io.ByteStreams;
 import fi.jumi.actors.eventizers.Event;
 import fi.jumi.actors.eventizers.dynamic.DynamicEventizer;
+import fi.jumi.actors.generator.ast.*;
 import fi.jumi.actors.generator.codegen.GeneratedClass;
 import fi.jumi.actors.generator.reference.DummyListenerEventizer;
 import fi.jumi.actors.queue.*;
