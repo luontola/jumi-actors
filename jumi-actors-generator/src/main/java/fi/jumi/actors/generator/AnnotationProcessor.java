@@ -12,7 +12,7 @@ import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
 import javax.lang.model.type.TypeMirror;
-import javax.tools.*;
+import javax.tools.JavaFileObject;
 import java.io.*;
 import java.util.*;
 
@@ -56,13 +56,14 @@ public class AnnotationProcessor extends AbstractProcessor {
                 log().printMessage(ERROR, "Expected one parent interface, but had " + parentInterfaces.size(), eventInterface);
                 return;
             }
+            // TODO: does not support interfaces that are members of an enclosing class (see EventStubGeneratorTest.getJavaSource)
             String parentInterface = parentInterfaces.get(0).toString();
             String sourceCode = new LibrarySourceLocator().findSources(parentInterface);
             if (sourceCode == null) {
                 log().printMessage(ERROR, "Could not find source code for " + parentInterface, eventInterface);
                 return;
             }
-            eventInterface = getAst(parentInterface, sourceCode);
+            eventInterface = AstExtractor.getAst(parentInterface, new JavaSourceFromString(parentInterface, sourceCode));
         }
 
         EventStubGenerator generator = new EventStubGenerator(eventInterface, new TargetPackageResolver(targetPackage));
@@ -73,27 +74,6 @@ public class AnnotationProcessor extends AbstractProcessor {
             Writer w = file.openWriter();
             w.write(generated.source);
             w.close();
-        }
-    }
-
-    private TypeElement getAst(String className, String sourceCode) {
-        AstExtractor astExtractor = new AstExtractor(className);
-        compile(astExtractor, new JavaSourceFromString(className, sourceCode));
-        return astExtractor.getResult();
-    }
-
-    private void compile(AbstractProcessor processor, JavaFileObject... compilationUnits) {
-        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
-        StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, null, null);
-        JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, null, null, Arrays.asList(compilationUnits));
-        task.setProcessors(Collections.singletonList(processor));
-        boolean success = task.call();
-        for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
-            log().printMessage(diagnostic.getKind(), diagnostic.getMessage(null));
-        }
-        if (!success) {
-            throw new RuntimeException("Failed to compile " + Arrays.toString(compilationUnits));
         }
     }
 

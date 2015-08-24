@@ -65,6 +65,10 @@ public class AnnotationProcessorTest {
 
         assertThat(new File(outputDir, "com/example/RunnableEventizer.java"), exists());
         assertThat(new File(outputDir, "com/example/RunnableEventizer.class"), exists());
+        assertThat("shouldn't compile the parent to working directory", new File("Runnable.class"), not(exists()));
+        assertThat("shouldn't compile the parent to working directory", new File("java/lang/Runnable.class"), not(exists()));
+        assertThat("shouldn't compile the parent to output directory", new File(outputDir, "Runnable.class"), not(exists()));
+        assertThat("shouldn't compile the parent to output directory", new File(outputDir, "java/lang/Runnable.class"), not(exists()));
     }
 
     @Test

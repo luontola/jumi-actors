@@ -14,10 +14,7 @@ import fi.jumi.actors.queue.*;
 import org.junit.*;
 import org.junit.rules.*;
 
-import javax.annotation.processing.AbstractProcessor;
 import javax.lang.model.element.TypeElement;
-import javax.tools.*;
-import javax.tools.JavaCompiler.CompilationTask;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.*;
@@ -230,40 +227,20 @@ public class EventStubGeneratorTest {
     }
 
     private TypeElement ast(Class<?> clazz) {
-        AstExtractor extractor = new AstExtractor(clazz);
-        compile(extractor, readJavaSource(clazz));
-        return extractor.getResult();
+        return AstExtractor.getAst(clazz, getJavaSource(clazz));
     }
 
-    private static JavaSourceFromString readJavaSource(Class<?> clazz) {
+    private static JavaSourceFromString getJavaSource(Class<?> clazz) {
+        Class<?> topLevel = getTopLevelClass(clazz);
+        String code = readFile(topLevel.getName().replace('.', '/') + ".java");
+        return new JavaSourceFromString(topLevel.getName(), code);
+    }
+
+    private static Class<?> getTopLevelClass(Class<?> clazz) {
         while (clazz.getEnclosingClass() != null) {
             clazz = clazz.getEnclosingClass();
         }
-        String code = readFile(clazz.getName().replace('.', '/') + ".java");
-        return new JavaSourceFromString(clazz.getName(), code);
-    }
-
-    private void compile(AbstractProcessor processor, JavaFileObject... compilationUnits) {
-        try {
-            JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-            DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
-            StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, null, null);
-            fileManager.setLocation(StandardLocation.CLASS_OUTPUT, Arrays.asList(tempDir.getRoot()));
-
-            CompilationTask task = compiler.getTask(null, fileManager, diagnostics, null, null, Arrays.asList(compilationUnits));
-
-            task.setProcessors(Arrays.asList(
-                    //new PrintingProcessor(),
-                    processor
-            ));
-            boolean success = task.call();
-            for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
-                System.err.println(diagnostic);
-            }
-            assertThat("compile succeeded", success, is(true));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return clazz;
     }
 
 

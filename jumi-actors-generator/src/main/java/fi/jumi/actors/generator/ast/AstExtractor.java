@@ -7,19 +7,50 @@ package fi.jumi.actors.generator.ast;
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
-import java.util.Set;
+import javax.tools.*;
+import java.util.*;
 
 @SupportedAnnotationTypes("*")
 public class AstExtractor extends AbstractProcessor {
 
+    private static final String SKIP_COMPILE_PHASE = AstExtractor.class.getName() + ".SKIP_COMPILE_PHASE";
+
     private final String classNameToFind;
     private TypeElement result;
 
-    public AstExtractor(Class<?> classToFind) {
-        this(classToFind.getCanonicalName());
+    public static TypeElement getAst(Class<?> clazz, JavaFileObject compilationUnit) {
+        return getAst(clazz.getCanonicalName(), compilationUnit);
     }
 
-    public AstExtractor(String classNameToFind) {
+    public static TypeElement getAst(String className, JavaFileObject compilationUnit) {
+        AstExtractor astExtractor = new AstExtractor(className);
+        List<Diagnostic<? extends JavaFileObject>> diagnostics = compile(astExtractor, compilationUnit);
+        if (!diagnostics.isEmpty()) {
+            throw new RuntimeException("Failed to get AST of " + className + ": " + diagnostics);
+        }
+        return astExtractor.getResult();
+    }
+
+    private static List<Diagnostic<? extends JavaFileObject>> compile(AbstractProcessor processor, JavaFileObject... compilationUnits) {
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
+        JavaCompiler.CompilationTask task = compiler.getTask(null, null, diagnostics, null, null, Arrays.asList(compilationUnits));
+        task.setProcessors(Collections.singletonList(processor));
+        task.call();
+        return getRealDiagnostics(diagnostics.getDiagnostics());
+    }
+
+    private static List<Diagnostic<? extends JavaFileObject>> getRealDiagnostics(List<Diagnostic<? extends JavaFileObject>> diagnostics) {
+        List<Diagnostic<? extends JavaFileObject>> results = new ArrayList<Diagnostic<? extends JavaFileObject>>();
+        for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics) {
+            if (!diagnostic.getMessage(null).endsWith(SKIP_COMPILE_PHASE)) {
+                results.add(diagnostic);
+            }
+        }
+        return results;
+    }
+
+    private AstExtractor(String classNameToFind) {
         this.classNameToFind = classNameToFind;
     }
 
@@ -33,6 +64,9 @@ public class AstExtractor extends AbstractProcessor {
         for (Element element : roundEnv.getRootElements()) {
             result = searchIn(element);
         }
+        // We don't need nor want the class to be compiled, we just want its AST,
+        // so we'll prevent compiling it by producing a fake error message.
+        processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, SKIP_COMPILE_PHASE);
         return false;
     }
 
