@@ -84,6 +84,20 @@ public class AnnotationProcessorTest {
     }
 
     @Test
+    public void finds_sources_of_3rd_party_classes_which_are_member_classes() throws IOException {
+        compile(new JavaSourceFromString("MemberInterfaceStub", "" +
+                "package com.example;\n" +
+                "import " + EnclosingClass.MemberInterface.class.getCanonicalName() + ";\n" +
+                "@fi.jumi.actors.generator.GenerateEventizer(useParentInterface = true)\n" +
+                "public interface MemberInterfaceStub extends MemberInterface {\n" +
+                "}"
+        ));
+
+        assertThat(new File(outputDir, "com/example/MemberInterfaceEventizer.java"), exists());
+        assertThat(new File(outputDir, "com/example/MemberInterfaceEventizer.class"), exists());
+    }
+
+    @Test
     public void useParentInterface_requires_exactly_one_parent_interface() throws IOException {
         doesNotCompile(new JavaSourceFromString("TooManyParentInterfaces", "" +
                 "package com.example;\n" +

@@ -56,14 +56,13 @@ public class AnnotationProcessor extends AbstractProcessor {
                 log().printMessage(ERROR, "Expected one parent interface, but had " + parentInterfaces.size(), eventInterface);
                 return;
             }
-            // TODO: does not support interfaces that are members of an enclosing class (see EventStubGeneratorTest.getJavaSource)
             String parentInterface = parentInterfaces.get(0).toString();
-            String sourceCode = new LibrarySourceLocator().findSources(parentInterface);
+            JavaFileObject sourceCode = findSourceCode(parentInterface);
             if (sourceCode == null) {
                 log().printMessage(ERROR, "Could not find source code for " + parentInterface, eventInterface);
                 return;
             }
-            eventInterface = AstExtractor.getAst(parentInterface, new JavaSourceFromString(parentInterface, sourceCode));
+            eventInterface = AstExtractor.getAst(parentInterface, sourceCode);
         }
 
         EventStubGenerator generator = new EventStubGenerator(eventInterface, new TargetPackageResolver(targetPackage));
@@ -75,6 +74,21 @@ public class AnnotationProcessor extends AbstractProcessor {
             w.write(generated.source);
             w.close();
         }
+    }
+
+    private static JavaFileObject findSourceCode(String className) {
+        LibrarySourceLocator locator = new LibrarySourceLocator();
+        for (; !className.isEmpty(); className = getEnclosingClass(className)) {
+            String sourceCode = locator.findSources(className);
+            if (sourceCode != null) {
+                return new JavaSourceFromString(className, sourceCode);
+            }
+        }
+        return null;
+    }
+
+    private static String getEnclosingClass(String className) {
+        return className.substring(0, className.lastIndexOf('.'));
     }
 
     private static PackageElement getPackage(Element e) {

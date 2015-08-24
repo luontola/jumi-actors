@@ -29,7 +29,7 @@ OK - don't use Java 7 (or upgrade to Java 8 and use Retrolambda?)
 			OK - read AST from source file
 	OK - @GenerateEventizer(targetPackage = "fi.jumi.core.events")
 	OK - fix tests creating Runnable.class in the current directory; prevent compilation or use a temp dir
-	!! - support for using parent interfaces which are members of an enclosing class
+	OK - support for using parent interfaces which are members of an enclosing class
 	- generate error messages about invalid eventizer interfaces
 	- inherited methods, would somehow have to get the parent's AST
 

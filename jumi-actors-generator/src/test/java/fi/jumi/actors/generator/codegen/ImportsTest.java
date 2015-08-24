@@ -1,9 +1,10 @@
-// Copyright © 2011-2014, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2015, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
 package fi.jumi.actors.generator.codegen;
 
+import fi.jumi.actors.generator.EnclosingClass;
 import org.junit.Test;
 
 import java.util.*;
@@ -20,6 +21,13 @@ public class ImportsTest {
         imports.addImports(JavaType.of(ArrayList.class));
 
         assertThat(imports.toString().trim(), is("import java.util.ArrayList;"));
+    }
+
+    @Test
+    public void imports_member_classes() {
+        imports.addImports(JavaType.of(EnclosingClass.MemberInterface.class));
+
+        assertThat(imports.toString().trim(), is("import fi.jumi.actors.generator.EnclosingClass.MemberInterface;"));
     }
 
     @Test

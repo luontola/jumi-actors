@@ -1,4 +1,4 @@
-// Copyright © 2011-2014, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2015, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -29,7 +29,7 @@ public class Imports {
                 continue;
             }
             // TODO: do not import classes from target package
-            imports.add(type.getPackage() + "." + type.getRawName());
+            imports.add(type.getName());
         }
         for (String packageName : packagesToImport) {
             imports.add(packageName + ".*");
