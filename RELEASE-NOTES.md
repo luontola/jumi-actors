@@ -4,6 +4,10 @@ Release Notes
 
 ### Upcoming Changes
 
+- TBD
+
+### Jumi Actors 1.0.270 (2015-08-28)
+
 - Jumi Actors is from this release onwards its own project with its own release cycle
 - Maven groupId was changed from `fi.jumi` to `fi.jumi.actors`
 - Upgraded to ASM 5, making the thread-safety-agent Java 8 compatible
