@@ -1,48 +1,5 @@
 
-OK - don't use Java 7 (or upgrade to Java 8 and use Retrolambda?)
-	OK - the compiles-using-project-language-level test uses Java 7; figure out a way to unit test it without JDK 7
-		-> maybe we could parameterize maven-invoker-plugin to use a different JDK for just that test?
-	OK - update end-to-end tests to not use Java 7 features
-		-> extract the common class parsing/iterating functionality into an external library?
-	OK - configure maven-failsafe-plugin to use Java 6
-	OK - build with JDK 6 on CI
-	OK - update building.txt
-
-OK - annotation processor based generator
-	OK - evaluate triggering the code generator using JSR 269 (might be hard to generate code for 3rd party classes such as Runnable?)
-		! http://deors.wordpress.com/2011/10/08/annotation-processors/
-		! http://deors.wordpress.com/2011/10/31/annotation-generators/
-		http://weblogs.java.net/blog/tball/archive/2006/09/hacking_javac.html
-		http://code.google.com/p/genftw/
-		http://code.google.com/p/objectify-gwtkey/
-	OK - port the current generator
-	OK - generate imports
-	OK - hook into the annotation processor
-	OK - event getters
-	OK - DummyListenerToEvent: rename sender to target
-	OK - EventToDummyListener: rename listener to target
-	OK - @Override annotation to all methods
-	OK - @Generated annotation, example: @Generated(value = "fi.jumi.actors.generator.EventStubGenerator", comments = "Generated based on fi.jumi.actors.maven.DummyListener", date = "2000-01-01")
-	OK - 3rd party classes: package-local interface with @GenerateEventizers(useParent = true)
-		OK - will need to figure out how to read the parameter names, maybe use overloaded methods if available
-			OK - locate source files for library classes
-			OK - read AST from source file
-	OK - @GenerateEventizer(targetPackage = "fi.jumi.core.events")
-	OK - fix tests creating Runnable.class in the current directory; prevent compilation or use a temp dir
-	OK - support for using parent interfaces which are members of an enclosing class
-	OK - generate error messages about invalid eventizer interfaces
-	OK - try out in Jumi
-
-OK - release 1.0.x
-	OK - bump version
-	OK - release it
-	OK - set up relocation from the old groupId
-		http://maven.apache.org/guides/mini/guide-relocation.html
-		http://javamoods.blogspot.fi/2009/06/maven-how-relocated-artifacts-can-ruin.html
-	OK - update groupId on web site
-	OK - docs for APT on wiki
-
-- APT generator: inherited methods, would somehow have to get the parent's AST
+- APT generator: support inherited methods? would somehow have to get the parent's AST (workaround is to override every method)
 
 - remove Maven plugin, cleanup this TODO list, push up issues that can now be solved more easily
 
@@ -51,6 +8,14 @@ OK - release 1.0.x
 	- find all use cases in Jumi, see how they would benefit from this change, design the API appropriately
 
 - support for non-void actor methods which return a Future
+
+	actor.tell().doSomething().then(this::myCallback);
+	...
+	private void myCallback(String result) {...}
+
+	public Promise<String> doSomething() {
+	    return Promise.of("the return value");
+	}
 
 - refactor EventSpy: always call await() from assertContains() to avoid duplication?
 	http://lets-code.orfjackal.net/2013/04/lets-code-jumi-231-monitoredexecutor.html

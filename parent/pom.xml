@@ -263,7 +263,7 @@
 
             <plugin>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <!-- Version must be defined here instead of dependency management, because oss-parent otherwise overrides it -->
+                <!-- Version must be defined here instead of <pluginManagement>, because oss-parent otherwise overrides it -->
                 <version>1.4</version>
                 <executions>
 
