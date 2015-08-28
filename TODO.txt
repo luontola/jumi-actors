@@ -8,7 +8,7 @@ OK - don't use Java 7 (or upgrade to Java 8 and use Retrolambda?)
 	OK - build with JDK 6 on CI
 	OK - update building.txt
 
-!! - annotation processor based generator
+OK - annotation processor based generator
 	OK - evaluate triggering the code generator using JSR 269 (might be hard to generate code for 3rd party classes such as Runnable?)
 		! http://deors.wordpress.com/2011/10/08/annotation-processors/
 		! http://deors.wordpress.com/2011/10/31/annotation-generators/
@@ -31,14 +31,16 @@ OK - don't use Java 7 (or upgrade to Java 8 and use Retrolambda?)
 	OK - fix tests creating Runnable.class in the current directory; prevent compilation or use a temp dir
 	OK - support for using parent interfaces which are members of an enclosing class
 	OK - generate error messages about invalid eventizer interfaces
-	- inherited methods, would somehow have to get the parent's AST
+	OK - try out in Jumi
 
-- release 1.0.x
-	- bump version
-	- release it
+!! - release 1.0.x
+	OK - bump version
+	!! - release it
 	- set up relocation from the old groupId
 		http://maven.apache.org/guides/mini/guide-relocation.html
 		http://javamoods.blogspot.fi/2009/06/maven-how-relocated-artifacts-can-ruin.html
+
+- APT generator: inherited methods, would somehow have to get the parent's AST
 
 - remove Maven plugin, cleanup this TODO list, push up issues that can now be solved more easily
 
