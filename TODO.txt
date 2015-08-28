@@ -33,12 +33,14 @@ OK - annotation processor based generator
 	OK - generate error messages about invalid eventizer interfaces
 	OK - try out in Jumi
 
-!! - release 1.0.x
+OK - release 1.0.x
 	OK - bump version
-	!! - release it
-	- set up relocation from the old groupId
+	OK - release it
+	OK - set up relocation from the old groupId
 		http://maven.apache.org/guides/mini/guide-relocation.html
 		http://javamoods.blogspot.fi/2009/06/maven-how-relocated-artifacts-can-ruin.html
+	OK - update groupId on web site
+	OK - docs for APT on wiki
 
 - APT generator: inherited methods, would somehow have to get the parent's AST
 
