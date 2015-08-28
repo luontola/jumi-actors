@@ -109,6 +109,44 @@ public class AnnotationProcessorTest {
         assertThat(outputDir.listFiles(), is(emptyArray()));
     }
 
+    @Test
+    public void requires_interface() throws IOException {
+        doesNotCompile(new JavaSourceFromString("NotInterface", "" +
+                "package com.example;\n" +
+                "@fi.jumi.actors.generator.GenerateEventizer\n" +
+                "public class NotInterface {\n" +
+                "}"
+        ));
+
+        assertThat(outputDir.listFiles(), is(emptyArray()));
+    }
+
+    @Test
+    public void requires_methods_to_return_void() throws IOException {
+        doesNotCompile(new JavaSourceFromString("NonVoidMethods", "" +
+                "package com.example;\n" +
+                "@fi.jumi.actors.generator.GenerateEventizer\n" +
+                "public interface NonVoidMethods {\n" +
+                "    java.lang.String bad();\n" +
+                "}"
+        ));
+
+        assertThat(outputDir.listFiles(), is(emptyArray()));
+    }
+
+    @Test
+    public void requires_methods_to_not_throw_exceptions() throws IOException {
+        doesNotCompile(new JavaSourceFromString("ThrowingMethods", "" +
+                "package com.example;\n" +
+                "@fi.jumi.actors.generator.GenerateEventizer\n" +
+                "public interface ThrowingMethods {\n" +
+                "    void bad() throws java.lang.Exception;\n" +
+                "}"
+        ));
+
+        assertThat(outputDir.listFiles(), is(emptyArray()));
+    }
+
 
     private void compile(JavaFileObject... compilationUnits) throws IOException {
         assertThat("compiled?", tryCompile(compilationUnits), is(true));

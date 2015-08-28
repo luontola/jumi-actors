@@ -6,6 +6,10 @@ package fi.jumi.actors.generator;
 
 import java.lang.annotation.*;
 
+/**
+ * Causes the compiler to generate {@link fi.jumi.actors.eventizers.Eventizer eventizer} classes for the interface which
+ * is annotated with this annotation.
+ */
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
 public @interface GenerateEventizer {

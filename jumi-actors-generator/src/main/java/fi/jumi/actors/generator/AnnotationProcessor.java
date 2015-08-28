@@ -11,7 +11,7 @@ import fi.jumi.actors.generator.codegen.GeneratedClass;
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
-import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.*;
 import javax.tools.JavaFileObject;
 import java.io.*;
 import java.util.*;
@@ -33,7 +33,7 @@ public class AnnotationProcessor extends AbstractProcessor {
                             "\n" + Throwables.getStackTraceAsString(e), element);
                 }
             } else {
-                log().printMessage(WARNING, "Only interfaces can be annotated with @GenerateEventizer", element);
+                log().printMessage(ERROR, "Only interfaces can be annotated with @" + GenerateEventizer.class.getSimpleName(), element);
             }
         }
         return false;
@@ -65,6 +65,10 @@ public class AnnotationProcessor extends AbstractProcessor {
             eventInterface = AstExtractor.getAst(parentInterface, sourceCode);
         }
 
+        if (!hasValidActorMethods(eventInterface)) {
+            return;
+        }
+
         EventStubGenerator generator = new EventStubGenerator(eventInterface, new TargetPackageResolver(targetPackage));
         generator.setGeneratorName(getClass().getName());
 
@@ -74,6 +78,13 @@ public class AnnotationProcessor extends AbstractProcessor {
             w.write(generated.source);
             w.close();
         }
+    }
+
+    private static PackageElement getPackage(Element e) {
+        while (e.getKind() != ElementKind.PACKAGE) {
+            e = e.getEnclosingElement();
+        }
+        return (PackageElement) e;
     }
 
     private static JavaFileObject findSourceCode(String className) {
@@ -91,13 +102,25 @@ public class AnnotationProcessor extends AbstractProcessor {
         return className.substring(0, className.lastIndexOf('.'));
     }
 
-    private static PackageElement getPackage(Element e) {
-        while (e.getKind() != ElementKind.PACKAGE) {
-            e = e.getEnclosingElement();
+    private boolean hasValidActorMethods(TypeElement eventInterface) {
+        boolean ok = true;
+        for (Element element : eventInterface.getEnclosedElements()) {
+            if (element.getKind() == ElementKind.METHOD) {
+                ExecutableElement method = (ExecutableElement) element;
+                TypeMirror returnType = method.getReturnType();
+                if (returnType.getKind() != TypeKind.VOID) {
+                    log().printMessage(ERROR, "Actor interface methods must return void, but method " + method + " returns " + returnType, method);
+                    ok = false;
+                }
+                List<? extends TypeMirror> thrownTypes = method.getThrownTypes();
+                if (!thrownTypes.isEmpty()) {
+                    log().printMessage(ERROR, "Actor interface methods must not throw exceptions, but method " + method + " throws " + thrownTypes, method);
+                    ok = false;
+                }
+            }
         }
-        return (PackageElement) e;
+        return ok;
     }
-
 
     @Override
     public SourceVersion getSupportedSourceVersion() {
