@@ -99,7 +99,11 @@ public class AnnotationProcessor extends AbstractProcessor {
     }
 
     private static String getEnclosingClass(String className) {
-        return className.substring(0, className.lastIndexOf('.'));
+        int index = className.lastIndexOf('.');
+        if (index < 0) {
+            return "";
+        }
+        return className.substring(0, index);
     }
 
     private boolean hasValidActorMethods(TypeElement eventInterface) {
