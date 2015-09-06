@@ -1,4 +1,4 @@
-// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2015, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -19,6 +19,8 @@ import javax.annotation.concurrent.*;
  */
 @ThreadSafe
 public abstract class Actors {
+
+    private static ThreadLocal<ActorThread> currentThread = new ThreadLocal<ActorThread>();
 
     private final EventizerProvider eventizerProvider;
     private final FailureHandler failureHandler;
@@ -42,6 +44,14 @@ public abstract class Actors {
     // Package-private to avoid showing up in Javadocs and creating confusion with the overloaded version.
     // Also MessageProcessor is package-private, so anyways third parties cannot extend this class.
     abstract void startActorThread(MessageProcessor actorThread);
+
+    public static ActorThread currentThread() {
+        ActorThread actorThread = currentThread.get();
+        if (actorThread == null) {
+            throw new IllegalStateException("Currently not inside an actor");
+        }
+        return actorThread;
+    }
 
 
     @ThreadSafe
@@ -84,7 +94,12 @@ public abstract class Actors {
         private void process(Runnable task) {
             // MessageToActor should already take care of handling uncaught exceptions,
             // so we don't need to do it here.
-            task.run();
+            currentThread.set(this);
+            try {
+                task.run();
+            } finally {
+                currentThread.remove();
+            }
         }
     }
 

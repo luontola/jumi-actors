@@ -5,7 +5,7 @@ OK - generating event stubs when method argument types take type parameters (now
 	https://github.com/orfjackal/jumi-actors/issues/1
 	OK - the new generator doesn't add imports for nested type parameters
 
-- easier access to an ActorRef to the current actor, e.g. Actors.selfRef() using a thread-local, or perhaps Actors.currentThread()?
+OK - easier access to an ActorRef to the current actor, e.g. Actors.selfRef() using a thread-local, or perhaps Actors.currentThread()?
 	https://groups.google.com/d/topic/jumi-test-runner/xQYPeqB00UQ/discussion
 	- find all use cases in Jumi, see how they would benefit from this change, design the API appropriately
 

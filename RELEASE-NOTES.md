@@ -5,6 +5,7 @@ Release Notes
 ### Upcoming Changes
 
 - Removed `jumi-actors-maven-plugin` in favor of `jumi-actors-generator`
+- Easy access to an actor's own `ActorThread` using `Actors.currentThread()`
 
 ### Jumi Actors 1.0.277 (2015-09-06)
 

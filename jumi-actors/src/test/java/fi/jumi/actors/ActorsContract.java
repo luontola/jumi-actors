@@ -1,15 +1,17 @@
-// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2015, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
 package fi.jumi.actors;
 
-import fi.jumi.actors.eventizers.dynamic.*;
 import fi.jumi.actors.eventizers.*;
+import fi.jumi.actors.eventizers.dynamic.*;
 import fi.jumi.actors.listeners.*;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.mockito.InOrder;
+
+import java.util.concurrent.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -33,8 +35,8 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
     }
 
     /**
-     * Avoid the thread interrupted status from leaking from one test to another,
-     * since some tests in this class do interrupt threads.
+     * Avoid the thread interrupted status from leaking from one test to another, since some tests in this class do
+     * interrupt threads.
      */
     @After
     public void clearThreadInterruptedStatus() {
@@ -165,6 +167,38 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
 
         awaitEvents(1);
         assertEvents("unrelated message");
+    }
+
+
+    // access to current actor thread
+
+    @Test
+    public void current_actor_thread_can_be_accessed_inside_an_actor() throws InterruptedException, ExecutionException, TimeoutException {
+        FutureTask<ActorThread> getCurrentThread = new FutureTask<ActorThread>(new Callable<ActorThread>() {
+            @Override
+            public ActorThread call() throws Exception {
+                return Actors.currentThread();
+            }
+        });
+
+        ActorThread actorThread = actors.startActorThread();
+        ActorRef<Runnable> actor = actorThread.bindActor(Runnable.class, getCurrentThread);
+        actor.tell().run();
+        processEvents();
+
+        ActorThread currentThread = getCurrentThread.get(100, TimeUnit.MILLISECONDS);
+        assertThat(currentThread, is(actorThread));
+    }
+
+    @Test
+    public void current_actor_thread_cannot_be_accessed_outside_an_actor() {
+        ActorThread actorThread = actors.startActorThread();
+        ActorRef<DummyListener> actor = actorThread.bindActor(DummyListener.class, new SpyDummyListener());
+        actor.tell().onSomething("foo");
+        awaitEvents(1);
+
+        thrown.expect(IllegalStateException.class);
+        Actors.currentThread();
     }
 
 
