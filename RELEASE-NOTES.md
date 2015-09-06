@@ -4,7 +4,7 @@ Release Notes
 
 ### Upcoming Changes
 
-- TBD
+- Removed `jumi-actors-maven-plugin` in favor of `jumi-actors-generator`
 
 ### Jumi Actors 1.0.277 (2015-09-06)
 

@@ -12,7 +12,7 @@
 
     <groupId>fi.jumi.actors</groupId>
     <artifactId>parent</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <description>
@@ -129,30 +129,6 @@
                 <groupId>com.intellij</groupId>
                 <artifactId>annotations</artifactId>
                 <version>9.0.4</version>
-            </dependency>
-
-            <!-- Maven Plugins -->
-
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-plugin-api</artifactId>
-                <version>${minimumMavenVersion}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-project</artifactId>
-                <version>2.2.1</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.codehaus.plexus</groupId>
-                <artifactId>plexus-compiler-api</artifactId>
-                <version>1.9.1</version>
-            </dependency>
-            <dependency>
-                <groupId>org.codehaus.plexus</groupId>
-                <artifactId>plexus-compiler-javac</artifactId>
-                <version>1.9.1</version>
             </dependency>
 
             <!-- Bytecode Manipulation -->
@@ -358,16 +334,6 @@
         </plugins>
         <pluginManagement>
             <plugins>
-
-                <plugin>
-                    <groupId>fi.jumi.actors</groupId>
-                    <artifactId>jumi-actors-maven-plugin</artifactId>
-                    <version>${project.version}</version>
-                    <configuration>
-                        <source>1.6</source>
-                        <target>1.6</target>
-                    </configuration>
-                </plugin>
 
                 <plugin>
                     <artifactId>maven-clean-plugin</artifactId>

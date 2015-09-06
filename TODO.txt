@@ -1,11 +1,9 @@
 
+OK - remove Maven plugin, cleanup this TODO list, push up issues that can now be solved more easily
+
 OK - generating event stubs when method argument types take type parameters (now causes JavaType to throw IllegalArgumentException: unsupported type)
 	https://github.com/orfjackal/jumi-actors/issues/1
 	OK - the new generator doesn't add imports for nested type parameters
-
-- APT generator: support inherited methods? would somehow have to get the parent's AST (workaround is to override every method)
-
-- remove Maven plugin, cleanup this TODO list, push up issues that can now be solved more easily
 
 - easier access to an ActorRef to the current actor, e.g. Actors.selfRef() using a thread-local, or perhaps Actors.currentThread()?
 	https://groups.google.com/d/topic/jumi-test-runner/xQYPeqB00UQ/discussion
@@ -29,6 +27,8 @@ OK - generating event stubs when method argument types take type parameters (now
 	- remove duplicated calls to await()
 
 - thread-safety-checker: when an inner class is missing the annotation, use the annotation of the enclosing class or default to @NotThreadSafe when the enclosing class has any concurrency annotation
+
+- APT generator: support inherited methods? would somehow have to get the parent's AST (workaround is to override every method)
 
 - extract AbstractMessageLogger from PrintStreamMessageLogger, to support multiple logging frameworks
 
@@ -59,26 +59,6 @@ OK - generating event stubs when method argument types take type parameters (now
 	- create a benchmark to compare reflection vs code generation based eventizers
 		- also use it as an example of using the code generator plugin
 	- add the benchmark results to the web site
-
-- refactor jumi-actors-maven-plugin
-	- plugin pom: instead of using testResource, use add-test-source with http://mojo.codehaus.org/build-helper-maven-plugin/ and keep the reference files in the normal resource directory
-	- DummyListenerToEvent: rename sender to target
-	- EventToDummyListener: rename listener to target
-	- @Generated annotation, example: @Generated(value = "EventStubGenerator", comments = "Generated based on DummyListener", date = "2000-01-01")
-	- @Override annotation to all methods
-	- find a way to read the compiler language level from maven-compiler-plugin, instead of configuring it separately for this plugin
-		http://maven.apache.org/ref/3.0.4/maven-core/apidocs/org/apache/maven/project/MavenProject.html
-			getPlugin
-		http://maven.apache.org/ref/3.0.4/maven-core/apidocs/org/apache/maven/plugin/BuildPluginManager.html
-		http://maven.apache.org/ref/3.0.4/maven-core/apidocs/org/apache/maven/plugin/MavenPluginManager.html
-			getConfiguredMojo
-		http://maven.apache.org/ref/2.2.1/maven-core/apidocs/org/apache/maven/plugin/PluginManager.html (deprecated)
-			getPluginDefinitionForPrefix
-			getPluginComponent
-		http://stackoverflow.com/questions/526733/maven-plugin-executing-another-plugin
-		http://timmoore.github.com/mojo-executor/
-		http://stackoverflow.com/questions/4243686/how-to-programatically-invoke-a-maven-dependency-plugin/5761554#5761554
-	- hand-written serialization using bare DataOutput/DataInput? should give overall best performance without additional dependencies: https://github.com/eishay/jvm-serializers/wiki/
 
 - evaluate using Eclipse JDT DOM for code generation, create an internal DSL as necessary (factory methods to avoid setter hell)
 	http://blog.cedarsoft.com/2010/08/code-generation-done-right/
