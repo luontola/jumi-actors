@@ -18,7 +18,6 @@
     <modules>
         <module>jumi-actors</module>
         <module>jumi-actors-generator</module>
-        <module>jumi-actors-maven-plugin</module>
         <module>thread-safety-agent</module>
         <module>end-to-end-tests</module>
         <module>parent</module>
