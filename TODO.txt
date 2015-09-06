@@ -1,4 +1,8 @@
 
+OK - generating event stubs when method argument types take type parameters (now causes JavaType to throw IllegalArgumentException: unsupported type)
+	https://github.com/orfjackal/jumi-actors/issues/1
+	OK - the new generator doesn't add imports for nested type parameters
+
 - APT generator: support inherited methods? would somehow have to get the parent's AST (workaround is to override every method)
 
 - remove Maven plugin, cleanup this TODO list, push up issues that can now be solved more easily
@@ -25,9 +29,6 @@
 	- remove duplicated calls to await()
 
 - thread-safety-checker: when an inner class is missing the annotation, use the annotation of the enclosing class or default to @NotThreadSafe when the enclosing class has any concurrency annotation
-
-- generating event stubs when method argument types take type parameters (now causes JavaType to throw IllegalArgumentException: unsupported type)
-	https://github.com/orfjackal/jumi-actors/issues/1
 
 - extract AbstractMessageLogger from PrintStreamMessageLogger, to support multiple logging frameworks
 

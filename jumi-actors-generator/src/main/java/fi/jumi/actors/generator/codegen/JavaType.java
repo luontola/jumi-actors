@@ -297,7 +297,9 @@ public abstract class JavaType {
         public List<JavaType> getClassImports() {
             ArrayList<JavaType> imports = new ArrayList<JavaType>();
             imports.add(this);
-            imports.addAll(typeArguments);
+            for (JavaType typeArgument : typeArguments) {
+                imports.addAll(typeArgument.getClassImports());
+            }
             return imports;
         }
 

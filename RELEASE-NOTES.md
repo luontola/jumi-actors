@@ -4,7 +4,7 @@ Release Notes
 
 ### Upcoming Changes
 
-- TBD
+- Fixed generating imports for nested generics
 
 ### Jumi Actors 1.0.270 (2015-08-28)
 
