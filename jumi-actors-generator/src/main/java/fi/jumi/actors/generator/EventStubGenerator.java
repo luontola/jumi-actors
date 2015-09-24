@@ -39,7 +39,7 @@ public class EventStubGenerator {
         senderInterface = JavaType.of(MessageSender.class, eventInterface);
 
         eventizerPackage = targetPackage;
-        stubsPackage = targetPackage + "." + UPPER_CAMEL.to(LOWER_CAMEL, listenerInterface.getSimpleName());
+        stubsPackage = targetPackage + "." + UPPER_CAMEL.to(LOWER_CAMEL, listenerInterface.getRawName());
     }
 
     public void setGeneratorName(String generatorName) {
