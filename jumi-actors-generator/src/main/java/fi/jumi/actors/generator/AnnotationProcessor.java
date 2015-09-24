@@ -69,7 +69,7 @@ public class AnnotationProcessor extends AbstractProcessor {
             return;
         }
 
-        EventStubGenerator generator = new EventStubGenerator(eventInterface, new TargetPackageResolver(targetPackage));
+        EventStubGenerator generator = new EventStubGenerator(eventInterface, targetPackage);
         generator.setGeneratorName(getClass().getName());
 
         for (GeneratedClass generated : generator.getGeneratedClasses()) {

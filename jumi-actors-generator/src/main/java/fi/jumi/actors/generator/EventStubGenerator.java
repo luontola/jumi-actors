@@ -30,7 +30,7 @@ public class EventStubGenerator {
     private String generatorName = getClass().getName();
     private Date generationDate = new Date();
 
-    public EventStubGenerator(TypeElement listenerType, TargetPackageResolver targetPackageResolver) {
+    public EventStubGenerator(TypeElement listenerType, String targetPackage) {
         listenerInterface = JavaType.of(listenerType);
         listenerMethods = JavaClasses.getMethods(listenerType);
 
@@ -38,8 +38,8 @@ public class EventStubGenerator {
         eventInterface = JavaType.of(Event.class, listenerInterface);
         senderInterface = JavaType.of(MessageSender.class, eventInterface);
 
-        eventizerPackage = targetPackageResolver.getEventizerPackage();
-        stubsPackage = targetPackageResolver.getStubsPackage(listenerInterface);
+        eventizerPackage = targetPackage;
+        stubsPackage = targetPackage + "." + UPPER_CAMEL.to(LOWER_CAMEL, listenerInterface.getSimpleName());
     }
 
     public void setGeneratorName(String generatorName) {

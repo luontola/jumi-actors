@@ -35,12 +35,10 @@ public class EventStubGeneratorTest {
     @Rule
     public final TemporaryFolder tempDir = new TemporaryFolder();
 
-    private TargetPackageResolver targetPackageResolver;
     private EventStubGenerator generator;
 
     @Before
     public void setUp() {
-        targetPackageResolver = new TargetPackageResolver(TARGET_PACKAGE);
         generator = newEventStubGenerator(DummyListener.class);
     }
 
@@ -221,7 +219,7 @@ public class EventStubGeneratorTest {
     }
 
     private EventStubGenerator newEventStubGenerator(Class<?> listenerType) {
-        EventStubGenerator generator = new EventStubGenerator(ast(listenerType), targetPackageResolver);
+        EventStubGenerator generator = new EventStubGenerator(ast(listenerType), TARGET_PACKAGE);
         generator.setGenerationDate(new GregorianCalendar(2000, Calendar.DECEMBER, 31).getTime());
         return generator;
     }
