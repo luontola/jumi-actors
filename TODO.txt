@@ -19,6 +19,8 @@ OK - easier access to an ActorRef to the current actor, e.g. Actors.selfRef() us
 	    return Promise.of("the return value");
 	}
 
+- make dynamic and generated events support equals and hashCode methods
+
 - refactor EventSpy: always call await() from assertContains() to avoid duplication?
 	http://lets-code.orfjackal.net/2013/04/lets-code-jumi-231-monitoredexecutor.html
 	- find all usages and see if await be done everywhere
