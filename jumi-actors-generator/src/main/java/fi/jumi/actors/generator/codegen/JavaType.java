@@ -74,15 +74,17 @@ public abstract class JavaType {
         return results;
     }
 
-    public abstract String getPackage();
+    public abstract String getCanonicalName();
 
-    public abstract String getName();
+    public abstract String getRawSimpleName();
 
-    public abstract String getRawName();
+    // The following operations should be used only through the Imports class:
 
-    public abstract String getSimpleName();
+    protected abstract String getPackage();
 
-    public abstract List<JavaType> getClassImports();
+    protected abstract String getGenericSimpleName();
+
+    protected abstract List<JavaType> getClassImports();
 
 
     private static class RawJavaType extends JavaType {
@@ -103,17 +105,17 @@ public abstract class JavaType {
         }
 
         @Override
-        public String getName() {
+        public String getCanonicalName() {
             return type.getCanonicalName();
         }
 
         @Override
-        public String getRawName() {
+        public String getRawSimpleName() {
             return type.getSimpleName();
         }
 
         @Override
-        public String getSimpleName() {
+        public String getGenericSimpleName() {
             return type.getSimpleName();
         }
 
@@ -125,7 +127,6 @@ public abstract class JavaType {
             }
             return imports;
         }
-
     }
 
     private static class GenericJavaType extends JavaType {
@@ -148,18 +149,18 @@ public abstract class JavaType {
         }
 
         @Override
-        public String getName() {
-            return type.getName();
+        public String getCanonicalName() {
+            return type.getCanonicalName();
         }
 
         @Override
-        public String getRawName() {
-            return type.getRawName();
+        public String getRawSimpleName() {
+            return type.getRawSimpleName();
         }
 
         @Override
-        public String getSimpleName() {
-            return type.getSimpleName() + "<" + typeArgumentsAsString() + ">";
+        public String getGenericSimpleName() {
+            return type.getGenericSimpleName() + "<" + typeArgumentsAsString() + ">";
         }
 
         private String typeArgumentsAsString() {
@@ -168,7 +169,7 @@ public abstract class JavaType {
                 if (i > 0) {
                     result += ", ";
                 }
-                result += typeArguments[i].getSimpleName();
+                result += typeArguments[i].getGenericSimpleName();
             }
             return result;
         }
@@ -192,7 +193,7 @@ public abstract class JavaType {
 
         @Override
         public String toString() {
-            return getClass().getSimpleName() + "(" + getSimpleName() + ")";
+            return getClass().getSimpleName() + "(" + getGenericSimpleName() + ")";
         }
 
         @Override
@@ -201,17 +202,17 @@ public abstract class JavaType {
         }
 
         @Override
-        public String getName() {
-            return getSimpleName();
-        }
-
-        @Override
-        public String getRawName() {
+        public String getCanonicalName() {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public String getSimpleName() {
+        public String getRawSimpleName() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public String getGenericSimpleName() {
             // TODO: upper and lower bounds
             return "?";
         }
@@ -256,23 +257,23 @@ public abstract class JavaType {
         }
 
         @Override
-        public String getName() {
-            return element.toString();
+        public String getCanonicalName() {
+            return element.getQualifiedName().toString();
         }
 
         @Override
-        public String getRawName() {
+        public String getRawSimpleName() {
             return element.getSimpleName().toString();
         }
 
         @Override
-        public String getSimpleName() {
+        public String getGenericSimpleName() {
             StringBuilder sb = new StringBuilder();
             sb.append(type.asElement().getSimpleName());
             if (!typeArguments.isEmpty()) {
                 sb.append("<");
                 for (JavaType typeArgument : typeArguments) {
-                    sb.append(typeArgument.getSimpleName());
+                    sb.append(typeArgument.getGenericSimpleName());
                 }
                 sb.append(">");
             }

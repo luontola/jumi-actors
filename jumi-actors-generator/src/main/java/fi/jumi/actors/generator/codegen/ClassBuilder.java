@@ -1,4 +1,4 @@
-// Copyright © 2011-2014, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2015, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -35,9 +35,8 @@ public class ClassBuilder {
         constructorArguments.addAll(arguments);
     }
 
-    public String imported(JavaType type) {
-        imports.addImports(type);
-        return type.getSimpleName();
+    public String getSimpleName(JavaType type) {
+        return imports.getSimpleName(type);
     }
 
     public void addPackageImport(String packageName) {
@@ -75,7 +74,7 @@ public class ClassBuilder {
         sb.append("\n");
         if (constructorArguments.size() > 0) {
             for (JavaVar var : constructorArguments) {
-                sb.append("    private final " + imported(var.getType()) + " " + var.getName() + ";\n");
+                sb.append("    private final " + getSimpleName(var.getType()) + " " + var.getName() + ";\n");
             }
             sb.append("\n");
             sb.append("    public " + className + "(" + JavaVar.toFormalArguments(this, constructorArguments) + ") {\n");
@@ -96,7 +95,7 @@ public class ClassBuilder {
             if (sb.length() > 0) {
                 sb.append(", ");
             }
-            sb.append(imported(type));
+            sb.append(getSimpleName(type));
         }
         return sb;
     }

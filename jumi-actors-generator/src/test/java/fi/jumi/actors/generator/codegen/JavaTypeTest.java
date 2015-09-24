@@ -1,4 +1,4 @@
-// Copyright © 2011-2014, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2015, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -25,8 +25,8 @@ public class JavaTypeTest {
         JavaType t = JavaType.of(NonGenericType.class);
 
         assertThat(t.getPackage(), is("fi.jumi.actors.generator.codegen"));
-        assertThat(t.getRawName(), is("NonGenericType"));
-        assertThat(t.getSimpleName(), is("NonGenericType"));
+        assertThat(t.getRawSimpleName(), is("NonGenericType"));
+        assertThat(t.getGenericSimpleName(), is("NonGenericType"));
     }
 
     @Test
@@ -34,8 +34,8 @@ public class JavaTypeTest {
         JavaType t = JavaType.of(genericTypeOfField("SINGLE_TYPE_ARGUMENT"));
 
         assertThat(t.getPackage(), is("fi.jumi.actors.generator.codegen"));
-        assertThat(t.getRawName(), is("GenericType"));
-        assertThat(t.getSimpleName(), is("GenericType<String>"));
+        assertThat(t.getRawSimpleName(), is("GenericType"));
+        assertThat(t.getGenericSimpleName(), is("GenericType<String>"));
     }
 
     @Test
@@ -43,16 +43,16 @@ public class JavaTypeTest {
         JavaType t = JavaType.of(genericTypeOfField("WILDCARD_TYPE_ARGUMENT"));
 
         assertThat(t.getPackage(), is("fi.jumi.actors.generator.codegen"));
-        assertThat(t.getRawName(), is("GenericType"));
-        assertThat(t.getSimpleName(), is("GenericType<?>"));
+        assertThat(t.getRawSimpleName(), is("GenericType"));
+        assertThat(t.getGenericSimpleName(), is("GenericType<?>"));
     }
 
     @Test
     public void multiple_type_arguments() throws Exception {
         JavaType t = JavaType.of(genericTypeOfField("MULTIPLE_TYPE_ARGUMENTS"));
 
-        assertThat(t.getRawName(), is("GenericType2"));
-        assertThat(t.getSimpleName(), is("GenericType2<String, Integer>"));
+        assertThat(t.getRawSimpleName(), is("GenericType2"));
+        assertThat(t.getGenericSimpleName(), is("GenericType2<String, Integer>"));
 
     }
 
@@ -60,8 +60,8 @@ public class JavaTypeTest {
     public void nested_type_arguments() throws Exception {
         JavaType t = JavaType.of(genericTypeOfField("NESTED_TYPE_ARGUMENTS"));
 
-        assertThat(t.getRawName(), is("GenericType"));
-        assertThat(t.getSimpleName(), is("GenericType<List<String>>"));
+        assertThat(t.getRawSimpleName(), is("GenericType"));
+        assertThat(t.getGenericSimpleName(), is("GenericType<List<String>>"));
     }
 
     private static Type genericTypeOfField(String fieldName) throws Exception {

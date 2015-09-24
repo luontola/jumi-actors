@@ -11,6 +11,11 @@ public class Imports {
     private final List<JavaType> classesToImport = new ArrayList<JavaType>();
     private final List<String> packagesToImport = new ArrayList<String>();
 
+    public String getSimpleName(JavaType type) {
+        addImports(type);
+        return type.getGenericSimpleName();
+    }
+
     public void addImports(JavaType... types) {
         for (JavaType type : types) {
             classesToImport.addAll(type.getClassImports());
@@ -29,7 +34,7 @@ public class Imports {
                 continue;
             }
             // TODO: do not import classes from target package
-            imports.add(type.getName());
+            imports.add(type.getCanonicalName());
         }
         for (String packageName : packagesToImport) {
             imports.add(packageName + ".*");
