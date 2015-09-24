@@ -84,8 +84,6 @@ public abstract class JavaType {
 
     public abstract List<JavaType> getClassImports();
 
-    public abstract List<JavaMethod> getMethods();
-
 
     private static class RawJavaType extends JavaType {
         private final Class<?> type;
@@ -128,10 +126,6 @@ public abstract class JavaType {
             return imports;
         }
 
-        @Override
-        public List<JavaMethod> getMethods() {
-            return Collections.emptyList();
-        }
     }
 
     private static class GenericJavaType extends JavaType {
@@ -189,10 +183,6 @@ public abstract class JavaType {
             return imports;
         }
 
-        @Override
-        public List<JavaMethod> getMethods() {
-            return Collections.emptyList();
-        }
     }
 
     private static class WildcardJavaType extends JavaType {
@@ -231,10 +221,6 @@ public abstract class JavaType {
             return Collections.emptyList();
         }
 
-        @Override
-        public List<JavaMethod> getMethods() {
-            return Collections.emptyList();
-        }
     }
 
     private static class AstJavaType extends JavaType {
@@ -303,16 +289,5 @@ public abstract class JavaType {
             return imports;
         }
 
-        @Override
-        public List<JavaMethod> getMethods() {
-            ArrayList<JavaMethod> methods = new ArrayList<JavaMethod>();
-            for (Element element : this.element.getEnclosedElements()) {
-                if (element.getKind() == ElementKind.METHOD) {
-                    methods.add(new JavaMethod((ExecutableElement) element));
-                }
-            }
-            // TODO: get methods of parent interfaces
-            return methods;
-        }
     }
 }
