@@ -9,19 +9,33 @@ import com.google.common.base.Joiner;
 import javax.lang.model.element.VariableElement;
 import java.util.*;
 
-public abstract class JavaVar {
+public class JavaVar {
+
+    private final JavaType type;
+    private final String name;
 
     public static JavaVar of(VariableElement var) {
-        return new AstJavaVar(var); // TODO: unnecessary - extract the type and name
+        JavaType type = JavaType.of(var.asType());
+        String name = var.getSimpleName().toString();
+        return of(type, name);
     }
 
     public static JavaVar of(JavaType type, String name) {
-        return new SimpleJavaVar(type, name);
+        return new JavaVar(type, name);
     }
 
-    public abstract JavaType getType();
+    private JavaVar(JavaType type, String name) {
+        this.type = type;
+        this.name = name;
+    }
 
-    public abstract String getName();
+    public JavaType getType() {
+        return type;
+    }
+
+    public String getName() {
+        return name;
+    }
 
     public static String toFormalArguments(ClassBuilder cb, List<JavaVar> arguments) {
         List<String> vars = new ArrayList<String>();
@@ -45,46 +59,5 @@ public abstract class JavaVar {
             return ", " + args;
         }
         return args;
-    }
-
-
-    private static class AstJavaVar extends JavaVar {
-
-        private final VariableElement var;
-
-        private AstJavaVar(VariableElement var) {
-            this.var = var;
-        }
-
-        @Override
-        public JavaType getType() {
-            return JavaType.of(var.asType());
-        }
-
-        @Override
-        public String getName() {
-            return var.getSimpleName().toString();
-        }
-    }
-
-    private static class SimpleJavaVar extends JavaVar {
-
-        private final JavaType type;
-        private final String name;
-
-        public SimpleJavaVar(JavaType type, String name) {
-            this.type = type;
-            this.name = name;
-        }
-
-        @Override
-        public JavaType getType() {
-            return type;
-        }
-
-        @Override
-        public String getName() {
-            return name;
-        }
     }
 }
