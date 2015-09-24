@@ -37,10 +37,10 @@ public class JavaVar {
         return name;
     }
 
-    public static String toFormalArguments(ClassBuilder cb, List<JavaVar> arguments) {
+    public static String toFormalArguments(List<JavaVar> arguments, Imports imports) {
         List<String> vars = new ArrayList<String>();
         for (JavaVar var : arguments) {
-            vars.add(cb.getSimpleName(var.getType()) + " " + var.getName());
+            vars.add(imports.getSimpleName(var.getType()) + " " + var.getName());
         }
         return Joiner.on(", ").join(vars);
     }

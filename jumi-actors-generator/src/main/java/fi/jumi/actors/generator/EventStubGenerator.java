@@ -63,10 +63,10 @@ public class EventStubGenerator {
         ClassBuilder cb = new ClassBuilder(myEventizerName(), eventizerPackage);
         addGeneratedAnnotation(cb);
         cb.implement(eventizerInterface);
-        cb.addPackageImport(stubsPackage);
+        cb.imports.addPackageImport(stubsPackage);
 
-        String listenerType = cb.getSimpleName(listenerInterface);
-        String senderType = cb.getSimpleName(senderInterface);
+        String listenerType = cb.imports.getSimpleName(listenerInterface);
+        String senderType = cb.imports.getSimpleName(senderInterface);
 
         cb.addMethod("" +
                 "    @Override\n" +
@@ -100,7 +100,7 @@ public class EventStubGenerator {
         for (JavaMethod method : listenerMethods) {
             cb.addMethod("" +
                     "    @Override\n" +
-                    "    public void " + method.getName() + "(" + JavaVar.toFormalArguments(cb, method.getArguments()) + ") {\n" +
+                    "    public void " + method.getName() + "(" + JavaVar.toFormalArguments(method.getArguments(), cb.imports) + ") {\n" +
                     "        " + target.getName() + ".send(new " + myEventWrapperName(method) + "(" + JavaVar.toActualArguments(method.getArguments()) + "));\n" +
                     "    }\n");
         }
@@ -117,7 +117,7 @@ public class EventStubGenerator {
 
         cb.addMethod("" +
                 "    @Override\n" +
-                "    public void send(" + cb.getSimpleName(eventInterface) + " message) {\n" +
+                "    public void send(" + cb.imports.getSimpleName(eventInterface) + " message) {\n" +
                 "        message.fireOn(" + target.getName() + ");\n" +
                 "    }\n");
 
@@ -135,12 +135,12 @@ public class EventStubGenerator {
             cb.implement(JavaType.of(Serializable.class));
             cb.fieldsAndConstructorParameters(arguments);
 
-            String eventToString = cb.getSimpleName(JavaType.of(EventToString.class));
-            String listenerName = cb.getSimpleName(listenerInterface);
+            String eventToString = cb.imports.getSimpleName(JavaType.of(EventToString.class));
+            String listenerName = cb.imports.getSimpleName(listenerInterface);
 
             for (JavaVar argument : arguments) {
                 cb.addMethod("" +
-                        "    public " + cb.getSimpleName(argument.getType()) + " " + getterName(argument.getName()) + "() {\n" +
+                        "    public " + cb.imports.getSimpleName(argument.getType()) + " " + getterName(argument.getName()) + "() {\n" +
                         "        return " + argument.getName() + ";\n" +
                         "    }\n");
             }
@@ -170,7 +170,7 @@ public class EventStubGenerator {
     }
 
     private void addGeneratedAnnotation(ClassBuilder cb) {
-        cb.annotate("@" + cb.getSimpleName(JavaType.of(Generated.class)) +
+        cb.annotate("@" + cb.imports.getSimpleName(JavaType.of(Generated.class)) +
                 "(value = \"" + generatorName + "\",\n" +
                 "        comments = \"Based on " + listenerInterface.getCanonicalName() + "\",\n" +
                 "        date = \"" + new SimpleDateFormat("yyyy-MM-dd").format(generationDate) + "\")");
