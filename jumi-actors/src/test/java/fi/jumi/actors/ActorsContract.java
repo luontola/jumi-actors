@@ -5,7 +5,7 @@
 package fi.jumi.actors;
 
 import fi.jumi.actors.eventizers.*;
-import fi.jumi.actors.eventizers.dynamic.*;
+import fi.jumi.actors.eventizers.dynamic.DynamicEventizer;
 import fi.jumi.actors.listeners.*;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
@@ -27,6 +27,8 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
     protected final ComposedEventizerProvider defaultEventizerProvider =
             new ComposedEventizerProvider(
                     new DummyListenerEventizer(),
+                    new DynamicEventizer<PrimaryInterface>(PrimaryInterface.class),
+                    new DynamicEventizer<SecondaryInterface>(SecondaryInterface.class),
                     new DynamicEventizer<Runnable>(Runnable.class));
 
     @Before
@@ -82,7 +84,6 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
 
     @Test
     public void actors_bound_to_the_same_actor_thread_are_processed_in_the_same_thread() {
-        actors = newActors(new DynamicEventizerProvider(), defaultFailureHandler, defaultMessageListener);
         ActorThread actorThread = actors.startActorThread();
 
         class Actor1 implements PrimaryInterface {
