@@ -8,6 +8,8 @@ import fi.jumi.actors.eventizers.*;
 import fi.jumi.actors.listeners.FailureHandler;
 import fi.jumi.actors.queue.MessageSender;
 
+import java.util.concurrent.Future;
+
 public abstract class ActorsContractHelpers<T extends Actors> {
 
     protected T actors;
@@ -98,6 +100,38 @@ public abstract class ActorsContractHelpers<T extends Actors> {
         void onSecondaryEvent();
     }
 
+    public interface ResultsInterface {
+
+        void noReturnValue();
+
+        Promise<String> returnsPromise();
+
+        Future<String> returnsFuture();
+
+        Promise<Void> returnsVoidPromise();
+    }
+
+    public static class ResultsAdapter implements ResultsInterface {
+        @Override
+        public void noReturnValue() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Promise<String> returnsPromise() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Future<String> returnsFuture() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Promise<Void> returnsVoidPromise() {
+            throw new UnsupportedOperationException();
+        }
+    }
 
     public interface DummyListener {
         void onSomething(String parameter);

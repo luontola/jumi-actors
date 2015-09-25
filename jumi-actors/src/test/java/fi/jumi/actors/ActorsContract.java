@@ -27,9 +27,10 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
     protected final ComposedEventizerProvider defaultEventizerProvider =
             new ComposedEventizerProvider(
                     new DummyListenerEventizer(),
-                    new DynamicEventizer<PrimaryInterface>(PrimaryInterface.class),
-                    new DynamicEventizer<SecondaryInterface>(SecondaryInterface.class),
-                    new DynamicEventizer<Runnable>(Runnable.class));
+                    new DynamicEventizer<>(PrimaryInterface.class),
+                    new DynamicEventizer<>(SecondaryInterface.class),
+                    new DynamicEventizer<>(ResultsInterface.class),
+                    new DynamicEventizer<>(Runnable.class));
 
     @Before
     public void initActors() {
@@ -79,6 +80,30 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
         assertEvents("event 1", "event 2", "event 3");
     }
 
+
+    // promises
+
+    @Ignore // TODO
+    @Test
+    public void handlers_can_return_already_satisfied_promises() {
+        ActorThread actorThread = actors.startActorThread();
+        ActorRef<ResultsInterface> actor = actorThread.bindActor(ResultsInterface.class, new ResultsAdapter() {
+            @Override
+            public Promise<String> returnsPromise() {
+                logEvent("called");
+                return Promise.of("return value");
+            }
+        });
+
+        actor.tell().returnsPromise().then(this::logEvent);
+        awaitEvents(2);
+
+        assertEvents("called", "return value");
+    }
+
+    // TODO: handlers_can_return_later_satisfied_promises
+    // TODO: handlers_can_return_notifivation_promises
+    // TODO: on_failure_promises_cancelled (?)
 
     // threads
 
@@ -175,12 +200,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
 
     @Test
     public void current_actor_thread_can_be_accessed_inside_an_actor() throws InterruptedException, ExecutionException, TimeoutException {
-        FutureTask<ActorThread> getCurrentThread = new FutureTask<ActorThread>(new Callable<ActorThread>() {
-            @Override
-            public ActorThread call() throws Exception {
-                return Actors.currentThread();
-            }
-        });
+        FutureTask<ActorThread> getCurrentThread = new FutureTask<>(Actors::currentThread);
 
         ActorThread actorThread = actors.startActorThread();
         ActorRef<Runnable> actor = actorThread.bindActor(Runnable.class, getCurrentThread);
