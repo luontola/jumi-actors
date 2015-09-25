@@ -61,13 +61,12 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="end-to-end-tests" target="1.6" />
-      <module name="jumi-actors" target="1.6" />
-      <module name="jumi-actors-generator" target="1.6" />
-      <module name="jumi-actors-maven-plugin" target="1.6" />
-      <module name="parent" target="1.6" />
-      <module name="project" target="1.6" />
-      <module name="thread-safety-agent" target="1.6" />
+      <module name="end-to-end-tests" target="1.8" />
+      <module name="jumi-actors" target="1.8" />
+      <module name="jumi-actors-generator" target="1.8" />
+      <module name="parent" target="1.8" />
+      <module name="project" target="1.8" />
+      <module name="thread-safety-agent" target="1.8" />
     </bytecodeTargetLevel>
   </component>
   <component name="EclipseCompilerSettings">

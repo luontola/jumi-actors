@@ -191,8 +191,26 @@
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.6</source>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>net.orfjackal.retrolambda</groupId>
+                <artifactId>retrolambda-maven-plugin</artifactId>
+                <version>2.0.6</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>process-main</goal>
+                            <goal>process-test</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
                     <target>1.6</target>
+                    <java8home>${env.JAVA8_HOME}</java8home>
                 </configuration>
             </plugin>
 
@@ -269,7 +287,7 @@
                                     <variableName>JAVA6_HOME</variableName>
                                 </requireEnvironmentVariable>
                                 <requireEnvironmentVariable>
-                                    <variableName>JAVA7_HOME</variableName>
+                                    <variableName>JAVA8_HOME</variableName>
                                 </requireEnvironmentVariable>
                             </rules>
                         </configuration>

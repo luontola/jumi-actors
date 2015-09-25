@@ -4,14 +4,14 @@
 Requirements
 
     JDK 6
-    JDK 7
+    JDK 8
     Maven 3
 
 Required environment variables
 
     JAVA6_HOME = JDK 6 directory
-    JAVA7_HOME = JDK 7 directory
-    JAVA_HOME  = JDK 6+ directory
+    JAVA8_HOME = JDK 8 directory
+    JAVA_HOME  = JDK 8 directory
 
 Regular build, execute all end-to-end tests
 
