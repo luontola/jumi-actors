@@ -9,8 +9,7 @@ OK - easier access to an ActorRef to the current actor, e.g. Actors.selfRef() us
 	https://groups.google.com/d/topic/jumi-test-runner/xQYPeqB00UQ/discussion
 	- find all use cases in Jumi, see how they would benefit from this change, design the API appropriately
 
-- support for non-void actor methods which return a Future
-
+!! - support for non-void actor methods which return a Future
 	actor.tell().doSomething().then(this::myCallback);
 	...
 	private void myCallback(String result) {...}
@@ -18,6 +17,13 @@ OK - easier access to an ActorRef to the current actor, e.g. Actors.selfRef() us
 	public Promise<String> doSomething() {
 	    return Promise.of("the return value");
 	}
+	OK - allow methods which return futures
+	OK - dynamic eventizer support
+	!! - mutable promise handle, make promise itself read-only
+	- make the resulting JAR under 100KB; using Guava makes it easily 1MB because shade plugin doesn't remove unused methods
+		http://wvengen.github.io/proguard-maven-plugin/
+		http://proguard.sourceforge.net/
+	- generated eventizer support
 
 - make dynamic and generated events support equals and hashCode methods
 

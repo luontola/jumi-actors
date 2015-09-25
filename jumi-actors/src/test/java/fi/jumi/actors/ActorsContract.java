@@ -83,14 +83,13 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
 
     // promises
 
-    @Ignore // TODO
     @Test
     public void handlers_can_return_already_satisfied_promises() {
         ActorThread actorThread = actors.startActorThread();
         ActorRef<ResultsInterface> actor = actorThread.bindActor(ResultsInterface.class, new ResultsAdapter() {
             @Override
             public Promise<String> returnsPromise() {
-                logEvent("called");
+                logEvent("event 1");
                 return Promise.of("return value");
             }
         });
@@ -98,12 +97,66 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
         actor.tell().returnsPromise().then(this::logEvent);
         awaitEvents(2);
 
-        assertEvents("called", "return value");
+        assertEvents("event 1", "return value");
     }
 
-    // TODO: handlers_can_return_later_satisfied_promises
+    @Test
+    public void handlers_can_return_later_satisfied_promises() {
+        ActorThread actorThread = actors.startActorThread();
+        ActorRef<ResultsInterface> actor = actorThread.bindActor(ResultsInterface.class, new ResultsAdapter() {
+            Promise<String> promise;
+
+            @Override
+            public Promise<String> returnsPromise() {
+                logEvent("event 1");
+                promise = Promise.pending();
+                return promise;
+            }
+
+            @Override
+            public void noReturnValue() {
+                logEvent("event 2");
+                promise.set("return value");
+            }
+        });
+
+        actor.tell().returnsPromise().then(this::logEvent);
+        actor.tell().noReturnValue();
+        awaitEvents(3);
+
+        assertEvents("event 1", "event 2", "return value");
+    }
+
+    @Test
+    public void handlers_can_return_arbitrary_futures() throws Exception {
+        ActorThread actorThread = actors.startActorThread();
+        ActorRef<ResultsInterface> actor = actorThread.bindActor(ResultsInterface.class, new ResultsAdapter() {
+            FutureTask<String> future;
+
+            @Override
+            public Future<String> returnsFuture() {
+                logEvent("event 1");
+                future = new FutureTask<>(() -> "return value");
+                return future;
+            }
+
+            @Override
+            public void noReturnValue() {
+                future.run();
+                logEvent("event 2");
+            }
+        });
+
+        Future<String> future = actor.tell().returnsFuture();
+        actor.tell().noReturnValue();
+        awaitEvents(2);
+
+        assertEvents("event 1", "event 2");
+        assertThat(future.get(1, TimeUnit.MILLISECONDS), is("return value"));
+    }
+
     // TODO: handlers_can_return_notifivation_promises
-    // TODO: on_failure_promises_cancelled (?)
+    // TODO: on_failure_promise_is_cancelled (?)
 
     // threads
 

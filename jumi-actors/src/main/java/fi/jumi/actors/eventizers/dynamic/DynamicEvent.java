@@ -1,34 +1,44 @@
-// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2015, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
 package fi.jumi.actors.eventizers.dynamic;
 
+import com.google.common.base.Throwables;
+import fi.jumi.actors.Promise;
 import fi.jumi.actors.eventizers.*;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.*;
-import java.lang.reflect.*;
+import java.lang.reflect.Method;
+import java.util.concurrent.Future;
 
 @ThreadSafe
 public class DynamicEvent<T> implements Event<T>, Serializable {
 
     private transient Method method;
     private final Object[] args;
+    private final Promise<T> promise;
 
     public DynamicEvent(Method method, Object[] args) {
+        this(method, args, null);
+    }
+
+    public DynamicEvent(Method method, Object[] args, Promise<T> promise) {
         this.method = method;
         this.args = args;
+        this.promise = promise;
     }
 
     @Override
     public void fireOn(T target) {
         try {
-            method.invoke(target, args);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        } catch (InvocationTargetException e) {
-            throw new RuntimeException(e);
+            Object result = method.invoke(target, args);
+            if (promise != null && result instanceof Future) {
+                promise.setFrom((Future<T>) result);
+            }
+        } catch (Exception e) {
+            throw Throwables.propagate(e);
         }
     }
 
