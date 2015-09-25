@@ -10,7 +10,7 @@ import java.util.*;
 public class JavaClasses {
 
     public static List<JavaMethod> getMethods(TypeElement clazz) {
-        ArrayList<JavaMethod> methods = new ArrayList<JavaMethod>();
+        ArrayList<JavaMethod> methods = new ArrayList<>();
         for (Element enclosedElement : clazz.getEnclosedElements()) {
             if (enclosedElement.getKind() == ElementKind.METHOD) {
                 methods.add(new JavaMethod((ExecutableElement) enclosedElement));

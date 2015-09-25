@@ -4,7 +4,6 @@
 
 package fi.jumi.test;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import fi.luontola.buildtest.*;
 import org.hamcrest.Matchers;
@@ -163,12 +162,7 @@ public class BuildTest {
     }
 
     private static Iterable<ClassNode> ignoreShadedLibraries(Iterable<ClassNode> classes) {
-        return Iterables.filter(classes, new Predicate<ClassNode>() {
-            @Override
-            public boolean apply(ClassNode c) {
-                return !c.name.contains("/INTERNAL/");
-            }
-        });
+        return Iterables.filter(classes, c -> !c.name.contains("/INTERNAL/"));
     }
 
 

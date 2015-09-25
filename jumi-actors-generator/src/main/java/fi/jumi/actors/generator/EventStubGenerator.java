@@ -51,7 +51,7 @@ public class EventStubGenerator {
     }
 
     public List<GeneratedClass> getGeneratedClasses() {
-        List<GeneratedClass> generated = new ArrayList<GeneratedClass>();
+        List<GeneratedClass> generated = new ArrayList<>();
         generated.add(getEventizer());
         generated.add(getFrontend());
         generated.add(getBackend());
@@ -125,7 +125,7 @@ public class EventStubGenerator {
     }
 
     public List<GeneratedClass> getEvents() {
-        List<GeneratedClass> events = new ArrayList<GeneratedClass>();
+        List<GeneratedClass> events = new ArrayList<>();
         for (JavaMethod method : listenerMethods) {
             List<JavaVar> arguments = method.getArguments();
 
@@ -160,12 +160,7 @@ public class EventStubGenerator {
             events.add(cb.build());
         }
 
-        Collections.sort(events, new Comparator<GeneratedClass>() {
-            @Override
-            public int compare(GeneratedClass o1, GeneratedClass o2) {
-                return o1.name.compareTo(o2.name);
-            }
-        });
+        Collections.sort(events, (o1, o2) -> o1.name.compareTo(o2.name));
         return events;
     }
 

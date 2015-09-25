@@ -25,7 +25,7 @@ public class JumiActorsGeneratorTest {
     @Test
     public void generates_eventizer_frontends() {
         GuineaPigEventizer eventizer = new GuineaPigEventizer();
-        MessageQueue<Event<GuineaPig>> queue = new MessageQueue<Event<GuineaPig>>();
+        MessageQueue<Event<GuineaPig>> queue = new MessageQueue<>();
 
         GuineaPig frontend = eventizer.newFrontend(queue);
         frontend.onFoo("foo");

@@ -1,4 +1,4 @@
-// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2015, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -24,7 +24,7 @@ public class PiTest {
      */
     @Test
     public void each_worker_calculates_one_part_of_the_pi_approximation() {
-        final List<Double> results = new ArrayList<Double>();
+        final List<Double> results = new ArrayList<>();
         ActorRef<ResultListener> listener = ActorRef.wrap((ResultListener) new ResultListener() {
             @Override
             public void onResult(double result) {

@@ -121,7 +121,7 @@ public abstract class JavaType {
 
         @Override
         public List<JavaType> getClassImports() {
-            List<JavaType> imports = new ArrayList<JavaType>();
+            List<JavaType> imports = new ArrayList<>();
             if (!type.isPrimitive()) {
                 imports.add(this);
             }
@@ -176,7 +176,7 @@ public abstract class JavaType {
 
         @Override
         public List<JavaType> getClassImports() {
-            List<JavaType> imports = new ArrayList<JavaType>();
+            List<JavaType> imports = new ArrayList<>();
             imports.add(type);
             for (JavaType typeArgument : typeArguments) {
                 imports.addAll(typeArgument.getClassImports());
@@ -229,7 +229,7 @@ public abstract class JavaType {
         // XXX: is there some way for just the element or type to be enough?
         private final TypeElement element;
         private final DeclaredType type;
-        private final List<JavaType> typeArguments = new ArrayList<JavaType>();
+        private final List<JavaType> typeArguments = new ArrayList<>();
 
         public AstJavaType(TypeElement element, TypeMirror type) {
             if (type.getKind() != TypeKind.DECLARED) {
@@ -282,7 +282,7 @@ public abstract class JavaType {
 
         @Override
         public List<JavaType> getClassImports() {
-            ArrayList<JavaType> imports = new ArrayList<JavaType>();
+            ArrayList<JavaType> imports = new ArrayList<>();
             imports.add(this);
             for (JavaType typeArgument : typeArguments) {
                 imports.addAll(typeArgument.getClassImports());

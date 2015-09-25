@@ -1,4 +1,4 @@
-// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2015, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -19,7 +19,7 @@ public class PrintStreamMessageLogger implements MessageListener {
     private static final String INCOMING_MESSAGE = "<-";
 
     private final PrintStream out;
-    private final ThreadLocal<Object> currentActor = new ThreadLocal<Object>();
+    private final ThreadLocal<Object> currentActor = new ThreadLocal<>();
     private final long startTime;
 
     public PrintStreamMessageLogger(PrintStream out) {

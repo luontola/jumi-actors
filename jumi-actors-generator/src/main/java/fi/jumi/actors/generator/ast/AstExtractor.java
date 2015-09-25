@@ -33,7 +33,7 @@ public class AstExtractor extends AbstractProcessor {
 
     private static List<Diagnostic<? extends JavaFileObject>> compile(AbstractProcessor processor, JavaFileObject... compilationUnits) {
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
+        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
         JavaCompiler.CompilationTask task = compiler.getTask(null, null, diagnostics, null, null, Arrays.asList(compilationUnits));
         task.setProcessors(Collections.singletonList(processor));
         task.call();
@@ -41,7 +41,7 @@ public class AstExtractor extends AbstractProcessor {
     }
 
     private static List<Diagnostic<? extends JavaFileObject>> getRealDiagnostics(List<Diagnostic<? extends JavaFileObject>> diagnostics) {
-        List<Diagnostic<? extends JavaFileObject>> results = new ArrayList<Diagnostic<? extends JavaFileObject>>();
+        List<Diagnostic<? extends JavaFileObject>> results = new ArrayList<>();
         for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics) {
             if (!diagnostic.getMessage(null).endsWith(SKIP_COMPILE_PHASE)) {
                 results.add(diagnostic);

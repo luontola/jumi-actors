@@ -1,4 +1,4 @@
-// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2015, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -18,8 +18,8 @@ import static org.mockito.Mockito.*;
 
 public class DynamicEventizerTest {
 
-    private final DynamicEventizer<DummyListener> eventizer = new DynamicEventizer<DummyListener>(DummyListener.class);
-    private final MessageQueue<Event<DummyListener>> queue = new MessageQueue<Event<DummyListener>>();
+    private final DynamicEventizer<DummyListener> eventizer = new DynamicEventizer<>(DummyListener.class);
+    private final MessageQueue<Event<DummyListener>> queue = new MessageQueue<>();
     private final DummyListener frontend = eventizer.newFrontend(queue);
 
     @Rule
@@ -83,7 +83,7 @@ public class DynamicEventizerTest {
     public void rejects_invalid_actor_interfaces() {
         thrown.expect(IllegalArgumentException.class);
 
-        new DynamicEventizer<ActorInterfaceContractsTest.HasNonVoidMethods>(ActorInterfaceContractsTest.INVALID_ACTOR_INTERFACE);
+        new DynamicEventizer<>(ActorInterfaceContractsTest.INVALID_ACTOR_INTERFACE);
     }
 
 

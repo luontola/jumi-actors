@@ -1,4 +1,4 @@
-// Copyright © 2011-2013, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2015, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -23,30 +23,17 @@ public class ThreadSafetyCheckerTest {
 
     @Test
     public void is_silent_when_called_from_just_one_thread() throws Throwable {
-        runInNewThread("T1", new Runnable() {
-            @Override
-            public void run() {
-                checker.checkCurrentThread();
-                checker.checkCurrentThread();
-            }
+        runInNewThread("T1", () -> {
+            checker.checkCurrentThread();
+            checker.checkCurrentThread();
         });
     }
 
     @Test
     public void throws_an_exception_when_called_from_many_threads() throws Throwable {
-        runInNewThread("T1", new Runnable() {
-            @Override
-            public void run() {
-                checker.checkCurrentThread();
-            }
-        });
+        runInNewThread("T1", checker::checkCurrentThread);
 
-        Throwable t = getExceptionFromNewThread("T2", new Runnable() {
-            @Override
-            public void run() {
-                checker.checkCurrentThread();
-            }
-        });
+        Throwable t = getExceptionFromNewThread("T2", checker::checkCurrentThread);
 
         assertThat(t, is(instanceOf(AssertionError.class)));
         assertThat(t.getMessage(), is("non-thread-safe instance called from multiple threads: T1, T2"));
@@ -63,12 +50,7 @@ public class ThreadSafetyCheckerTest {
 
     @Test
     public void fails_at_most_once_per_thread() throws Throwable {
-        runInNewThread("T1", new Runnable() {
-            @Override
-            public void run() {
-                checker.checkCurrentThread();
-            }
-        });
+        runInNewThread("T1", checker::checkCurrentThread);
         try {
             checker.checkCurrentThread();
         } catch (AssertionError e) {
@@ -81,19 +63,9 @@ public class ThreadSafetyCheckerTest {
 
     @Test
     public void fails_for_each_new_thread() throws Throwable {
-        runInNewThread("T1", new Runnable() {
-            @Override
-            public void run() {
-                checker.checkCurrentThread();
-            }
-        });
+        runInNewThread("T1", checker::checkCurrentThread);
         try {
-            runInNewThread("T2", new Runnable() {
-                @Override
-                public void run() {
-                    checker.checkCurrentThread();
-                }
-            });
+            runInNewThread("T2", checker::checkCurrentThread);
         } catch (AssertionError e) {
             // ignore first failure
         }
@@ -103,28 +75,13 @@ public class ThreadSafetyCheckerTest {
         thrown.expect(stackTraceContains("T2"));
         thrown.expect(stackTraceContains("T3"));
 
-        runInNewThread("T3", new Runnable() {
-            @Override
-            public void run() {
-                checker.checkCurrentThread();
-            }
-        });
+        runInNewThread("T3", checker::checkCurrentThread);
     }
 
     @Test
     public void exception_cause_stack_traces_mention_for_each_thread_from_where_the_calls_were_made() throws Throwable {
-        runInNewThread("T1", new Runnable() {
-            @Override
-            public void run() {
-                callLocation1();
-            }
-        });
-        Throwable t = getExceptionFromNewThread("T2", new Runnable() {
-            @Override
-            public void run() {
-                callLocation2();
-            }
-        });
+        runInNewThread("T1", () -> callLocation1());
+        Throwable t = getExceptionFromNewThread("T2", () -> callLocation2());
 
         String[] traces = stackTraceAsText(t).toString().split("Caused by: ");
         assertThat(traces.length, is(3));

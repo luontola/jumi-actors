@@ -1,11 +1,11 @@
-// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2015, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
 package fi.jumi.actors;
 
-import fi.jumi.actors.eventizers.dynamic.DynamicEventizerProvider;
 import fi.jumi.actors.eventizers.EventizerProvider;
+import fi.jumi.actors.eventizers.dynamic.DynamicEventizerProvider;
 import fi.jumi.actors.listeners.*;
 import org.junit.Test;
 import org.mockito.Matchers;
@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 
 public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActors> {
 
-    private final List<SingleThreadedActors> createdActors = new ArrayList<SingleThreadedActors>();
+    private final List<SingleThreadedActors> createdActors = new ArrayList<>();
 
     @Override
     protected SingleThreadedActors newActors(EventizerProvider eventizerProvider, FailureHandler failureHandler, MessageListener messageListener) {
@@ -65,18 +65,8 @@ public class SingleThreadedActorsTest extends ActorsContract<SingleThreadedActor
         SingleThreadedActors actors = new SingleThreadedActors(new DynamicEventizerProvider(), defaultFailureHandler, defaultMessageListener);
 
         Executor executor = actors.getExecutor();
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                spy.append("a");
-            }
-        });
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                spy.append("b");
-            }
-        });
+        executor.execute(() -> spy.append("a"));
+        executor.execute(() -> spy.append("b"));
 
         assertThat("should not have executed synchronously", spy.toString(), is(""));
         actors.processEventsUntilIdle();

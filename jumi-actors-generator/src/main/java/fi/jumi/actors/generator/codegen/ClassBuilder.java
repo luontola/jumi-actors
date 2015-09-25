@@ -13,10 +13,10 @@ public class ClassBuilder {
     private final String targetPackage;
 
     private final StringBuilder methods = new StringBuilder();
-    private final List<JavaType> interfaces = new ArrayList<JavaType>();
-    private final List<String> annotations = new ArrayList<String>();
+    private final List<JavaType> interfaces = new ArrayList<>();
+    private final List<String> annotations = new ArrayList<>();
     public final Imports imports = new Imports();
-    private final List<JavaVar> constructorArguments = new ArrayList<JavaVar>();
+    private final List<JavaVar> constructorArguments = new ArrayList<>();
 
     public ClassBuilder(String className, String targetPackage) {
         this.className = className;

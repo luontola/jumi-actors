@@ -1,4 +1,4 @@
-// Copyright © 2011-2014, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2015, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -11,7 +11,7 @@ import java.util.*;
 
 public class EnabledWhenAnnotatedWith extends ClassVisitor {
 
-    private final List<String> myAnnotationDescs = new ArrayList<String>();
+    private final List<String> myAnnotationDescs = new ArrayList<>();
     private final String enablerAnnotationDesc;
 
     public EnabledWhenAnnotatedWith(String enablerAnnotation, ClassVisitor next) {

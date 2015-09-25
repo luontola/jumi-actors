@@ -158,7 +158,7 @@ public class AnnotationProcessorTest {
 
     private boolean tryCompile(JavaFileObject... compilationUnits) throws IOException {
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
+        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
         StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, null, null);
         fileManager.setLocation(StandardLocation.CLASS_OUTPUT, Arrays.asList(outputDir));
 

@@ -20,7 +20,7 @@ import javax.annotation.concurrent.*;
 @ThreadSafe
 public abstract class Actors {
 
-    private static ThreadLocal<ActorThread> currentThread = new ThreadLocal<ActorThread>();
+    private static ThreadLocal<ActorThread> currentThread = new ThreadLocal<>();
 
     private final EventizerProvider eventizerProvider;
     private final FailureHandler failureHandler;
@@ -57,12 +57,12 @@ public abstract class Actors {
     @ThreadSafe
     private class ActorThreadImpl implements ActorThread, MessageProcessor {
 
-        private final MessageQueue<Runnable> taskQueue = new MessageQueue<Runnable>();
+        private final MessageQueue<Runnable> taskQueue = new MessageQueue<>();
 
         @Override
         public <T> ActorRef<T> bindActor(Class<T> type, T rawActor) {
             Eventizer<T> eventizer = eventizerProvider.getEventizerForType(type);
-            T proxy = eventizer.newFrontend(new MessageToActorSender<T>(this, rawActor));
+            T proxy = eventizer.newFrontend(new MessageToActorSender<>(this, rawActor));
             return ActorRef.wrap(type.cast(proxy));
         }
 
@@ -116,7 +116,7 @@ public abstract class Actors {
         @Override
         public void send(final Event<T> message) {
             messageListener.onMessageSent(message);
-            actorThread.send(new MessageToActor<T>(rawActor, message));
+            actorThread.send(new MessageToActor<>(rawActor, message));
         }
     }
 

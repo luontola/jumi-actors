@@ -1,4 +1,4 @@
-// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2015, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -103,12 +103,9 @@ public class WorkerCounterTest {
     public void works_for_commands_which_launch_other_commands() throws InterruptedException {
         final WorkerCounter counter = new WorkerCounter(realExecutor);
 
-        counter.execute(new Runnable() {
-            @Override
-            public void run() {
-                events.log("command 1");
-                counter.execute(new Command("command 2"));
-            }
+        counter.execute(() -> {
+            events.log("command 1");
+            counter.execute(new Command("command 2"));
         });
         counter.afterPreviousWorkersFinished(log("callback"));
 
@@ -117,17 +114,12 @@ public class WorkerCounterTest {
     }
 
     /**
-     * Reproduces a concurrency bug that would produce two onFinished events
-     * if the first command finishes before the second command is even scheduled.
+     * Reproduces a concurrency bug that would produce two onFinished events if the first command finishes before the
+     * second command is even scheduled.
      */
     @Test(timeout = TIMEOUT)
     public void works_for_synchronous_executors() throws InterruptedException {
-        Executor synchronousExecutor = new Executor() {
-            @Override
-            public void execute(Runnable command) {
-                command.run();
-            }
-        };
+        Executor synchronousExecutor = Runnable::run;
         WorkerCounter counter = new WorkerCounter(synchronousExecutor);
 
         counter.execute(new Command("command 1"));
@@ -141,12 +133,9 @@ public class WorkerCounterTest {
     @Test(timeout = TIMEOUT)
     public void the_callback_is_called_even_when_commands_throw_exceptions() throws InterruptedException {
         WorkerCounter counter = new WorkerCounter(realExecutor);
-        Runnable throwerCommand = new Runnable() {
-            @Override
-            public void run() {
-                events.log("thrower");
-                throw uncaughtExceptions.throwDummyException();
-            }
+        Runnable throwerCommand = () -> {
+            events.log("thrower");
+            throw uncaughtExceptions.throwDummyException();
         };
 
         counter.execute(throwerCommand);
@@ -159,12 +148,7 @@ public class WorkerCounterTest {
     @Test(timeout = TIMEOUT)
     public void toString_of_commands_is_good_for_logging() {
         final StringBuilder loggerOutput = new StringBuilder();
-        Executor loggingExecutor = new Executor() {
-            @Override
-            public void execute(Runnable wrappedCommand) {
-                loggerOutput.append(wrappedCommand.toString());
-            }
-        };
+        Executor loggingExecutor = wrappedCommand -> loggerOutput.append(wrappedCommand.toString());
         WorkerCounter counter = new WorkerCounter(loggingExecutor);
         Runnable originalCommand = mock(Runnable.class, "<the command's original toString>");
 
@@ -177,12 +161,7 @@ public class WorkerCounterTest {
     // helpers
 
     private ActorRef<WorkerListener> log(final String message) {
-        return ActorRef.<WorkerListener>wrap(new WorkerListener() {
-            @Override
-            public void onAllWorkersFinished() {
-                events.log(message);
-            }
-        });
+        return ActorRef.<WorkerListener>wrap(() -> events.log(message));
     }
 
     private void await(CyclicBarrier barrier) {

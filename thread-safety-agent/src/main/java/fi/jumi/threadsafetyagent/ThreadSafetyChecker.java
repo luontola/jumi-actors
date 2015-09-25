@@ -1,4 +1,4 @@
-// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2015, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -16,7 +16,7 @@ public class ThreadSafetyChecker {
      */
     private Thread lastThread = null;
 
-    private final Set<Thread> calledFromThreads = new HashSet<Thread>(1, 1);
+    private final Set<Thread> calledFromThreads = new HashSet<>(1, 1);
     private CallLocation callLocations = null;
 
 
@@ -53,7 +53,7 @@ public class ThreadSafetyChecker {
     }
 
     private static String threadNames(Set<Thread> threads) {
-        List<String> threadNames = new ArrayList<String>();
+        List<String> threadNames = new ArrayList<>();
         for (Thread thread : threads) {
             threadNames.add(thread.getName());
         }

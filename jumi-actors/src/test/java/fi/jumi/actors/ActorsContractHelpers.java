@@ -38,12 +38,7 @@ public abstract class ActorsContractHelpers<T extends Actors> {
     }
 
     public void sendSyncEvent(ActorThread actorThread) {
-        ActorRef<Runnable> actor = actorThread.bindActor(Runnable.class, new Runnable() {
-            @Override
-            public void run() {
-                logEvent("sync event");
-            }
-        });
+        ActorRef<Runnable> actor = actorThread.bindActor(Runnable.class, () -> logEvent("sync event"));
         actor.tell().run();
     }
 

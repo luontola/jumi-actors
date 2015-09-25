@@ -47,7 +47,7 @@ public class Eventizers {
     }
 
     private static String format(Class<?>[] types) {
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         for (Class<?> type : types) {
             names.add(type.getName());
         }

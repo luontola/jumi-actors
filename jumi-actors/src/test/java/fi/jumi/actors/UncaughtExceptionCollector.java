@@ -1,4 +1,4 @@
-// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2015, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -13,7 +13,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @ThreadSafe
 public class UncaughtExceptionCollector implements Thread.UncaughtExceptionHandler, FailureHandler {
 
-    private final List<Throwable> uncaughtExceptions = new CopyOnWriteArrayList<Throwable>();
+    private final List<Throwable> uncaughtExceptions = new CopyOnWriteArrayList<>();
 
     @Override
     public void uncaughtException(Thread t, Throwable e) {

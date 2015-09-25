@@ -1,4 +1,4 @@
-// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2015, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -97,23 +97,17 @@ public class PrintStreamMessageLoggerTest {
         final CyclicBarrier barrier = new CyclicBarrier(2);
 
         executeConcurrently(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        logger.onProcessingStarted("actor1", "unimportant message");
-                        sync(barrier);
-                        logger.onMessageSent("message1");
-                        logger.onProcessingFinished();
-                    }
+                () -> {
+                    logger.onProcessingStarted("actor1", "unimportant message");
+                    sync(barrier);
+                    logger.onMessageSent("message1");
+                    logger.onProcessingFinished();
                 },
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        logger.onProcessingStarted("actor2", "unimportant message");
-                        sync(barrier);
-                        logger.onMessageSent("message2");
-                        logger.onProcessingFinished();
-                    }
+                () -> {
+                    logger.onProcessingStarted("actor2", "unimportant message");
+                    sync(barrier);
+                    logger.onMessageSent("message2");
+                    logger.onProcessingFinished();
                 }
         );
 
@@ -174,7 +168,7 @@ public class PrintStreamMessageLoggerTest {
 
     @Test
     public void timestamps_are_shown_as_seconds_since_start_with_microsecond_precision() {
-        final Queue<Long> fakeNanoTime = new LinkedList<Long>();
+        final Queue<Long> fakeNanoTime = new LinkedList<>();
         fakeNanoTime.add(1000000L);
         fakeNanoTime.add(1234567L);
         PrintStreamMessageLogger logger = new PrintStreamMessageLogger(new PrintStream(output)) {
@@ -214,7 +208,7 @@ public class PrintStreamMessageLoggerTest {
 
     private static class FakeExecutor implements Executor {
 
-        private final Queue<Runnable> commands = new LinkedList<Runnable>();
+        private final Queue<Runnable> commands = new LinkedList<>();
 
         @Override
         public void execute(Runnable command) {

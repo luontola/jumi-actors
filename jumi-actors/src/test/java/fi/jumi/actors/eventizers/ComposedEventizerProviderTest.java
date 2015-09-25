@@ -1,4 +1,4 @@
-// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2015, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -19,9 +19,9 @@ public class ComposedEventizerProviderTest {
     @Test
     public void returns_an_eventizer_which_corresponds_the_specified_type() {
         Class<Integer> type1 = Integer.class;
-        Eventizer<Integer> eventizer1 = new DummyEventizer<Integer>(type1);
+        Eventizer<Integer> eventizer1 = new DummyEventizer<>(type1);
         Class<Double> type2 = Double.class;
-        Eventizer<Double> eventizer2 = new DummyEventizer<Double>(type2);
+        Eventizer<Double> eventizer2 = new DummyEventizer<>(type2);
 
         ComposedEventizerProvider provider = new ComposedEventizerProvider(eventizer1, eventizer2);
 

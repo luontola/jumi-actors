@@ -1,4 +1,4 @@
-// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2015, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -15,14 +15,14 @@ import java.util.concurrent.ConcurrentHashMap;
 @Immutable
 public class DynamicEventizerProvider implements EventizerProvider {
 
-    private final ConcurrentHashMap<Class<?>, Eventizer<?>> cache = new ConcurrentHashMap<Class<?>, Eventizer<?>>();
+    private final ConcurrentHashMap<Class<?>, Eventizer<?>> cache = new ConcurrentHashMap<>();
 
     @SuppressWarnings("unchecked")
     @Override
     public <T> Eventizer<T> getEventizerForType(Class<T> type) {
         Eventizer<T> eventizer = (Eventizer<T>) cache.get(type);
         if (eventizer == null) {
-            eventizer = new DynamicEventizer<T>(type);
+            eventizer = new DynamicEventizer<>(type);
             cache.put(type, eventizer);
         }
         return eventizer;

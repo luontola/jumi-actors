@@ -1,4 +1,4 @@
-// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2015, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -33,12 +33,12 @@ public class DynamicEventizer<T> implements Eventizer<T> {
         return type.cast(Proxy.newProxyInstance(
                 type.getClassLoader(),
                 new Class<?>[]{type},
-                new DynamicListenerToEvent<T>(target))
+                new DynamicListenerToEvent<>(target))
         );
     }
 
     @Override
     public MessageSender<Event<T>> newBackend(T target) {
-        return new EventToDynamicListener<T>(target);
+        return new EventToDynamicListener<>(target);
     }
 }

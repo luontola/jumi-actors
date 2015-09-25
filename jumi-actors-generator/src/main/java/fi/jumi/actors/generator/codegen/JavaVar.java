@@ -38,7 +38,7 @@ public class JavaVar {
     }
 
     public static String toFormalArguments(List<JavaVar> arguments, Imports imports) {
-        List<String> vars = new ArrayList<String>();
+        List<String> vars = new ArrayList<>();
         for (JavaVar var : arguments) {
             vars.add(imports.getSimpleName(var.getType()) + " " + var.getName());
         }
@@ -46,7 +46,7 @@ public class JavaVar {
     }
 
     public static String toActualArguments(List<JavaVar> arguments) {
-        List<String> vars = new ArrayList<String>();
+        List<String> vars = new ArrayList<>();
         for (JavaVar var : arguments) {
             vars.add(var.getName());
         }

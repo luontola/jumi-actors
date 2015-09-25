@@ -8,8 +8,8 @@ import java.util.*;
 
 public class Imports {
 
-    private final List<JavaType> classesToImport = new ArrayList<JavaType>();
-    private final List<String> packagesToImport = new ArrayList<String>();
+    private final List<JavaType> classesToImport = new ArrayList<>();
+    private final List<String> packagesToImport = new ArrayList<>();
 
     public String getSimpleName(JavaType type) {
         addImports(type);
@@ -28,7 +28,7 @@ public class Imports {
 
     @Override
     public String toString() {
-        SortedSet<String> imports = new TreeSet<String>();
+        SortedSet<String> imports = new TreeSet<>();
         for (JavaType type : classesToImport) {
             if (isAlreadyInScope(type)) {
                 continue;

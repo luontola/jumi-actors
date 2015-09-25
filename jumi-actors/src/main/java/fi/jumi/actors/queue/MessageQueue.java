@@ -14,7 +14,7 @@ import java.util.concurrent.*;
 @ThreadSafe
 public class MessageQueue<T> implements MessageSender<T>, MessageReceiver<T> {
 
-    private final BlockingQueue<T> queue = new LinkedBlockingQueue<T>();
+    private final BlockingQueue<T> queue = new LinkedBlockingQueue<>();
 
     @Override
     public void send(T message) {

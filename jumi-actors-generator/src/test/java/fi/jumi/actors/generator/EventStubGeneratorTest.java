@@ -25,6 +25,7 @@ import static org.hamcrest.Matchers.endsWith;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
+@SuppressWarnings("Convert2Diamond") // this class must be compilable with Java 6 because of the annotation processor
 public class EventStubGeneratorTest {
 
     private static final String TARGET_PACKAGE = "fi.jumi.actors.generator.reference";

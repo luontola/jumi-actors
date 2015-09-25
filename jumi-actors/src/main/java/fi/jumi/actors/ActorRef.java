@@ -1,4 +1,4 @@
-// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2015, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -21,7 +21,7 @@ public class ActorRef<T> {
      * <em>only</em> by the {@link Actors} class.</span>
      */
     public static <T> ActorRef<T> wrap(T proxy) {
-        return new ActorRef<T>(proxy);
+        return new ActorRef<>(proxy);
     }
 
     private ActorRef(T proxy) {

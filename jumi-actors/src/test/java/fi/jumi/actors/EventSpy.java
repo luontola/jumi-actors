@@ -1,4 +1,4 @@
-// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2015, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -12,7 +12,7 @@ import static org.hamcrest.Matchers.is;
 
 public class EventSpy {
 
-    private final Queue<String> events = new ConcurrentLinkedQueue<String>();
+    private final Queue<String> events = new ConcurrentLinkedQueue<>();
 
     public void log(String event) {
         events.add(event);
@@ -29,7 +29,7 @@ public class EventSpy {
     }
 
     public void assertContains(String... expected) {
-        List<String> actual = new ArrayList<String>(events);
+        List<String> actual = new ArrayList<>(events);
         assertThat("events", actual, is(Arrays.asList(expected)));
     }
 
