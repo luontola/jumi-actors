@@ -6,5 +6,5 @@ package fi.jumi.actors;
 
 public interface Callback<T> {
 
-    void onResult(T value);
+    void onResult(T result);
 }

@@ -104,19 +104,19 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
     public void handlers_can_return_later_satisfied_promises() {
         ActorThread actorThread = actors.startActorThread();
         ActorRef<ResultsInterface> actor = actorThread.bindActor(ResultsInterface.class, new ResultsAdapter() {
-            Promise<String> promise;
+            Promise.Deferred<String> deferred;
 
             @Override
             public Promise<String> returnsPromise() {
                 logEvent("event 1");
-                promise = Promise.pending();
-                return promise;
+                deferred = Promise.defer();
+                return deferred.promise();
             }
 
             @Override
             public void noReturnValue() {
                 logEvent("event 2");
-                promise.set("return value");
+                deferred.resolve("return value");
             }
         });
 
@@ -155,8 +155,8 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
         assertThat(future.get(1, TimeUnit.MILLISECONDS), is("return value"));
     }
 
-    // TODO: handlers_can_return_notifivation_promises
-    // TODO: on_failure_promise_is_cancelled (?)
+    // TODO: handlers_can_return_notification_promises (no return value)
+    // TODO: on_failure_promise_is_cancelled (or pass the exception to callback? should error handler also receive it?)
 
     // threads
 

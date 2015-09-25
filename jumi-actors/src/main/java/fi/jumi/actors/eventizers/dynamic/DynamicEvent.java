@@ -18,24 +18,24 @@ public class DynamicEvent<T> implements Event<T>, Serializable {
 
     private transient Method method;
     private final Object[] args;
-    private final Promise<T> promise;
+    private final transient Promise.Deferred<T> deferred;
 
     public DynamicEvent(Method method, Object[] args) {
         this(method, args, null);
     }
 
-    public DynamicEvent(Method method, Object[] args, Promise<T> promise) {
+    public DynamicEvent(Method method, Object[] args, Promise.Deferred<T> deferred) {
         this.method = method;
         this.args = args;
-        this.promise = promise;
+        this.deferred = deferred;
     }
 
     @Override
     public void fireOn(T target) {
         try {
             Object result = method.invoke(target, args);
-            if (promise != null && result instanceof Future) {
-                promise.setFrom((Future<T>) result);
+            if (deferred != null) {
+                deferred.delegate((Future<T>) result);
             }
         } catch (Exception e) {
             throw Throwables.propagate(e);

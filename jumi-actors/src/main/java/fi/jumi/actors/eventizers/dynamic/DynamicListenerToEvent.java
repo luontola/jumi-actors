@@ -26,9 +26,9 @@ public class DynamicListenerToEvent<T> implements InvocationHandler {
             return method.invoke(this, args);
         }
         if (method.getReturnType().isAssignableFrom(Promise.class)) {
-            Promise<T> promise = Promise.pending();
-            target.send(new DynamicEvent<>(method, args, promise));
-            return promise;
+            Promise.Deferred<T> deferred = Promise.defer();
+            target.send(new DynamicEvent<>(method, args, deferred));
+            return deferred.promise();
         } else {
             target.send(new DynamicEvent<>(method, args));
             return null;

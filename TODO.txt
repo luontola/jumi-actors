@@ -19,10 +19,15 @@ OK - easier access to an ActorRef to the current actor, e.g. Actors.selfRef() us
 	}
 	OK - allow methods which return futures
 	OK - dynamic eventizer support
-	!! - mutable promise handle, make promise itself read-only
+	OK - mutable promise handle, make promise itself read-only
+	- returning null instead of a promise; should crash early?
+	- support for exceptions, pass as a second parameter to callback.then(value, error)
+		https://github.com/kriskowal/q#handling-errors
 	- make the resulting JAR under 100KB; using Guava makes it easily 1MB because shade plugin doesn't remove unused methods
 		http://wvengen.github.io/proguard-maven-plugin/
 		http://proguard.sourceforge.net/
+	- use the actor thread pool in JdkFutureAdapters.listenInPoolThread to avoid thread leaks
+	- support for non-shaded ListenableFuture
 	- generated eventizer support
 
 - make dynamic and generated events support equals and hashCode methods

@@ -11,39 +11,19 @@ import javax.annotation.concurrent.ThreadSafe;
 import java.util.concurrent.Future;
 
 @ThreadSafe
-public class Promise<V> extends AbstractFuture<V> {
+public final class Promise<V> extends AbstractFuture<V> {
 
-    // TODO: return a mutable handle and keep Promise's public API unmodifiable
-
-    public static <V> Promise<V> pending() {
-        return new Promise<>();
+    public static <V> Deferred<V> defer() {
+        return new Deferred<>();
     }
 
     public static <V> Promise<V> of(V value) {
-        Promise<V> promise = new Promise<>();
-        promise.set(value);
-        return promise;
+        Deferred<V> deferred = defer();
+        deferred.resolve(value);
+        return deferred.promise();
     }
 
     private Promise() {
-    }
-
-    @Override
-    public boolean set(@Nullable V value) {
-        return super.set(value);
-    }
-
-    public void setFrom(Future<V> source) {
-        Futures.addCallback(JdkFutureAdapters.listenInPoolThread(source), new FutureCallback<V>() {
-            @Override
-            public void onSuccess(@Nullable V result) {
-                set(result);
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-            }
-        });
     }
 
     public void then(Callback<V> callback) {
@@ -54,8 +34,46 @@ public class Promise<V> extends AbstractFuture<V> {
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Throwable error) {
+                // TODO
             }
         });
+    }
+
+    @ThreadSafe
+    public static final class Deferred<V> {
+
+        private final Promise<V> promise = new Promise<>();
+
+        private Deferred() {
+        }
+
+        public Promise<V> promise() {
+            return promise;
+        }
+
+        public boolean resolve(@Nullable V result) {
+            return promise.set(result);
+        }
+
+        public boolean reject(Throwable error) {
+            // TODO
+            //return promise.setException(error);
+            throw new UnsupportedOperationException("TODO");
+        }
+
+        public void delegate(Future<V> source) {
+            Futures.addCallback(JdkFutureAdapters.listenInPoolThread(source), new FutureCallback<V>() {
+                @Override
+                public void onSuccess(@Nullable V result) {
+                    resolve(result);
+                }
+
+                @Override
+                public void onFailure(Throwable error) {
+                    reject(error);
+                }
+            });
+        }
     }
 }
