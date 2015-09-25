@@ -407,7 +407,6 @@
                     <artifactId>maven-shade-plugin</artifactId>
                     <version>2.3</version>
                     <configuration>
-                        <!-- NOTE: This also minimizes jumi-core when it's included in jumi-daemon -->
                         <minimizeJar>true</minimizeJar>
                         <!-- Keep the generated POM file out of the base directory -->
                         <dependencyReducedPomLocation>

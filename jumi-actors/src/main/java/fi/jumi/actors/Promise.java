@@ -4,44 +4,17 @@
 
 package fi.jumi.actors;
 
+import com.google.common.util.concurrent.AbstractFuture;
+
 import javax.annotation.concurrent.ThreadSafe;
-import java.util.concurrent.*;
 
 @ThreadSafe
-public class Promise<T> implements Future<T> {
+public class Promise<V> extends AbstractFuture<V> {
 
-    public static <T> Promise<T> of(T value) {
-        return new Promise<T>();
+    public static <V> Promise<V> of(V value) {
+        return new Promise<>();
     }
 
-    public void then(Callback<T> callback) {
-    }
-
-
-    // TODO: remove us
-
-    @Override
-    public boolean cancel(boolean mayInterruptIfRunning) {
-        return false;
-    }
-
-    @Override
-    public boolean isCancelled() {
-        return false;
-    }
-
-    @Override
-    public boolean isDone() {
-        return false;
-    }
-
-    @Override
-    public T get() throws InterruptedException, ExecutionException {
-        return null;
-    }
-
-    @Override
-    public T get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-        return null;
+    public void then(Callback<V> callback) {
     }
 }

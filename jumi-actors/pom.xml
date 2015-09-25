@@ -13,7 +13,16 @@
     <artifactId>jumi-actors</artifactId>
     <packaging>jar</packaging>
 
+    <properties>
+        <shadedPrefix>fi.jumi.actors.generator.INTERNAL</shadedPrefix>
+    </properties>
+
     <dependencies>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>com.google.caliper</groupId>
@@ -22,5 +31,42 @@
         </dependency>
 
     </dependencies>
+
+    <build>
+        <plugins>
+
+            <!-- Hide external dependencies -->
+
+            <plugin>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <relocations>
+                                <!-- Hidden dependencies -->
+                                <relocation>
+                                    <pattern>com.google</pattern>
+                                    <shadedPattern>${shadedPrefix}.com.google</shadedPattern>
+                                </relocation>
+                            </relocations>
+                            <filters>
+                                <!-- Throw away non-class files of hidden dependencies -->
+                                <filter>
+                                    <artifact>com.google.guava:guava</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/**</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
 
 </project>
