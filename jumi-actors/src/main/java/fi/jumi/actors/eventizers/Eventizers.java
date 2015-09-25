@@ -1,4 +1,4 @@
-// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2015, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
@@ -7,6 +7,7 @@ package fi.jumi.actors.eventizers;
 import javax.annotation.concurrent.Immutable;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.Future;
 
 @Immutable
 public class Eventizers {
@@ -18,7 +19,7 @@ public class Eventizers {
     public static void validateActorInterface(Class<?> type) {
         checkIsInterface(type);
         for (Method method : type.getMethods()) {
-            checkReturnTypeIsVoid(type, method);
+            checkReturnTypeIsAllowed(type, method);
             checkDoesNotThrowExceptions(type, method);
         }
     }
@@ -29,10 +30,10 @@ public class Eventizers {
         }
     }
 
-    private static void checkReturnTypeIsVoid(Class<?> type, Method method) {
+    private static void checkReturnTypeIsAllowed(Class<?> type, Method method) {
         Class<?> returnType = method.getReturnType();
-        if (!returnType.equals(Void.TYPE)) {
-            throw new IllegalArgumentException("actor interface methods must be void, " +
+        if (!returnType.equals(Void.TYPE) && !Future.class.isAssignableFrom(returnType)) {
+            throw new IllegalArgumentException("actor interface methods must return void or " + Future.class.getName() + ", " +
                     "but method " + method.getName() + " of " + type + " had return type " + returnType.getName());
         }
     }
