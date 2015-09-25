@@ -492,14 +492,17 @@
                                 <pattern>fi.jumi.*</pattern>
                             </targetClasses>
                             <targetTests>
-                                <pattern>fi.jumi.*</pattern>
+                                <pattern>fi.jumi.*Test</pattern>
                             </targetTests>
+                            <excludedClasses>
+                                <!-- Lambdas don't have debug information so PIT can't mutate them (and anyways they are generated) -->
+                                <pattern>*$$Lambda$*</pattern>
+                            </excludedClasses>
                             <failWhenNoMutations>false</failWhenNoMutations>
                             <timestampedReports>false</timestampedReports>
                             <mutators>
                                 <mutator>ALL</mutator>
                             </mutators>
-                            <detectInlinedCode>true</detectInlinedCode>
                             <mutateStaticInitializers>true</mutateStaticInitializers>
                         </configuration>
                     </plugin>
