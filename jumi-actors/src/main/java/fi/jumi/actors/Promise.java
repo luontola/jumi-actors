@@ -17,7 +17,7 @@ public final class Promise<V> extends AbstractFuture<V> {
         return new Deferred<>();
     }
 
-    public static <V> Promise<V> of(V value) {
+    public static <V> Promise<V> of(@Nullable V value) {
         Deferred<V> deferred = defer();
         deferred.resolve(value);
         return deferred.promise();

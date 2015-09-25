@@ -2,11 +2,7 @@
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
-package fi.jumi.actors;
+@ParametersAreNonnullByDefault
+package fi.jumi.actors.queue;
 
-import javax.annotation.Nullable;
-
-public interface Callback<T> {
-
-    void onResult(@Nullable T result);
-}
+import javax.annotation.ParametersAreNonnullByDefault;

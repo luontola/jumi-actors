@@ -8,6 +8,7 @@ import com.google.common.base.Throwables;
 import fi.jumi.actors.Promise;
 import fi.jumi.actors.eventizers.*;
 
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.*;
 import java.lang.reflect.Method;
@@ -24,12 +25,13 @@ public class DynamicEvent<T> implements Event<T>, Serializable {
         this(method, args, null);
     }
 
-    public DynamicEvent(Method method, Object[] args, Promise.Deferred<T> deferred) {
+    public DynamicEvent(Method method, Object[] args, @Nullable Promise.Deferred<T> deferred) {
         this.method = method;
         this.args = args;
         this.deferred = deferred;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void fireOn(T target) {
         try {
@@ -66,7 +68,7 @@ public class DynamicEvent<T> implements Event<T>, Serializable {
         return EventToString.format(method.getDeclaringClass().getSimpleName(), method.getName(), nonNull(args));
     }
 
-    private static Object[] nonNull(Object[] args) {
+    private static Object[] nonNull(@Nullable Object[] args) {
         if (args == null) {
             return new Object[0];
         }

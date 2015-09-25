@@ -28,6 +28,8 @@ OK - easier access to an ActorRef to the current actor, e.g. Actors.selfRef() us
 		http://proguard.sourceforge.net/
 	- use the actor thread pool in JdkFutureAdapters.listenInPoolThread to avoid thread leaks
 	- support for non-shaded ListenableFuture
+	- javadocs for Promise
+	- javadocs for Callback
 	- generated eventizer support
 
 - make dynamic and generated events support equals and hashCode methods
