@@ -81,6 +81,7 @@ public class AnnotationProcessor extends AbstractProcessor {
     }
 
     private static PackageElement getPackage(Element e) {
+        // TODO: use javax.lang.model.util.Elements.getPackageElement()
         while (e.getKind() != ElementKind.PACKAGE) {
             e = e.getEnclosingElement();
         }

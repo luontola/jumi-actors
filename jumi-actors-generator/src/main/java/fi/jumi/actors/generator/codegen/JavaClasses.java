@@ -10,12 +10,14 @@ import java.util.*;
 public class JavaClasses {
 
     public static List<JavaMethod> getMethods(TypeElement clazz) {
+        // TODO: use javax.lang.model.util.Elements.getAllMembers()
         ArrayList<JavaMethod> methods = new ArrayList<>();
         for (Element enclosedElement : clazz.getEnclosedElements()) {
             if (enclosedElement.getKind() == ElementKind.METHOD) {
                 methods.add(new JavaMethod((ExecutableElement) enclosedElement));
             }
         }
+        // TODO: get parent using javax.lang.model.util.Types.directSupertypes or javax.lang.model.util.Elements.getTypeElement()
         // TODO: get methods of parent interfaces
         return methods;
     }

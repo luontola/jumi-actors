@@ -12,6 +12,8 @@ import java.util.*;
 
 public abstract class JavaType {
 
+    // TODO: use javax.lang.model.util.Types
+
     public static JavaType of(TypeElement type) {
         return of(type, null, null);
     }

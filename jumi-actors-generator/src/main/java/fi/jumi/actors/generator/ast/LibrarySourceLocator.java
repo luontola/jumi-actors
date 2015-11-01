@@ -18,6 +18,8 @@ public class LibrarySourceLocator {
         String result = null;
         String sourceFilePath = className.replace('.', '/') + ".java";
         try {
+            // TODO: consider using javax.annotation.processing.Filer.getResource and javax.tools.StandardLocation.SOURCE_PATH
+
             // classpath
             InputStream in = getClass().getClassLoader().getResourceAsStream(sourceFilePath);
             if (in != null) {
