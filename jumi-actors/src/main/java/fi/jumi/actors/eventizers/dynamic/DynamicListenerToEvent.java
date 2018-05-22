@@ -10,7 +10,6 @@ import fi.jumi.actors.queue.MessageSender;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.lang.reflect.*;
-import java.util.concurrent.Future;
 
 @ThreadSafe
 public class DynamicListenerToEvent<T> implements InvocationHandler {
@@ -26,7 +25,13 @@ public class DynamicListenerToEvent<T> implements InvocationHandler {
         if (method.getDeclaringClass().equals(Object.class)) {
             return method.invoke(this, args);
         }
-        if (Future.class.isAssignableFrom(method.getReturnType())) {
+        // This check will match the Promise class and all of its superclasses,
+        // including the Future interface. Though it would be more obvious to
+        // check whether the return type is an instance of Future, that could
+        // blow up at runtime (for example if return type is FutureTask) because
+        // this wrapper code will always return a Promise to the caller, even if
+        // the callee returned some other Future implementation.
+        if (method.getReturnType().isAssignableFrom(Promise.class)) {
             Promise.Deferred<T> deferred = Promise.defer();
             target.send(new DynamicEvent<>(method, args, deferred));
             return deferred.promise();
