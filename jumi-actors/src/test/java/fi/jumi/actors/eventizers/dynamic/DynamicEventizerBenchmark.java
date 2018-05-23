@@ -1,17 +1,21 @@
-// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2018, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
 package fi.jumi.actors.eventizers.dynamic;
 
-import com.google.caliper.*;
+import com.google.caliper.Benchmark;
+import com.google.caliper.api.VmOptions;
+import com.google.caliper.runner.CaliperMain;
 import fi.jumi.actors.eventizers.Eventizer;
 
-@SuppressWarnings("UnusedDeclaration")
-public class DynamicEventizerBenchmark extends SimpleBenchmark {
+// XXX: workaround for https://stackoverflow.com/questions/29199509/caliper-error-cicompilercount-of-1-is-invalid-must-be-at-least-2
+@VmOptions("-XX:-TieredCompilation")
+public class DynamicEventizerBenchmark {
 
     private final DynamicEventizerProvider provider = new DynamicEventizerProvider();
 
+    @Benchmark
     public int timeEventizerLookup(int reps) {
         int junk = 0;
         for (int i = 0; i < reps; i++) {
@@ -23,7 +27,7 @@ public class DynamicEventizerBenchmark extends SimpleBenchmark {
 
 
     public static void main(String[] args) {
-        Runner.main(DynamicEventizerBenchmark.class, new String[0]);
+        CaliperMain.main(DynamicEventizerBenchmark.class, new String[0]);
     }
 
     private interface ListenerWithLotsOfMethods {

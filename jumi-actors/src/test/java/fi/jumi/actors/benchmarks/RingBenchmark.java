@@ -1,10 +1,12 @@
-// Copyright © 2011-2012, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2018, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
 package fi.jumi.actors.benchmarks;
 
 import com.google.caliper.*;
+import com.google.caliper.api.VmOptions;
+import com.google.caliper.runner.CaliperMain;
 import fi.jumi.actors.*;
 import fi.jumi.actors.eventizers.dynamic.DynamicEventizerProvider;
 import fi.jumi.actors.listeners.*;
@@ -16,7 +18,9 @@ import java.util.concurrent.*;
  * <p>
  * Based on http://blog.grayproductions.net/articles/erlang_message_passing/
  */
-public class RingBenchmark extends SimpleBenchmark {
+// XXX: workaround for https://stackoverflow.com/questions/29199509/caliper-error-cicompilercount-of-1-is-invalid-must-be-at-least-2
+@VmOptions("-XX:-TieredCompilation")
+public class RingBenchmark {
 
     @Param int ringSize;
     @Param int roundTrips;
@@ -26,8 +30,8 @@ public class RingBenchmark extends SimpleBenchmark {
 
     private ActorRef<Ring> ring;
 
-    @Override
-    protected void setUp() throws Exception {
+    @BeforeExperiment
+    public void before() {
         MultiThreadedActors actors = new MultiThreadedActors(
                 executor,
                 new DynamicEventizerProvider(),
@@ -48,11 +52,12 @@ public class RingBenchmark extends SimpleBenchmark {
         ring.tell().build(ringSize, ring);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @AfterExperiment
+    public void after() {
         executor.shutdownNow();
     }
 
+    @Benchmark
     public void timeRingRoundTrips(int reps) {
         for (int i = 0; i < reps; i++) {
             ring.tell().forward(roundTrips);
@@ -60,11 +65,15 @@ public class RingBenchmark extends SimpleBenchmark {
         }
     }
 
-    public static void sync(CyclicBarrier barrier) {
+    private static void sync(CyclicBarrier barrier) {
         try {
             barrier.await();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void main(String[] args) {
+        CaliperMain.main(RingBenchmark.class, new String[]{"-DringSize=1,10,100,1000,10000", "-DroundTrips=1000"});
     }
 }
