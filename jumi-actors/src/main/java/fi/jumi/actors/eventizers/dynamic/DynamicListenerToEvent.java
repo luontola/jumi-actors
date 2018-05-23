@@ -10,6 +10,7 @@ import fi.jumi.actors.queue.MessageSender;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.lang.reflect.*;
+import java.util.concurrent.Future;
 
 @ThreadSafe
 public class DynamicListenerToEvent<T> implements InvocationHandler {
@@ -27,9 +28,8 @@ public class DynamicListenerToEvent<T> implements InvocationHandler {
         }
         // The declared return type must be assignable from Promise, because this handler will always
         // return Promise to the caller, even if the callee returns some other Future implementation.
-        // The checks in fi.jumi.actors.eventizers.Eventizers#validateActorInterface
-        // already limit the declared return type to Promise, Future or ListenableFuture.
-        if (method.getReturnType().isAssignableFrom(Promise.class)) {
+        Class<?> returnType = method.getReturnType();
+        if (returnType == Future.class || returnType == Promise.class) {
             Promise.Deferred<T> deferred = Promise.defer();
             target.send(new DynamicEvent<>(method, args, deferred));
             return deferred.promise();

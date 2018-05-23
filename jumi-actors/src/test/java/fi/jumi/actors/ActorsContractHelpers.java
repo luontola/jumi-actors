@@ -4,7 +4,6 @@
 
 package fi.jumi.actors;
 
-import com.google.common.util.concurrent.ListenableFuture;
 import fi.jumi.actors.eventizers.*;
 import fi.jumi.actors.listeners.FailureHandler;
 import fi.jumi.actors.queue.MessageSender;
@@ -104,8 +103,6 @@ public abstract class ActorsContractHelpers<T extends Actors> {
 
         Future<String> returnsFuture();
 
-        ListenableFuture<String> returnsListenableFuture();
-
         Promise<Void> returnsVoidPromise();
     }
 
@@ -122,11 +119,6 @@ public abstract class ActorsContractHelpers<T extends Actors> {
 
         @Override
         public Future<String> returnsFuture() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public ListenableFuture<String> returnsListenableFuture() {
             throw new UnsupportedOperationException();
         }
 

@@ -4,7 +4,6 @@
 
 package fi.jumi.actors;
 
-import com.google.common.util.concurrent.ListenableFuture;
 import fi.jumi.actors.eventizers.Eventizers;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
@@ -73,8 +72,6 @@ public class ActorInterfaceContractsTest {
         void returnsVoid();
 
         Future<?> returnsFuture();
-
-        ListenableFuture<?> returnsListenableFuture();
 
         Promise<?> returnsPromise();
     }

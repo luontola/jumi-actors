@@ -4,7 +4,6 @@
 
 package fi.jumi.actors.eventizers;
 
-import com.google.common.util.concurrent.ListenableFuture;
 import fi.jumi.actors.Promise;
 
 import javax.annotation.concurrent.Immutable;
@@ -18,7 +17,6 @@ public class Eventizers {
     private static List<Class<?>> ALLOWED_RETURN_TYPES = Arrays.asList(
             Void.TYPE,
             Future.class,
-            ListenableFuture.class,
             Promise.class
     );
 
