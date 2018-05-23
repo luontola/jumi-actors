@@ -25,12 +25,10 @@ public class DynamicListenerToEvent<T> implements InvocationHandler {
         if (method.getDeclaringClass().equals(Object.class)) {
             return method.invoke(this, args);
         }
-        // This check will match the Promise class and all of its superclasses,
-        // including the Future interface. Though it would be more obvious to
-        // check whether the return type is an instance of Future, that could
-        // blow up at runtime (for example if return type is FutureTask) because
-        // this wrapper code will always return a Promise to the caller, even if
-        // the callee returned some other Future implementation.
+        // The declared return type must be assignable from Promise, because this handler will always
+        // return Promise to the caller, even if the callee returns some other Future implementation.
+        // The checks in fi.jumi.actors.eventizers.Eventizers#validateActorInterface
+        // already limit the declared return type to Promise, Future or ListenableFuture.
         if (method.getReturnType().isAssignableFrom(Promise.class)) {
             Promise.Deferred<T> deferred = Promise.defer();
             target.send(new DynamicEvent<>(method, args, deferred));

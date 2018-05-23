@@ -1,8 +1,11 @@
-// Copyright © 2011-2015, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2018, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
 package fi.jumi.actors.eventizers;
+
+import com.google.common.util.concurrent.ListenableFuture;
+import fi.jumi.actors.Promise;
 
 import javax.annotation.concurrent.Immutable;
 import java.lang.reflect.Method;
@@ -11,6 +14,14 @@ import java.util.concurrent.Future;
 
 @Immutable
 public class Eventizers {
+
+    private static List<Class<?>> ALLOWED_RETURN_TYPES = Arrays.asList(
+            Void.TYPE,
+            Future.class,
+            ListenableFuture.class,
+            Promise.class
+    );
+
 
     private Eventizers() {
         // utility class, not to be instantiated
@@ -32,7 +43,7 @@ public class Eventizers {
 
     private static void checkReturnTypeIsAllowed(Class<?> type, Method method) {
         Class<?> returnType = method.getReturnType();
-        if (!returnType.equals(Void.TYPE) && !Future.class.isAssignableFrom(returnType)) {
+        if (!ALLOWED_RETURN_TYPES.contains(returnType)) {
             throw new IllegalArgumentException("actor interface methods must return void or " + Future.class.getName() + ", " +
                     "but method " + method.getName() + " of " + type + " had return type " + returnType.getName());
         }

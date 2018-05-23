@@ -1,9 +1,10 @@
-// Copyright © 2011-2015, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2018, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
 package fi.jumi.actors;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import fi.jumi.actors.eventizers.*;
 import fi.jumi.actors.listeners.FailureHandler;
 import fi.jumi.actors.queue.MessageSender;
@@ -103,6 +104,8 @@ public abstract class ActorsContractHelpers<T extends Actors> {
 
         Future<String> returnsFuture();
 
+        ListenableFuture<String> returnsListenableFuture();
+
         Promise<Void> returnsVoidPromise();
     }
 
@@ -119,6 +122,11 @@ public abstract class ActorsContractHelpers<T extends Actors> {
 
         @Override
         public Future<String> returnsFuture() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public ListenableFuture<String> returnsListenableFuture() {
             throw new UnsupportedOperationException();
         }
 

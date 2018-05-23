@@ -1,14 +1,15 @@
-// Copyright © 2011-2015, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2018, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
 package fi.jumi.actors;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import fi.jumi.actors.eventizers.Eventizers;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 public class ActorInterfaceContractsTest {
 
@@ -51,6 +52,16 @@ public class ActorInterfaceContractsTest {
         Eventizers.validateActorInterface(HasExceptionThrowingMethods.class);
     }
 
+    @Test
+    public void methods_returning_future_must_use_the_interface_instead_of_the_implementation_class() {
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("actor interface methods must return void or java.util.concurrent.Future, " +
+                "but method returnsFutureTask of interface fi.jumi.actors.ActorInterfaceContractsTest$DeclaresWrongFutureImplementation " +
+                "had return type java.util.concurrent.FutureTask");
+
+        Eventizers.validateActorInterface(DeclaresWrongFutureImplementation.class);
+    }
+
 
     // guinea pigs
 
@@ -63,6 +74,8 @@ public class ActorInterfaceContractsTest {
 
         Future<?> returnsFuture();
 
+        ListenableFuture<?> returnsListenableFuture();
+
         Promise<?> returnsPromise();
     }
 
@@ -72,5 +85,9 @@ public class ActorInterfaceContractsTest {
 
     public interface HasExceptionThrowingMethods {
         void onSomething() throws Exception;
+    }
+
+    public interface DeclaresWrongFutureImplementation {
+        FutureTask<?> returnsFutureTask();
     }
 }

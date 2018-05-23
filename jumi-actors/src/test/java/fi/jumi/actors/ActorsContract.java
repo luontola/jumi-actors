@@ -1,9 +1,10 @@
-// Copyright © 2011-2015, Esko Luontola <www.orfjackal.net>
+// Copyright © 2011-2018, Esko Luontola <www.orfjackal.net>
 // This software is released under the Apache License 2.0.
 // The license text is at http://www.apache.org/licenses/LICENSE-2.0
 
 package fi.jumi.actors;
 
+import com.google.common.util.concurrent.*;
 import fi.jumi.actors.eventizers.*;
 import fi.jumi.actors.eventizers.dynamic.DynamicEventizer;
 import fi.jumi.actors.listeners.*;
@@ -84,7 +85,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
     // promises
 
     @Test
-    public void handlers_can_return_already_satisfied_promises() {
+    public void handlers_can_return_already_satisfied_Promises() {
         ActorThread actorThread = actors.startActorThread();
         ActorRef<ResultsInterface> actor = actorThread.bindActor(ResultsInterface.class, new ResultsAdapter() {
             @Override
@@ -101,7 +102,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
     }
 
     @Test
-    public void handlers_can_return_later_satisfied_promises() {
+    public void handlers_can_return_later_satisfied_Promises() {
         ActorThread actorThread = actors.startActorThread();
         ActorRef<ResultsInterface> actor = actorThread.bindActor(ResultsInterface.class, new ResultsAdapter() {
             Promise.Deferred<String> deferred;
@@ -128,7 +129,7 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
     }
 
     @Test
-    public void handlers_can_return_arbitrary_futures() throws Exception {
+    public void handlers_can_return_any_Future_implementation() throws Exception {
         ActorThread actorThread = actors.startActorThread();
         ActorRef<ResultsInterface> actor = actorThread.bindActor(ResultsInterface.class, new ResultsAdapter() {
             FutureTask<String> future;
@@ -148,6 +149,34 @@ public abstract class ActorsContract<T extends Actors> extends ActorsContractHel
         });
 
         Future<String> future = actor.tell().returnsFuture();
+        actor.tell().noReturnValue();
+        awaitEvents(2);
+
+        assertEvents("event 1", "event 2");
+        assertThat(future.get(1, TimeUnit.MILLISECONDS), is("return value"));
+    }
+
+    @Test
+    public void handlers_can_return_any_ListenableFuture_implementation() throws Exception {
+        ActorThread actorThread = actors.startActorThread();
+        ActorRef<ResultsInterface> actor = actorThread.bindActor(ResultsInterface.class, new ResultsAdapter() {
+            SettableFuture<String> future;
+
+            @Override
+            public ListenableFuture<String> returnsListenableFuture() {
+                logEvent("event 1");
+                future = SettableFuture.create();
+                return future;
+            }
+
+            @Override
+            public void noReturnValue() {
+                future.set("return value");
+                logEvent("event 2");
+            }
+        });
+
+        ListenableFuture<String> future = actor.tell().returnsListenableFuture();
         actor.tell().noReturnValue();
         awaitEvents(2);
 
