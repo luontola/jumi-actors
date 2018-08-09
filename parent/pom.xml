@@ -37,8 +37,8 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com/orfjackal/jumi-actors.git</connection>
-        <url>https://github.com/orfjackal/jumi-actors</url>
+        <connection>scm:git:git://github.com/luontola/jumi-actors.git</connection>
+        <url>https://github.com/luontola/jumi-actors</url>
     </scm>
 
     <properties>

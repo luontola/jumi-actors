@@ -2,7 +2,7 @@
 OK - remove Maven plugin, cleanup this TODO list, push up issues that can now be solved more easily
 
 OK - generating event stubs when method argument types take type parameters (now causes JavaType to throw IllegalArgumentException: unsupported type)
-	https://github.com/orfjackal/jumi-actors/issues/1
+	https://github.com/luontola/jumi-actors/issues/1
 	OK - the new generator doesn't add imports for nested type parameters
 
 OK - easier access to an ActorRef to the current actor, e.g. Actors.selfRef() using a thread-local, or perhaps Actors.currentThread()?
